@@ -7,8 +7,8 @@ function impulse.DB.boot()
     database.onConnected = function() 
         MsgC(Color(0,255,0),"[IMPULSE] Database connection established.\n") 
     end
-	database.onConnectionFailed = function() 
-	    MsgC(Color(0,255,0),"[IMPULSE] Database connection failure.\n") 
+	database.onConnectionFailed = function(error) 
+	    MsgC(Color(0,255,0),"[IMPULSE] Database connection failure. Error dump: ("..error..")\n") 
 	end
 	database:connect()
 end
