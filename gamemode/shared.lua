@@ -57,9 +57,9 @@ function impulse.reload()
 MsgC( Color( 255, 0, 0 ), "[IMPULSE] Reloading gamemode...\n" )
 impulse.lib.includeDir("core")
 
-for files, dir in ipairs(file.Find("impulse/plugins/*", "LUA")) do
-	impulse.lib.includeDir("plugins")
-end
+    for files, dir in ipairs(file.Find("impulse/plugins/*", "LUA")) do
+	    impulse.lib.includeDir("plugins")
+    end
 
 end
 
