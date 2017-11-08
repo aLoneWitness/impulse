@@ -2,7 +2,7 @@
 require("mysqloo")
 
 function impulse.DB.boot()
-    impulse.DB.object = mysqloo.connect( impulse.DB.ip, impulse.DB.username, impulse.DB.password, [impulse.DB.database, 3306] )
+    impulse.DB.object = mysqloo.connect( impulse.DB.ip, impulse.DB.username, impulse.DB.password, impulse.DB.database, 3306 )
     local database = impulse.DB.object
     database.onConnected = function() 
         MsgC(Color(0,255,0),"[IMPULSE] Database connection established.\n") 
