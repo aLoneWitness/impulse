@@ -55,6 +55,10 @@ end
 
 -- Loading 3rd party libs
 impulse.lib.includeDir("libs")
+-- Load config
+impulse.lib.includeDir("config")
+-- Load core
+impulse.lib.includeDir("core")
 
 function impulse.reload()
 MsgC( Color( 255, 0, 0 ), "[IMPULSE] Reloading gamemode...\n" )
