@@ -53,6 +53,9 @@ function impulse.lib.includeDir(directory, fromLua)
 		end
 end
 
+-- Loading 3rd party libs
+impulse.lib.includeDir("libs")
+
 function impulse.reload()
 MsgC( Color( 255, 0, 0 ), "[IMPULSE] Reloading gamemode...\n" )
 impulse.lib.includeDir("core")
@@ -62,5 +65,6 @@ impulse.lib.includeDir("core")
     end
 
 end
+
 
 MsgC( Color( 0, 255, 0 ), "[IMPULSE] Completeing shared load...\n" )
