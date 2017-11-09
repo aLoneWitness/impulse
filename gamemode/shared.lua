@@ -7,6 +7,9 @@ IMPULSE = GM
 
 -- Called after the gamemode has loaded.
 function IMPULSE:Initialize()
+    if (SERVER) then
+        impulse.DB.boot() -- Load database
+    end
 	impulse.reload()
 end
 
