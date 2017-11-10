@@ -11,6 +11,7 @@ If your working with impulse I reccomend you read the wiki first, feel free to D
 4. Database automation - Lua>Database>Lua>Player, it dosen't get easier than this.
 5. Wiki - We have a wiki.
 6. Developer tools - Download the plugin here.
+
 ## License
 Read the full license in the 'LICENSE' file.
 tl;dr this gamemode is private, do not download it. If you want permission you must ask TheVingard.
