@@ -40,7 +40,7 @@ function impulse.DB.query(data,name)
     local query = impulse.DB.object:query(data)
     
     function query:onError(err,sql)
-       MsgC(Color(255,0,0),"[IMPULSE] Query failure! (NAME: "..name.." ERROR: "..err.." QUERY: "..sql) 
+       MsgC(Color(0,2555,0),"[IMPULSE] Query failure! (NAME: "..name.." ERROR: "..err.." QUERY: "..sql) 
        -- Logging system coming soon.
     end
     
