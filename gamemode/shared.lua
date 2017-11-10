@@ -56,15 +56,15 @@ function impulse.lib.includeDir(directory, fromLua)
 end
 
 -- Loading 3rd party libs
-impulse.lib.includeDir("libs")
+impulse.lib.includeDir("impulse/gamemode/libs")
 -- Load config
-impulse.lib.includeDir("config")
+impulse.lib.includeDir("impulse/gamemode/config")
 -- Load core
-impulse.lib.includeDir("core")
+impulse.lib.includeDir("impulse/gamemode/core")
 
 function impulse.reload()
 MsgC( Color( 255, 0, 0 ), "[IMPULSE] Reloading gamemode...\n" )
-impulse.lib.includeDir("core")
+impulse.lib.includeDir("impulse/gamemode/core")
 
     for files, dir in ipairs(file.Find("impulse/plugins/*", "LUA")) do
 	    impulse.lib.includeDir(dir)
