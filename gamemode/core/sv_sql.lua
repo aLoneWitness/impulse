@@ -27,7 +27,7 @@ function impulse.DB.boot()
         self:query(baseTables)
     end
 	function database:onConnectionFailed(error) 
-	    return MsgC(Color(0,255,0),"[IMPULSE] Database connection failure. Error dump: ("..error..")\n") 
+	    return MsgC(Color(255,0,0),"[IMPULSE] Database connection failure. Error dump: ("..error..")\n") 
 	end
 	database:connect()
 	
@@ -38,9 +38,9 @@ function impulse.DB.query(data,name)
     
     function query:onError(err,sql)
         if name then
-            MsgC(Color(0,255,0),"[IMPULSE] Query failure! (NAME: "..name.." ERROR: "..err.." QUERY: "..sql) 
+            MsgC(Color(255,0,0),"[IMPULSE] Query failure! (NAME: "..name.." ERROR: "..err.." QUERY: "..sql) 
         else
-            MsgC(Color(0,255,0),"[IMPULSE] Query failure! (ERROR: "..err.." QUERY: "..sql) 
+            MsgC(Color(255,0,0),"[IMPULSE] Query failure! (ERROR: "..err.." QUERY: "..sql) 
         end
         
        -- Logging system coming soon.
