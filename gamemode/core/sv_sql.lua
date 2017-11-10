@@ -12,3 +12,9 @@ function impulse.DB.boot()
 	end
 	database:connect()
 end
+
+local function dbAuth()
+    
+    
+end
+hook.Add("PlayerAuthed","IMPULSE-DATABASE-AUTH",dbAuth)
