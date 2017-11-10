@@ -28,33 +28,33 @@ end
 
 
 function SKIN:PaintButton(panel) -- button skin from ns edited
-		if (panel:GetPaintBackground()) then
-			local w, h = panel:GetWide(), panel:GetTall()
-			local alpha = 150
+	if (panel:GetPaintBackground()) then
+		local w, h = panel:GetWide(), panel:GetTall()
+		local alpha = 150
 
-			if (panel:GetDisabled()) then
-				alpha = 10
-			elseif (panel.Depressed) then
-				alpha = 190
-			elseif (panel.Hovered) then
-				alpha = 170
-			end
-
-			surface.SetDrawColor(46, 139, 232, alpha)
-			surface.DrawRect(0, 0, w, h)
-
-			surface.SetDrawColor(0, 0, 0, 180)
-			surface.DrawOutlinedRect(0, 0, w, h)
-
-			surface.SetDrawColor(180, 180, 180, 2)
-			surface.DrawOutlinedRect(1, 1, w - 2, h - 2)
+    	if (panel:GetDisabled()) then
+			alpha = 10
+		elseif (panel.Depressed) then
+			alpha = 190
+		elseif (panel.Hovered) then
+			alpha = 170
 		end
+		surface.SetDrawColor(46, 139, 232, alpha)
+		surface.DrawRect(0, 0, w, h)
+		
+		surface.SetDrawColor(0, 0, 0, 180)
+		surface.DrawOutlinedRect(0, 0, w, h)
+		surface.SetDrawColor(180, 180, 180, 2)
+		surface.DrawOutlinedRect(1, 1, w - 2, h - 2)
+	end
 end
 
 function SKIN:PaintWindowMinimizeButton( panel, w, h ) -- dont need these
+    
 end
 
 function SKIN:PaintWindowMaximizeButton( panel, w, h )
+    
 end
 
 
