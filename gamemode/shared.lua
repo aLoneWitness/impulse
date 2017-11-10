@@ -2,7 +2,7 @@
 GM.Name = "IMPULSE"
 GM.Author = "TheVingard"
 GM.Website = "https://www.apex-roleplay.com"
-MsgC( Color( 255, 0, 0 ), "[IMPULSE] Starting shared load...\n" )
+MsgC( Color( 83, 143, 239 ), "[IMPULSE] Starting shared load...\n" )
 IMPULSE = GM
 
 -- Called after the gamemode has loaded.
@@ -63,10 +63,11 @@ impulse.lib.includeDir("impulse/gamemode/config")
 impulse.lib.includeDir("impulse/gamemode/core")
 
 function impulse.reload()
-MsgC( Color( 255, 0, 0 ), "[IMPULSE] Reloading gamemode...\n" )
+MsgC( Color( 83, 143, 239 ), "[IMPULSE] Reloading gamemode...\n" )
 impulse.lib.includeDir("impulse/gamemode/core")
 
     for files, dir in ipairs(file.Find("impulse/plugins/*", "LUA")) do
+        MsgC( Color( 83, 143, 239 ), "[IMPULSE] Loading plugin '"..dir.."'\n" )
 	    impulse.lib.includeDir(dir)
     end
 
