@@ -17,9 +17,6 @@ CREATE TABLE IF NOT EXISTS `impulse_pd` (
 	'_blacklists' varchar(180) NOT NULL,
 	PRIMARY KEY (`_id`)
 );
-
-
-
 ]]
 
 function impulse.DB.boot()
