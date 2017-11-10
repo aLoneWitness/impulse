@@ -8,7 +8,6 @@ CREATE TABLE IF NOT EXISTS `impulse_pd` (
 	`_group` text NOT NULL,
 	`_cosmetic` varchar(180) NOT NULL,
 	`_attributes` varchar(180) DEFAULT NULL,
-	`_schema` varchar(24) NOT NULL,
 	`_rpgroup` int(11) unsigned NOT NULL,
 	`_steamid` bigint(20) unsigned NOT NULL,
 	`_data` longtext,
