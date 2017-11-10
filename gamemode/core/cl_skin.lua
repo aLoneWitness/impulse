@@ -7,7 +7,7 @@ local Color = Color
 
 SKIN = {}
 
-SKIN.PrintName 		= "apex-modern"
+SKIN.PrintName 		= "impulse"
 SKIN.Author 		= "TheVingard"
 SKIN.DermaVersion	= 1
 SKIN.Colours = table.Copy(derma.SkinList.Default.Colours)
