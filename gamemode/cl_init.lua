@@ -1,5 +1,5 @@
 DeriveGamemode("sandbox")
-MsgC( Color( 255, 0, 0 ), "[IMPULSE] Starting client load...\n" )
+MsgC( Color( 83, 143, 239 ), "[IMPULSE] Starting client load...\n" )
 
 impulse = {} -- defining global function table
 impulse.meta = FindMetaTable( "Player" )
