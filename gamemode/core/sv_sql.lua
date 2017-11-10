@@ -46,10 +46,14 @@ function impulse.DB.query(data,name)
     end
     
     query:start()
+    
+    return query
 end
 
 local function dbAuth(player,id)
-    if 
-    
+    local check = impulse.DB.query("SELECT steamid FROM impulse_pd WHERE steamid = '"..id.."'","IMPULSE-PC-CHECK")
+    if not check then
+        impulse.DB.query("INSERT INTO impulse_pd ('steamid)VALUES ('"..id.."')")
+    end
 end
 hook.Add("PlayerAuthed","IMPULSE-DATABASE-AUTH",dbAuth)
