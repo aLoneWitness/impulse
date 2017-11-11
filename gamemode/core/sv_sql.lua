@@ -34,6 +34,10 @@ function impulse.DB.boot()
 	
 end
 
+function impulse.DB.escape(val)
+   return impulse.DB.object:escape(val) 
+end
+
 function impulse.DB.query(data,name)
     local query = impulse.DB.object:query(data)
     
