@@ -52,6 +52,11 @@ function impulse.DB.query(data,name)
     return query
 end
 
+function meta:GetData(key)
+    local id = self:SteamID()
+    return pon.decode(impulse.DB.query("'SELECT data FROM impulse_pd WHERE steamid = '"..id.."'","IMPULSE GET DATA"))
+end
+
 local function dbAuth(player,id)
     local check = impulse.DB.query("SELECT steamid FROM impulse_pd WHERE steamid = '"..id.."'","IMPULSE-PC-CHECK")
     if not check then
