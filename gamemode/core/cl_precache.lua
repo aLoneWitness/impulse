@@ -24,6 +24,9 @@ function impulse.TriggerLoad(table)
    elseif table[2] == 2 then
        util.PrecacheSound(table[1])
    end
-    
+   impulse.loaded = true
 end
 
+function impulse.GetLoadCache()
+    return impulse.loadCache
+end
