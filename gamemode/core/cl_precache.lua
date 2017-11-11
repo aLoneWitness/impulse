@@ -1,4 +1,4 @@
-local impulse.loadCache = {}
+local impulse.loadCache = impulse.loadCache or {} -- Lua refresh support.
 
 function impulse.PrepModelForLoad(model)
     local generatedtable = {model, 1}
