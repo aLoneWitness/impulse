@@ -25,6 +25,7 @@ function impulse.DB.boot()
     function database:onConnected()
         MsgC(Color(0,255,0),"[IMPULSE] Database connection established.\n")
         self:query(baseTables)
+        hook.Run('DbLoad')
     end
 	function database:onConnectionFailed(error) 
 	    return MsgC(Color(255,0,0),"[IMPULSE] Database connection failure. Error dump: ("..error..")\n") 
