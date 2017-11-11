@@ -1,4 +1,4 @@
-impulse.schema = {}
+impulse.schema = impulse.schema or {} 
 
 function impulse.schema.boot()
     SCHEMA = {GM.FolderName}
