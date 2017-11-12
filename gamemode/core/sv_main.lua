@@ -1,9 +1,9 @@
-util.AddNetworkString("DarkRP_InitializeVars")
-util.AddNetworkString("DarkRP_PlayerVar")
-util.AddNetworkString("DarkRP_PlayerVarRemoval")
-util.AddNetworkString("DarkRP_DarkRPVarDisconnect")
+util.AddNetworkString("IMPULSE_InitializeVars")
+util.AddNetworkString("IMPULSE_PlayerVar")
+util.AddNetworkString("IMPULSE_PlayerVarRemoval")
+util.AddNetworkString("IMPULSE_DarkRPVarDisconnect")
 
-function meta:removeDarkRPVar(var, target)
+function meta:removeIVar(var, target)
     hook.Call("DarkRPVarChanged", nil, self, var, (self.DarkRPVars and self.DarkRPVars[var]) or nil, nil)
     target = target or player.GetAll()
     self.DarkRPVars = self.DarkRPVars or {}
@@ -16,7 +16,7 @@ function meta:removeDarkRPVar(var, target)
     net.Send(target)
 end
 
-function meta:setDarkRPVar(var, value, target)
+function meta:setIVar(var, value, target)
     if not IsValid(self) then return end
     target = target or player.GetAll()
 
@@ -32,7 +32,7 @@ function meta:setDarkRPVar(var, value, target)
     net.Send(target)
 end
 
-function meta:setSelfDarkRPVar(var, value)
+function meta:setSelfIVar(var, value)
     self.privateDRPVars = self.privateDRPVars or {}
     self.privateDRPVars[var] = true
 
@@ -44,7 +44,7 @@ function meta:getDarkRPVar(var)
     return self.DarkRPVars[var]
 end
 
-function meta:sendDarkRPVars()
+function meta:sendIVars()
     if self:EntIndex() == 0 then return end
 
     local plys = player.GetAll()
@@ -67,7 +67,7 @@ function meta:sendDarkRPVars()
         end
     net.Send(self)
 end
-concommand.Add("_sendDarkRPvars", function(ply)
+concommand.Add("_sendIvars", function(ply)
     if ply.DarkRPVarsSent and ply.DarkRPVarsSent > (CurTime() - 3) then return end -- prevent spammers
     ply.DarkRPVarsSent = CurTime()
     ply:sendDarkRPVars()
