@@ -8,11 +8,11 @@ function meta:CanAfford(cost)
 end
 
 function meta:GiveMoney(amount)
-    self:setMoney(self:getIVar("money")+amount)
+    return self:setMoney(self:getIVar("money")+amount)
 end
 
 function meta:TakeMoney(amount)
-    self:setMoney(self:getIVar("money")-amount)
+    return self:setMoney(self:getIVar("money")-amount)
 end
 
 function meta:SetBank(value)
