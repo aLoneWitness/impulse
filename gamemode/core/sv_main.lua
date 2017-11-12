@@ -1,16 +1,16 @@
 util.AddNetworkString("IMPULSE_InitializeVars")
 util.AddNetworkString("IMPULSE_PlayerVar")
 util.AddNetworkString("IMPULSE_PlayerVarRemoval")
-util.AddNetworkString("IMPULSE_DarkRPVarDisconnect")
+util.AddNetworkString("IMPULSE_impulseVarDisconnect")
 
 function meta:removeIVar(var, target)
     target = target or player.GetAll()
-    self.DarkRPVars = self.DarkRPVars or {}
-    self.DarkRPVars[var] = nil
+    self.impulseVars = self.impulseVars or {}
+    self.impulseVars[var] = nil
 
-    net.Start("DarkRP_PlayerVarRemoval")
+    net.Start("impulse_PlayerVarRemoval")
         net.WriteUInt(self:UserID(), 16)
-        DarkRP.writeNetDarkRPVarRemoval(var)
+        impulse.writeNetimpulseVarRemoval(var)
     net.Send(target)
 end
 
@@ -18,15 +18,15 @@ function meta:setIVar(var, value, target)
     if not IsValid(self) then return end
     target = target or player.GetAll()
 
-    if value == nil then return self:removeDarkRPVar(var, target) end
-    hook.Call("DarkRPVarChanged", nil, self, var, (self.DarkRPVars and self.DarkRPVars[var]) or nil, value)
+    if value == nil then return self:removeimpulseVar(var, target) end
+    hook.Call("impulseVarChanged", nil, self, var, (self.impulseVars and self.impulseVars[var]) or nil, value)
 
-    self.DarkRPVars = self.DarkRPVars or {}
-    self.DarkRPVars[var] = value
+    self.impulseVars = self.impulseVars or {}
+    self.impulseVars[var] = value
 
-    net.Start("DarkRP_PlayerVar")
+    net.Start("impulse_PlayerVar")
         net.WriteUInt(self:UserID(), 16)
-        DarkRP.writeNetDarkRPVar(var, value)
+        impulse.writeNetimpulseVar(var, value)
     net.Send(target)
 end
 
@@ -34,12 +34,12 @@ function meta:setSelfIVar(var, value)
     self.privateDRPVars = self.privateDRPVars or {}
     self.privateDRPVars[var] = true
 
-    self:setDarkRPVar(var, value, self)
+    self:setimpulseVar(var, value, self)
 end
 
-function meta:getDarkRPVar(var)
-    self.DarkRPVars = self.DarkRPVars or {}
-    return self.DarkRPVars[var]
+function meta:getimpulseVar(var)
+    self.impulseVars = self.impulseVars or {}
+    return self.impulseVars[var]
 end
 
 function meta:sendIVars()
@@ -47,26 +47,26 @@ function meta:sendIVars()
 
     local plys = player.GetAll()
 
-    net.Start("DarkRP_InitializeVars")
+    net.Start("impulse_InitializeVars")
         net.WriteUInt(#plys, 8)
         for _, target in pairs(plys) do
             net.WriteUInt(target:UserID(), 16)
 
-            local DarkRPVars = {}
-            for var, value in pairs(target.DarkRPVars) do
+            local impulseVars = {}
+            for var, value in pairs(target.impulseVars) do
                 if self ~= target and (target.privateDRPVars or {})[var] then continue end
-                table.insert(DarkRPVars, var)
+                table.insert(impulseVars, var)
             end
 
-            net.WriteUInt(#DarkRPVars, DarkRP.DARKRP_ID_BITS + 2) -- Allow for three times as many unknown DarkRPVars than the limit
-            for i = 1, #DarkRPVars, 1 do
-                DarkRP.writeNetDarkRPVar(DarkRPVars[i], target.DarkRPVars[DarkRPVars[i]])
+            net.WriteUInt(#impulseVars, impulse.impulse_ID_BITS + 2) -- Allow for three times as many unknown impulseVars than the limit
+            for i = 1, #impulseVars, 1 do
+                impulse.writeNetimpulseVar(impulseVars[i], target.impulseVars[impulseVars[i]])
             end
         end
     net.Send(self)
 end
 concommand.Add("_sendIvars", function(ply)
-    if ply.DarkRPVarsSent and ply.DarkRPVarsSent > (CurTime() - 3) then return end -- prevent spammers
-    ply.DarkRPVarsSent = CurTime()
-    ply:sendDarkRPVars()
+    if ply.impulseVarsSent and ply.impulseVarsSent > (CurTime() - 3) then return end -- prevent spammers
+    ply.impulseVarsSent = CurTime()
+    ply:sendimpulseVars()
 end)
