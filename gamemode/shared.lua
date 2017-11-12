@@ -50,9 +50,9 @@ end
 
 function impulse.lib.includeDir(directory, fromLua)
 	local baseDir = "impulse"
-		for k, v in ipairs(file.Find((fromLua and "" or baseDir)..directory.."/*.lua", "LUA")) do
-			impulse.lib.include(directory.."/"..v)
-		end
+	for k, v in ipairs(file.Find((fromLua and "" or baseDir)..directory.."/*.lua", "LUA")) do
+    	impulse.lib.include(directory.."/"..v)
+	end
 end
 
 -- Loading 3rd party libs
