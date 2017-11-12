@@ -19,7 +19,6 @@ function meta:setIVar(var, value, target)
     target = target or player.GetAll()
 
     if value == nil then return self:removeimpulseVar(var, target) end
-    hook.Call("impulseVarChanged", nil, self, var, (self.impulseVars and self.impulseVars[var]) or nil, value)
 
     self.impulseVars = self.impulseVars or {}
     self.impulseVars[var] = value
