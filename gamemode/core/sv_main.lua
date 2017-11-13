@@ -88,5 +88,4 @@ function IMPULSE:PlayerSay(player,text,teamChat)
            k[3](args) -- Run command function (Add arg)
        end
     end
-   
 end
