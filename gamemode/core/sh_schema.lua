@@ -8,7 +8,7 @@ function impulse.schema.boot()
 
     for files, dir in ipairs(file.Find(SCHEMA.."/plugins/*", "LUA")) do
         MsgC( Color( 83, 143, 239 ), "[IMPULSE] ["..SCHEMA.."] Loading plugin '"..dir.."'\n" )
-	    impulse.lib.includeDir(dir)
+	    impulse.lib.includeDir(SCHEMA.."/plugins/"..dir)
     end
 
 end
