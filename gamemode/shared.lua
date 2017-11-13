@@ -63,8 +63,8 @@ impulse.lib.includeDir("impulse/gamemode/config")
 impulse.lib.includeDir("impulse/gamemode/core")
 
 function impulse.reload()
-MsgC( Color( 83, 143, 239 ), "[IMPULSE] Reloading gamemode...\n" )
-impulse.lib.includeDir("impulse/gamemode/core")
+    MsgC( Color( 83, 143, 239 ), "[IMPULSE] Reloading gamemode...\n" )
+    impulse.lib.includeDir("impulse/gamemode/core")
 
     for files, dir in ipairs(file.Find("impulse/plugins/*", "LUA")) do
         MsgC( Color( 83, 143, 239 ), "[IMPULSE] Loading plugin '"..dir.."'\n" )
