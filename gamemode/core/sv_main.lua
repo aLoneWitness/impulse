@@ -69,3 +69,24 @@ concommand.Add("_sendIvars", function(ply)
     ply.impulseVarsSent = CurTime()
     ply:sendimpulseVars()
 end)
+
+impulse.chatcommands = {}
+
+function impulse.RegisterChatCommand(commanddata,function)
+    local name = "/"..commanddata.name
+    local desc = commanddata.desc or ""
+    local table = {name,desc,function}
+    table.insert(impulse.chatcommands, table)
+end
+
+function IMPULSE:PlayerSay(player,text,teamChat)
+   if teamChat then return text end -- teamchat is not used for commands
+    for v,k in pairs(impulse.chatcommands) do -- loop through all commands
+       if k[1]==string.lower(text) then -- if what they typed is a command
+           local args = string.Explode(" ", text) -- split the string into each word (argument)
+           args[1]=nil -- lets not send the actual command
+           k[3](args) -- Run command function (Add arg)
+       end
+    end
+   
+end
