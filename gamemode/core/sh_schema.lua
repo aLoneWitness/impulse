@@ -10,7 +10,6 @@ function impulse.schema.boot()
         MsgC( Color( 83, 143, 239 ), "[IMPULSE] ["..SCHEMA.."] Loading plugin '"..dir.."'\n" )
 	    impulse.lib.includeDir(SCHEMA.."/plugins/"..dir)
     end
-
-end
+    
     hook.Run('SchemaLoad')
 end
