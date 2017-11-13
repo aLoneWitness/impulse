@@ -68,7 +68,7 @@ impulse.lib.includeDir("impulse/gamemode/core")
 
     for files, dir in ipairs(file.Find("impulse/plugins/*", "LUA")) do
         MsgC( Color( 83, 143, 239 ), "[IMPULSE] Loading plugin '"..dir.."'\n" )
-	    impulse.lib.includeDir(dir)
+	    impulse.lib.includeDir("impulse/plugins/"..dir)
     end
 
 end
