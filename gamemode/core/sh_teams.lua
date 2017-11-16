@@ -1,5 +1,5 @@
 impulse.team = {}
-impulse.team.teams = {}
+
 
 function impulse.team.define(data_table)
     team.SetUp( data_table.id, data_table.name, data_table.color ) -- Hooking into the source engine team system
