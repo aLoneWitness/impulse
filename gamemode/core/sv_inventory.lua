@@ -3,5 +3,5 @@ function meta:inventorySave()
 end
 
 function meta:inventoryRead()
-    self.Inventory = impulse.DB.query("SELECT inventory FROM impulse_pd WHERE steamid = '"..self:SteamID().."'")
+    self.Inventory = pon.decode(impulse.DB.query("SELECT inventory FROM impulse_pd WHERE steamid = '"..self:SteamID().."'")) -- may need to use util.KeyValuesToTable
 end
