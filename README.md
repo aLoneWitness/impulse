@@ -11,6 +11,7 @@ If your working with impulse I reccomend you read the wiki first, feel free to D
 4. Database automation - Lua>Database>Lua>Player, it dosen't get easier than this.
 5. Wiki - We have a wiki.
 6. Developer tools - Download the plugin here.
+7. Simple networking - Networking is less of a hassle with impulse. We have a built in 'IVar' system that makes entity networking easy, and IMessages are planned to be added soon.
 
 ## License
 Read the full license in the 'LICENSE' file.
