@@ -16,6 +16,28 @@ function meta:IsCP() -- function to check if the team has authority
     return impulse.team.teams[self:Team()].iscp
 end
 
-function IMPULSE:OnPlayerChangeTeam(player,oldteam,newteam)
-   player:SetIVar("job",team.GetName(newteam))
+if SERVER then
+    function IMPULSE:OnPlayerChangeTeam(player,oldteam,newteam)
+        player:SetIVar("job",team.GetName(newteam))
+    end
+    
+    
+    function impulse.team.updateranks()
+        for v,k in pairs(player.GetAll()) do
+            local job =  k:Team()
+            local rank = v:GetRank()
+            if hook.Run('ShouldUpdateRank',k,job,rank) then
+               k.jobPlaytime = v.jobPlaytime or 0
+               k.jobPlaytime = k.jobPlaytime + impulse.GetConfig().rankUpdateTime
+               
+               k:CheckForPromotion()
+               k:SaveRanks()
+            end
+        
+    end
+    
+    timer.Create("IMPULSE-JOB-RANK-UPDT", impulse.GetConfig().rankUpdateTime, 0, impulse.team.updateranks)
+    
+
+
 end
