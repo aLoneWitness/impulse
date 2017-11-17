@@ -65,7 +65,7 @@ end
 local function dbAuth(player,id)
     local check = impulse.DB.query("SELECT steamid FROM impulse_pd WHERE steamid = '"..id.."'","IMPULSE-PC-CHECK")
     if not check then
-        impulse.DB.query("INSERT INTO impulse_pd ('steamid')VALUES ('"..id.."')", "IMPULSE FIRST TIME JOIN")
+        impulse.DB.query("INSERT INTO impulse_pd ('steamid') VALUES ('"..id.."')", "IMPULSE FIRST TIME JOIN")
     end
     hook.Run('PlayerDbAuth', player)
 end
