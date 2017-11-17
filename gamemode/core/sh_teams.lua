@@ -21,7 +21,6 @@ if SERVER then
         player:SetIVar("job",team.GetName(newteam))
     end
     
-    
     function impulse.team.updateranks()
         for v,k in pairs(player.GetAll()) do
             local job =  k:Team()
@@ -33,11 +32,9 @@ if SERVER then
                k:CheckForPromotion()
                k:SaveRanks()
             end
-        
+        end
     end
     
     timer.Create("IMPULSE-JOB-RANK-UPDT", impulse.GetConfig().rankUpdateTime, 0, impulse.team.updateranks)
-    
-
 
 end
