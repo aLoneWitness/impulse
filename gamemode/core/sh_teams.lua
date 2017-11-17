@@ -26,7 +26,7 @@ if SERVER then
         for v,k in pairs(player.GetAll()) do
             local job =  k:Team()
             local rank = v:GetRank()
-            if hook.Run('ShouldUpdateRank',k,job,rank) then
+            if impulse.team.teams[job].ranks and hook.Run('ShouldUpdateRank',k,job,rank) then
                k.jobPlaytime[job] = v.jobPlaytime[job] or 0
                k.jobPlaytimep[job] = k.jobPlaytime[job] + impulse.GetConfig().rankUpdateTime
                
