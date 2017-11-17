@@ -27,8 +27,8 @@ if SERVER then
             local job =  k:Team()
             local rank = v:GetRank()
             if hook.Run('ShouldUpdateRank',k,job,rank) then
-               k.jobPlaytime = v.jobPlaytime or 0
-               k.jobPlaytime = k.jobPlaytime + impulse.GetConfig().rankUpdateTime
+               k.jobPlaytime[job] = v.jobPlaytime[job] or 0
+               k.jobPlaytimep[job] = k.jobPlaytime[job] + impulse.GetConfig().rankUpdateTime
                
                k:CheckForPromotion()
                k:SaveRanks()
