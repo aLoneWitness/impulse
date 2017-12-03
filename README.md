@@ -14,6 +14,7 @@ If your working with impulse I reccomend you read the wiki first, feel free to D
 7. Simple networking - Networking is less of a hassle with impulse. We have a built in 'IVar' system that makes entity networking easy, and IMessages are planned to be added soon.
 8. Plugin permissions - (Maybe) If I release this to the public I will add a plugin permission system, the server owner must grant the plugin permissions in-game via a VGUI or in the schema config for the plugin to do things like, write to DB, read from DB, set usergroups, ban, get IP addresses, load external files, create files and make HTTP posts.
 9. basicadmin - Not required, but very much recommended. A ultra-lightweight and simple admin mod that intergrates nicely into the gamemode, if GExtention is detected it will run off that, if not some features will be disabled. In the schema you can create the sh_admin.lua file in the config file to completely change the plugin for your schema.
+10. XML table and 3D2D interaction built in libraries to make it easier to work with.
 
 ## License
 Read the full license in the 'LICENSE' file.
