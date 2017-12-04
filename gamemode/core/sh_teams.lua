@@ -1,5 +1,9 @@
-impulse.team = {}
+/*
+** Copyright (c) 2017 Jake Green (TheVingard)
+** This file is private and may not be shared, downloaded, used or sold.
+*/
 
+impulse.team = {}
 
 function impulse.team.define(data_table)
     team.SetUp( data_table.id, data_table.name, data_table.color ) -- Hooking into the source engine team system
