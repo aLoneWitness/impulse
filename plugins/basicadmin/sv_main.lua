@@ -4,16 +4,21 @@
 */
 
 impulse.ops = {} -- Define a table for basic admin
-if GExtention th
 
-function impulse.ba.Ban(steamid, reason, time, isGlobal)
+local function impulse.ops.notify(...)
+    
+end
+
+function impulse.ops.Ban(steamid, reason, time, isGlobal, banner)
     local player = util.playerGetBySteamID(steamid)
     
     if GExtention then
-        GExtention.Ban(steamid, reason, time)
+        return GExtention.Ban(steamid, reason, time)
     elseif player then
         player:Ban(time, false)
-        player:Kick(reason)
+        return player:Kick(reason)
+    elseif banner then
+        return banner:notify("[ops] Cannot ban offline players without GExtention functionality.")
     end
 end
 
