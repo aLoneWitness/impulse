@@ -12,3 +12,7 @@ function impulse.blur( panel, layers, density, alpha )
 		surface.DrawTexturedRect( -x, -y, ScrW(), ScrH() )
 	end
 end
+
+net.Receive("IMPULSE-CHATADD",function()
+    -- SERVERSIDE/CLIENTSIDE chat.AddText connector. (FINISH ME)
+end)
