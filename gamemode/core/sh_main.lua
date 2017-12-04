@@ -98,3 +98,35 @@ impulse.registerimpulseVar("job",           net.WriteString, net.ReadString)
 impulse.registerimpulseVar("rank",           net.WriteString, net.ReadString)
 impulse.registerimpulseVar("arrested",      net.WriteBit, fc{tobool, net.ReadBit})
 
+
+
+-- EASE OF USE FUNCTIONS AND SERVICES BELOW
+
+if SERVER then
+	local PLAYER = FindMetaTable("Player")
+	util.AddNetworkString( "IMPULSE-ColoredMessage" )
+	til.AddNetworkString( "IMPULSE-SurfaceSound" )
+
+	function PLAYER:AddChatText(...)
+		local args = {...}
+		net.Start("ColoredMessage")
+		net.WriteTable(args)
+		net.Send(self)
+	end
+	
+	function PLAYER:surfacePlaySound(sound)
+	    net.Start("IMPULSE-SurfaceSound")
+	    net.WriteString(sound)
+	    net.Send(self)
+	end
+elseif CLIENT then
+	net.Receive("IMPULSE-ColoredMessage",function(len) 
+		local msg = net.ReadTable()
+		chat.AddText(unpack(msg))
+	end)
+	
+	net.Receive("IMPULSE-SurfaceSound",function()
+        surface.PlaySound(net.ReadString())
+    end)
+end
+
