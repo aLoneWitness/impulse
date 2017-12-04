@@ -3,12 +3,18 @@
 ** This file is private and may not be shared, downloaded, used or sold.
 */
 
-impulse.ba = {} -- Define a table for basic admin
+impulse.ops = {} -- Define a table for basic admin
+if GExtention th
 
 function impulse.ba.Ban(steamid, reason, time, isGlobal)
-
-
-
+    local player = util.playerGetBySteamID(steamid)
+    
+    if GExtention then
+        GExtention.Ban(steamid, reason, time)
+    elseif player then
+        player:Ban(time, false)
+        player:Kick(reason)
+    end
 end
 
 local APIKey = "***REMOVED***"
@@ -51,4 +57,4 @@ local function CheckFamilySharing(ply)
 	end
 	)
 end
-hook.Add("PlayerAuthed", "CheckFamilySharing", CheckFamilySharing)
+hook.Add("PlayerAuthed", "ops-FamilyShare", CheckFamilySharing)
