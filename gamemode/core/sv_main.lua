@@ -1,3 +1,8 @@
+/*
+** Copyright (c) 2017 Jake Green (TheVingard)
+** This file is private and may not be shared, downloaded, used or sold.
+*/
+
 util.AddNetworkString("IMPULSE_InitializeVars")
 util.AddNetworkString("IMPULSE_PlayerVar")
 util.AddNetworkString("IMPULSE_PlayerVarRemoval")
