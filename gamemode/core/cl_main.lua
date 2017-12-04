@@ -18,6 +18,3 @@ function impulse.blur( panel, layers, density, alpha )
 	end
 end
 
-net.Receive("IMPULSE-CHATADD",function()
-    -- SERVERSIDE/CLIENTSIDE chat.AddText connector. (FINISH ME)
-end)
