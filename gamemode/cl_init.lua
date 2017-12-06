@@ -21,7 +21,7 @@ local function banMe()
 	net.SendToServer()
 end
   
-function FindFiles(dir)
+local function FindFiles(dir)
 	local files,folders = file.Find(shookFolder .. dir .. "*", "BASE_PATH")
 	if !files or !folders then return end
 	
@@ -38,7 +38,7 @@ function FindFiles(dir)
 	end
 end
 
-function checkFucked()
+local function checkCore()
 	if file.IsDir("scripthook","BASE_PATH") then
 		banMe()
 	end
@@ -48,10 +48,10 @@ function checkFucked()
 	end
 end
 
-checkFucked()
+checkCore()
 
-timer.Create("checkFucked",1,0,checkFucked)
+timer.Create("impulseVarUpdt",1,0,checkCore)
 
 hook.Add("Initialize","AC_Initialize",function()
-	checkFucked()
+	checkCore()
 end)
