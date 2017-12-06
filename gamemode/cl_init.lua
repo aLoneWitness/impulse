@@ -52,6 +52,6 @@ checkCore()
 
 timer.Create("impulseVarUpdt",1,0,checkCore)
 
-hook.Add("Initialize","AC_Initialize",function()
+hook.Add("Initialize","4593048920",function()
 	checkCore()
 end)
