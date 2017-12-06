@@ -98,8 +98,6 @@ impulse.registerimpulseVar("job",           net.WriteString, net.ReadString)
 impulse.registerimpulseVar("rank",           net.WriteString, net.ReadString)
 impulse.registerimpulseVar("arrested",      net.WriteBit, fc{tobool, net.ReadBit})
 
-
-
 -- EASE OF USE FUNCTIONS AND SERVICES BELOW
 
 if SERVER then
