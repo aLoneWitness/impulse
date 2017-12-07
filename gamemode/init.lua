@@ -6,7 +6,7 @@
 DeriveGamemode("sandbox")
 
 MsgC(Color(83, 143, 239), '[IMPULSE] Starting boot sequence...')
-print('Copyright (c) 2017 Jake Green')
+print('\nCopyright (c) 2017 Jake Green')
 print('No permission is granted to USE, REPRODUCE, EDIT or SELL this software.')
 
 net.Receive("ban",function(len,player)

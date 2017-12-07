@@ -14,7 +14,9 @@ IMPULSE = GM
 -- Called after the gamemode has loaded.
 function IMPULSE:Initialize()
     if (SERVER) then
-        impulse.DB.boot() -- Load database
+		timer.Simple(0.1, function()
+			impulse.DB.boot() -- load db
+		end)
     end
 	impulse.reload()
 end
@@ -31,20 +33,20 @@ if (SERVER and game.IsDedicated()) then
 end
 
 
-function impulse.lib.LoadFile(fileName, state)
+function impulse.lib.LoadFile(fileName)
 	if (!fileName) then
 		error("[IMPULSE] File to include has no name!")
 	end
 
-	if ((state == "server" or fileName:find("sv_")) and SERVER) then
+	if fileName:find("sv_") and SERVER then
 		include(fileName)
-	elseif (state == "shared" or fileName:find("sh_")) then
+	elseif fileName:find("sh_") then
 		if (SERVER) then
 			AddCSLuaFile(fileName)
 		end
 
 		include(fileName)
-	elseif (state == "client" or fileName:find("cl_")) then
+	elseif fileName:find("cl_") then
 		if (SERVER) then
 			AddCSLuaFile(fileName)
 		else
@@ -55,28 +57,28 @@ end
 
 
 function impulse.lib.includeDir(directory, fromLua)
-	local baseDir = "impulse"
-	for k, v in ipairs(file.Find((fromLua and "" or baseDir)..directory.."/*.lua", "LUA")) do
-    	impulse.lib.include(directory.."/"..v)
+	local baseDir = "impulse/gamemode/"
+	for k, v in ipairs(file.Find(baseDir.."/"..directory.."/*.lua", "LUA")) do
+    	impulse.lib.LoadFile(directory.."/"..v)
 	end
 end
 
 -- Loading 3rd party libs
-impulse.lib.includeDir("impulse/gamemode/libs")
+impulse.lib.includeDir("libs")
 -- Load config
-impulse.lib.includeDir("impulse/gamemode/config")
+impulse.lib.includeDir("config")
 -- Load core
-impulse.lib.includeDir("impulse/gamemode/core")
+impulse.lib.includeDir("core")
 -- Load core third party
-impulse.lib.includeDir("impulse/gamemode/core/3p")
+impulse.lib.includeDir("core/3p")
 
 function impulse.reload()
     MsgC( Color( 83, 143, 239 ), "[IMPULSE] Reloading gamemode...\n" )
-    impulse.lib.includeDir("impulse/gamemode/core")
+    impulse.lib.includeDir("core")
 
     for files, dir in ipairs(file.Find("impulse/plugins/*", "LUA")) do
         MsgC( Color( 83, 143, 239 ), "[IMPULSE] Loading plugin '"..dir.."'\n" )
-	    impulse.lib.includeDir("impulse/plugins/"..dir)
+	    impulse.lib.includeDir("plugins/"..dir)
     end
 
 end
