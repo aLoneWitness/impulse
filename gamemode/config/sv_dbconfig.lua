@@ -4,9 +4,9 @@
 */
 
 impulse.DB = {
-    ip = "",
-    username = "",
-    password = "",
-    database = ""
+    ip = "localhost",
+    username = "root",
+    password = "password",
+    database = "impulse"
 }
 -- requires https://facepunch.com/showthread.php?t=1515853
