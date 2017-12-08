@@ -10,6 +10,7 @@ GM.Author = "TheVingard"
 GM.Website = "https://www.apex-roleplay.com"
 MsgC( Color( 83, 143, 239 ), "[IMPULSE] Starting shared load...\n" )
 IMPULSE = GM
+meta = FindMetaTable( "Player" )
 
 -- Called after the gamemode has loaded.
 function IMPULSE:Initialize()
@@ -38,8 +39,10 @@ function impulse.lib.LoadFile(fileName)
 		error("[IMPULSE] File to include has no name!")
 	end
 
-	if fileName:find("sv_") and SERVER then
-		include(fileName)
+	if fileName:find("sv_") then
+		if (SERVER) then
+			include(fileName)
+		end
 	elseif fileName:find("sh_") then
 		if (SERVER) then
 			AddCSLuaFile(fileName)
@@ -57,20 +60,19 @@ end
 
 
 function impulse.lib.includeDir(directory, fromLua)
-	local baseDir = "impulse/gamemode/"
-	for k, v in ipairs(file.Find(baseDir.."/"..directory.."/*.lua", "LUA")) do
+	for k, v in ipairs(file.Find(directory.."/*.lua", "LUA")) do
     	impulse.lib.LoadFile(directory.."/"..v)
 	end
 end
 
 -- Loading 3rd party libs
-impulse.lib.includeDir("libs")
+impulse.lib.includeDir("impulse/gamemode/libs")
 -- Load config
-impulse.lib.includeDir("config")
+impulse.lib.includeDir("impulse/gamemode/config")
 -- Load core
-impulse.lib.includeDir("core")
+impulse.lib.includeDir("impulse/gamemode/core")
 -- Load core third party
-impulse.lib.includeDir("core/3p")
+impulse.lib.includeDir("impulse/gamemode/core/3p")
 
 function impulse.reload()
     MsgC( Color( 83, 143, 239 ), "[IMPULSE] Reloading gamemode...\n" )
@@ -85,3 +87,4 @@ end
 
 
 MsgC( Color( 0, 255, 0 ), "[IMPULSE] Completeing shared load...\n" )
+
