@@ -69,18 +69,18 @@ function meta:sendIVars()
         end
     net.Send(self)
 end
-concommand.Add("_sendIvars", function(ply)
+concommand.Add("_sendimpulsevars", function(ply)
     if ply.impulseVarsSent and ply.impulseVarsSent > (CurTime() - 3) then return end -- prevent spammers
     ply.impulseVarsSent = CurTime()
-    ply:sendimpulseVars()
+    ply:sendIVars()
 end)
 
 impulse.chatcommands = {}
 
-function impulse.RegisterChatCommand(commanddata,function)
+function impulse.RegisterChatCommand(commanddata,func)
     local name = "/"..commanddata.name
     local desc = commanddata.desc or ""
-    local table = {name,desc,function}
+    local table = {name,desc,func}
     table.insert(impulse.chatcommands, table)
 end
 

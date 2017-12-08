@@ -3,12 +3,12 @@
 ** This file is private and may not be shared, downloaded, used or sold.
 */
 
-local impulse.loadCache = impulse.loadCache or {} -- Lua refresh support.
+loadCache = loadCache or {} -- Lua refresh support.
 
 function impulse.PrepModelForLoad(model)
     local generatedtable = {model, 1}
     if not impulse.loaded then -- if we have not loaded in yet
-        table.insert(impulse.loadCache,generatedtable) -- prepare for load
+        table.insert(loadCache,generatedtable) -- prepare for load
     else
         util.PrecacheModel(model) -- load now
     end
@@ -17,7 +17,7 @@ end
 function impulse.PrepSoundForLoad(sound)
     local generatedtable = {sound, 2}
     if not impulse.loaded then
-        table.insert(impulse.loadCache,generatedtable)
+        table.insert(loadCache,generatedtable)
     else
         util.PrecacheSound(sound)
     end
@@ -33,5 +33,5 @@ function impulse.TriggerLoad(table)
 end
 
 function impulse.GetLoadCache()
-    return impulse.loadCache
+    return loadCache
 end

@@ -3,6 +3,21 @@
 ** This file is private and may not be shared, downloaded, used or sold.
 */
 
+function fp(tbl)
+    local func = tbl[1]
+
+    return function(...)
+        local fnArgs = {}
+        local arg = {...}
+        local tblN = table.maxn(tbl)
+
+        for i = 2, tblN do fnArgs[i - 1] = tbl[i] end
+        for i = 1, table.maxn(arg) do fnArgs[tblN + i - 1] = arg[i] end
+
+        return func(unpack(fnArgs, 1, table.maxn(fnArgs)))
+    end
+end
+
 local maxId = 0
 local impulseVars = {}
 local impulseVarById = {}
@@ -92,18 +107,18 @@ end
 
 -- The money is a double because it accepts higher values than Int and UInt, which are undefined for >32 bits
 impulse.registerimpulseVar("money",         net.WriteDouble, net.ReadDouble)
-impulse.registerimpulseVar("salary",        fp{fn.Flip(net.WriteInt), 32}, fp{net.ReadInt, 32})
+--impulse.registerimpulseVar("salary",        fp{net.WriteInt, net.ReadInt) may or may not need this
 impulse.registerimpulseVar("rpname",        net.WriteString, net.ReadString)
 impulse.registerimpulseVar("job",           net.WriteString, net.ReadString)
-impulse.registerimpulseVar("rank",           net.WriteString, net.ReadString)
-impulse.registerimpulseVar("arrested",      net.WriteBit, fc{tobool, net.ReadBit})
+impulse.registerimpulseVar("rank",           fp{net.WriteInt, 32}, fp{net.ReadInt, 32})
+impulse.registerimpulseVar("arrested",      net.WriteBool, net.ReadBool)
 
 -- EASE OF USE FUNCTIONS AND SERVICES BELOW
 
 if SERVER then
 	local PLAYER = FindMetaTable("Player")
 	util.AddNetworkString( "IMPULSE-ColoredMessage" )
-	til.AddNetworkString( "IMPULSE-SurfaceSound" )
+	util.AddNetworkString( "IMPULSE-SurfaceSound" )
 
 	function PLAYER:AddChatText(...)
 		local args = {...}
@@ -111,20 +126,19 @@ if SERVER then
 		net.WriteTable(args)
 		net.Send(self)
 	end
-	
+
 	function PLAYER:surfacePlaySound(sound)
 	    net.Start("IMPULSE-SurfaceSound")
 	    net.WriteString(sound)
 	    net.Send(self)
 	end
 elseif CLIENT then
-	net.Receive("IMPULSE-ColoredMessage",function(len) 
+	net.Receive("IMPULSE-ColoredMessage",function(len)
 		local msg = net.ReadTable()
 		chat.AddText(unpack(msg))
 	end)
-	
+
 	net.Receive("IMPULSE-SurfaceSound",function()
         surface.PlaySound(net.ReadString())
     end)
 end
-
