@@ -3,6 +3,8 @@
 ** This file is private and may not be shared, downloaded, used or sold.
 */
 
+local blur = Material( "pp/blurscreen" )
+
 function impulse.blur( panel, layers, density, alpha )
 	local x, y = panel:LocalToScreen(0, 0)
 
