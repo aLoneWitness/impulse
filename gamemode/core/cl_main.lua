@@ -83,7 +83,7 @@ end)
 
 timer.Create("impulseCheckifitcamethrough", 15, 0, function()
     for _, v in ipairs(player.GetAll()) do
-        if v:getimpulseVar("rpname") then continue end
+        if v:getIVar("rpname") then continue end
 
         RunConsoleCommand("_sendimpulsevars")
         return
