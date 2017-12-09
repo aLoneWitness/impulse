@@ -14,6 +14,7 @@ if (CLIENT) then
 	end
 
 	hook.Add("PlayerBindPressed","IMPULSE-BIND-PRESS1", function(client, bind, pressed)
+		print(bind)
 		local weapon = client:GetActiveWeapon()
 
 		if (!client:InVehicle() and (!IsValid(weapon) or weapon:GetClass() != "weapon_physgun" or !client:KeyDown(IN_ATTACK))) then
