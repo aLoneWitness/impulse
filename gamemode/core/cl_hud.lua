@@ -10,6 +10,7 @@ hidden["CHudAmmo"] = true
 hidden["CHudSecondaryAmmo"] = true
 hidden["CHudCrosshair"] = true
 hidden["CHudHistoryResource"] = true
+hidden["CHudDeathNotice"] = true
 
 function IMPULSE:HUDShouldDraw(element)
 	if (hidden[element]) then
