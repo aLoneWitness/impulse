@@ -11,18 +11,6 @@ if (CLIENT) then
 	local function OnSlotChanged()
 		lifeTime = CurTime() + LIFE_TIME
 		deathTime = CurTime() + DEATH_TIME
-
-		for k, v in SortedPairs(LocalPlayer():GetWeapons()) do
-			if (k == lastSlot) then
-				if (v.Instructions and string.find(v.Instructions, "%S")) then
-					markup = markup.Parse("<font=nut_TargetFont>"..v.Instructions.."</font>")
-
-					return
-				else
-					markup = nil
-				end
-			end
-		end
 	end
 
 	hook.Add("PlayerBindPressed","IMPULSE-BIND-PRESS1", function(client, bind, pressed)
@@ -58,7 +46,7 @@ if (CLIENT) then
 
 					for k, v in SortedPairs(LocalPlayer():GetWeapons()) do
 						if (k == lastSlot) then
-							RunConsoleCommand("nut_selectwep", v:GetClass())
+							RunConsoleCommand("impulse_selectwep", v:GetClass())
 
 							return true
 						end
@@ -88,14 +76,8 @@ if (CLIENT) then
 			end
 
 			color.a = math.Clamp(255 - math.TimeFraction(lifeTime, deathTime, CurTime()) * 255, 0, 255)
-			draw.DrawText(string.upper(v:GetPrintName()), "DermaDefault" x, y, color, nil, TEXT_ALIGN_LEFT)
+			draw.DrawText(string.upper(v:GetPrintName()), "Impulse-Elements18", x, y, color, nil, TEXT_ALIGN_LEFT)
 
-			if (k == lastSlot and markup) then
-				surface.SetDrawColor(30, 30, 30, color.a * 0.95)
-				surface.DrawRect(x + 118, ScrH() * 0.4 - 4, markup:GetWidth() + 20, markup:GetHeight() + 18)
-
-				markup:Draw(x + 128, ScrH() * 0.4 + 24, 0, 1, color.a)
-			end
 		end
 	end)
 else
