@@ -38,7 +38,7 @@ function meta:setSelfIVar(var, value)
     self.privateDRPVars = self.privateDRPVars or {}
     self.privateDRPVars[var] = true
 
-    self:setimpulseVar(var, value, self)
+    self:setIVar(var, value, self)
 end
 
 function meta:getimpulseVar(var)

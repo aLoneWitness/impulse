@@ -76,7 +76,7 @@ if (CLIENT) then
 			end
 
 			color.a = math.Clamp(255 - math.TimeFraction(lifeTime, deathTime, CurTime()) * 255, 0, 255)
-			draw.DrawText(string.upper(v:GetPrintName()), "Impulse-Elements18", x, y, color, nil, TEXT_ALIGN_LEFT)
+			draw.DrawText(string.upper(v:GetPrintName()), "Impulse-Elements18-Shadow", x, y, color, nil, TEXT_ALIGN_LEFT)
 
 		end
 	end)

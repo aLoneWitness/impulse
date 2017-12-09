@@ -39,10 +39,7 @@ local function warnRegistration(name)
     if warningsShown[name] then return end
     warningsShown[name] = true
 
-    impulse.errorNoHalt(string.format([[Warning! impulseVar '%s' wasn't registered!
-        Please contact the author of the impulse Addon to fix this.
-        Until this is fixed you don't need to worry about anything. Everything will keep working.
-        It's just that registering impulseVars would make impulse faster.]], name), 4)
+    print(string.format([[Warning! impulseVar '%s' wasn't registered!]], name))
 end
 
 function impulse.writeNetimpulseVar(name, value)
@@ -101,18 +98,17 @@ impulse.registerimpulseVar("arrested",      net.WriteBool, net.ReadBool)
 -- EASE OF USE FUNCTIONS AND SERVICES BELOW
 
 if SERVER then
-	local PLAYER = FindMetaTable("Player")
 	util.AddNetworkString( "IMPULSE-ColoredMessage" )
 	util.AddNetworkString( "IMPULSE-SurfaceSound" )
 
-	function PLAYER:AddChatText(...)
+	function meta:AddChatText(...)
 		local args = {...}
 		net.Start("ColoredMessage")
 		net.WriteTable(args)
 		net.Send(self)
 	end
 
-	function PLAYER:surfacePlaySound(sound)
+	function meta:surfacePlaySound(sound)
 	    net.Start("IMPULSE-SurfaceSound")
 	    net.WriteString(sound)
 	    net.Send(self)

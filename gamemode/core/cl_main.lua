@@ -22,18 +22,11 @@ end
 
 local impulseVars = {}
 
---[[---------------------------------------------------------------------------
-interface"someString"
----------------------------------------------------------------------------]]
-local pmeta = FindMetaTable("Player")
-function pmeta:getimpulseVar(var)
+function meta:getIVar(var)
     local vars = impulseVars[self:UserID()]
     return vars and vars[var] or nil
 end
 
---[[---------------------------------------------------------------------------
-Retrieve the information of a player var
----------------------------------------------------------------------------]]
 local function RetrievePlayerVar(userID, var, value)
     local ply = Player(userID)
     impulseVars[userID] = impulseVars[userID] or {}
@@ -47,10 +40,6 @@ local function RetrievePlayerVar(userID, var, value)
     end
 end
 
---[[---------------------------------------------------------------------------
-Retrieve a player var.
-Read the usermessage and attempt to set the impulse var
----------------------------------------------------------------------------]]
 local function doRetrieve()
     local userID = net.ReadUInt(16)
     local var, value = impulse.readNetimpulseVar()
@@ -59,9 +48,6 @@ local function doRetrieve()
 end
 net.Receive("impulse_PlayerVar", doRetrieve)
 
---[[---------------------------------------------------------------------------
-Retrieve the message to remove a impulseVar
----------------------------------------------------------------------------]]
 local function doRetrieveRemoval()
     local userID = net.ReadUInt(16)
     local vars = impulseVars[userID] or {}
@@ -74,9 +60,6 @@ local function doRetrieveRemoval()
 end
 net.Receive("impulse_PlayerVarRemoval", doRetrieveRemoval)
 
---[[---------------------------------------------------------------------------
-Initialize the impulseVars at the start of the game
----------------------------------------------------------------------------]]
 local function InitializeimpulseVars(len)
     local plyCount = net.ReadUInt(8)
 
@@ -98,9 +81,6 @@ net.Receive("impulse_impulseVarDisconnect", function(len)
     impulseVars[userID] = nil
 end)
 
---[[---------------------------------------------------------------------------
-Request the impulseVars when they haven't arrived
----------------------------------------------------------------------------]]
 timer.Create("impulseCheckifitcamethrough", 15, 0, function()
     for _, v in ipairs(player.GetAll()) do
         if v:getimpulseVar("rpname") then continue end
