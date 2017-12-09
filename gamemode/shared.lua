@@ -96,7 +96,7 @@ function impulse.reload()
     for files, dir in ipairs(file.Find("impulse/plugins/*", "LUA")) do
         MsgC( Color( 83, 143, 239 ), "[IMPULSE] Loading plugin '"..dir.."'\n" )
 	    impulse.lib.includeDir("impulse/plugins/"..dir)
-		MsgC( Color( 83, 143, 239 ), "[IMPULSE] Finished loading plugin '"..dir.."'\n" )
+		MsgC( Color( 0, 255, 0 ), "[IMPULSE] Finished loading plugin '"..dir.."'\n" )
     end
 
 end
