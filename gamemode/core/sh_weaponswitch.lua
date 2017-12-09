@@ -13,8 +13,7 @@ if (CLIENT) then
 		deathTime = CurTime() + DEATH_TIME
 	end
 
-	hook.Add("PlayerBindPressed","IMPULSE-BIND-PRESS1", function(client, bind, pressed)
-		print(bind)
+	hook.Add("PlayerBindPress","IMPULSE-BIND-PRESS1", function(client, bind, pressed)
 		local weapon = client:GetActiveWeapon()
 
 		if (!client:InVehicle() and (!IsValid(weapon) or weapon:GetClass() != "weapon_physgun" or !client:KeyDown(IN_ATTACK))) then
@@ -73,7 +72,7 @@ if (CLIENT) then
 			local color = Color(255, 255, 255)
 
 			if (k == lastSlot) then
-				color = Color(255,0,0)
+				color = impulse.Config.maincolour
 			end
 
 			color.a = math.Clamp(255 - math.TimeFraction(lifeTime, deathTime, CurTime()) * 255, 0, 255)
