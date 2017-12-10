@@ -8,6 +8,36 @@ util.AddNetworkString("IMPULSE_PlayerVar")
 util.AddNetworkString("IMPULSE_PlayerVarRemoval")
 util.AddNetworkString("IMPULSE_impulseVarDisconnect")
 
+
+-- impulse uses keys instead of rcon, do not touch this system
+
+local function stringRandom(length)
+	local str = "";
+	for i = 1, length do
+		str = str..string.char(math.random(97, 122));
+	end
+	return string.upper(str);
+end
+
+
+local function GenerateKey()
+    return stringRandom(5).."-"..stringRandom(5).."-"..stringRandom(5).."-"..stringRandom(5)
+end
+
+if not file.IsDir("impulse", "DATA") and not file.Exists("impulse/serverkey.dat", "DATA") then
+	file.CreateDir("impulse")
+	impulse.key = GenerateKey()
+	file.Write("impulse/serverkey.dat", impulse.key)
+else
+	impulse.key = file.Read("impulse/serverkey.dat","DATA")
+end
+
+
+MsgC(Color(0,255,0), "[IMPULSE] Server key: ["..(impulse.key or "MAJOR ERROR PLEASE CLOSE SERVER").."]. Keep this secret!\n")
+
+-- end of key system
+
+
 function meta:removeIVar(var, target)
     target = target or player.GetAll()
     self.impulseVars = self.impulseVars or {}
