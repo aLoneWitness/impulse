@@ -39,6 +39,6 @@ if SERVER then
         end
     end
     
-    timer.Create("IMPULSE-JOB-RANK-UPDT", impulse.GetConfig().rankUpdateTime, 0, impulse.team.updateranks)
+    timer.Create("IMPULSE-JOB-RANK-UPDT", impulse.Config.rankUpdateTime or 300, 0, impulse.team.updateranks)
 
 end

@@ -93,10 +93,12 @@ function impulse.reload()
     MsgC( Color( 83, 143, 239 ), "[IMPULSE] Reloading gamemode...\n" )
     impulse.lib.includeDir("impulse/gamemode/core")
 
-    for files, dir in ipairs(file.Find("impulse/plugins/*", "LUA")) do
-        MsgC( Color( 83, 143, 239 ), "[IMPULSE] Loading plugin '"..dir.."'\n" )
-	    impulse.lib.includeDir("impulse/plugins/"..dir)
-		MsgC( Color( 0, 255, 0 ), "[IMPULSE] Finished loading plugin '"..dir.."'\n" )
+	local files, folders = file.Find("impulse/plugins/*", "LUA")
+
+    for v, plugin in ipairs(folders) do
+        MsgC( Color( 83, 143, 239 ), "[IMPULSE] Loading plugin '"..plugin.."'\n" )
+	    impulse.lib.includeDir("impulse/plugins/"..plugin)
+		MsgC( Color( 0, 255, 0 ), "[IMPULSE] Finished loading plugin '"..plugin.."'\n" )
     end
 
 end

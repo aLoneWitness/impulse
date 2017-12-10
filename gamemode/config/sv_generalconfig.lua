@@ -1,5 +1,4 @@
-impulse.Config = {
-    apikey = "", -- Steam API key here
-    developermode = false,
-    sqlenabled = true
-}
+impulse.Config.apikey = "" -- Steam API key here
+impulse.Config.developermode = false
+impulse.Config.sqlenabled = true
+
