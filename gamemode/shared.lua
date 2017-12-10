@@ -31,6 +31,9 @@ end
 
 if (SERVER and game.IsDedicated()) then
 	concommand.Remove("gm_save")
+	RunConsoleCommand( "alias", "rcon", "echo" ) -- frying the rcon system
+	RunConsoleCommand( "alias", "rcon_password", "echo" )
+	RunConsoleCommand( "alias", "rcon_address", "echo" )
 end
 
 

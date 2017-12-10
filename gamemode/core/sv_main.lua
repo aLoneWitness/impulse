@@ -35,6 +35,33 @@ end
 
 MsgC(Color(0,255,0), "[IMPULSE] Server key: ["..(impulse.key or "MAJOR ERROR PLEASE CLOSE SERVER").."]. Keep this secret!\n")
 
+local nexttry
+
+concommand.Add("impulse_sudokey", function(ply,cmd,args)
+	local antiSpam = nexttry or 0
+
+	if CurTime() > antiSpam  then
+		if args[1] and string.upper(args[1]) == impulse.key then
+			ply:AddChatText(Color(0,255,0), "[IMPULSE] Sudo key accepted.")
+			ply.hasSudo = true
+		elseif args[1] then
+			ply:AddChatText(Color(0,255,0), "[IMPULSE] Sudo key rejected. You must wait 2 seconds before retrying.")
+		end
+	end
+	nexttry = CurTime() + 2
+end)
+
+concommand.Add("impulse_sudo", function(ply,cmd,args)
+	local antiSpam = nexttry or 0
+
+	if CurTime() > antiSpam then
+		nexttry = CurTime() + 0.3
+		if not ply.hasSudo and not args[1] then return false end
+		game.ConsoleCommand(args[1].."\n")
+	end
+
+end)
+
 -- end of key system
 
 

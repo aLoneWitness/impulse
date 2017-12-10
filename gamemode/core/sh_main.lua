@@ -103,7 +103,7 @@ if SERVER then
 
 	function meta:AddChatText(...)
 		local args = {...}
-		net.Start("ColoredMessage")
+		net.Start("IMPULSE-ColoredMessage")
 		net.WriteTable(args)
 		net.Send(self)
 	end
