@@ -114,6 +114,7 @@ function meta:sendIVars()
             net.WriteUInt(target:UserID(), 16)
 
             local impulseVars = {}
+            if not target.impulseVars then return end
             for var, value in pairs(target.impulseVars) do
                 if self ~= target and (target.privateDRPVars or {})[var] then continue end
                 table.insert(impulseVars, var)
@@ -148,6 +149,9 @@ function IMPULSE:PlayerSay(player,text,teamChat)
            local args = string.Explode(" ", text) -- split the string into each word (argument)
            args[1]=nil -- lets not send the actual command
            k[3](args) -- Run command function (Add arg)
+           return ""
+        else
+            return text
        end
     end
 end
