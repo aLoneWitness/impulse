@@ -8,7 +8,7 @@ local surface = surface
 local draw = draw
 local Color = Color
 local DARK_50, DARK_25, DARK_100, WHITE = Color(0,0,0,45), Color(0,0,0,35), Color(0, 0, 0, 80) Color(255,255,255,255)
-local HIGHLIGHT = Color(46, 139, 232)
+local HIGHLIGHT = Color(14, 141, 201)
 
 
 SKIN = {}
@@ -46,14 +46,14 @@ end
 function SKIN:PaintButton(panel) -- button skin from ns edited
 	if (panel:GetPaintBackground()) then
 		local w, h = panel:GetWide(), panel:GetTall()
-		local alpha = 150
+		local alpha = 230
 
     	if (panel:GetDisabled()) then
 			alpha = 10
 		elseif (panel.Depressed) then
 			alpha = 190
 		elseif (panel.Hovered) then
-			alpha = 170
+			alpha = 245
 		end
 		surface.SetDrawColor(ColorAlpha(HIGHLIGHT, alpha))
 		surface.DrawRect(0, 0, w, h)
@@ -86,7 +86,7 @@ function SKIN:DrawGenericBackground(x, y, w, h)
 end
 
 function SKIN:PaintVScrollBar( panel, w, h )
-    surface.SetDrawColor(DARK_25)
+    surface.SetDrawColor(DARK_50)
     surface.DrawRect(0, 0, w, h)
 end
 
