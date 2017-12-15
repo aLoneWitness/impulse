@@ -7,13 +7,14 @@ local PANEL = {}
 	local COLOR_FADED = Color(200, 200, 200, 100)
 	local COLOR_ACTIVE = color_white
 	local COLOR_WRONG = Color(255, 100, 80)
+	local CHAT_FONT = impulse.GetSetting("ChatFontSize") or "Impulse-ChatSmall"
 
 	function PANEL:Init()
 		local border = 32
 		local scrW, scrH = ScrW(), ScrH()
 		local w, h = scrW * 0.4, scrH * 0.375
 
-		impulse.chatbox = self
+		--impulse.chatbox = self
 
 		self:SetSize(w, h)
 		self:SetPos(border, scrH - h - border)
@@ -43,38 +44,38 @@ local PANEL = {}
 					local arguments = self.arguments or {}
 					local command = string.PatternSafe(arguments[1] or ""):lower()
 
-					impulse.blur(this)
+					impulse.blur( this, 10, 20, 255 )
 
 					surface.SetDrawColor(0, 0, 0, 200)
 					surface.DrawRect(0, 0, w, h)
 
 					local i = 0
-					local color = nut.config.get("color")
+					local color = Color(255,255,255,255)
 
-					for k, v in SortedPairs(nut.command.list) do
-						local k2 = "/"..k
+--~ 					for k, v in SortedPairs(nut.command.list) do
+--~ 						local k2 = "/"..k
 
-						if (k2:match(command)) then
-							local x, y = nut.util.drawText(k2.."  ", 4, i * 20, color)
+--~ 						if (k2:match(command)) then
+--~ 							local x, y = nut.util.drawText(k2.."  ", 4, i * 20, color)
 
-							if (k == command and v.syntax) then
-								local i2 = 0
+--~ 							if (k == command and v.syntax) then
+--~ 								local i2 = 0
 
-								for argument in v.syntax:gmatch("([%[<][%w_]+[%s][%w_]+[%]>])") do
-									i2 = i2 + 1
-									local color = COLOR_FADED
+--~ 								for argument in v.syntax:gmatch("([%[<][%w_]+[%s][%w_]+[%]>])") do
+--~ 									i2 = i2 + 1
+--~ 									local color = COLOR_FADED
 
-									if (i2 == (#arguments - 1)) then
-										color = COLOR_ACTIVE
-									end
+--~ 									if (i2 == (#arguments - 1)) then
+--~ 										color = COLOR_ACTIVE
+--~ 									end
 
-									x = x + nut.util.drawText(argument.."  ", x, i * 20, color)
-								end
-							end
+--~ 									x = x + nut.util.drawText(argument.."  ", x, i * 20, color)
+--~ 								end
+--~ 							end
 
-							i = i + 1
-						end
-					end
+--~ 							i = i + 1
+--~ 						end
+--~ 					end
 				end
 			end
 		end
@@ -91,20 +92,11 @@ local PANEL = {}
 		chat.GetChatBoxSize = function()
 			return self:GetSize()
 		end
-
-		local buttons = {}
-
-		for k, v in SortedPairsByMemberValue(nut.chat.classes, "filter") do
-			if (!buttons[v.filter]) then
-				self:addFilterButton(v.filter)
-				buttons[v.filter] = true
-			end
-		end
 	end
 
 	function PANEL:Paint(w, h)
 		if (self.active) then
-			impulse.blur(self, 10)
+			impulse.blur( self, 10, 20, 255 )
 
 			surface.SetDrawColor(250, 250, 250, 2)
 			surface.DrawRect(0, 0, w, h)
@@ -130,14 +122,14 @@ local PANEL = {}
 			end
 			self.entry:SetTall(28)
 
-			nut.chat.history = nut.chat.history or {}
+			local chathistory = chathistory or {}
 
 			self.text = self.entry:Add("DTextEntry")
 			self.text:Dock(FILL)
-			self.text.History = nut.chat.history
+			self.text.History = chathistory
 			self.text:SetHistoryEnabled(true)
 			self.text:DockMargin(3, 3, 3, 3)
-			self.text:SetFont("nutChatFont")
+			self.text:SetFont(CHAT_FONT)
 			self.text.OnEnter = function(this)
 				local text = this:GetText()
 
@@ -148,9 +140,9 @@ local PANEL = {}
 				self.entry:Remove()
 
 				if (text:find("%S")) then
-					if (!(nut.chat.lastLine or ""):find(text, 1, true)) then
-						nut.chat.history[#nut.chat.history + 1] = text
-						nut.chat.lastLine = text
+					if (!(lastLine or ""):find(text, 1, true)) then
+						chathistory[#chathistory + 1] = text
+						local lastLine = text
 					end
 
 					netstream.Start("msg", text)
@@ -164,16 +156,13 @@ local PANEL = {}
 				surface.SetDrawColor(0, 0, 0, 200)
 				surface.DrawOutlinedRect(0, 0, w, h)
 
-				this:DrawTextEntryText(TEXT_COLOR, nut.config.get("color"), TEXT_COLOR)
+				this:DrawTextEntryText(TEXT_COLOR, Color(255,255,255,255), TEXT_COLOR)
 			end
 			self.text.OnTextChanged = function(this)
 				local text = this:GetText()
 
 				hook.Run("ChatTextChanged", text)
 
-				if (text:sub(1, 1) == "/") then
-					self.arguments = nut.command.extractArgs(text:sub(2))
-				end
 			end
 
 			self.entry:MakePopup()
@@ -200,10 +189,10 @@ local PANEL = {}
 	end
 
 	function PANEL:addText(...)
-		local text = "<font=nutChatFont>"
+		local text = "<font="..CHAT_FONT..">"
 
 		if (CHAT_CLASS) then
-			text = "<font="..(CHAT_CLASS.font or "nutChatFont")..">"
+			text = "<font="..CHAT_FONT..">"
 		end
 
 		for k, v in ipairs({...}) do
@@ -219,19 +208,12 @@ local PANEL = {}
 				text = text.."<color="..color.r..","..color.g..","..color.b..">"..v:Name():gsub("<", "&lt;"):gsub(">", "&gt;")
 			else
 				text = text..tostring(v):gsub("<", "&lt;"):gsub(">", "&gt;")
-				text = text:gsub("%b**", function(value)
-					local inner = value:sub(2, -2)
-
-					if (inner:find("%S")) then
-						return "<font=nutChatFontItalics>"..value:sub(2, -2).."</font>"
-					end
-				end)
 			end
 		end
 
 		text = text.."</font>"
 
-		local panel = self.scroll:Add("nutMarkupPanel")
+		local panel = self.scroll:Add("MarkupPanel")
 		panel:SetWide(self:GetWide() - 8)
 		panel:setMarkup(text, OnDrawText)
 		panel.start = CurTime() + 15
@@ -275,14 +257,13 @@ local PANEL = {}
 	end
 vgui.Register("ChatBox", PANEL, "DPanel")
 
-local chatsystem = {}
-local self = chatsystem
+
 
 local function createChat()
-	if (IsValid(self.panel)) then
+	if (IsValid(panel)) then
 		return
 	end
-	self.panel = vgui.Create("ChatBox")
+	impulse.chatbox = vgui.Create("ChatBox")
 end
 
 hook.Add("InitPostEntity","IMPULSE-CHATSTART", function()
@@ -295,11 +276,12 @@ hook.Add("HUDShouldDraw", "IMPULSE-CHATNODRAW", function(element)
 	end
 end)
 
-hook.Add("PlayerBindPressed", "IMPULSE-CHAT-OPEN", function(client, bind, pressed)
+hook.Add("PlayerBindPress", "IMPULSE-CHAT-OPEN", function(client, bind, pressed)
 	bind = bind:lower()
+	print(bind)
 
 	if (bind:find("messagemode") and pressed) then
-		self.panel:setActive(true)
+		impulse.chatbox:setActive(true)
 
 		return true
 	end
