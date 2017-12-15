@@ -272,7 +272,6 @@ end)
 
 hook.Add("PlayerBindPress", "IMPULSE-CHAT-OPEN", function(client, bind, pressed)
 	bind = bind:lower()
-	print(bind)
 
 	if (bind:find("messagemode") and pressed) then
 		impulse.chatbox:setActive(true)
