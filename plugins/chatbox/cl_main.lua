@@ -7,7 +7,8 @@ local PANEL = {}
 	local COLOR_FADED = Color(200, 200, 200, 100)
 	local COLOR_ACTIVE = color_white
 	local COLOR_WRONG = Color(255, 100, 80)
-	local CHAT_FONT = impulse.GetSetting("ChatFontSize") or "Impulse-ChatSmall"
+	--local CHAT_FONT = impulse.GetSetting("ChatFontSize") or "Impulse-ChatSmall"
+	local CHAT_FONT = "Impulse-ChatSmall"
 
 	function PANEL:Init()
 		local border = 32
@@ -228,17 +229,10 @@ local PANEL = {}
 
 		self.list[#self.list + 1] = panel
 
-		local class = CHAT_CLASS and CHAT_CLASS.filter and CHAT_CLASS.filter:lower() or "ic"
+		panel:SetPos(0, self.lastY)
+		self.lastY = self.lastY + panel:GetTall()
+		self.scroll:ScrollToChild(panel)
 
-		if (NUT_CVAR_CHATFILTER:GetString():lower():find(class)) then
-			self.filtered[panel] = class
-			panel:SetVisible(false)
-		else
-			panel:SetPos(0, self.lastY)
-
-			self.lastY = self.lastY + panel:GetTall()
-			self.scroll:ScrollToChild(panel)
-		end
 
 		panel.filter = class
 
