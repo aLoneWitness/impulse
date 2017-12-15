@@ -3,6 +3,10 @@
 ** This file is private and may not be shared, downloaded, used or sold.
 */
 
+function IMPULSE:ForceDermaSkin()
+	return "impulse"
+end
+
 local blur = Material( "pp/blurscreen" )
 
 function impulse.blur( panel, layers, density, alpha )

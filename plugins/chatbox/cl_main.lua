@@ -274,3 +274,34 @@ local PANEL = {}
 		end
 	end
 vgui.Register("ChatBox", PANEL, "DPanel")
+
+local chatsystem = {}
+local self = chatsystem
+
+local function createChat()
+	if (IsValid(self.panel)) then
+		return
+	end
+	self.panel = vgui.Create("ChatBox")
+end
+
+hook.Add("InitPostEntity","IMPULSE-CHATSTART", function()
+	createChat()
+end)
+
+hook.Add("HUDShouldDraw", "IMPULSE-CHATNODRAW", function(element)
+	if (element == "CHudChat") then
+			return false
+	end
+end)
+
+hook.Add("PlayerBindPressed", "IMPULSE-CHAT-OPEN", function(client, bind, pressed)
+	bind = bind:lower()
+
+	if (bind:find("messagemode") and pressed) then
+		self.panel:setActive(true)
+
+		return true
+	end
+end)
+
