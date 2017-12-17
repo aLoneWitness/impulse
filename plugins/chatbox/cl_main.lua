@@ -213,6 +213,7 @@ local PANEL = {}
 		end
 
 		text = text.."</font>"
+		print(text)
 
 		local panel = self.scroll:Add("MarkupPanel")
 		panel:SetWide(self:GetWide() - 8)
@@ -279,4 +280,19 @@ hook.Add("PlayerBindPress", "IMPULSE-CHAT-OPEN", function(client, bind, pressed)
 		return true
 	end
 end)
+
+
+chat.impulseAddText = chat.impulseAddText or chat.AddText
+
+function chat.AddText(...)
+	local show = true
+	if (IsValid(impulse.chatbox)) then
+		show = impulse.chatbox:addText(...)
+	end
+
+	if (show) then
+		chat.impulseAddText(...)
+		chat.PlaySound()
+	end
+end
 
