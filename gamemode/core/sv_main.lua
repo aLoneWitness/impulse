@@ -8,6 +8,11 @@ util.AddNetworkString("IMPULSE_PlayerVar")
 util.AddNetworkString("IMPULSE_PlayerVarRemoval")
 util.AddNetworkString("IMPULSE_impulseVarDisconnect")
 
+hook.Add("PlayerLoadout", "IMPULSE-CONFIGSET", function(player)
+	player:SetRunSpeed(impulse.Config.JogSpeed)
+	player:SetWalkSpeed(impulse.Config.WalkSpeed)
+end)
+
 
 -- impulse uses keys instead of rcon, do not touch this system
 
