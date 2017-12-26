@@ -6,12 +6,12 @@ local PANEL = {}
 	end
 
 	function PANEL:setMarkup(text, onDrawText)
-		local object = markup.parse(text, self:GetWide())
+		local object = markup.Parse(text, self:GetWide())
 		object.onDrawText = onDrawText
 
-		self:SetTall(object:getHeight())
+		self:SetTall(object:GetHeight())
 		self.Paint = function(this, w, h)
-			object:draw(0, 0)
+			object:Draw(0, 0)
 		end
 	end
 vgui.Register("MarkupPanel", PANEL, "DPanel")

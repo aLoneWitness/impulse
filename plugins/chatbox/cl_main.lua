@@ -296,3 +296,10 @@ function chat.AddText(...)
 	end
 end
 
+hook.Add("ChatText", "IMPULSE-CHATCORE", function(index, name, text, messageType)
+	if (messageType == "none" and IsValid(impulse.chatbox)) then
+		impulse.chatbox:addText(text)
+		chat.PlaySound()
+	end
+end)
+
