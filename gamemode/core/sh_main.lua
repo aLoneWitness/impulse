@@ -95,6 +95,15 @@ impulse.registerimpulseVar("job",           net.WriteString, net.ReadString)
 impulse.registerimpulseVar("rank",           fp{net.WriteInt, 32}, fp{net.ReadInt, 32})
 impulse.registerimpulseVar("arrested",      net.WriteBool, net.ReadBool)
 
+
+-- CHAT COMMANDS
+
+impulse.chatcommands = {}
+
+function impulse.RegisterChatCommand(name, desc, func)
+    table.insert(impulse.chatcommands, {name,desc,func})
+end
+
 -- EASE OF USE FUNCTIONS AND SERVICES BELOW
 
 if SERVER then

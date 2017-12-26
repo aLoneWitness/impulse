@@ -53,30 +53,13 @@ local PANEL = {}
 					local i = 0
 					local color = Color(255,255,255,255)
 
---~ 					for k, v in SortedPairs(nut.command.list) do
---~ 						local k2 = "/"..k
+ 					for k, v in pairs(impulse.chatcommands) do
+ 						local k2 = "/"..v[1]
 
---~ 						if (k2:match(command)) then
---~ 							local x, y = nut.util.drawText(k2.."  ", 4, i * 20, color)
-
---~ 							if (k == command and v.syntax) then
---~ 								local i2 = 0
-
---~ 								for argument in v.syntax:gmatch("([%[<][%w_]+[%s][%w_]+[%]>])") do
---~ 									i2 = i2 + 1
---~ 									local color = COLOR_FADED
-
---~ 									if (i2 == (#arguments - 1)) then
---~ 										color = COLOR_ACTIVE
---~ 									end
-
---~ 									x = x + nut.util.drawText(argument.."  ", x, i * 20, color)
---~ 								end
---~ 							end
-
---~ 							i = i + 1
---~ 						end
---~ 					end
+ 						if (k2:match(command)) then
+							draw.DrawText(v[1], "Impulse-ChatSmall", w,h, color, TEXT_ALIGN_LEFT)
+ 						end
+ 					end
 				end
 			end
 		end
@@ -255,7 +238,7 @@ vgui.Register("ChatBox", PANEL, "DPanel")
 
 
 local function createChat()
-	if (IsValid(panel)) then
+	if (IsValid(impulse.chatbox)) then
 		return
 	end
 	impulse.chatbox = vgui.Create("ChatBox")
@@ -272,6 +255,8 @@ hook.Add("HUDShouldDraw", "IMPULSE-CHATNODRAW", function(element)
 end)
 
 hook.Add("PlayerBindPress", "IMPULSE-CHAT-OPEN", function(client, bind, pressed)
+	if not impulse.chatbox then return createChat() end
+
 	bind = bind:lower()
 
 	if (bind:find("messagemode") and pressed) then

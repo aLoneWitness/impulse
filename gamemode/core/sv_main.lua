@@ -138,14 +138,6 @@ concommand.Add("_sendimpulsevars", function(ply)
     ply:sendIVars()
 end)
 
-impulse.chatcommands = {}
-
-function impulse.RegisterChatCommand(commanddata,func)
-    local name = "/"..commanddata.name
-    local desc = commanddata.desc or ""
-    local table = {name,desc,func}
-    table.insert(impulse.chatcommands, table)
-end
 
 function IMPULSE:PlayerSay(player,text,teamChat)
    if teamChat == true then return text end -- teamchat is not used for commands
