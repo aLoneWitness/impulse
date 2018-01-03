@@ -42,8 +42,7 @@ local PANEL = {}
 				local text = entry:GetText()
 
 				if (text:sub(1, 1) == "/") then
-					local arguments = self.arguments or {}
-					local command = string.PatternSafe(arguments[1] or ""):lower()
+					local command = string.lower(text)
 
 					impulse.blur( this, 10, 20, 255 )
 
@@ -56,7 +55,7 @@ local PANEL = {}
  					for k, v in pairs(impulse.chatcommands) do
  						local k2 = "/"..v[1]
 
- 						if (k2:match(command)) then
+ 						if (k2:find(command)) then
 							draw.DrawText(v[1], "Impulse-ChatSmall", w,h, color, TEXT_ALIGN_LEFT)
  						end
  					end
@@ -180,15 +179,14 @@ local PANEL = {}
 		end
 
 		for k, v in ipairs({...}) do
-			if (type(v) == "IMaterial") then
-				local ttx = tostring(v):match("%[[a-z0-9/]+%]")
-				ttx = ttx:sub(2, ttx:len() - 1)
-				text = text.."<img="..ttx..","..v:Width().."x"..v:Height()..">"
+			if (type(v) == "number") and v == 1 then
+				local source = "icon16/script_gear.png"
+
+				text = text.."<img='"..source.."',16x16>"
 			elseif (type(v) == "table" and v.r and v.g and v.b) then
 				text = text.."<color="..v.r..","..v.g..","..v.b..">"
 			elseif (type(v) == "Player") then
 				local color = team.GetColor(v:Team())
-
 				text = text.."<color="..color.r..","..color.g..","..color.b..">"..v:Name():gsub("<", "&lt;"):gsub(">", "&gt;")
 			else
 				text = text..tostring(v):gsub("<", "&lt;"):gsub(">", "&gt;")

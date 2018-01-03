@@ -111,10 +111,8 @@ if SERVER then
 	util.AddNetworkString( "IMPULSE-SurfaceSound" )
 
 	function meta:AddChatText(...)
-		local args = {...}
-		net.Start("IMPULSE-ColoredMessage")
-		net.WriteTable(args)
-		net.Send(self)
+		local package = {...}
+		netstream.Start(self, "IMPULSE-ColoredMessage", package)
 	end
 
 	function meta:surfacePlaySound(sound)
@@ -123,8 +121,7 @@ if SERVER then
 	    net.Send(self)
 	end
 elseif CLIENT then
-	net.Receive("IMPULSE-ColoredMessage",function(len)
-		local msg = net.ReadTable()
+	netstream.Hook("IMPULSE-ColoredMessage",function(msg)
 		chat.AddText(unpack(msg))
 	end)
 

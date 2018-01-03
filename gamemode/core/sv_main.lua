@@ -139,14 +139,13 @@ concommand.Add("_sendimpulsevars", function(ply)
 end)
 
 
+
 function IMPULSE:PlayerSay(player,text,teamChat)
    if teamChat == true then return text end -- teamchat is not used for commands
    if not string.StartWith(text, "/") then return text end
     for v,k in pairs(impulse.chatcommands) do -- loop through all commands
-		print(v)
-		print(k)
 		if "/"..k[1] == string.sub(string.lower(text), 1, string.len(k[1])+1) then -- if what they typed is a command
-		   local input = string.sub(text, string.len(k[1]))
+		   local input = string.sub(text, string.len(k[1])+3)
 		   local args = string.Explode(" ", text) -- split the string into each word (argument)
            table.remove(args, 1)
            k[3](player, args, input) -- Run command function (Add arg)
