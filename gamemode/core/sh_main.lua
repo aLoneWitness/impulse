@@ -98,7 +98,7 @@ impulse.registerimpulseVar("arrested",      net.WriteBool, net.ReadBool)
 
 -- CHAT COMMANDS
 
-impulse.chatcommands = {}
+impulse.chatcommands = impulse.chatcommands or {}
 
 function impulse.RegisterChatCommand(name, desc, func)
     table.insert(impulse.chatcommands, {name,desc,func})
