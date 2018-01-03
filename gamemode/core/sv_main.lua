@@ -140,9 +140,10 @@ end)
 
 
 function IMPULSE:PlayerSay(player,text,teamChat)
+	print('hello')
    if teamChat == true then return text end -- teamchat is not used for commands
     for v,k in pairs(impulse.chatcommands) do -- loop through all commands
-       if k[1]==string.lower(text) then -- if what they typed is a command
+       if "/"..k[1]==string.lower(text) then -- if what they typed is a command
 		   local input = string.sub(text, 1, string.len(k[1]))
            local args = string.Explode(" ", text) -- split the string into each word (argument)
            table.remove(args, 1)
