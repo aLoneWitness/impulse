@@ -146,7 +146,7 @@ function IMPULSE:PlayerSay(player,text,teamChat)
 		   local input = string.sub(text, 1, string.len(k[1]))
            local args = string.Explode(" ", text) -- split the string into each word (argument)
            table.remove(args, 1)
-           k[3](args, input) -- Run command function (Add arg)
+           k[3](player, args, input) -- Run command function (Add arg)
            return ""
        end
     end
