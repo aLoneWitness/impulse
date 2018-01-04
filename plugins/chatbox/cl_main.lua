@@ -180,9 +180,9 @@ local PANEL = {}
 
 		for k, v in ipairs({...}) do
 			if (type(v) == "number") and v == 1 then
-				local source = "impulse/apex_grey.png"
+				local source = "impulse/apex_grey"
 
-				text = text.."<img="..source..",16x16>"
+				text = text.."<img="..source..", 18x16>"
 			elseif (type(v) == "table" and v.r and v.g and v.b) then
 				text = text.."<color="..v.r..","..v.g..","..v.b..">"
 			elseif (type(v) == "Player") then
@@ -194,7 +194,6 @@ local PANEL = {}
 		end
 
 		text = text.."</font>"
-		print(text)
 
 		local panel = self.scroll:Add("MarkupPanel")
 		panel:SetWide(self:GetWide() - 8)

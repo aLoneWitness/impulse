@@ -122,11 +122,6 @@ local function ExtractParams(p1,p2,p3)
 			local material = exploded[1] or p2
 			local p3 = exploded[2]
 
-			local found = file.Find("materials/"..material..".*", "GAME")
-
-			if (found[1] and found[1]:find("%.png")) then
-				material = material..".png"
-			end
 
 			local texture = Material(material)
 			local sizeData = string.Explode("x", p3 or "16x16")

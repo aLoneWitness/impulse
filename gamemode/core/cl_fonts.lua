@@ -32,7 +32,7 @@ surface.CreateFont("Impulse-Elements23", {
 
 surface.CreateFont("Impulse-ChatSmall", {
 	font = "Tahoma",
-	size = 14,
+	size = 17,
 	weight = 600,
 	antialias = true,
 	shadow = true,
@@ -53,7 +53,7 @@ surface.CreateFont("Impulse-ChatLarge", {
 	antialias = true,
 	shadow = true,
 } )
-	
+
 surface.CreateFont("Impulse-Ui-SmallFont", {
 		font = "Arial",
 		size = math.max(ScreenScale(6), 17),
