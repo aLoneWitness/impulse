@@ -6,7 +6,7 @@ local PANEL = {}
 	end
 
 	function PANEL:setMarkup(text, onDrawText)
-		local object = markup.Parse(text, self:GetWide())
+		local object = markup.parse(text, self:GetWide())
 		object.onDrawText = onDrawText
 
 		self:SetTall(object:GetHeight())

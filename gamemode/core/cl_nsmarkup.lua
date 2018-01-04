@@ -9,8 +9,8 @@ local math = math
 local Material = Material
 local tonumber = tonumber
 local file = file
-
-module("nut.markup")
+print("Loading NS markup...")
+module("markup")
 
 --[[---------------------------------------------------------
     Name: Constants used for text alignment.

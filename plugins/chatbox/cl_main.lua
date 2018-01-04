@@ -182,7 +182,7 @@ local PANEL = {}
 			if (type(v) == "number") and v == 1 then
 				local source = "icon16/script_gear.png"
 
-				text = text.."<img='"..source.."',16x16>"
+				text = text.."<img="..source..",16x16>"
 			elseif (type(v) == "table" and v.r and v.g and v.b) then
 				text = text.."<color="..v.r..","..v.g..","..v.b..">"
 			elseif (type(v) == "Player") then
