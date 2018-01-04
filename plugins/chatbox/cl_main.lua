@@ -180,7 +180,7 @@ local PANEL = {}
 
 		for k, v in ipairs({...}) do
 			if (type(v) == "number") and v == 1 then
-				local source = "icon16/script_gear.png"
+				local source = "impulse/apex_grey.png"
 
 				text = text.."<img="..source..",16x16>"
 			elseif (type(v) == "table" and v.r and v.g and v.b) then
