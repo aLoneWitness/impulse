@@ -19,3 +19,11 @@ function IMPULSE:HUDShouldDraw(element)
 
 	return true
 end
+
+local vignette = Material("impulse/vignette.png")
+
+function IMPULSE:HUDPaint()
+	surface.SetDrawColor(255, 255, 255, 255)
+	surface.SetMaterial(vignette)
+	surface.DrawTexturedRect(0, 0, ScrW(), ScrH())
+end
