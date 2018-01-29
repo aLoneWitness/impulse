@@ -95,3 +95,7 @@ timer.Create("impulseCheckifitcamethrough", 15, 0, function()
 
     timer.Remove("impulseCheckifitcamethrough")
 end)
+
+function IMPULSE:ContextMenuOpen()
+	return false
+end
