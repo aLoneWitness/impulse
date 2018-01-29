@@ -21,9 +21,10 @@ function IMPULSE:HUDShouldDraw(element)
 end
 
 local vignette = Material("impulse/vignette.png")
+local vig_alpha_normal = Color(10,10,10,180)
 
 function IMPULSE:HUDPaint()
-	surface.SetDrawColor(255, 255, 255, 255)
+	surface.SetDrawColor(vig_alpha_normal)
 	surface.SetMaterial(vignette)
 	surface.DrawTexturedRect(0, 0, ScrW(), ScrH())
 end
