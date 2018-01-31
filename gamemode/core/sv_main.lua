@@ -154,3 +154,10 @@ function IMPULSE:PlayerSay(player,text,teamChat)
     end
 	return text
 end
+
+
+function IMPULSE:PlayerHurt(victim, attacker, healthLeft, damageTaken) -- WARNING, I NEED REPLACING WITH A CLIENT BASED MORE EFFICIENT SYSTEM!
+    if victim:IsPlayer() then
+        victim:ScreenFade(SCREENFADE.IN, Color(255,255,255,130), 0.5, 0.1) -- Shock effect
+    end
+end
