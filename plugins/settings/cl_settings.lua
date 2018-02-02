@@ -23,11 +23,23 @@ function impulse.LoadSettings()
 end
 
 
-function impulse.SetSetting(name)
+function impulse.SetSetting(name, value)
 	for v,k in pairs(impulse.Settings) do
 		if k.name == name then
-			return cookie.Set("impulse-setting-"..k.name, k.default)
+			return cookie.Set("impulse-setting-"..k.name, value)
 		end
 	end
 	return print("[impulse] Error, could not SetSetting. You've probably got the name wrong!")
 end
+
+timer.Simple(1, function()
+	impulse.LoadSettings()
+end)
+
+
+concommand.Add("impulse_resetsettings", function()
+	for v,k in pairs(impulse.Settings) do
+		impulse.SetSetting(k.name, k.default)
+	end
+	print("[impulse] Settings reset!")
+end)
