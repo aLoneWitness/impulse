@@ -99,3 +99,21 @@ end)
 function IMPULSE:ContextMenuOpen()
 	return false
 end
+
+local myscrw, myscrh = 1920, 1080
+
+function SizeW(width)
+    local screenwidth = myscrw
+    return width*ScrW()/screenwidth
+end
+
+function SizeH(height)
+    local screenheight = myscrh
+    return height*ScrH()/screenheight
+end
+
+function SizeWH(width, height)
+    local screenwidth = myscrw
+    local screenheight = myscrh
+    return width*ScrW()/screenwidth, height*ScrH()/screenheight
+end
