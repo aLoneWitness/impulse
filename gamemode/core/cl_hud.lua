@@ -25,9 +25,24 @@ local vig_alpha_normal = Color(10,10,10,180)
 local lasthealth = 100
 local time = 0
 local gradient = Material("vgui/gradient-d")
+local fde = 0
 
 function IMPULSE:HUDPaint()
 	local health = LocalPlayer():Health()
+	local lp = LocalPlayer()
+
+	if not lp:Alive() then
+		local ft = FrameTime()
+		fde = math.Clamp(fde+ft*0.2, 0, 1)
+
+		surface.SetDrawColor(0,0,0,math.ceil(fde*255))
+		surface.DrawRect(-1, -1, ScrW()+2, ScrH()+2)
+
+		draw.SimpleText("You have died", "Impulse-Elements23", ScrW()/2,ScrH()/2, Color(255,255,255,math.ceil(fde*255)),TEXT_ALIGN_CENTER)
+		return
+	else
+		fde = 0
+	end
 
 	if health < 45 then
 		healthstate = Color(255,0,0,240)
@@ -84,7 +99,10 @@ function IMPULSE:HUDPaint()
 
 	if health < lasthealth then
 		LocalPlayer():ScreenFade(SCREENFADE.IN, Color(255,255,255,120), 1, 0)
-	end 
+	end
+
+
+
 
 	-- Don't edit anything under this comment
 	lasthealth = health
@@ -108,3 +126,5 @@ function IMPULSE:RenderScreenspaceEffects()
 		DrawColorModify(blackandwhite)
 	end
 end
+
+
