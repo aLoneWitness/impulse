@@ -1,5 +1,5 @@
 function IMPULSE:CalcView(player, origin, angles, fov)
-	local ragdoll = pl:GetRagdollEntity();
+	local ragdoll = player:GetRagdollEntity();
 
 	if( !ragdoll || ragdoll == NULL || !ragdoll:IsValid() ) then return; end
 
