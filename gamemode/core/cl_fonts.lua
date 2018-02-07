@@ -1,3 +1,5 @@
+-- Font's are still a bit squiffy, they will all be scaled properly soon. Also - please name none specific fonts 'Impulse-Elements<description>'
+
 surface.CreateFont("Impulse-Elements18", {
 	font = "Arial",
 	size = 18,
@@ -31,27 +33,27 @@ surface.CreateFont("Impulse-Elements23", {
 } )
 
 surface.CreateFont("Impulse-ChatSmall", {
-	font = "Tahoma",
-	size = 17,
-	weight = 600,
+	font = "Arial",
+	size = ScreenScale(7),
+	weight = 700,
 	antialias = true,
-	shadow = true,
+	shadow = false,
 } )
 
 surface.CreateFont("Impulse-ChatMedium", {
-	font = "Tahoma",
-	size = 16,
-	weight = 600,
-	antialias = true,
-	shadow = true,
+	font = "Arial",
+	size = ScreenScale(7),
+	weight = 700,
+	antialias = false,
+	shadow = false,
 } )
 
 surface.CreateFont("Impulse-ChatLarge", {
-	font = "Tahoma",
-	size = 18,
-	weight = 600,
-	antialias = true,
-	shadow = true,
+	font = "Arial",
+	size = ScreenScale(7),
+	weight = 700,
+	antialias = false,
+	shadow = false,
 } )
 
 surface.CreateFont("Impulse-Ui-SmallFont", {
