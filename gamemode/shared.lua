@@ -89,8 +89,8 @@ impulse.lib.includeDir("impulse/gamemode/libs")
 impulse.lib.includeDir("impulse/gamemode/config")
 -- Load core
 impulse.lib.includeDir("impulse/gamemode/core")
--- Load core third party
-impulse.lib.includeDir("impulse/gamemode/core/3p")
+-- Load core vgui elements
+impulse.lib.includeDir("impulse/gamemode/core/vgui")
 
 function impulse.reload()
     MsgC( Color( 83, 143, 239 ), "[IMPULSE] Reloading gamemode...\n" )
