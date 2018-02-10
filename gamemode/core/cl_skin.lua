@@ -19,13 +19,13 @@ SKIN.DermaVersion	= 1
 SKIN.Colours = table.Copy(derma.SkinList.Default.Colours)
 SKIN.Colours.Window.TitleActive = Color(255, 255, 255)
 SKIN.Colours.Window.TitleInactive = Color(255, 255, 255)
- 
+
 SKIN.Colours.Button.Normal = Color(255, 255, 255)
 SKIN.Colours.Button.Hover = Color(255, 255, 255)
 SKIN.Colours.Button.Down = Color(180, 180, 180)
 SKIN.Colours.Button.Disabled = Color(0, 0, 0, 100)
 
-SKIN.fontFrame = "BudgetLabel"
+SKIN.fontFrame = "Impulse-Ui-SmallFont"
 SKIN.fontTab = "Impulse-Ui-SmallFont"
 SKIN.fontButton = "Impulse-Ui-SmallFont"
 SKIN.fontCategoryHeader	= "Impulse-Ui-SmallFont"
@@ -57,7 +57,7 @@ function SKIN:PaintButton(panel) -- button skin from ns edited
 		end
 		surface.SetDrawColor(ColorAlpha(HIGHLIGHT, alpha))
 		surface.DrawRect(0, 0, w, h)
-		
+
 		surface.SetDrawColor(0, 0, 0, 180)
 		surface.DrawOutlinedRect(0, 0, w, h)
 		surface.SetDrawColor(180, 180, 180, 2)
@@ -66,11 +66,11 @@ function SKIN:PaintButton(panel) -- button skin from ns edited
 end
 
 function SKIN:PaintWindowMinimizeButton( panel, w, h ) -- dont need these
-    
+
 end
 
 function SKIN:PaintWindowMaximizeButton( panel, w, h )
-    
+
 end
 
 

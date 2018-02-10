@@ -57,8 +57,8 @@ surface.CreateFont("Impulse-ChatLarge", {
 } )
 
 surface.CreateFont("Impulse-Ui-SmallFont", {
-		font = "Arial",
-		size = math.max(ScreenScale(6), 17),
-		extended = true,
-		weight = 500
+	font = "Arial",
+	size = math.max(ScreenScale(6), 17),
+	extended = true,
+	weight = 500
 })
