@@ -92,7 +92,8 @@ impulse.registerimpulseVar("money",         net.WriteDouble, net.ReadDouble)
 --impulse.registerimpulseVar("salary",        fp{net.WriteInt, net.ReadInt) may or may not need this
 impulse.registerimpulseVar("rpname",        net.WriteString, net.ReadString)
 impulse.registerimpulseVar("job",           net.WriteString, net.ReadString)
-impulse.registerimpulseVar("rank",           fp{net.WriteInt, 32}, fp{net.ReadInt, 32})
+impulse.registerimpulseVar("rank",           fp{net.WriteInt, 5}, fp{net.ReadInt, 5})
+impulse.registerimpulseVar("stamina",           fp{net.WriteInt, 8}, fp{net.ReadInt, 8})
 impulse.registerimpulseVar("arrested",      net.WriteBool, net.ReadBool)
 
 
