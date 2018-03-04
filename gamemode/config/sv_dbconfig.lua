@@ -7,7 +7,7 @@ if not impulse.DB then
 	impulse.DB = {
 		ip = "localhost",
 		username = "root",
-		password = "password",
+		password = "",
 		database = "impulse"
 	}
 end

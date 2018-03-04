@@ -52,47 +52,6 @@ function IMPULSE:HUDPaint()
 		healthstate = nil
 	end
 
-	-- Health bar
-	surface.SetDrawColor(healthstate or vig_alpha_normal)
-	surface.SetMaterial(vignette)
-	surface.DrawTexturedRect(0, 0, ScrW(), ScrH())
-
-	surface.SetDrawColor(30,30,30,155)
-	surface.DrawRect(0, 0, SizeW(500), 20)
-	surface.DrawOutlinedRect(0,0,SizeW(500), 20)
-
-	surface.SetDrawColor(255,0,0,150)
-	surface.DrawRect(1,1,SizeW(499)/100*health, 19)
-
-	surface.SetDrawColor(200,200,200, 90)
-	surface.SetMaterial(gradient)
-	surface.DrawTexturedRect(0,0,SizeW(500),20)
-
-	-- Food bar
-
-	surface.SetDrawColor(30,30,30,155)
-	surface.DrawRect(0, 21, SizeW(500), 20)
-	surface.DrawOutlinedRect(0,21,SizeW(500), 20)
-
-	surface.SetDrawColor(0,255,0,150)
-	surface.DrawRect(1,22,SizeW(499)/100*health, 19)
-
-	surface.SetDrawColor(200,200,200, 90)
-	surface.SetMaterial(gradient)
-	surface.DrawTexturedRect(0,21,SizeW(500),20)
-
-	-- Stamina bar
-
-	surface.SetDrawColor(30,30,30,155)
-	surface.DrawRect(0, 40, SizeW(500), 20)
-	surface.DrawOutlinedRect(0,20,SizeW(500), 20)
-
-	surface.SetDrawColor(255,165,0)
-	surface.DrawRect(1,41,SizeW(499)/100*health, 19)
-
-	surface.SetDrawColor(200,200,200, 90)
-	surface.SetMaterial(gradient)
-	surface.DrawTexturedRect(0,40,SizeW(500),20)
 
 	-- Draw any HUD stuff under this comment
 
