@@ -1,5 +1,5 @@
 # Welcome to impulse
-Impulse is a framework designed by TheVingard (Jake Green) for Apex-Roleplay. It is made to be super-lightweight, easy to program in and super simple to work with.
+Impulse is a framework designed by vin (Jake Green) for Apex-Roleplay originally . It is made to be super-lightweight, easy to program in and super simple to work with.
 
 ## Working with impulse
 If your working with impulse I reccomend you read the wiki first, feel free to DM me on discord if you have any questions.
