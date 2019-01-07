@@ -88,13 +88,13 @@ function impulse.readNetimpulseVarRemoval()
 end
 
 -- The money is a double because it accepts higher values than Int and UInt, which are undefined for >32 bits
-impulse.registerimpulseVar("money",         net.WriteDouble, net.ReadDouble)
+impulse.registerimpulseVar("money", net.WriteDouble, net.ReadDouble)
 --impulse.registerimpulseVar("salary",        fp{net.WriteInt, net.ReadInt) may or may not need this
-impulse.registerimpulseVar("rpname",        net.WriteString, net.ReadString)
-impulse.registerimpulseVar("job",           net.WriteString, net.ReadString)
-impulse.registerimpulseVar("rank",           fp{net.WriteInt, 5}, fp{net.ReadInt, 5})
-impulse.registerimpulseVar("stamina",           fp{net.WriteInt, 8}, fp{net.ReadInt, 8})
-impulse.registerimpulseVar("arrested",      net.WriteBool, net.ReadBool)
+impulse.registerimpulseVar("rpname", net.WriteString, net.ReadString)
+impulse.registerimpulseVar("job", net.WriteString, net.ReadString)
+impulse.registerimpulseVar("rank", fp{net.WriteInt, 5}, fp{net.ReadInt, 5})
+impulse.registerimpulseVar("stamina", fp{net.WriteInt, 8}, fp{net.ReadInt, 8})
+impulse.registerimpulseVar("arrested", net.WriteBool, net.ReadBool)
 
 
 -- CHAT COMMANDS
@@ -136,3 +136,11 @@ function meta:Name()
     return self:getIVar("rpname") or self:SteamName()
 end
 meta.GetName = meta.Name
+
+function meta:IsDeveloper()
+    return (self:SteamID() == "STEAM_0:1:95921723")
+end
+
+function meta:IsDonator()
+    return self:IsUserGroup("vip")
+end 

@@ -139,6 +139,7 @@ concommand.Add("_sendimpulsevars", function(ply)
 end)
 
 
+impulse.chatID = impulse.chatID or 0
 
 function IMPULSE:PlayerSay(player,text,teamChat)
    if teamChat == true then return text end -- teamchat is not used for commands
@@ -148,7 +149,8 @@ function IMPULSE:PlayerSay(player,text,teamChat)
 		   local input = string.sub(text, string.len(k[1])+3)
 		   local args = string.Explode(" ", text) -- split the string into each word (argument)
            table.remove(args, 1)
-           k[3](player, args, input) -- Run command function (Add arg)
+           impulse.chatID = impulse.chatID +1
+           k[3](player, args, input, impulse.chatID) -- Run command function (Add arg)
            return ""
        end
     end

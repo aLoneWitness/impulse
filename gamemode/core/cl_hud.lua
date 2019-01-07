@@ -11,6 +11,7 @@ hidden["CHudSecondaryAmmo"] = true
 hidden["CHudCrosshair"] = true
 hidden["CHudHistoryResource"] = true
 hidden["CHudDeathNotice"] = true
+hidden["CHudDamageIndicator"] = true
 
 function IMPULSE:HUDShouldDraw(element)
 	if (hidden[element]) then
@@ -24,12 +25,16 @@ local vignette = Material("impulse/vignette.png")
 local vig_alpha_normal = Color(10,10,10,180)
 local lasthealth = 100
 local time = 0
-local gradient = Material("vgui/gradient-d")
+local gradient = Material("vgui/gradient-l")
 local fde = 0
+local hudBlackGrad = Color(40,40,40,180)
+local hudBlack = Color(20,20,20,140)
 
 function IMPULSE:HUDPaint()
 	local health = LocalPlayer():Health()
 	local lp = LocalPlayer()
+	local scrW, scrH = ScrW(), ScrH()
+	local hudWidth, hudHeight = 300, 178
 
 	if not lp:Alive() then
 		local ft = FrameTime()
@@ -52,19 +57,19 @@ function IMPULSE:HUDPaint()
 		healthstate = nil
 	end
 
-
 	-- Draw any HUD stuff under this comment
 
-
 	if health < lasthealth then
-		LocalPlayer():ScreenFade(SCREENFADE.IN, Color(255,255,255,120), 1, 0)
+		LocalPlayer():ScreenFade(SCREENFADE.IN, Color(255,10,10,80), 1, 0)
 	end
-
-
-
 
 	-- Don't edit anything under this comment
 	lasthealth = health
+
+	surface.SetDrawColor(hudBlackGrad)
+	surface.SetMaterial(gradient)
+	surface.DrawTexturedRect(10, scrH-hudHeight-8, hudWidth, hudHeight)
+	surface.DrawRect(10, scrH-hudHeight-8, hudWidth, hudHeight)
 end
 
 local blackandwhite = {

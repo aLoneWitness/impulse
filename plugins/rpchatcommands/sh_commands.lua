@@ -10,8 +10,8 @@ local ooccolour = {
 }
 
 
-impulse.RegisterChatCommand('ooc','Global out of character chat', function(ply, args, input)
+impulse.RegisterChatCommand('ooc','Global out of character chat', function(sender, args, input, id)
     for v,k in pairs(player.GetAll()) do
-        k:AddChatText(Color(200,0,0), '[OOC] ', 1, ooccolour[ply:GetUserGroup()], ply:SteamName(), Color(255,255,255), ": ", input )
+        k:AddChatText(true, id, sender, Color(200,0,0), '[OOC] ', ooccolour[sender:GetUserGroup()], sender:SteamName(), Color(255,255,255), ": ", input)
     end
 end)

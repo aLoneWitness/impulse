@@ -12,7 +12,7 @@ function PANEL:SetColour(col)
 end
 
 function PANEL:SetTime(seconds)
-	self.Time =
+	self.Time = seconds
 end
 
 function PANEL:GetProgress()

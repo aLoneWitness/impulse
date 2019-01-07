@@ -25,6 +25,8 @@ SKIN.Colours.Button.Hover = Color(255, 255, 255)
 SKIN.Colours.Button.Down = Color(180, 180, 180)
 SKIN.Colours.Button.Disabled = Color(0, 0, 0, 100)
 
+SKIN.Colours.Label.Highlight = Color(90, 200, 250, 255)
+
 SKIN.fontFrame = "Impulse-Ui-SmallFont"
 SKIN.fontTab = "Impulse-Ui-SmallFont"
 SKIN.fontButton = "Impulse-Ui-SmallFont"
@@ -95,7 +97,6 @@ function SKIN:PaintScrollBarGrip( panel, w, h )
     surface.DrawRect(0, 0, w, h)
 end
 
-
 function SKIN:PaintWindowCloseButton( panel, w, h )
     h = 22
     local min = math.min(w,h)
@@ -149,9 +150,14 @@ function SKIN:PaintProgress( panel, w, h )
 	surface.DrawOutlinedRect(0, 0, w, h)
 end
 
-function SKIN:PaintCollapsibleCategoryHeader( w, h )
-    surface.SetDrawColor(HIGHLIGHT)
-    surface.DrawRect(0,0,w,h)
+function SKIN:PaintCollapsibleCategory( panel, w, h )
+	if h < 21 then
+    	--surface.SetDrawColor(HIGHLIGHT)
+    	--surface.DrawRect(0,0,w,h)
+    	draw.RoundedBox( 0, 0, 0, w, h, Color( 110, 110, 110, 130 ) )
+    else
+    	draw.RoundedBox( 0, 0, 0, w, h, Color( 110, 110, 110, 130 ) )
+	end
 end
 
 function SKIN:PaintTooltip( panel, w, h )

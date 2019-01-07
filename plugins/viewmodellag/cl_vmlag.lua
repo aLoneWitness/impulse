@@ -1,5 +1,5 @@
-local cl_vm_lag_enabled = CreateClientConVar("cl_vm_lag_enabled", "1", true)
-local cl_vm_lag_scale = CreateClientConVar("cl_vm_lag_scale", "1.5", true)
+-- edited version of viewmodel lagger on workshop, might need a recode
+local vmLagScale = 1.5
 
 local function VectorMA( start, scale, direction, dest )
 	dest.x = start.x + direction.x * scale
@@ -8,50 +8,50 @@ local function VectorMA( start, scale, direction, dest )
 end
 
 local function CalcViewModelLag(vm, origin, angles, original_angles)
-	local vOriginalOrigin = Vector(origin.x, origin.y, origin.z);
-	local vOriginalAngles = Angle(angles.x, angles.y, angles.z);
+	local vOriginalOrigin = Vector(origin.x, origin.y, origin.z)
+	local vOriginalAngles = Angle(angles.x, angles.y, angles.z)
 
 	vm.m_vecLastFacing = vm.m_vecLastFacing or angles:Forward()
 
-	local forward = angles:Forward();
+	local forward = angles:Forward()
 
-	if (FrameTime() != 0.0) then
-		local vDifference = forward - vm.m_vecLastFacing;
+	if (FrameTime() != 0) then
+		local vDifference = forward - vm.m_vecLastFacing
 
-		local flSpeed = 5.0;
+		local flSpeed = 5
 
-		local flDiff = vDifference:Length();
-		if ( (flDiff > cl_vm_lag_scale:GetFloat()) and (cl_vm_lag_scale:GetFloat() > 0.0) ) then
-			local flScale = flDiff / cl_vm_lag_scale:GetFloat();
-			flSpeed = flSpeed * flScale;
+		local flDiff = vDifference:Length()
+		if ( (flDiff > vmLagScale) and (vmLagScale > 0) ) then
+			local flScale = flDiff / vmLagScale
+			flSpeed = flSpeed * flScale
 		end
 
-		VectorMA(vm.m_vecLastFacing, flSpeed * FrameTime(), vDifference, vm.m_vecLastFacing);
+		VectorMA(vm.m_vecLastFacing, flSpeed * FrameTime(), vDifference, vm.m_vecLastFacing)
 
 		vm.m_vecLastFacing:Normalize()
-		VectorMA(origin, 5.0, vDifference * -1.0, origin);
+		VectorMA(origin, 5, vDifference * -1, origin)
 	end
 
-	local right, up;
+	local right, up
 	right = original_angles:Right()
 	up = original_angles:Up()
 
-	local pitch = original_angles[1];
+	local pitch = original_angles[1]
 
-	if (pitch > 180.0) then
-		pitch = pitch - 360.0;
-	elseif (pitch < -180.0) then
-		pitch = pitch + 360.0;
+	if (pitch > 180) then
+		pitch = pitch - 360
+	elseif (pitch < -180) then
+		pitch = pitch + 360
 	end
 
-	if (cl_vm_lag_scale:GetFloat() == 0.0) then
-		origin = vOriginalOrigin;
-		angles = vOriginalAngles;
+	if vmLagScale == 0 then
+		origin = vOriginalOrigin
+		angles = vOriginalAngles
 	end
 
-	VectorMA(origin, -pitch * 0.035, forward, origin);
-	VectorMA(origin, -pitch * 0.03, right,	origin);
-	VectorMA(origin, -pitch * 0.02, up, origin);
+	VectorMA(origin, -pitch * 0.035, forward, origin)
+	VectorMA(origin, -pitch * 0.03, right,	origin)
+	VectorMA(origin, -pitch * 0.02, up, origin)
 end
 
 
@@ -63,16 +63,5 @@ do
 			CalcViewModelLag(vm, pos, ang, oldAng)
 		end
 	end
-
-	if (cl_vm_lag_enabled:GetInt() != 0) then
-		hook.Add("CalcViewModelView", "HL2ViewModelSway", doLag)
-	end
-
-	cvars.AddChangeCallback("cl_vm_lag_enabled", function(var, old, new)
-		if (tonumber(new) != 0) then
-			hook.Add("CalcViewModelView", "HL2ViewModelSway", doLag)
-		else
-			hook.Remove("CalcViewModelView", "HL2ViewModelSway")
-		end
-	end)
+	hook.Add("CalcViewModelView", "HL2ViewModelSway", doLag)
 end

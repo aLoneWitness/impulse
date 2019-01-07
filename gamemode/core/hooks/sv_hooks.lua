@@ -1,0 +1,3 @@
+function IMPULSE:PlayerInitialSpawn()
+	
+end

@@ -6,8 +6,8 @@
 
 -- Define gamemode information.
 GM.Name = "IMPULSE"
-GM.Author = "TheVingard"
-GM.Website = "https://www.apex-roleplay.com"
+GM.Author = "vin"
+GM.Website = "https://www.vingard.ovh"
 MsgC( Color( 83, 143, 239 ), "[IMPULSE] Starting shared load...\n" )
 IMPULSE = GM
 meta = FindMetaTable( "Player" )
@@ -29,11 +29,9 @@ end
 
 
 
-if (SERVER and game.IsDedicated()) then
+if (SERVER) then
 	concommand.Remove("gm_save")
-	RunConsoleCommand( "alias", "rcon", "echo" ) -- frying the rcon system
-	RunConsoleCommand( "alias", "rcon_password", "echo" )
-	RunConsoleCommand( "alias", "rcon_address", "echo" )
+	RunConsoleCommand("sv_defaultdeployspeed", 1)
 end
 
 
@@ -91,6 +89,8 @@ impulse.lib.includeDir("impulse/gamemode/config")
 impulse.lib.includeDir("impulse/gamemode/core")
 -- Load core vgui elements
 impulse.lib.includeDir("impulse/gamemode/core/vgui")
+-- Load hooks
+impulse.lib.includeDir("impulse/gamemode/core/hooks")
 
 function impulse.reload()
     MsgC( Color( 83, 143, 239 ), "[IMPULSE] Reloading gamemode...\n" )
@@ -103,7 +103,6 @@ function impulse.reload()
 	    impulse.lib.includeDir("impulse/plugins/"..plugin)
 		MsgC( Color( 0, 255, 0 ), "[IMPULSE] Finished loading plugin '"..plugin.."'\n" )
     end
-
 end
 
 

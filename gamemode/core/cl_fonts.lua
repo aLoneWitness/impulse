@@ -16,6 +16,14 @@ surface.CreateFont("Impulse-Elements18-Shadow", {
 	shadow = true,
 } )
 
+surface.CreateFont("Impulse-Elements20-Shadow", {
+	font = "Arial",
+	size = 18,
+	weight = 900,
+	antialias = true,
+	shadow = true,
+} )
+
 surface.CreateFont("Impulse-CharacterInfo", {
 	font = "Arial",
 	size = 34,
@@ -23,6 +31,15 @@ surface.CreateFont("Impulse-CharacterInfo", {
 	antialias = true,
 	shadow = true,
 	outline = true
+} )
+
+surface.CreateFont("Impulse-CharacterInfo-NO", {
+	font = "Arial",
+	size = 34,
+	weight = 900,
+	antialias = true,
+	shadow = true,
+	outline = false
 } )
 
 surface.CreateFont("Impulse-Elements13", {
@@ -41,8 +58,32 @@ surface.CreateFont("Impulse-Elements23", {
 	shadow = false,
 } )
 
+surface.CreateFont("Impulse-Elements32", {
+	font = "Arial",
+	size = 32,
+	weight = 800,
+	antialias = true,
+	shadow = false,
+} )
+
+surface.CreateFont("Impulse-Elements48", {
+	font = "Arial",
+	size = 48,
+	weight = 1000,
+	antialias = true,
+	shadow = false,
+} )
+
 surface.CreateFont("Impulse-ChatSmall", {
 	font = "Arial",
+	size = 16,
+	weight = 700,
+	antialias = true,
+	shadow = false,
+} )
+
+surface.CreateFont("Impulse-ChatSmall-Radio", {
+	font = "Consolas",
 	size = ScreenScale(7),
 	weight = 700,
 	antialias = true,

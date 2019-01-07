@@ -9,6 +9,7 @@ local PANEL = {}
 	local COLOR_WRONG = Color(255, 100, 80)
 	--local CHAT_FONT = impulse.GetSetting("ChatFontSize") or "Impulse-ChatSmall"
 	local CHAT_FONT = "Impulse-ChatSmall"
+	local CHAT_FONT_RADIO = "Impulse-ChatSmall-Radio"
 
 	function PANEL:Init()
 		local border = 32
@@ -51,12 +52,15 @@ local PANEL = {}
 
 					local i = 0
 					local color = Color(255,255,255,255)
-
+					PrintTable(impulse.chatcommands)
  					for k, v in pairs(impulse.chatcommands) do
+ 						print(v[1])
+ 						print(command)
  						local k2 = "/"..v[1]
 
  						if (k2:find(command)) then
-							draw.DrawText(v[1], "Impulse-ChatSmall", w,h, color, TEXT_ALIGN_LEFT)
+ 							print("Found!")
+							draw.DrawText("HELLO DAD", "DermaDefault", ScrW()/2,ScrH()/2, color, TEXT_ALIGN_LEFT)
  						end
  					end
 				end
@@ -178,16 +182,19 @@ local PANEL = {}
 			text = "<font="..CHAT_FONT..">"
 		end
 
-		for k, v in ipairs({...}) do
-			if (type(v) == "number") and v == 1 then
-				local source = "impulse/apex_grey"
+		local sender = nil
+		local isOOC = false
+		local messageID = -1
 
-				text = text.."<img="..source..", 18x16>"
-			elseif (type(v) == "table" and v.r and v.g and v.b) then
+		for k, v in ipairs({...}) do
+			if (type(v) == "table" and v.r and v.g and v.b) then
 				text = text.."<color="..v.r..","..v.g..","..v.b..">"
+			elseif (type(v) == "number") then
+				messageID = v
 			elseif (type(v) == "Player") then
-				local color = team.GetColor(v:Team())
-				text = text.."<color="..color.r..","..color.g..","..color.b..">"..v:Name():gsub("<", "&lt;"):gsub(">", "&gt;")
+				sender = v
+			elseif (type(v) == "boolean") then
+				isOOC = true
 			else
 				text = text..tostring(v):gsub("<", "&lt;"):gsub(">", "&gt;")
 			end
@@ -200,6 +207,39 @@ local PANEL = {}
 		panel:setMarkup(text, OnDrawText)
 		panel.start = CurTime() + 15
 		panel.finish = panel.start + 20
+		panel.sender = sender:SteamID()
+		panel.isOOC = isOOC
+		panel.messageID = messageID
+		panel.DoClick = function()
+			if panel.isOOC == false then return end
+			local chatMenu = DermaMenu()
+
+			local reportChat = chatMenu:AddOption("Report message")
+			reportChat:SetIcon("icon16/bell.png")
+
+			if LocalPlayer():IsAdmin() then
+				chatMenu:AddSpacer()
+				local deleteChat = chatMenu:AddOption("Redact message", function() netstream.Start("msgRedact", panel.messageID) end)
+				deleteChat:SetIcon("icon16/cog_delete.png")
+				-- Add function here
+
+				local idChat = chatMenu:AddOption("Copy sender SteamID", function() SetClipboardText(panel.sender) end)
+				idChat:SetIcon("icon16/page_copy.png")
+
+				if LocalPlayer():IsSuperAdmin() then
+					chatMenu:AddSpacer()
+					local idChat = chatMenu:AddOption("Copy message ID", function() SetClipboardText(panel.messageID) end)
+					idChat:SetIcon("icon16/key.png")
+				end
+
+			end
+
+			chatMenu:Open()
+		end
+		panel.DoRightClick = function()
+			SetClipboardText(text)
+			chat.AddText(Color(255,255,255), "Copied message to clipboard")
+		end
 		panel.Think = function(this)
 			if (self.active) then
 				this:SetAlpha(255)
@@ -216,7 +256,9 @@ local PANEL = {}
 
 
 		panel.filter = class
-
+		if messageID > -1 then -- if it actually has a proper server-generated message id
+			impulse.messages[messageID] = panel
+		end
 		return panel:IsVisible()
 	end
 
@@ -252,7 +294,7 @@ hook.Add("HUDShouldDraw", "IMPULSE-CHATNODRAW", function(element)
 end)
 
 hook.Add("PlayerBindPress", "IMPULSE-CHAT-OPEN", function(client, bind, pressed)
-	if not impulse.chatbox then return createChat() end
+	if not IsValid(impulse.chatbox) then return createChat() end
 
 	bind = bind:lower()
 
@@ -278,10 +320,10 @@ function chat.AddText(...)
 	end
 end
 
-hook.Add("ChatText", "IMPULSE-CHATCORE", function(index, name, text, messageType)
-	if (messageType == "none" and IsValid(impulse.chatbox)) then
-		impulse.chatbox:addText(text)
-		chat.PlaySound()
+impulse.messages = impulse.messages or {}
+
+netstream.Hook("redactMsg", function(messageID)
+	if impulse.messages[messageID] then
+		impulse.messages[messageID]:setMarkup("<font=Impulse-ChatSmall><colour=124,252,0>Message redacted by a moderator</colour></font>")
 	end
 end)
-

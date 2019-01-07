@@ -117,3 +117,11 @@ function SizeWH(width, height)
     local screenheight = myscrh
     return width*ScrW()/screenwidth, height*ScrH()/screenheight
 end
+
+function IMPULSE:ScoreboardShow()
+    impulse_scoreboard = vgui.Create("impulseScoreboard")
+end
+
+function IMPULSE:ScoreboardHide()
+    impulse_scoreboard:Remove()
+end

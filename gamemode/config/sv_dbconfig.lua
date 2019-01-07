@@ -8,7 +8,7 @@ if not impulse.DB then
 		ip = "localhost",
 		username = "root",
 		password = "",
-		database = "impulse"
+		database = "impulse_development"
 	}
 end
 -- requires https://facepunch.com/showthread.php?t=1515853

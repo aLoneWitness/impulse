@@ -23,13 +23,12 @@ function impulse.PrepSoundForLoad(sound)
     end
 end
 
-function impulse.TriggerLoad(table)
-   if table[2] == 1 then
+function impulse.TriggerLoad(table) -- will load assets from a impulse loadCache table, you can get this with impulse.GetLoadCache()
+   if table[2] == 1 then -- if type is model
        util.PrecacheModel(table[1])
-   elseif table[2] == 2 then
+   elseif table[2] == 2 then -- if type is sound
        util.PrecacheSound(table[1])
    end
-   impulse.loaded = true
 end
 
 function impulse.GetLoadCache()
