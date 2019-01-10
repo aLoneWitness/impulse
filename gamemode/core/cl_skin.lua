@@ -43,8 +43,6 @@ function SKIN:PaintFrame(panel, w, h)
     draw.RoundedBox( 0, 0, 0, w, 25, Color( 80, 80, 80, 100 ) ) -- this is the "top bar" of the derma frame
 end
 
-
-
 function SKIN:PaintButton(panel) -- button skin from ns edited
 	if (panel:GetPaintBackground()) then
 		local w, h = panel:GetWide(), panel:GetTall()
@@ -167,6 +165,25 @@ function SKIN:PaintTooltip( panel, w, h )
     surface.DrawOutlinedRect(0, 0, w, h)
 end
 
+function SKIN:PaintPropertySheet(panel, w, h)
+	local activeTab = panel:GetActiveTab()
+	local offset = 0
+	if activeTab then offset = activeTab:GetTall() - 8 end
+	
+	surface.SetDrawColor(Color( 110, 110, 110, 20 ))
+	surface.DrawRect(0, 0+offset, w, h)
+end
+
+function SKIN:PaintTab(panel, w, h)
+	local h = 20
+	if panel:IsActive() then
+		surface.SetDrawColor(Color( 80, 80, 80, 100 ))
+		return surface.DrawRect(0,0,w,h)
+	end
+
+	surface.SetDrawColor(Color( 80, 80, 80, 40 ))
+	surface.DrawRect(0,0,w,h)
+end
 
 derma.DefineSkin("impulse", "Skin made by TheVingard. A nice new lick of paint for BMRP's interfaces.", SKIN)
 derma.RefreshSkins()

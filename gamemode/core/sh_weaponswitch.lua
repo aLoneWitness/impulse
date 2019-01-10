@@ -63,6 +63,7 @@ if (CLIENT) then
 	end)
 
 	hook.Add("HUDPaint", "IMPULSE-WEAPON-HDPAINT", function()
+		if impulse.hudEnabled == false or IsValid(impulse.MainMenu) then return end
 		local x = ScrW() * 0.475
 
 		for k, v in SortedPairs(LocalPlayer():GetWeapons()) do

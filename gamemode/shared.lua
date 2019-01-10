@@ -8,17 +8,13 @@
 GM.Name = "IMPULSE"
 GM.Author = "vin"
 GM.Website = "https://www.vingard.ovh"
+GM.Version = 0.1
 MsgC( Color( 83, 143, 239 ), "[IMPULSE] Starting shared load...\n" )
 IMPULSE = GM
 meta = FindMetaTable( "Player" )
 
 -- Called after the gamemode has loaded.
 function IMPULSE:Initialize()
-    if (SERVER) then
-		timer.Simple(0.1, function()
-			impulse.DB.boot() -- load db
-		end)
-    end
 	impulse.reload()
 end
 

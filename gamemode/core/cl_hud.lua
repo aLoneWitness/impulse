@@ -3,6 +3,8 @@
 ** This file is private and may not be shared, downloaded, used or sold.
 */
 
+impulse.hudEnabled = impulse.hudEnabled or true
+
 local hidden = {}
 hidden["CHudHealth"] = true
 hidden["CHudBattery"] = true
@@ -31,6 +33,8 @@ local hudBlackGrad = Color(40,40,40,180)
 local hudBlack = Color(20,20,20,140)
 
 function IMPULSE:HUDPaint()
+	if impulse.hudEnabled == false or IsValid(impulse.MainMenu) then return end
+
 	local health = LocalPlayer():Health()
 	local lp = LocalPlayer()
 	local scrW, scrH = ScrW(), ScrH()
@@ -86,9 +90,14 @@ local blackandwhite = {
 
 
 function IMPULSE:RenderScreenspaceEffects()
+	if impulse.hudEnabled == false or IsValid(impulse.MainMenu) then return end
+
 	if LocalPlayer():Health() < 20 then
 		DrawColorModify(blackandwhite)
 	end
 end
 
 
+concommand.Add("impulse_cameratoggle", function()
+	impulse.hudEnabled = (!impulse.hudEnabled)
+end)

@@ -4,7 +4,7 @@
 
 impulse.chatBox = {}
 
-impulse.DefineSetting({name="Chatbox fade time", category="User interface", type="plainint", default=12})
+impulse.DefineSetting("chat_fadetime", {name="Chatbox fade time", category="User interface", type="plainint", default=12})
 
 --// Builds the chatbox but doesn't display it
 function impulse.chatBox.buildBox()
@@ -121,7 +121,7 @@ function impulse.chatBox.buildBox()
 	end
 	impulse.chatBox.chatLog.Think = function( self )
 		if impulse.chatBox.lastMessage then
-			if CurTime() - impulse.chatBox.lastMessage > impulse.GetSetting("Chatbox fade time") then
+			if CurTime() - impulse.chatBox.lastMessage > impulse.GetSetting("chat_fadetime") then
 				self:SetVisible( false )
 			else
 				self:SetVisible( true )

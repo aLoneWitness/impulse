@@ -11,7 +11,7 @@ function impulse.schema.boot(name)
     impulse.lib.includeDir(SCHEMA.."/schema/config")
 
     local mapPath = SCHEMA.."/schema/config/maps/"..game.GetMap()..".lua"
-    if file.Exists(mapPath, "GAME") then
+    if file.Exists("gamemodes/"..mapPath, "GAME") then
     	MsgC( Color( 83, 143, 239 ), "[IMPULSE] Loading map config for '"..game.GetMap().."'\n" )
     	include(mapPath)
     	AddCSLuaFile(mapPath)
