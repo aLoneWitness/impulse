@@ -28,14 +28,13 @@ function PANEL:Init()
 	button:SetFont("Impulse-Elements48")
 	button:SetText("Play")
 	button:SizeToContents()
-	local normalCol = button:GetColor()
-	local highlightCol = Color(impulse.Config.maincolour.r, impulse.Config.maincolour.g, impulse.Config.maincolour.b)
+	local highlightCol = Color(impulse.Config.MainColour.r, impulse.Config.MainColour.g, impulse.Config.MainColour.b)
 	local selfPanel = self
 	function button:Paint()
 		if self:IsHovered() then
 			self:SetColor(highlightCol)
 		else
-			self:SetColor(normalCol)
+			self:SetColor(color_white)
 		end
 	end
 
@@ -50,12 +49,12 @@ function PANEL:Init()
 	button:SetText("Settings")
 	button:SizeToContents()
 	local normalCol = button:GetColor()
-	local highlightCol = Color(impulse.Config.maincolour.r, impulse.Config.maincolour.g, impulse.Config.maincolour.b)
+	local highlightCol = Color(impulse.Config.MainColour.r, impulse.Config.MainColour.g, impulse.Config.MainColour.b)
 	function button:Paint()
 		if self:IsHovered() then
 			self:SetColor(highlightCol)
 		else
-			self:SetColor(normalCol)
+			self:SetColor(color_white)
 		end
 	end
 
@@ -69,12 +68,12 @@ function PANEL:Init()
 	button:SetText("Community")
 	button:SizeToContents()
 	local normalCol = button:GetColor()
-	local highlightCol = Color(impulse.Config.maincolour.r, impulse.Config.maincolour.g, impulse.Config.maincolour.b)
+	local highlightCol = Color(impulse.Config.MainColour.r, impulse.Config.MainColour.g, impulse.Config.MainColour.b)
 	function button:Paint()
 		if self:IsHovered() then
 			self:SetColor(highlightCol)
 		else
-			self:SetColor(normalCol)
+			self:SetColor(color_white)
 		end
 	end
 
@@ -87,8 +86,8 @@ function PANEL:Init()
 
 	local schemaLabel = vgui.Create("DLabel", self)
 	schemaLabel:SetFont("Impulse-Elements32")
-	schemaLabel:SetText(impulse.Config.schemaName)
-	--schemaLabel:SetTextColor(Color(impulse.Config.maincolour.r, impulse.Config.maincolour.g, impulse.Config.maincolour.b)) not sure if i like this
+	schemaLabel:SetText(impulse.Config.SchemaName)
+	--schemaLabel:SetTextColor(Color(impulse.Config.MainColour.r, impulse.Config.MainColour.g, impulse.Config.MainColour.b)) not sure if i like this
 	schemaLabel:SizeToContents()
 	schemaLabel:SetPos(100,140)
 end

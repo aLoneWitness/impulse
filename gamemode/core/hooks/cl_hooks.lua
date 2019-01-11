@@ -1,4 +1,4 @@
-function IMPULSE:OnGamemodeLoaded()
+function IMPULSE:OnSchemaLoaded()
 	if not impulse.MainMenu and not IsValid(impulse.MainMenu) then
 		vgui.Create("impulseMainMenu")
 	end

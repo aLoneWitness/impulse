@@ -187,7 +187,7 @@ function impulse.chatBox.hideBox()
 	impulse.chatBox.chatLog:SetVerticalScrollbarEnabled( false )
 	impulse.chatBox.chatLog:GotoTextEnd()
 	
-	impulse.chatBox.lastMessage = impulse.chatBox.lastMessage or CurTime() - impulse.GetSetting("Chatbox fade time")
+	impulse.chatBox.lastMessage = impulse.chatBox.lastMessage or CurTime() - impulse.GetSetting("chat_fadetime")
 	
 	-- Hide the chatbox except the log
 	local children = impulse.chatBox.frame:GetChildren()

@@ -8,67 +8,10 @@ util.AddNetworkString("IMPULSE_PlayerVar")
 util.AddNetworkString("IMPULSE_PlayerVarRemoval")
 util.AddNetworkString("IMPULSE_impulseVarDisconnect")
 
-hook.Add("PlayerLoadout", "IMPULSE-CONFIGSET", function(player)
-	player:SetRunSpeed(impulse.Config.JogSpeed)
-	player:SetWalkSpeed(impulse.Config.WalkSpeed)
-end)
-
-
--- impulse uses keys instead of rcon, do not touch this system
-
-local function stringRandom(length)
-	local str = "";
-	for i = 1, length do
-		str = str..string.char(math.random(97, 122));
-	end
-	return string.upper(str);
-end
-
-
-local function GenerateKey()
-    return stringRandom(5).."-"..stringRandom(5).."-"..stringRandom(5).."-"..stringRandom(5)
-end
-
-if not file.IsDir("impulse", "DATA") and not file.Exists("impulse/serverkey.dat", "DATA") then
-	file.CreateDir("impulse")
-	impulse.key = GenerateKey()
-	file.Write("impulse/serverkey.dat", impulse.key)
-else
-	impulse.key = file.Read("impulse/serverkey.dat","DATA")
-end
-
-
-MsgC(Color(0,255,0), "[IMPULSE] Server key: ["..(impulse.key or "MAJOR ERROR PLEASE CLOSE SERVER").."]. Keep this secret!\n")
-
-local nexttry
-
-concommand.Add("impulse_sudokey", function(ply,cmd,args)
-	local antiSpam = nexttry or 0
-
-	if CurTime() > antiSpam  then
-		if args[1] and string.upper(args[1]) == impulse.key then
-			ply:AddChatText(Color(0,255,0), "[IMPULSE] Sudo key accepted.")
-			ply.hasSudo = true
-		elseif args[1] then
-			ply:AddChatText(Color(0,255,0), "[IMPULSE] Sudo key rejected. You must wait 2 seconds before retrying.")
-		end
-	end
-	nexttry = CurTime() + 2
-end)
-
-concommand.Add("impulse_sudo", function(ply,cmd,args)
-	local antiSpam = nexttry or 0
-
-	if CurTime() > antiSpam then
-		nexttry = CurTime() + 0.3
-		if not ply.hasSudo and not args[1] then return false end
-		game.ConsoleCommand(args[1].."\n")
-	end
-
-end)
-
--- end of key system
-
+--hook.Add("PlayerLoadout", "IMPULSE-CONFIGSET", function(player)
+	--player:SetRunSpeed(impulse.Config.JogSpeed)
+	--player:SetWalkSpeed(impulse.Config.WalkSpeed)
+--end)
 
 function meta:removeIVar(var, target)
     target = target or player.GetAll()

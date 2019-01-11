@@ -3,7 +3,6 @@
 ** This file is private and may not be shared, downloaded, used or sold.
 */
 
-
 -- Define gamemode information.
 GM.Name = "IMPULSE"
 GM.Author = "vin"
@@ -23,13 +22,10 @@ function IMPULSE:OnReloaded()
 	impulse.reload()
 end
 
-
-
 if (SERVER) then
 	concommand.Remove("gm_save")
 	RunConsoleCommand("sv_defaultdeployspeed", 1)
 end
-
 
 function impulse.lib.LoadFile(fileName)
 	if (!fileName) then
@@ -55,7 +51,6 @@ function impulse.lib.LoadFile(fileName)
 	end
 end
 
-
 function impulse.lib.includeDir(directory, fromLua)
 	for k, v in ipairs(file.Find(directory.."/*.lua", "LUA")) do
     	impulse.lib.LoadFile(directory.."/"..v)
@@ -80,6 +75,7 @@ end
 -- Loading 3rd party libs
 impulse.lib.includeDir("impulse/gamemode/libs")
 -- Load config
+impulse.Config = impulse.Config or {}
 impulse.lib.includeDir("impulse/gamemode/config")
 -- Load core
 impulse.lib.includeDir("impulse/gamemode/core")

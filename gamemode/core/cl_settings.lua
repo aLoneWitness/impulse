@@ -2,6 +2,7 @@ impulse.Settings = impulse.Settings or {}
 
 function impulse.DefineSetting(name, settingdata)
 	impulse.Settings[name] = settingdata
+	impulse.LoadSettings()
 end
 
 function impulse.GetSetting(name)
@@ -33,10 +34,6 @@ function impulse.SetSetting(name, newValue)
 	end
 	return print("[impulse] Error, could not SetSetting. You've probably got the name wrong! Attempted name: "..name)
 end
-
-timer.Simple(1, function()
-	impulse.LoadSettings()
-end)
 
 concommand.Add("impulse_resetsettings", function()
 	for v,k in pairs(impulse.Settings) do

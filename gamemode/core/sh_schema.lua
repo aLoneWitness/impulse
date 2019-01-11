@@ -24,5 +24,5 @@ function impulse.schema.boot(name)
 	    impulse.lib.includeDir(SCHEMA.."/plugins/"..dir)
     end
 
-    hook.Run('SchemaLoad')
+    hook.Call("OnSchemaLoaded", IMPULSE)
 end

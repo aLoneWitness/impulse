@@ -73,7 +73,7 @@ if (CLIENT) then
 			local color = Color(255, 255, 255)
 
 			if (k == lastSlot) then
-				color = impulse.Config.maincolour
+				color = impulse.Config.MainColour
 			end
 
 			color.a = math.Clamp(255 - math.TimeFraction(lifeTime, deathTime, CurTime()) * 255, 0, 255)
