@@ -6,8 +6,9 @@ function IMPULSE:PlayerInitialSpawn(player)
 		if (type(result) == "table" and #result > 0) then -- if player exists in db
 			isNew = false
 		end
+		netstream.Start(player, "impulseJoinData", isNew)
 	end)
-	netstream.Start(player, "impulseJoinData", isNew)
+	query:Execute()
 end
 
 function IMPULSE:PlayerLoadout(player)

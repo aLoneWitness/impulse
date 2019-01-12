@@ -4,7 +4,8 @@
 
 impulse.chatBox = {}
 
-impulse.DefineSetting("chat_fadetime", {name="Chatbox fade time", category="User interface", type="plainint", default=12})
+impulse.DefineSetting("chat_fadetime", {name="Chatbox fade time", category="Chatbox", type="slider", default=12, minValue=4, maxValue=120})
+impulse.DefineSetting("chat_fontsize", {name="Chatbox font size (requires rejoin)", category="Chatbox", type="dropdown", default="Small", options={"Small", "Medium", "Large"}})
 
 --// Builds the chatbox but doesn't display it
 function impulse.chatBox.buildBox()
@@ -130,7 +131,7 @@ function impulse.chatBox.buildBox()
 		self:SetSize( impulse.chatBox.frame:GetWide() - 10, impulse.chatBox.frame:GetTall() - impulse.chatBox.entry:GetTall() - 20 )
 	end
 	impulse.chatBox.chatLog.PerformLayout = function( self )
-		self:SetFontInternal("Impulse-ChatSmall")
+		self:SetFontInternal("Impulse-Chat"..impulse.GetSetting("chat_fontsize"))
 		self:SetFGColor( color_white )
 	end
 	impulse.chatBox.oldPaint2 = impulse.chatBox.chatLog.Paint

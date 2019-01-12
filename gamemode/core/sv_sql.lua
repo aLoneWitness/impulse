@@ -4,7 +4,6 @@
 */
 
 -- Uses https://github.com/FredyH/MySQLOO/releases
-mysql:Connect(impulse.DB.ip, impulse.DB.username, impulse.DB.password, impulse.DB.database, 3306) -- send data to connect with
 
 function IMPULSE:DatabaseConnected()
     local sqlQuery = mysql:Create("impulse_players") -- if not table exist, make it.

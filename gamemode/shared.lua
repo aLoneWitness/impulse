@@ -77,6 +77,10 @@ impulse.lib.includeDir("impulse/gamemode/libs")
 -- Load config
 impulse.Config = impulse.Config or {}
 impulse.lib.includeDir("impulse/gamemode/config")
+-- Load DB
+if SERVER then
+	mysql:Connect(impulse.DB.ip, impulse.DB.username, impulse.DB.password, impulse.DB.database, 3306)
+end
 -- Load core
 impulse.lib.includeDir("impulse/gamemode/core")
 -- Load core vgui elements

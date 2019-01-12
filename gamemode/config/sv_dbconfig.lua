@@ -3,12 +3,11 @@
 ** This file is private and may not be shared, downloaded, used or sold.
 */
 
-if not impulse.DB then
-	impulse.DB = {
-		ip = "localhost",
-		username = "root",
-		password = "",
-		database = "impulse_development"
-	}
-end
+impulse.DB = impulse.DB or {
+	ip = "localhost",
+	username = "root",
+	password = "",
+	database = "impulse_development"
+}
+
 -- requires https://facepunch.com/showthread.php?t=1515853
