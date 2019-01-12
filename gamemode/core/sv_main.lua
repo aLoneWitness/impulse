@@ -84,25 +84,18 @@ end)
 
 impulse.chatID = impulse.chatID or 0
 
-function IMPULSE:PlayerSay(player,text,teamChat)
-   if teamChat == true then return text end -- teamchat is not used for commands
-   if not string.StartWith(text, "/") then return text end
-    for v,k in pairs(impulse.chatcommands) do -- loop through all commands
-		if "/"..k[1] == string.sub(string.lower(text), 1, string.len(k[1])+1) then -- if what they typed is a command
-		   local input = string.sub(text, string.len(k[1])+3)
-		   local args = string.Explode(" ", text) -- split the string into each word (argument)
-           table.remove(args, 1)
-           impulse.chatID = impulse.chatID +1
-           k[3](player, args, input, impulse.chatID) -- Run command function (Add arg)
-           return ""
-       end
-    end
-	return text
-end
-
-
-function IMPULSE:PlayerHurt(victim, attacker, healthLeft, damageTaken) -- WARNING, I NEED REPLACING WITH A CLIENT BASED MORE EFFICIENT SYSTEM!
-    if victim:IsPlayer() then
-        victim:ScreenFade(SCREENFADE.IN, Color(255,255,255,130), 0.5, 0.1) -- Shock effect
-    end
-end
+--function IMPULSE:PlayerSay(player,text,teamChat)
+--   if teamChat == true then return text end -- teamchat is not used for commands
+--   if not string.StartWith(text, "/") then return text end
+--    for v,k in pairs(impulse.chatcommands) do -- loop through all commands
+--		if "/"..k[1] == string.sub(string.lower(text), 1, string.len(k[1])+1) then -- if what they typed is a command
+--		   local input = string.sub(text, string.len(k[1])+3)
+--		   local args = string.Explode(" ", text) -- split the string into each word (argument)
+--           table.remove(args, 1)
+--           impulse.chatID = impulse.chatID +1
+--           k[3](player, args, input, impulse.chatID) -- Run command function (Add arg)
+--           return ""
+--       end
+--    end
+--	return text
+--end

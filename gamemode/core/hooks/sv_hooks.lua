@@ -19,5 +19,11 @@ function IMPULSE:PlayerLoadout(player)
 end
 
 function IMPULSE:ShowHelp()
-	
+	return
+end
+
+function IMPULSE:PlayerSay(ply, text)
+	for v,k in pairs(player.GetAll()) do
+		k:AddChatText(text)
+	end
 end

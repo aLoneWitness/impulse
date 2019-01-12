@@ -79,7 +79,7 @@ function impulse.chatBox.buildBox()
 				elseif impulse.chatBox.ChatType == types[3] then
 					LocalPlayer():ConCommand(self:GetText() or "")
 				else
-					LocalPlayer():ConCommand("say \"" .. self:GetText() .. "\"")
+					netstream.Start("msg", self:GetText()) -- use netstream to send messages its faster + we can send bigger messages
 				end
 			end
 
@@ -89,11 +89,8 @@ function impulse.chatBox.buildBox()
 	end
 
 	impulse.chatBox.chatLog = vgui.Create("RichText", impulse.chatBox.frame) 
-	impulse.chatBox.chatLog:SetSize( impulse.chatBox.frame:GetWide() - 10, impulse.chatBox.frame:GetTall() - 60 )
+	impulse.chatBox.chatLog:SetSize( impulse.chatBox.frame:GetWide() - 10, impulse.chatBox.frame:GetTall() - 70 )
 	impulse.chatBox.chatLog:SetPos( 5, 30 )
-	impulse.chatBox.chatLog.Paint = function( self, w, h )
-		draw.RoundedBox( 0, 0, 0, w, h, Color( 30, 30, 30, 100 ) )
-	end
 	impulse.chatBox.chatLog.PaintOver = function(self, w, h)
 		local entry = impulse.chatBox.entry
 
@@ -128,7 +125,7 @@ function impulse.chatBox.buildBox()
 				self:SetVisible( true )
 			end
 		end
-		self:SetSize( impulse.chatBox.frame:GetWide() - 10, impulse.chatBox.frame:GetTall() - impulse.chatBox.entry:GetTall() - 20 )
+		self:SetSize( impulse.chatBox.frame:GetWide() - 10, impulse.chatBox.frame:GetTall() - impulse.chatBox.entry:GetTall() - 40 )
 	end
 	impulse.chatBox.chatLog.PerformLayout = function( self )
 		self:SetFontInternal("Impulse-Chat"..impulse.GetSetting("chat_fontsize"))
@@ -136,7 +133,7 @@ function impulse.chatBox.buildBox()
 	end
 	impulse.chatBox.oldPaint2 = impulse.chatBox.chatLog.Paint
 	
-	local text = "Say :"
+	local text = "Say:"
 
 	local say = vgui.Create("DLabel", impulse.chatBox.frame)
 	say:SetText("")
@@ -146,7 +143,6 @@ function impulse.chatBox.buildBox()
 	say:SetPos( 5, impulse.chatBox.frame:GetTall() - impulse.chatBox.entry:GetTall() - 5 )
 	
 	say.Paint = function( self, w, h )
-		draw.RoundedBox( 0, 0, 0, w, h, Color( 30, 30, 30, 100 ) )
 		draw.DrawText( text, "Impulse-ChatSmall", 2, 1, color_white )
 	end
 
@@ -155,11 +151,11 @@ function impulse.chatBox.buildBox()
 		local s = {}
 
 		if impulse.chatBox.ChatType == types[2] then 
-			text = "Say (TEAM) :"	
+			text = "Say (TEAM):"	
 		elseif impulse.chatBox.ChatType == types[3] then
-			text = "Console :"
+			text = "Console:"
 		else
-			text = "Say :"
+			text = "Say:"
 			s.pw = 45
 			s.sw = impulse.chatBox.frame:GetWide() - 50
 		end
@@ -272,22 +268,6 @@ function chat.AddText(...)
 	impulse.chatBox.chatLog:InsertColorChange( 255, 255, 255, 255 )
 --	oldAddText(unpack(msg))
 end
-
---// Write any server notifications
-hook.Remove( "ChatText", "impulse.chatBox_joinleave")
-hook.Add( "ChatText", "impulse.chatBox_joinleave", function( index, name, text, type )
-	if not impulse.chatBox.chatLog then
-		impulse.chatBox.buildBox()
-	end
-	
-	if type != "chat" then
-		impulse.chatBox.chatLog:InsertColorChange( 0, 128, 255, 255 )
-		impulse.chatBox.chatLog:AppendText( text.."\n" )
-		impulse.chatBox.chatLog:SetVisible( true )
-		impulse.chatBox.lastMessage = CurTime()
-		return true
-	end
-end)
 
 --// Stops the default chat box from being opened
 hook.Remove("PlayerBindPress", "impulse.chatBox_hijackbind")

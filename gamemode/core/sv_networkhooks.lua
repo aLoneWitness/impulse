@@ -27,3 +27,10 @@ netstream.Hook("impulseCharacterCreate", function(player, charName, charModel, c
 	end)
 	query:Execute()
 end)
+
+netstream.Hook("msg", function(ply, text)
+	if (player.NextChat or 0) < CurTime() then
+		hook.Run("PlayerSay", ply, text)
+		player.NextChat = CurTime() + math.max(#text / 250, 0.4)
+	end
+end)
