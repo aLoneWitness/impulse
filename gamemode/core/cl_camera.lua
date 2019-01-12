@@ -1,7 +1,7 @@
 function IMPULSE:CalcView(player, origin, angles, fov)
 	local view
 
-	if IsValid(impulse.MainMenu) then
+	if IsValid(impulse.MainMenu) and not impulse.MainMenu.popup then
 		view = {
 			origin = impulse.Config.MenuCamPos,
 			angles = impulse.Config.MenuCamAng,

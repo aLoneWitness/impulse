@@ -81,6 +81,26 @@ function PANEL:Init()
 		end
 	end
 
+	local button = vgui.Create("DButton", self)
+	button:SetPos(100,ScrH()-200)
+	button:SetFont("Impulse-Elements32")
+	button:SetText("Disconnect")
+	button:SizeToContents()
+	local normalCol = button:GetColor()
+	local highlightCol = Color(impulse.Config.MainColour.r, impulse.Config.MainColour.g, impulse.Config.MainColour.b)
+	function button:Paint()
+		if self:IsHovered() then
+			self:SetColor(highlightCol)
+		else
+			self:SetColor(color_white)
+		end
+	end
+
+	function button:DoClick()
+		print("Bye. :(")
+		LocalPlayer():ConCommand("disconnect")
+	end
+
 	local year = os.date("%Y", os.time())
 	local copyrightLabel = vgui.Create("DLabel", self)
 	copyrightLabel:SetFont("Impulse-Elements14")

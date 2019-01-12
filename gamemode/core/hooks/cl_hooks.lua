@@ -6,6 +6,7 @@ end
 
 function IMPULSE:Think()
 	if input.IsKeyDown(KEY_F1) and not IsValid(impulse.MainMenu) then
-		vgui.Create("impulseMainMenu")
+		local mainMenu = vgui.Create("impulseMainMenu")
+		mainMenu.popup = true
 	end
 end
