@@ -39,8 +39,12 @@ function PANEL:Init()
 	end
 
 	function button:DoClick()
-		selfPanel:Remove()
-		impulse.hudEnabled = true
+		if impulse_isNewPlayer == true then
+			vgui.Create("impulseCharacterCreator", selfPanel)
+		else
+			selfPanel:Remove()
+			impulse.hudEnabled = true
+		end
 	end
 
 	local button = vgui.Create("DButton", self)
@@ -90,6 +94,13 @@ function PANEL:Init()
 	--schemaLabel:SetTextColor(Color(impulse.Config.MainColour.r, impulse.Config.MainColour.g, impulse.Config.MainColour.b)) not sure if i like this
 	schemaLabel:SizeToContents()
 	schemaLabel:SetPos(100,140)
+end
+
+function PANEL:OnChildAdded(child)
+	if IsValid(self.openElement) then
+		self.openElement:Remove()
+	end
+	self.openElement = child
 end
 
 function PANEL:IsLoading(isLoading)
