@@ -1,8 +1,4 @@
 local PANEL = {}
-impulse.DefineSetting("test1", {name="Tickbox test setting 1", category="Roleplay", type="dropdown", default="high", options={"high", "medium", "low"}})
-impulse.DefineSetting("test2", {name="Tickbox test setting 2", category="Roleplay", type="plainint", default="high"})
-impulse.DefineSetting("test3", {name="Tickbox test boolean", category="Weaponry", type="tickbox", default=true})
-impulse.DefineSetting("test4", {name="Tickbox test slide", category="Weaponry", type="slider", default=50, maxValue=200})
 
 function PANEL:Init()
 	local addedCategories = {}
