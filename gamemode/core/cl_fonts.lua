@@ -100,7 +100,7 @@ surface.CreateFont("Impulse-ChatSmall-Radio", {
 
 surface.CreateFont("Impulse-ChatMedium", {
 	font = "Arial",
-	size = ScreenScale(7),
+	size = 18,
 	weight = 700,
 	antialias = true,
 	shadow = true,
@@ -108,7 +108,7 @@ surface.CreateFont("Impulse-ChatMedium", {
 
 surface.CreateFont("Impulse-ChatLarge", {
 	font = "Arial",
-	size = ScreenScale(7),
+	size = 20,
 	weight = 700,
 	antialias = true,
 	shadow = true,

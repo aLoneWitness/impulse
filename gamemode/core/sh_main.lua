@@ -124,7 +124,7 @@ end
 
 meta.SteamName = meta.SteamName or meta.Name
 function meta:Name()
-    return self:getIVar("rpname") or self:SteamName()
+    return reCODEIVARS or self:SteamName()
 end
 meta.GetName = meta.Name
 

@@ -73,6 +73,7 @@ function PANEL:Init()
 			dropdown:CenterVertical()
 			dropdown:SetPos(460, dropdown.y)
 			dropdown:SetValue(k.value)
+			dropdown:SetSortItems(false)
 			for _, option in pairs(k.options) do
 				dropdown:AddChoice(option)
 			end

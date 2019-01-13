@@ -32,7 +32,6 @@ function IMPULSE:PlayerSay(ply, text)
 		if command then
 			if command.adminOnly == true and ply:IsAdmin() == false then return end
 			if command.superAdminOnly == true and ply:IsSuperAdmin() == false then return end
-			PrintTable(args)
 			if command.requiresArg == true and (not args[2] or string.Trim(args[2]) == "") then return end
 
 			text = string.sub(text, string.len(args[1]) + 1)

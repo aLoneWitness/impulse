@@ -5,7 +5,7 @@
 impulse.chatBox = {}
 
 impulse.DefineSetting("chat_fadetime", {name="Chatbox fade time", category="Chatbox", type="slider", default=12, minValue=4, maxValue=120})
-impulse.DefineSetting("chat_fontsize", {name="Chatbox font size (requires rejoin)", category="Chatbox", type="dropdown", default="Small", options={"Small", "Medium", "Large"}})
+impulse.DefineSetting("chat_fontsize", {name="Chatbox font size", category="Chatbox", type="dropdown", default="Medium", options={"Small", "Medium", "Large"}})
 
 --// Builds the chatbox but doesn't display it
 function impulse.chatBox.buildBox()
@@ -18,6 +18,7 @@ function impulse.chatBox.buildBox()
 	impulse.chatBox.frame:SetPos( 10, (ScrH() - impulse.chatBox.frame:GetTall()) - ScrH()*0.177)
 	impulse.chatBox.frame:SetMinWidth( 300 )
 	impulse.chatBox.frame:SetMinHeight( 100 )
+	impulse.chatBox.frame:SetPopupStayAtBack(true)
 	impulse.chatBox.frame.Paint = function( self, w, h )
 		impulse.blur( self, 10, 20, 255 )
 		draw.RoundedBox( 0, 0, 0, w, h, Color( 30, 30, 30, 200 ) )
@@ -109,7 +110,8 @@ function impulse.chatBox.buildBox()
 
  				for k, v in pairs(impulse.chatCommands) do
  					if (k:find(command)) then
-						draw.DrawText(k.." - "..v.description, "Impulse-ChatSmall", 10, 10, impulse.Config.MainColour, TEXT_ALIGN_LEFT)
+						draw.DrawText(k.." - "..v.description, "Impulse-ChatSmall", 10, 10 + i, impulse.Config.MainColour, TEXT_ALIGN_LEFT)
+						i = i + 15
  					end
  				end
 			end
@@ -255,8 +257,8 @@ function chat.AddText(...)
 			
 			local col = GAMEMODE:GetTeamColor( obj )
 			impulse.chatBox.chatLog:InsertColorChange( col.r, col.g, col.b, 255 )
-			impulse.chatBox.chatLog:AppendText( obj:Nick() )
-			table.insert( msg, obj:Nick() )
+			impulse.chatBox.chatLog:AppendText( obj:Name() )
+			table.insert( msg, obj:Name() )
 		end
 	end
 	impulse.chatBox.chatLog:AppendText("\n")
