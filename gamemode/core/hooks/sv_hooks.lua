@@ -32,8 +32,14 @@ function IMPULSE:PlayerSay(ply, text, teamChat)
 		local args = string.Explode(" ", text)
 		local command = impulse.chatCommands[string.lower(args[1])]
 		if command then
-			if command.adminOnly == true and ply:IsAdmin() == false then return "" end
-			if command.superAdminOnly == true and ply:IsSuperAdmin() == false then return "" end
+			if command.adminOnly == true and ply:IsAdmin() == false then 
+				ply:AddChatText(infoCol, "You must be an admin to use this command.")
+				return "" 
+			end
+			if command.superAdminOnly == true and ply:IsSuperAdmin() == false then 
+				ply:AddChatText(infoCol, "You must be an super admin to use this command.")
+				return "" 
+			end
 			if command.requiresArg == true and (not args[2] or string.Trim(args[2]) == "") then return "" end
 
 			text = string.sub(text, string.len(args[1]) + 1)
