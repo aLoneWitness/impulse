@@ -48,3 +48,11 @@ function IMPULSE:PlayerSay(ply, text)
 		end
 	end
 end
+
+function IMPULSE:PlayerCanHearPlayersVoice(listener, speaker)
+	if listener:GetPos():DistToSqr(speaker:GetPos()) > impulse.Config.VoiceDistance then
+		return false, false
+	end 
+
+	return true, true
+end
