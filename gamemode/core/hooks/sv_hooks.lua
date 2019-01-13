@@ -22,8 +22,30 @@ function IMPULSE:ShowHelp()
 	return
 end
 
+local talkCol = Color(255, 255, 100)
+local infoCol = Color(135, 206, 250)
+
 function IMPULSE:PlayerSay(ply, text)
-	for v,k in pairs(player.GetAll()) do
-		k:AddChatText(text)
+	if string.StartWith(text, "/") then
+		local args = string.Explode(" ", text)
+		local command = impulse.chatCommands[string.lower(args[1])]
+		if command then
+			if command.adminOnly == true and ply:IsAdmin() == false then return end
+			if command.superAdminOnly == true and ply:IsSuperAdmin() == false then return end
+			PrintTable(args)
+			if command.requiresArg == true and (not args[2] or string.Trim(args[2]) == "") then return end
+
+			text = string.sub(text, string.len(args[1]) + 1)
+			table.remove(args, 1)
+			command.onRun(ply, args, text)
+		else
+			ply:AddChatText(infoCol, "The command "..args[1].." does not exist.")
+		end
+	else
+		for v,k in pairs(player.GetAll()) do
+			if (ply:GetPos() - k:GetPos()):LengthSqr() <= (impulse.Config.TalkDistance ^ 2) then 
+				k:AddChatText(ply, talkCol, " says: ", text)
+			end
+		end
 	end
 end

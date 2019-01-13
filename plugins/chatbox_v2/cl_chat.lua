@@ -107,11 +107,9 @@ function impulse.chatBox.buildBox()
 				local i = 0
 				local color = Color(255,255,255,255)
 
- 				for k, v in pairs(impulse.chatcommands) do
- 					local k2 = "/"..v[1]
-
- 					if (k2:find(command)) then
-						draw.DrawText(k2, "Impulse-ChatSmall", 10, 10, color, TEXT_ALIGN_LEFT)
+ 				for k, v in pairs(impulse.chatCommands) do
+ 					if (k:find(command)) then
+						draw.DrawText(k.." - "..v.description, "Impulse-ChatSmall", 10, 10, impulse.Config.MainColour, TEXT_ALIGN_LEFT)
  					end
  				end
 			end
