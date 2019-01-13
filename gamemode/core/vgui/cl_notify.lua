@@ -4,10 +4,9 @@ local baseSizeW, baseSizeH = 300, 20
 
 function PANEL:Init()
 	self.message = markup.Parse("")
-	self:SetPos(ScrW()-baseSizeW-10, ScrH()-baseSizeH-80)
 	self:SetSize(baseSizeW, baseSizeH)
 	self.startTime = CurTime()
-	self.endTime = CurTime() + 5
+	self.endTime = CurTime() + 7.5
 end
 
 function PANEL:SetMessage(...)
@@ -32,6 +31,7 @@ function PANEL:SetMessage(...)
 	self:SetHeight(shiftHeight+baseSizeH)
 	local pos = self:GetPos()
 	self:SetPos(pos, ScrH()-baseSizeH-shiftHeight-10)
+	surface.PlaySound("buttons/lightswitch2.wav")
 end
 
 local gradient = Material("vgui/gradient-r")

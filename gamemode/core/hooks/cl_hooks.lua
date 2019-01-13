@@ -10,3 +10,11 @@ function IMPULSE:Think()
 		mainMenu.popup = true
 	end
 end
+
+function IMPULSE:ScoreboardShow()
+    impulse_scoreboard = vgui.Create("impulseScoreboard")
+end
+
+function IMPULSE:ScoreboardHide()
+    impulse_scoreboard:Remove()
+end

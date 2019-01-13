@@ -135,3 +135,41 @@ end
 function meta:IsDonator()
     return self:IsUserGroup("vip")
 end 
+
+impulse.notices = impulse.notices or {}
+
+local function OrganizeNotices(i)
+    local scrW = ScrW()
+
+    for k, v in ipairs(impulse.notices) do
+        v:MoveTo(scrW - (v:GetWide()), ScrH() - 40 - ( k - i ) * ( v:GetTall() + 12 ) - i * ( v:GetTall() + 12 ), 0.15, (k / #impulse.notices) * 0.25, nil)
+    end
+end
+
+function meta:Notify(...)
+    if CLIENT then
+        local notice = vgui.Create("impulseNotify")
+        local i = table.insert(impulse.notices, notice)
+        local package = {...}
+
+        notice:SetMessage(unpack(package))
+        notice:SetPos(ScrW(), ScrH() - (i - 1) * (notice:GetTall() + 4) + 4) -- needs to be recoded to support variable heights
+        OrganizeNotices(i)
+
+        timer.Simple(7.5, function()
+            if IsValid(notice) then
+                notice:AlphaTo(0, 1, 0, function() notice:Remove() end)
+            end
+
+            for v,k in pairs(impulse.notices) do
+                if k == notice then
+                    table.remove(impulse.notices, v)
+                end
+            end
+            OrganizeNotices(i)
+        end)
+    else
+        local package = {...}
+        netstream.Start(self, "impulseNotify", package)
+    end
+end
