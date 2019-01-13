@@ -27,7 +27,7 @@ local infoCol = Color(135, 206, 250)
 
 function IMPULSE:PlayerSay(ply, text, teamChat)
 	if teamChat == true then return "" end -- disabled team chat
-	
+
 	if string.StartWith(text, "/") then
 		local args = string.Explode(" ", text)
 		local command = impulse.chatCommands[string.lower(args[1])]
@@ -54,7 +54,7 @@ function IMPULSE:PlayerSay(ply, text, teamChat)
 end
 
 function IMPULSE:PlayerCanHearPlayersVoice(listener, speaker)
-	if listener:GetPos():DistToSqr(speaker:GetPos()) > impulse.Config.VoiceDistance then
+	if listener:GetPos():DistToSqr(speaker:GetPos()) > impulse.Config.VoiceDistance ^ 2 then
 		return false, false
 	end 
 
