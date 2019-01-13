@@ -112,7 +112,7 @@ function impulse.chatBox.buildBox()
  						local color = impulse.Config.MainColour
  						if v.adminOnly == true and LocalPlayer():IsAdmin() == false then color = color_red end
  						if v.superAdminOnly == true and LocalPlayer():IsSuperAdmin() == false then color = color_red end
-						draw.DrawText(k.." - "..v.description, "Impulse-ChatSmall", 10, 10 + i, impulse.Config.MainColour, TEXT_ALIGN_LEFT)
+						draw.DrawText(k.." - "..v.description, "Impulse-ChatSmall", 10, 10 + i, color, TEXT_ALIGN_LEFT)
 						i = i + 15
  					end
  				end
@@ -268,7 +268,10 @@ function chat.AddText(...)
 	impulse.chatBox.chatLog:SetVisible( true )
 	impulse.chatBox.lastMessage = CurTime()
 	impulse.chatBox.chatLog:InsertColorChange( 255, 255, 255, 255 )
---	oldAddText(unpack(msg))
+	chat.PlaySound()
+	MsgC(unpack(msg)) -- print to console
+	MsgN("")
+	--oldAddText(unpack(msg))
 end
 
 --// Stops the default chat box from being opened

@@ -25,14 +25,16 @@ end
 local talkCol = Color(255, 255, 100)
 local infoCol = Color(135, 206, 250)
 
-function IMPULSE:PlayerSay(ply, text)
+function IMPULSE:PlayerSay(ply, text, teamChat)
+	if teamChat == true then return "" end -- disabled team chat
+	
 	if string.StartWith(text, "/") then
 		local args = string.Explode(" ", text)
 		local command = impulse.chatCommands[string.lower(args[1])]
 		if command then
-			if command.adminOnly == true and ply:IsAdmin() == false then return end
-			if command.superAdminOnly == true and ply:IsSuperAdmin() == false then return end
-			if command.requiresArg == true and (not args[2] or string.Trim(args[2]) == "") then return end
+			if command.adminOnly == true and ply:IsAdmin() == false then return "" end
+			if command.superAdminOnly == true and ply:IsSuperAdmin() == false then return "" end
+			if command.requiresArg == true and (not args[2] or string.Trim(args[2]) == "") then return "" end
 
 			text = string.sub(text, string.len(args[1]) + 1)
 			table.remove(args, 1)
@@ -47,6 +49,8 @@ function IMPULSE:PlayerSay(ply, text)
 			end
 		end
 	end
+
+	return ""
 end
 
 function IMPULSE:PlayerCanHearPlayersVoice(listener, speaker)
