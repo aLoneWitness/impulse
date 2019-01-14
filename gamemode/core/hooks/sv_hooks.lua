@@ -1,14 +1,24 @@
-function IMPULSE:PlayerInitialSpawn(player)
+function IMPULSE:PlayerInitialSpawn(ply)
 	local isNew = true
 	local query = mysql:Select("impulse_players")
-	query:Where("steamid", player:SteamID())
+	query:Where("steamid", ply:SteamID())
 	query:Callback(function(result)
 		if (type(result) == "table" and #result > 0) then -- if player exists in db
 			isNew = false
 		end
-		netstream.Start(player, "impulseJoinData", isNew)
+		netstream.Start(ply, "impulseJoinData", isNew)
 	end)
 	query:Execute()
+
+
+	impulse.Sync.Data[ply:UserID()] = {}
+	for v,k in pairs(player.GetAll()) do
+		k:Sync(ply)
+	end
+end
+
+function IMPULSE:PlayerDisconnected(ply)
+	impulse.Sync.Data[ply:UserID()] = nil
 end
 
 function IMPULSE:PlayerLoadout(player)
