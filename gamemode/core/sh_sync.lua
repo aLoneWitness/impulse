@@ -81,5 +81,7 @@ else
 		local varName = syncVars[varID]
 
 		target.impulseSync[varID] = newValue
+
+		hook.Run("OnSyncUpdate", varID, target, newValue)
 	end)
 end
