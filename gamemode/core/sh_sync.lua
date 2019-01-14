@@ -16,6 +16,7 @@ function impulse.Sync.RegisterVar(varName)
 end
 
 if SERVER then
+	-- target is optional. Sync will take the player and sync their all SyncVars with all clients or the single target if provided.
 	function meta:Sync(target)
 		local targetID = self:UserID()
 		local syncUser = impulse.Sync.Data[targetID]
@@ -37,6 +38,7 @@ if SERVER then
 		end
 	end
 
+	-- target is optional. SyncSingle will take the player and sync the SyncVar provided with all clients or the single target if provided.
 	function meta:SyncSingle(varID, target)
 		local targetID = self:UserID()
 		local syncUser = impulse.Sync.Data[targetID]
@@ -57,6 +59,7 @@ if SERVER then
 		end
 	end
 
+	-- instantSync is optional. SetSyncVar will set the SyncVar however it will not update it with all clients unless instantSync is true.
 	function meta:SetSyncVar(varID, newValue, instantSync)
 		local instantSync = instantSync or false
 		local targetID = self:UserID()
@@ -70,6 +73,7 @@ if SERVER then
 		end
 	end
 	
+	-- SetLocalSyncVar will set a local (to the player) SyncVar that will not be communicated with any other players.
 	function meta:SetLocalSyncVar(varID, newValue)
 		netstream.Start(self, "impulseSyncUpdate", varID, self:UserID(), newValue)
 		local targetData = impulse.Sync.Data[targetID]
