@@ -16,6 +16,9 @@ function PANEL:SetMessage(...)
 	for k, v in ipairs({...}) do
 		if type(v) == "table" then
 			msg = msg.."<color="..v.r..","..v.g..","..v.b..">"
+		elseif type(v) == "Player" then
+			local col = team.GetColor(v:Team())
+			msg= msg.."<color="..col.r..","..col.g..","..col.b..">"..tostring(v:Name()):gsub("<", "&lt;"):gsub(">", "&gt;").."</color>"
 		else
 			msg = msg..tostring(v):gsub("<", "&lt;"):gsub(">", "&gt;")
 		end
@@ -25,12 +28,9 @@ function PANEL:SetMessage(...)
 	-- parse
 	self.message = markup.Parse(msg, baseSizeW-20)
 
-
 	-- set frame position and height to suit the markup
 	local shiftHeight = self.message:GetHeight()
 	self:SetHeight(shiftHeight+baseSizeH)
-	local pos = self:GetPos()
-	self:SetPos(pos, ScrH()-baseSizeH-shiftHeight-10)
 	surface.PlaySound("buttons/lightswitch2.wav")
 end
 

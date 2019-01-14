@@ -140,9 +140,12 @@ impulse.notices = impulse.notices or {}
 
 local function OrganizeNotices(i)
     local scrW = ScrW()
+    local lastHeight = ScrH() - 100
 
     for k, v in ipairs(impulse.notices) do
-        v:MoveTo(scrW - (v:GetWide()), ScrH() - 40 - ( k - i ) * ( v:GetTall() + 12 ) - i * ( v:GetTall() + 12 ), 0.15, (k / #impulse.notices) * 0.25, nil)
+        local height = lastHeight - v:GetTall() - 10
+        v:MoveTo(scrW - (v:GetWide()), height, 0.15, (k / #impulse.notices) * 0.25, nil)
+        lastHeight = height
     end
 end
 
@@ -154,19 +157,23 @@ function meta:Notify(...)
 
         notice:SetMessage(unpack(package))
         notice:SetPos(ScrW(), ScrH() - (i - 1) * (notice:GetTall() + 4) + 4) -- needs to be recoded to support variable heights
+        notice:MoveToFront() 
         OrganizeNotices(i)
 
         timer.Simple(7.5, function()
             if IsValid(notice) then
-                notice:AlphaTo(0, 1, 0, function() notice:Remove() end)
-            end
+                notice:AlphaTo(0, 1, 0, function() 
+                    notice:Remove()
 
-            for v,k in pairs(impulse.notices) do
-                if k == notice then
-                    table.remove(impulse.notices, v)
-                end
+                    for v,k in pairs(impulse.notices) do
+                        if k == notice then
+                            table.remove(impulse.notices, v)
+                        end
+                    end
+
+                    OrganizeNotices(i)
+                end)
             end
-            OrganizeNotices(i)
         end)
     else
         local package = {...}
