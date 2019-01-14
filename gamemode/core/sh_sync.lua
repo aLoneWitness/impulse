@@ -16,7 +16,7 @@ function impulse.Sync.RegisterVar(varName)
 end
 
 if SERVER then
-	function meta:Sync(syncUser)
+	function meta:Sync(target)
 		local targetID = self:UserID()
 		local syncUser = impulse.Sync.Data[targetID]
 		for varID, syncData in pairs(syncUser) do
@@ -24,13 +24,33 @@ if SERVER then
 			local syncType = syncData[2]
 
 			if syncType == SYNC_TYPE_NEXT then
-				if syncUser then
-					netstream.Start(syncUser, "impulseSyncUpdate", varID, targetID, value)
+				if target then
+					netstream.Start(target, "impulseSyncUpdate", varID, targetID, value)
 				else
 					for v, ply in pairs(player.GetAll()) do
 						if not ply == Player(targetID) then
 							netstream.Start(ply, "impulseSyncUpdate", varID, targetID, value)
 						end
+					end
+				end
+			end
+		end
+	end
+
+	function meta:SyncSingle(varID, target)
+		local targetID = self:UserID()
+		local syncUser = impulse.Sync.Data[targetID]
+		local syncData = syncUser[varID]
+		local value = syncData[1]
+		local syncType = syncData[2]
+
+		if syncType == SYNC_TYPE_NEXT then
+			if target then
+				netstream.Start(target, "impulseSyncUpdate", varID, targetID, value)
+			else
+				for v, ply in pairs(player.GetAll()) do
+					if not ply == Player(targetID) then
+						netstream.Start(ply, "impulseSyncUpdate", varID, targetID, value)
 					end
 				end
 			end
@@ -46,7 +66,7 @@ if SERVER then
 		targetData[varID] = {newValue, SYNC_TYPE_NEXT}
 
 		if instantSync then
-			self:Sync()
+			self:SyncSingle(varID)
 		end
 	end
 	
