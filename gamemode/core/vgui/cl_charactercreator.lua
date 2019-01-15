@@ -20,7 +20,7 @@ function PANEL:Init()
 
 		local msg = Derma_Message
 
-		if characterName == "" then return msg("Please fill in the character name.", "impulse", "OK") end
+		if characterName == "" or charName:Trim() == "" then return msg("Please fill in the character name.", "impulse", "OK") end
 		--if #characterName:Explode(" ") > 3 then return msg("Too many spaces in character name.", "impulse", "OK") end
 		if characterName:len() >= 24 then return msg("Character name too long. (max 24 characters)", "impulse", "OK") end
 		if characterName:len() <= 6  then return msg("Character name too short. (min 6 characters)", "impulse", "OK") end
