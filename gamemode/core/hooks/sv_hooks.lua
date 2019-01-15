@@ -1,31 +1,52 @@
 function IMPULSE:PlayerInitialSpawn(ply)
 	local isNew = true
-	local query = mysql:Select("impulse_players")
-	query:Where("steamid", ply:SteamID())
-	query:Callback(function(result)
-		if (type(result) == "table" and #result > 0) then -- if player exists in db
-			isNew = false
-		end
-		netstream.Start(ply, "impulseJoinData", isNew)
-	end)
-	query:Execute()
-
 
 	impulse.Sync.Data[ply:UserID()] = {}
 	for v,k in pairs(player.GetAll()) do
 		k:Sync(ply)
 	end
+
+	local query = mysql:Select("impulse_players")
+	query:Select("rpname")
+	query:Select("group")
+	query:Select("xp")
+	query:Select("money")
+	query:Select("bankmoney")
+	query:Select("model")
+	query:Select("skin")
+	query:Where("steamid", ply:SteamID())
+	query:Callback(function(result)
+		if IsValid(ply) and type(result) == "table" and #result > 0 then -- if player exists in db
+			isNew = false
+			hook.Run("SetupPlayer", ply, result[1])
+		end
+		netstream.Start(ply, "impulseJoinData", isNew)
+	end)
+	query:Execute()
 end
 
 function IMPULSE:PlayerDisconnected(ply)
-	impulse.Sync.Data[ply:UserID()] = nil
+	ply:SyncRemove()
 end
 
-function IMPULSE:PlayerLoadout(player)
-	player:SetRunSpeed(impulse.Config.JogSpeed)
-	player:SetWalkSpeed(impulse.Config.WalkSpeed)
+function IMPULSE:PlayerLoadout(ply)
+	ply:SetRunSpeed(impulse.Config.JogSpeed)
+	ply:SetWalkSpeed(impulse.Config.WalkSpeed)
 
 	return true
+end
+
+function IMPULSE:SetupPlayer(ply, dbData)
+	ply:SetSyncVar(SYNC_RPNAME, dbData.rpname, true)
+	ply:SetSyncVar(SYNC_XP, dbData.xp, true)
+
+	ply:SetLocalSyncVar(SYNC_MONEY, dbData.money)
+	ply:SetLocalSyncVar(SYNC_BANKMONEY, dbData.bankmoney)
+
+	ply:SetModel(dbData.model)
+	ply:SetSkin(dbData.skin)
+
+	hook.Run("PostSetupPlayer", ply)
 end
 
 function IMPULSE:ShowHelp()

@@ -108,8 +108,10 @@ function impulse.chatBox.buildBox()
 				local i = 0
 
  				for k, v in pairs(impulse.chatCommands) do
+ 					print(k)
  					if (k:find(command)) then
  						local color = impulse.Config.MainColour
+ 						print("d"..i)
  						--if v.adminOnly == true and LocalPlayer():IsAdmin() == false then color = color_red end
  						--if v.superAdminOnly == true and LocalPlayer():IsSuperAdmin() == false then color = color_red end
 						draw.DrawText(k.." - "..v.description, "Impulse-ChatMedium", 10, 10 + i, color, TEXT_ALIGN_LEFT)

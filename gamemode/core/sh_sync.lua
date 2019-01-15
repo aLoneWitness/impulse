@@ -5,14 +5,13 @@
 
 impulse.Sync = impulse.Sync or {}
 impulse.Sync.Data = impulse.Sync.Data or {}
-local syncVars = {}
-local SYNC_TYPE_NEXT = 1
-local SYNC_TYPE_ISSUED = 2
-local SYNC_TYPE_NEVER = 3
+local syncVarsID = 0
+local SYNC_TYPE_PUBLIC = 1
+local SYNC_TYPE_PRIVATE = 2
 
-function impulse.Sync.RegisterVar(varName)
-	local id = table.insert(syncVars, varName)
-	return id
+function impulse.Sync.RegisterVar()
+	syncVarsID = syncVarsID + 1
+	return syncVarsID
 end
 
 if SERVER then
@@ -24,7 +23,7 @@ if SERVER then
 			local value = syncData[1]
 			local syncType = syncData[2]
 
-			if syncType == SYNC_TYPE_NEXT then
+			if syncType == SYNC_TYPE_PUBLIC then
 				if target then
 					netstream.Start(target, "impulseSyncUpdate", varID, targetID, value)
 				else
@@ -46,7 +45,7 @@ if SERVER then
 		local value = syncData[1]
 		local syncType = syncData[2]
 
-		if syncType == SYNC_TYPE_NEXT then
+		if syncType == SYNC_TYPE_PUBLIC then
 			if target then
 				netstream.Start(target, "impulseSyncUpdate", varID, targetID, value)
 			else
@@ -59,6 +58,14 @@ if SERVER then
 		end
 	end
 
+	-- SyncRemove will remove all SyncVars for this player, then it will update all clients to remove this player.
+	function meta:SyncRemove()
+		local targetID = self:UserID()
+
+		impulse.Sync.Data[targetID] = nil
+		netstream.Start("impulseSyncRemove", targetID)
+	end
+
 	-- instantSync is optional. SetSyncVar will set the SyncVar however it will not update it with all clients unless instantSync is true.
 	function meta:SetSyncVar(varID, newValue, instantSync)
 		local instantSync = instantSync or false
@@ -66,7 +73,7 @@ if SERVER then
 		netstream.Start(self, "impulseSyncUpdate", varID, targetID, newValue)
 		
 		local targetData = impulse.Sync.Data[targetID]
-		targetData[varID] = {newValue, SYNC_TYPE_NEXT}
+		targetData[varID] = {newValue, SYNC_TYPE_PUBLIC}
 
 		if instantSync then
 			self:SyncSingle(varID)
@@ -75,13 +82,21 @@ if SERVER then
 	
 	-- SetLocalSyncVar will set a local (to the player) SyncVar that will not be communicated with any other players.
 	function meta:SetLocalSyncVar(varID, newValue)
-		netstream.Start(self, "impulseSyncUpdate", varID, self:UserID(), newValue)
+		local targetID = self:UserID()
+
+		netstream.Start(self, "impulseSyncUpdate", varID, targetID, newValue)
 		local targetData = impulse.Sync.Data[targetID]
-		targetData[varID] = {newValue, SYNC_TYPE_NEVER}
+		targetData[varID] = {newValue, SYNC_TYPE_PRIVATE}
 	end
 
 	function meta:GetSyncVar(varID, fallback)
-		return impulse.Sync.Data[self:UserID()][varID] or fallback
+		local targetData = impulse.Sync.Data[self:UserID()]
+
+		if targetData then
+			return targetData[varID] or fallback
+		else
+			return fallback
+		end
 	end
 	
 	netstream.Hook("impulseRequestSync", function(ply)
@@ -94,18 +109,33 @@ if SERVER then
 	end)
 else
 	function meta:GetSyncVar(varID, fallback)
-		return self.impulseSync[varID] or fallback
+		local targetData = impulse.Sync.Data[self:UserID()]
+
+		if targetData then
+			return targetData[varID] or fallback
+		else
+			return fallback
+		end
 	end
 
 	netstream.Hook("impulseSyncUpdate", function(varID, targetID, newValue)
-		local target = Player(targetID)
-		if !IsValid(target) then return MsgN("[impulseSync] Invalid target player! VarID: "..varID.." TargetID: "..targetID.." Value: "..newValue) end
-		target.impulseSync = target.impulseSync or {}
-		print(varID)
-		local varName = syncVars[varID]
+		local targetData = impulse.Sync.Data[targetID]
+		if not targetData then
+			impulse.Sync.Data[targetID] = {}
+			targetData = impulse.Sync.Data[targetID]
+		end
 
-		target.impulseSync[varID] = newValue
+		targetData[varID] = newValue
 
-		hook.Run("OnSyncUpdate", varID, target, newValue)
+		hook.Run("OnSyncUpdate", varID, targetID, newValue)
+	end)
+
+	netstream.Hook("impulseSyncRemove", function(targetID)
+		impulse.Sync.Data[targetID] = nil
 	end)
 end
+
+SYNC_RPNAME = impulse.Sync.RegisterVar()
+SYNC_XP = impulse.Sync.RegisterVar()
+SYNC_MONEY = impulse.Sync.RegisterVar()
+SYNC_BANKMONEY = impulse.Sync.RegisterVar()

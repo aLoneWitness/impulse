@@ -14,7 +14,7 @@ net.Receive("ban",function(len,player)
 end)
 
 MsgC( Color( 83, 143, 239 ), "[IMPULSE] Starting server load...\n" )
-impulse = {} -- defining global function table
+impulse = impulse or {} -- defining global function table
 
 impulse.meta = FindMetaTable( "Player" )
 impulse.lib = {}

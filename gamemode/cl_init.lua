@@ -6,7 +6,7 @@
 DeriveGamemode("sandbox")
 MsgC( Color( 83, 143, 239 ), "[IMPULSE] Starting client load...\n" )
 
-impulse = {} -- defining global function table
+impulse = impulse or {} -- defining global function table
 impulse.meta = FindMetaTable( "Player" )
 impulse.lib = {}
 

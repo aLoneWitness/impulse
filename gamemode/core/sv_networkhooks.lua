@@ -15,13 +15,27 @@ netstream.Hook("impulseCharacterCreate", function(player, charName, charModel, c
 		insertQuery:Insert("steamid", playerID)
 		insertQuery:Insert("group", playerGroup)
 		insertQuery:Insert("xp", 0)
-		insertQuery:Insert("money", 10)
-		insertQuery:Insert("bankmoney", 20)
+		insertQuery:Insert("money", impulse.Config.StartingMoney)
+		insertQuery:Insert("bankmoney", impulse.Config.StartingBankMoney)
 		insertQuery:Insert("model", charModel)
 		insertQuery:Insert("skin", charSkin)
 		insertQuery:Insert("firstjoin", timestamp)
 		insertQuery:Callback(function(result, status, lastID)
-			print("[impulse] "..playerID.." has been submitted to the database. ".. charName)
+			if IsValid(player) then
+				local setupData = {
+					rpname = charName,
+					steamid = playerID,
+					group = playerGroup,
+					xp = 0,
+					money = impulse.Config.StartingMoney,
+					bankmoney = impulse.Config.StartingBankMoney,
+					model = charModel,
+					skin = charSkin
+				}
+
+				print("[impulse] "..playerID.." has been submitted to the database. RP Name: ".. charName)
+				hook.Run("SetupPlayer", player, setupData)
+			end
 		end)
 		insertQuery:Execute()
 	end)

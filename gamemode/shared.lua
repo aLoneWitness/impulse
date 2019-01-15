@@ -57,21 +57,6 @@ function impulse.lib.includeDir(directory, fromLua)
 	end
 end
 
-function fp(tbl)
-    local func = tbl[1]
-
-    return function(...)
-        local fnArgs = {}
-        local arg = {...}
-        local tblN = table.maxn(tbl)
-
-        for i = 2, tblN do fnArgs[i - 1] = tbl[i] end
-        for i = 1, table.maxn(arg) do fnArgs[tblN + i - 1] = arg[i] end
-
-        return func(unpack(fnArgs, 1, table.maxn(fnArgs)))
-    end
-end
-
 -- Loading 3rd party libs
 impulse.lib.includeDir("impulse/gamemode/libs")
 -- Load config
