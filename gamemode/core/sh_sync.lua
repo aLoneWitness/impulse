@@ -28,7 +28,7 @@ if SERVER then
 					netstream.Start(target, "impulseSyncUpdate", varID, targetID, value)
 				else
 					for v, ply in pairs(player.GetAll()) do
-						if not ply == Player(targetID) then
+						if ply:UserID() != targetID then
 							netstream.Start(ply, "impulseSyncUpdate", varID, targetID, value)
 						end
 					end
@@ -50,7 +50,7 @@ if SERVER then
 				netstream.Start(target, "impulseSyncUpdate", varID, targetID, value)
 			else
 				for v, ply in pairs(player.GetAll()) do
-					if not ply == Player(targetID) then
+					if ply:UserID() != targetID then
 						netstream.Start(ply, "impulseSyncUpdate", varID, targetID, value)
 					end
 				end
@@ -63,7 +63,7 @@ if SERVER then
 		local targetID = self:UserID()
 
 		impulse.Sync.Data[targetID] = nil
-		netstream.Start("impulseSyncRemove", targetID)
+		netstream.Start(self, "impulseSyncRemove", targetID)
 	end
 
 	-- instantSync is optional. SetSyncVar will set the SyncVar however it will not update it with all clients unless instantSync is true.
@@ -75,7 +75,7 @@ if SERVER then
 		local targetData = impulse.Sync.Data[targetID]
 		targetData[varID] = {newValue, SYNC_TYPE_PUBLIC}
 
-		if instantSync then
+		if instantSync == true then
 			self:SyncSingle(varID)
 		end
 	end
@@ -139,3 +139,6 @@ SYNC_RPNAME = impulse.Sync.RegisterVar()
 SYNC_XP = impulse.Sync.RegisterVar()
 SYNC_MONEY = impulse.Sync.RegisterVar()
 SYNC_BANKMONEY = impulse.Sync.RegisterVar()
+SYNC_CLASS = impulse.Sync.RegisterVar()
+SYNC_RANK = impulse.Sync.RegisterVar()
+SYNC_ARRESTED = impulse.Sync.RegisterVar()
