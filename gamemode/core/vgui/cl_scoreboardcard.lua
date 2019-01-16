@@ -46,9 +46,9 @@ function PANEL:Paint(w,h)
 	surface.DrawOutlinedRect(0,0,w, h)
 	surface.SetDrawColor(self.Colour)
  	surface.SetMaterial(gradient)
- 	surface.DrawTexturedRect(1,1,w-1,h-1)
+ 	surface.DrawTexturedRect(1,1,w-1,h-2)
 	surface.SetDrawColor(darkCol)
- 	surface.DrawTexturedRect(1,1,w-1,h-1)
+ 	surface.DrawTexturedRect(1,1,w-1,h-2)
 
 	 -- OOC/IC name
 	 surface.SetFont("Impulse-Elements20-Shadow")

@@ -119,7 +119,7 @@ function IMPULSE:HUDPaint()
 	surface.DrawText("Tokens: "..LocalPlayer():GetSyncVar(SYNC_MONEY, 0))
 
 	local weapon = LocalPlayer():GetActiveWeapon()
-	if weapon:Clip1() != -1 then
+	if IsValid(weapon) and weapon:Clip1() != -1 then
 		surface.SetDrawColor(darkCol)
 		surface.DrawRect(scrW-70, scrH-45, 70, 30)
 		surface.SetTextPos(scrW-60, scrH-40)

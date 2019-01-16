@@ -8,6 +8,8 @@ impulse.schema = impulse.schema or {}
 function impulse.schema.boot(name)
     SCHEMA = name
     MsgC( Color( 83, 143, 239 ), "[IMPULSE] Loading '"..SCHEMA.."' schema...\n" )
+    impulse.lib.includeDir(SCHEMA.."/schema/teams")
+    impulse.lib.includeDir(SCHEMA.."/schema/npcs")
     impulse.lib.includeDir(SCHEMA.."/schema/config")
 
     local mapPath = SCHEMA.."/schema/config/maps/"..game.GetMap()..".lua"
@@ -16,9 +18,6 @@ function impulse.schema.boot(name)
     	include(mapPath)
     	AddCSLuaFile(mapPath)
 	end
-
-    impulse.lib.includeDir(SCHEMA.."/schema/teams")
-    impulse.lib.includeDir(SCHEMA.."/schema/npcs")
 
     impulse.lib.includeDir(SCHEMA.."/schema/scripts")
 

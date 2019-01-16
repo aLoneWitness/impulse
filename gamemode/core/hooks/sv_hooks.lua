@@ -45,6 +45,7 @@ function IMPULSE:SetupPlayer(ply, dbData)
 
 	ply:SetModel(dbData.model)
 	ply:SetSkin(dbData.skin)
+	ply:SetTeam(impulse.Config.DefaultTeam)
 
 	hook.Run("PostSetupPlayer", ply)
 end

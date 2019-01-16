@@ -4,16 +4,16 @@
 */
 
 impulse.Teams = impulse.Teams or {}
-impulse.Teams.Data = {}
+impulse.Teams.Data = impulse.Teams.Data or {}
+teamID = 0
 
 function impulse.Teams.Define(teamData)
-    local teamID = #impulse.Teams.Data
-    teamData.Default = teamData.Default or false
-    teamData.Classes = teamData.Classes or {}
-    teamData.Ranks = teamData.Ranks or {}
-    teamData.FemaleModels = teamData.FemaleModels or teamData.MaleModels
-    team.SetUp(teamID, teamData.Name, teamData.Color, false)
+    teamID = teamID + 1
+    print(teamID)
+    teamData.classes = teamData.classes or {}
+    teamData.ranks = teamData.ranks or {}
+    team.SetUp(teamID, teamData.name, teamData.color, false)
 
-    impulse.Teams.Data[teamData.Name] = teamData
+    impulse.Teams.Data[teamData.name] = teamData
     return teamID
 end
