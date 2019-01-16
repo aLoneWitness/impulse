@@ -118,6 +118,21 @@ function IMPULSE:HUDPaint()
 	surface.SetTextPos(hudWidth/2, y+90)
 	surface.DrawText("Tokens: "..LocalPlayer():GetSyncVar(SYNC_MONEY, 0))
 
+	local weapon = LocalPlayer():GetActiveWeapon()
+	if weapon:Clip1() != -1 then
+		surface.SetDrawColor(darkCol)
+		surface.DrawRect(scrW-70, scrH-45, 70, 30)
+		surface.SetTextPos(scrW-60, scrH-40)
+		surface.DrawText(weapon:Clip1().."/"..LocalPlayer():GetAmmoCount(weapon:GetPrimaryAmmoType()))
+	end
+
+	if not IsValid(PlayerIcon) then
+		PlayerIcon = vgui.Create("SpawnIcon")
+		PlayerIcon:SetPos(30, y+100)
+		PlayerIcon:SetSize(64, 64)
+		PlayerIcon:SetModel(LocalPlayer():GetModel())
+	end
+
 	-- watermark
 	surface.SetDrawColor(watermarkCol)
 	surface.SetMaterial(watermark)
