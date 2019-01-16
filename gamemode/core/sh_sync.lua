@@ -93,7 +93,7 @@ if SERVER then
 		local targetData = impulse.Sync.Data[self:UserID()]
 
 		if targetData then
-			return targetData[varID] or fallback
+			return (targetData[varID][1]) or fallback
 		else
 			return fallback
 		end

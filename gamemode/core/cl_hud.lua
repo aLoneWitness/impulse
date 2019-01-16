@@ -23,6 +23,32 @@ function IMPULSE:HUDShouldDraw(element)
 	return true
 end
 
+local blur = Material("pp/blurscreen")
+local function BlurRect(x, y, w, h)
+	local X, Y = 0,0
+
+	surface.SetDrawColor(255,255,255, 255)
+	surface.SetMaterial(blur)
+
+	for i = 1, 2 do
+		blur:SetFloat("$blur", (i / 10) * 20)
+		blur:Recompute()
+
+		render.UpdateScreenEffectTexture()
+
+		render.SetScissorRect(x, y, x+w, y+h, true)
+		surface.DrawTexturedRect(X * -1, Y * -1, ScrW(), ScrH())
+		render.SetScissorRect(0, 0, 0, 0, false)
+	end
+   
+   --draw.RoundedBox(0,x,y,w,h,Color(0,0,0,205))
+   surface.SetDrawColor(0,0,0)
+   --surface.DrawOutlinedRect(x,y,w,h)
+   
+end
+
+
+
 local vignette = Material("impulse/vignette.png")
 local vig_alpha_normal = Color(10,10,10,180)
 local lasthealth = 100
@@ -31,6 +57,7 @@ local gradient = Material("vgui/gradient-l")
 local fde = 0
 local hudBlackGrad = Color(40,40,40,180)
 local hudBlack = Color(20,20,20,140)
+local darkCol = Color(30, 30, 30, 190)
 
 function IMPULSE:HUDPaint()
 	if impulse.hudEnabled == false or IsValid(impulse.MainMenu) then return end
@@ -67,13 +94,29 @@ function IMPULSE:HUDPaint()
 		LocalPlayer():ScreenFade(SCREENFADE.IN, Color(255,10,10,80), 1, 0)
 	end
 
-	-- Don't edit anything under this comment
-	lasthealth = health
-
-	surface.SetDrawColor(hudBlackGrad)
+	local y = scrH-hudHeight-8-10
+	BlurRect(10, y, hudWidth, hudHeight)
+	surface.SetDrawColor(darkCol)
+	surface.DrawRect(10, y, hudWidth, hudHeight)
 	surface.SetMaterial(gradient)
-	surface.DrawTexturedRect(10, scrH-hudHeight-8, hudWidth, hudHeight)
-	surface.DrawRect(10, scrH-hudHeight-8, hudWidth, hudHeight)
+	surface.DrawTexturedRect(10, y, hudWidth, hudHeight)
+
+	surface.SetFont("Impulse-Elements23")
+	surface.SetTextColor(color_white)
+	surface.SetTextPos(15, y+5)
+	surface.DrawText(LocalPlayer():Name())
+
+	surface.SetFont("Impulse-Elements18")
+	surface.SetTextPos(hudWidth/2, y+50)
+	surface.DrawText("Health: "..LocalPlayer():Health())
+
+	surface.SetTextPos(hudWidth/2, y+70)
+	surface.DrawText("Armour: "..LocalPlayer():Armor())
+
+	surface.SetTextPos(hudWidth/2, y+90)
+	surface.DrawText("Tokens: "..LocalPlayer():GetSyncVar(SYNC_MONEY, 0))
+
+	lasthealth = health
 end
 
 local blackandwhite = {

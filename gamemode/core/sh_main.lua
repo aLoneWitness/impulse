@@ -29,7 +29,7 @@ end
 
 meta.SteamName = meta.SteamName or meta.Name
 function meta:Name()
-    return reCODEIVARS or self:SteamName()
+    return self:GetSyncVar(SYNC_RPNAME, self:SteamName())
 end
 meta.GetName = meta.Name
 

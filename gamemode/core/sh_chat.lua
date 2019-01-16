@@ -36,7 +36,7 @@ local loocCommand = {
 	onRun = function(ply, arg, rawText)
 		for v,k in pairs(player.GetAll()) do
 			if (ply:GetPos() - k:GetPos()):LengthSqr() <= (impulse.Config.TalkDistance ^ 2) then 
-				k:AddChatText(oocTagCol, "[LOOC] ", ply:SteamName(), team.GetColor(ply:Team()), " (", ply:Name(), ")", oocCol, ":",  rawText)
+				k:AddChatText(oocTagCol, "[LOOC] ", ply:SteamName(), (team.GetColor(ply:Team())), " (", ply:Name(), ")", oocCol, ":",  rawText)
 			end
 		end
 	end
