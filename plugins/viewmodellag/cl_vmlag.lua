@@ -57,7 +57,7 @@ end
 
 do
 	local function doLag(weapon, vm, oldPos, oldAng, pos, ang)
-		if (IsValid(weapon) and weapon.GetIronSights and weapon:GetIronSights()) then
+		if (IsValid(weapon) and weapon.IronSightPos and weapon:GetNetworkedBool("Ironsights") == true) then
 			vm.m_vecLastFacing = ang:Forward()
 		else
 			CalcViewModelLag(vm, pos, ang, oldAng)

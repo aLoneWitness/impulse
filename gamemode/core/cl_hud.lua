@@ -55,7 +55,7 @@ local lasthealth = 100
 local time = 0
 local gradient = Material("vgui/gradient-l")
 local watermark = Material("impulse/impulse-logo-white.png")
-local watermarkCol = Color(255,255,255,90)
+local watermarkCol = Color(255,255,255,120)
 local fde = 0
 local hudBlackGrad = Color(40,40,40,180)
 local hudBlack = Color(20,20,20,140)
@@ -124,6 +124,7 @@ function IMPULSE:HUDPaint()
 	surface.DrawTexturedRect(10, 10, 112, 30)
 
 	surface.SetTextPos(10, 40)
+	surface.SetTextColor(watermarkCol)
 	surface.DrawText("TEST BUILD - "..IMPULSE.Version.." - "..LocalPlayer():SteamID64().. " - ".. os.date("%H:%M:%S - %d/%m/%Y", os.time()))
 
 	lasthealth = health
