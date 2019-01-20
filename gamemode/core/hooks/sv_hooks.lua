@@ -25,6 +25,10 @@ function IMPULSE:PlayerInitialSpawn(ply)
 	query:Execute()
 end
 
+function IMPULSE:PlayerSpawn(ply)
+	ply:SetTeam(impulse.Config.DefaultTeam)
+end
+
 function IMPULSE:PlayerDisconnected(ply)
 	ply:SyncRemove()
 end
@@ -43,8 +47,8 @@ function IMPULSE:SetupPlayer(ply, dbData)
 	ply:SetLocalSyncVar(SYNC_MONEY, dbData.money)
 	ply:SetLocalSyncVar(SYNC_BANKMONEY, dbData.bankmoney)
 
-	ply:SetModel(dbData.model)
-	ply:SetSkin(dbData.skin)
+	ply.defaultModel = dbData.model
+	ply.defaultSkin = dbData.skin
 	ply:SetTeam(impulse.Config.DefaultTeam)
 
 	hook.Run("PostSetupPlayer", ply)
