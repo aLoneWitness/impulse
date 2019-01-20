@@ -19,7 +19,7 @@ function impulse.Scenes.Play(sceneData, onDone)
 		impulse.Scenes.pos = impulse.Scenes.pos or sceneData.pos
 		impulse.Scenes.ang = impulse.Scenes.ang or sceneData.ang
 
-		if not sceneData.time and impulse.Scenes.pos:Distance(sceneData.endpos) < 1 and not sceneData.time then 
+		if not sceneData.time and sceneData.endpos and impulse.Scenes.pos:Distance(sceneData.endpos) < 1 then 
 			hook.Remove("CalcView", "impulseScene") 
 			hook.Remove("HUDPaint", "impulseScene")
 			impulse.hudEnabled = true
@@ -29,8 +29,11 @@ function impulse.Scenes.Play(sceneData, onDone)
 		end
 
 		local view = {}
-		impulse.Scenes.pos = LerpVector(FrameTime() * sceneData.speed, impulse.Scenes.pos, (sceneData.endpos or sceneData.pos))
-		impulse.Scenes.ang = LerpAngle(FrameTime() * sceneData.speed, impulse.Scenes.ang, (sceneData.endang or sceneData.ang))
+
+		if sceneData.endpos then
+			impulse.Scenes.pos = LerpVector(FrameTime() * sceneData.speed, impulse.Scenes.pos, sceneData.endpos)
+			impulse.Scenes.ang = LerpAngle(FrameTime() * sceneData.speed, impulse.Scenes.ang, (sceneData.endang or sceneData.ang))
+		end
 
 		view.origin = impulse.Scenes.pos
 		view.angles = impulse.Scenes.ang
@@ -47,7 +50,7 @@ function impulse.Scenes.Play(sceneData, onDone)
 
 	if sceneData.fovFrom then
 		netstream.Start("impulseSceneFOV", sceneData.fovFrom, 0)
-		netstream.Start("impulseSceneFOV", 0, sceneData.fovTime)
+		netstream.Start("impulseSceneFOV", 70, sceneData.fovTime)
 	end
 
 	if sceneData.time then

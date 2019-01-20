@@ -28,6 +28,23 @@ function PANEL:OnKeyCodeReleased()
 	self:AlphaTo(0, 2, 0, function()
 		self:Remove()
 	end)
+	if impulse_isNewPlayer == true then
+		local counter = 1
+		local function playIntroScenes()
+			if impulse.Config.IntroScenes[counter + 1] then
+				counter = counter + 1
+				impulse.Scenes.Play(impulse.Config.IntroScenes[counter], playIntroScenes)
+			else
+				local mainMenu = vgui.Create("impulseMainMenu")
+				mainMenu:SetAlpha(0)
+				mainMenu:AlphaTo(255, 1)
+			end
+		end
+
+		impulse.Scenes.Play(impulse.Config.IntroScenes[counter], playIntroScenes)
+	else
+		vgui.Create("impulseMainMenu")
+	end
 end
 
 function PANEL:Think()

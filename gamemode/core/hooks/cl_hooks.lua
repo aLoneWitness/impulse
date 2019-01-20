@@ -1,6 +1,6 @@
 function IMPULSE:OnSchemaLoaded()
 	if not impulse.MainMenu and not IsValid(impulse.MainMenu) then
-		vgui.Create("impulseMainMenu")
+		vgui.Create("impulseSplash")
 	end
 end
 
