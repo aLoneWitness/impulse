@@ -26,7 +26,11 @@ function IMPULSE:PlayerInitialSpawn(ply)
 end
 
 function IMPULSE:PlayerSpawn(ply)
-	ply:SetTeam(impulse.Config.DefaultTeam)
+	if ply.beenSetup then
+		ply:SetTeam(impulse.Config.DefaultTeam)
+	end
+
+	hook.Run("PlayerLoadout", ply)
 end
 
 function IMPULSE:PlayerDisconnected(ply)
@@ -50,6 +54,7 @@ function IMPULSE:SetupPlayer(ply, dbData)
 	ply.defaultModel = dbData.model
 	ply.defaultSkin = dbData.skin
 	ply:SetTeam(impulse.Config.DefaultTeam)
+	ply.beenSetup = true
 
 	hook.Run("PostSetupPlayer", ply)
 end

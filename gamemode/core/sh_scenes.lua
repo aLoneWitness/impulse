@@ -1,4 +1,5 @@
 netstream.Hook("impulseSceneFOV", function(ply, fov, time) -- for some reason setfov is broken on client
+	if fov == 0 then fov = ply:GetFOV() end
 	ply:SetFOV(fov, time)
 end)
 
@@ -30,9 +31,9 @@ function impulse.Scenes.Play(sceneData, onDone)
 
 		local view = {}
 
-		if sceneData.endpos then
+		if sceneData.endpos and sceneData.endang then
 			impulse.Scenes.pos = LerpVector(FrameTime() * sceneData.speed, impulse.Scenes.pos, sceneData.endpos)
-			impulse.Scenes.ang = LerpAngle(FrameTime() * sceneData.speed, impulse.Scenes.ang, (sceneData.endang or sceneData.ang))
+			impulse.Scenes.ang = LerpAngle(FrameTime() * sceneData.speed, impulse.Scenes.ang, sceneData.endang)
 		end
 
 		view.origin = impulse.Scenes.pos
@@ -50,7 +51,7 @@ function impulse.Scenes.Play(sceneData, onDone)
 
 	if sceneData.fovFrom then
 		netstream.Start("impulseSceneFOV", sceneData.fovFrom, 0)
-		netstream.Start("impulseSceneFOV", 70, sceneData.fovTime)
+		netstream.Start("impulseSceneFOV", 0, sceneData.fovTime)
 	end
 
 	if sceneData.time then
