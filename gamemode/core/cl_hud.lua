@@ -62,7 +62,12 @@ local hudBlack = Color(20,20,20,140)
 local darkCol = Color(30, 30, 30, 190)
 
 function IMPULSE:HUDPaint()
-	if impulse.hudEnabled == false or IsValid(impulse.MainMenu) then return end
+	if impulse.hudEnabled == false or IsValid(impulse.MainMenu) then
+		if IsValid(PlayerIcon) then
+			PlayerIcon:Remove()
+		end
+		return
+	end
 
 	local health = LocalPlayer():Health()
 	local lp = LocalPlayer()
@@ -126,7 +131,7 @@ function IMPULSE:HUDPaint()
 		surface.DrawText(weapon:Clip1().."/"..LocalPlayer():GetAmmoCount(weapon:GetPrimaryAmmoType()))
 	end
 
-	if not IsValid(PlayerIcon) then
+	if not IsValid(PlayerIcon) and impulse.hudEnabled == true then
 		PlayerIcon = vgui.Create("SpawnIcon")
 		PlayerIcon:SetPos(30, y+100)
 		PlayerIcon:SetSize(64, 64)
