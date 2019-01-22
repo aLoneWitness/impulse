@@ -17,6 +17,14 @@ function impulse.schema.boot(name)
     	MsgC( Color( 83, 143, 239 ), "[IMPULSE] Loading map config for '"..game.GetMap().."'\n" )
     	include(mapPath)
     	AddCSLuaFile(mapPath)
+
+        if impulse.Config.BlacklistEnts then
+            for v,k in pairs(ents.GetAll()) do
+                if impulse.Config.BlacklistEnts[k:GetClass()] then
+                    k:Remove()
+                end
+            end
+        end
 	end
 
     impulse.lib.includeDir(SCHEMA.."/schema/scripts")

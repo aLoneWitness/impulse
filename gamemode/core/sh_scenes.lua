@@ -1,15 +1,19 @@
 netstream.Hook("impulseSceneFOV", function(ply, fov, time) -- for some reason setfov is broken on client
-	print(fov)
-	if fov == 0 then fov = ply:GetFOV() end
-	print(fov)
+	if fov == 0 then fov = 70 end
 	ply:SetFOV(fov, time)
+end)
+
+netstream.Hook("impulseScenePVS", function(ply, stage)
+	if impulse.Config.IntroScenes[stage] then
+		ply.extraPVS = impulse.Config.IntroScenes[stage].pos
+	end
 end)
 
 if SERVER then return end
 
 impulse.Scenes = impulse.Scenes or {}
 
-function impulse.Scenes.Play(sceneData, onDone)
+function impulse.Scenes.Play(stage, sceneData, onDone)
 	impulse.Scenes.pos = nil
 	impulse.Scenes.ang = nil
 	sceneData.speed = sceneData.speed or 1
@@ -18,9 +22,21 @@ function impulse.Scenes.Play(sceneData, onDone)
 		impulse.Scenes.markup = markup.Parse("<font=Impulse-Elements27-Shadow>"..sceneData.text.."</font>")
 	end
 
+	netstream.Start("impulseScenePVS", stage)
+
 	hook.Add("CalcView", "impulseScene", function()
 		impulse.Scenes.pos = impulse.Scenes.pos or sceneData.pos
 		impulse.Scenes.ang = impulse.Scenes.ang or sceneData.ang
+
+		local view = {}
+
+		if sceneData.endpos and not sceneData.static then
+			impulse.Scenes.pos = LerpVector(FrameTime() * sceneData.speed, impulse.Scenes.pos, sceneData.endpos)
+		end
+
+		if sceneData.endang and not sceneData.static then
+			impulse.Scenes.ang = LerpAngle(FrameTime() * sceneData.speed, impulse.Scenes.ang, sceneData.endang)
+		end
 
 		if not sceneData.time and sceneData.endpos and impulse.Scenes.pos:Distance(sceneData.endpos) < 1 then 
 			hook.Remove("CalcView", "impulseScene") 
@@ -29,13 +45,6 @@ function impulse.Scenes.Play(sceneData, onDone)
 			if onDone then
 				onDone()
 			end
-		end
-
-		local view = {}
-
-		if sceneData.endpos and sceneData.endang then
-			impulse.Scenes.pos = LerpVector(FrameTime() * sceneData.speed, impulse.Scenes.pos, sceneData.endpos)
-			impulse.Scenes.ang = LerpAngle(FrameTime() * sceneData.speed, impulse.Scenes.ang, sceneData.endang)
 		end
 
 		view.origin = impulse.Scenes.pos

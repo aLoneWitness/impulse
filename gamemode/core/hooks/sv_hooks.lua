@@ -110,3 +110,9 @@ function IMPULSE:PlayerCanHearPlayersVoice(listener, speaker)
 
 	return true, true
 end
+
+function IMPULSE:SetupPlayerVisibility(ply)
+	if ply.extraPVS then
+		AddOriginToPVS(ply.extraPVS)
+	end
+end

@@ -33,7 +33,7 @@ function PANEL:OnKeyCodeReleased()
 		local function playIntroScenes()
 			if impulse.Config.IntroScenes[counter + 1] then
 				counter = counter + 1
-				impulse.Scenes.Play(impulse.Config.IntroScenes[counter], playIntroScenes)
+				impulse.Scenes.Play(counter, impulse.Config.IntroScenes[counter], playIntroScenes)
 			else
 				local mainMenu = vgui.Create("impulseMainMenu")
 				mainMenu:SetAlpha(0)
@@ -41,7 +41,7 @@ function PANEL:OnKeyCodeReleased()
 			end
 		end
 
-		impulse.Scenes.Play(impulse.Config.IntroScenes[counter], playIntroScenes)
+		impulse.Scenes.Play(1, impulse.Config.IntroScenes[counter], playIntroScenes)
 	else
 		vgui.Create("impulseMainMenu")
 	end
