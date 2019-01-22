@@ -16,6 +16,7 @@ local yellCol = Color(255, 140, 0)
 local whisperCol = Color(65, 105, 225)
 local infoCol = Color(135, 206, 250)
 local talkCol = Color(255, 255, 100)
+local radioCol = Color(55, 146, 21)
 
 local oocCommand = {
 	description = "Talk out of character globally.",
@@ -72,6 +73,22 @@ local whisperCommand = {
 }
 
 impulse.RegisterChatCommand("/w", whisperCommand)
+
+local radioCommand = {
+	description = "Send a radio message to all units.",
+	requiresArg = true,
+	onRun = function(ply, arg, rawText)
+		if not ply:IsCP() then return end
+		for v,k in pairs(player.GetAll()) do
+			if ply:IsCP() then 
+				k:AddChatText(radioCol, "[RADIO] ", ply:Name(), ":", rawText)
+			end
+		end
+	end
+}
+
+impulse.RegisterChatCommand("/radio", radioCommand)
+impulse.RegisterChatCommand("/r", radioCommand)
 
 local meCommand = {
 	description = "Preform an action in character.",

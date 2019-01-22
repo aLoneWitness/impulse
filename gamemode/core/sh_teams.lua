@@ -74,3 +74,7 @@ function meta:SetClass(className, forced)
 	local forced = forced or false
 	
 end
+
+function meta:IsCP()
+	return impulse.Teams.Data[self:Team()].cp or false
+end

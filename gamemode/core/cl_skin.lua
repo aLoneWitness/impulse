@@ -16,6 +16,9 @@ SKIN = {}
 SKIN.PrintName 		= "impulse"
 SKIN.Author 		= "TheVingard"
 SKIN.DermaVersion	= 1
+SKIN.fontFrame = "Impulse-UI-SmallFont"
+SKIN.fontTab = "Impulse-UI-SmallFont"
+SKIN.fontButton = "Impulse-UI-SmallFont"
 SKIN.Colours = table.Copy(derma.SkinList.Default.Colours)
 SKIN.Colours.Window.TitleActive = Color(255, 255, 255)
 SKIN.Colours.Window.TitleInactive = Color(255, 255, 255)
@@ -26,11 +29,6 @@ SKIN.Colours.Button.Down = Color(180, 180, 180)
 SKIN.Colours.Button.Disabled = Color(0, 0, 0, 100)
 
 SKIN.Colours.Label.Highlight = Color(90, 200, 250, 255)
-
-SKIN.fontFrame = "Impulse-Ui-SmallFont"
-SKIN.fontTab = "Impulse-Ui-SmallFont"
-SKIN.fontButton = "Impulse-Ui-SmallFont"
-SKIN.fontCategoryHeader	= "Impulse-Ui-SmallFont"
 
 function SKIN:GetTable(panel)
     panel.__derma__ = panel.__derma__ or {}
@@ -46,22 +44,22 @@ end
 function SKIN:PaintButton(panel) -- button skin from ns edited
 	if (panel:GetPaintBackground()) then
 		local w, h = panel:GetWide(), panel:GetTall()
-		local alpha = 230
+		local alpha = 200
 
     	if (panel:GetDisabled()) then
 			alpha = 10
 		elseif (panel.Depressed) then
-			alpha = 190
+			alpha = 70
 		elseif (panel.Hovered) then
-			alpha = 245
+			alpha = 150
 		end
-		surface.SetDrawColor(ColorAlpha(HIGHLIGHT, alpha))
+		surface.SetDrawColor(ColorAlpha(Color(80, 80, 80, 255), alpha))
 		surface.DrawRect(0, 0, w, h)
 
-		surface.SetDrawColor(0, 0, 0, 180)
-		surface.DrawOutlinedRect(0, 0, w, h)
-		surface.SetDrawColor(180, 180, 180, 2)
-		surface.DrawOutlinedRect(1, 1, w - 2, h - 2)
+		--surface.SetDrawColor(0, 0, 0, 180)
+		--surface.DrawOutlinedRect(0, 0, w, h)
+		--surface.SetDrawColor(180, 180, 180, 2)
+		--surface.DrawOutlinedRect(1, 1, w - 2, h - 2)
 	end
 end
 

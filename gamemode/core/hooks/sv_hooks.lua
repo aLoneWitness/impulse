@@ -14,6 +14,7 @@ function IMPULSE:PlayerInitialSpawn(ply)
 	query:Select("bankmoney")
 	query:Select("model")
 	query:Select("skin")
+	query:Select("data")
 	query:Where("steamid", ply:SteamID())
 	query:Callback(function(result)
 		if IsValid(ply) and type(result) == "table" and #result > 0 then -- if player exists in db
@@ -50,6 +51,8 @@ function IMPULSE:SetupPlayer(ply, dbData)
 
 	ply:SetLocalSyncVar(SYNC_MONEY, dbData.money)
 	ply:SetLocalSyncVar(SYNC_BANKMONEY, dbData.bankmoney)
+
+	ply.impulseData = util.JSONToTable(dbData.data or "[]")
 
 	ply.defaultModel = dbData.model
 	ply.defaultSkin = dbData.skin

@@ -28,6 +28,7 @@ function PANEL:Init()
 	button:SetFont("Impulse-Elements48")
 	button:SetText("Play")
 	button:SizeToContents()
+
 	local highlightCol = Color(impulse.Config.MainColour.r, impulse.Config.MainColour.g, impulse.Config.MainColour.b)
 	local selfPanel = self
 	function button:Paint()
@@ -38,7 +39,12 @@ function PANEL:Init()
 		end
 	end
 
+	function button:OnCursorEntered()
+		surface.PlaySound("ui/buttonrollover.wav")
+	end
+
 	function button:DoClick()
+		surface.PlaySound("ui/buttonclick.wav")
 		if impulse_isNewPlayer == true then
 			vgui.Create("impulseCharacterCreator", selfPanel)
 		else
@@ -52,6 +58,7 @@ function PANEL:Init()
 	button:SetFont("Impulse-Elements32")
 	button:SetText("Settings")
 	button:SizeToContents()
+
 	local normalCol = button:GetColor()
 	local highlightCol = Color(impulse.Config.MainColour.r, impulse.Config.MainColour.g, impulse.Config.MainColour.b)
 	function button:Paint()
@@ -62,7 +69,12 @@ function PANEL:Init()
 		end
 	end
 
+	function button:OnCursorEntered()
+		surface.PlaySound("ui/buttonrollover.wav")
+	end
+
 	function button:DoClick()
+		surface.PlaySound("ui/buttonclick.wav")
 		vgui.Create("impulseSettings", selfPanel)
 	end
 
@@ -71,6 +83,7 @@ function PANEL:Init()
 	button:SetFont("Impulse-Elements32")
 	button:SetText("Community")
 	button:SizeToContents()
+
 	local normalCol = button:GetColor()
 	local highlightCol = Color(impulse.Config.MainColour.r, impulse.Config.MainColour.g, impulse.Config.MainColour.b)
 	function button:Paint()
@@ -81,11 +94,16 @@ function PANEL:Init()
 		end
 	end
 
+	function button:OnCursorEntered()
+		surface.PlaySound("ui/buttonrollover.wav")
+	end
+
 	local button = vgui.Create("DButton", self)
 	button:SetPos(100,ScrH()-200)
 	button:SetFont("Impulse-Elements32")
 	button:SetText("Disconnect")
 	button:SizeToContents()
+
 	local normalCol = button:GetColor()
 	local highlightCol = Color(impulse.Config.MainColour.r, impulse.Config.MainColour.g, impulse.Config.MainColour.b)
 	function button:Paint()
@@ -94,6 +112,10 @@ function PANEL:Init()
 		else
 			self:SetColor(color_white)
 		end
+	end
+
+	function button:OnCursorEntered()
+		surface.PlaySound("ui/buttonrollover.wav")
 	end
 
 	function button:DoClick()

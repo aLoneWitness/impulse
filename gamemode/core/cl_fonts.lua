@@ -8,6 +8,14 @@ surface.CreateFont("Impulse-Elements18", {
 	shadow = false,
 } )
 
+surface.CreateFont("Impulse-Elements16", {
+	font = "Arial",
+	size = 16,
+	weight = 800,
+	antialias = true,
+	shadow = false,
+} )
+
 surface.CreateFont("Impulse-Elements14", {
 	font = "Arial",
 	size = 14,
@@ -122,7 +130,7 @@ surface.CreateFont("Impulse-ChatLarge", {
 	shadow = true,
 } )
 
-surface.CreateFont("Impulse-Ui-SmallFont", {
+surface.CreateFont("Impulse-UI-SmallFont", {
 	font = "Arial",
 	size = math.max(ScreenScale(6), 17),
 	extended = true,

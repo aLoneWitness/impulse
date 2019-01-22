@@ -1,5 +1,7 @@
 netstream.Hook("impulseSceneFOV", function(ply, fov, time) -- for some reason setfov is broken on client
+	print(fov)
 	if fov == 0 then fov = ply:GetFOV() end
+	print(fov)
 	ply:SetFOV(fov, time)
 end)
 
