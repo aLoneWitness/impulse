@@ -18,7 +18,7 @@ function impulse.schema.boot(name)
     	include(mapPath)
     	AddCSLuaFile(mapPath)
 
-        if impulse.Config.BlacklistEnts then
+        if SERVER and impulse.Config.BlacklistEnts then
             for v,k in pairs(ents.GetAll()) do
                 if impulse.Config.BlacklistEnts[k:GetClass()] then
                     k:Remove()
