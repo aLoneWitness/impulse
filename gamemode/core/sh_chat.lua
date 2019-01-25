@@ -130,3 +130,31 @@ local rollCommand = {
 }
 
 impulse.RegisterChatCommand("/roll", rollCommand)
+
+local dropMoneyCommand = {
+	description = "Drops the specified amount of money on the floor.",
+	requiresArg = true,
+	onRun = function(ply, arg, rawText)
+		if arg[1] and tonumber(arg[1]) then
+			local value = math.floor(tonumber(arg[1]))
+			if ply:CanAfford(value) and value > 0 then
+				ply:TakeMoney(value)
+
+				local trace = {}
+				trace.start = ply:EyePos()
+				trace.endpos = trace.start + ply:GetAimVector() * 85
+				trace.filter = ply
+
+				local tr = util.TraceLine(trace)
+				impulse.SpawnMoney(tr.HitPos, value)
+				hook.Run("PlayerDropMoney")
+			else
+				return ply:Notify("You cannot afford to drop that amount of money.")
+			end
+		else
+			return ply:Notify("Invalid argument.")
+		end
+	end
+}
+
+impulse.RegisterChatCommand("/dropmoney", dropMoneyCommand)

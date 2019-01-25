@@ -108,7 +108,7 @@ function impulse.chatBox.buildBox()
 				local i = 0
 
  				for k, v in pairs(impulse.chatCommands) do
- 					if (k:find(command)) then
+ 					if (string.find(k, command)) then
  						--local color = impulse.Config.MainColour
  						--if v.adminOnly == true and LocalPlayer():IsAdmin() == false then color = color_red end
  						--if v.superAdminOnly == true and LocalPlayer():IsSuperAdmin() == false then color = color_red end
