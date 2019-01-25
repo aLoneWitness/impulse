@@ -72,6 +72,8 @@ impulse.lib.includeDir("impulse/gamemode/core")
 impulse.lib.includeDir("impulse/gamemode/core/vgui")
 -- Load hooks
 impulse.lib.includeDir("impulse/gamemode/core/hooks")
+-- Create impulse folder
+file.CreateDir("impulse")
 
 function impulse.reload()
     MsgC( Color( 83, 143, 239 ), "[IMPULSE] Reloading gamemode...\n" )

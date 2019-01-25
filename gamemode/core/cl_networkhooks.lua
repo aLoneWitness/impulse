@@ -5,3 +5,7 @@ end)
 netstream.Hook("impulseNotify", function(msgData)
 	LocalPlayer():Notify(unpack(msgData))
 end)
+
+netstream.Hook("impulseATMOpen", function()
+	vgui.Create("impulseATMMenu")
+end)

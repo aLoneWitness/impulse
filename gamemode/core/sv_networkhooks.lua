@@ -51,3 +51,35 @@ netstream.Hook("msg", function(ply, text)
 		ply.NextChat = CurTime() + math.max(#text / 250, 0.4)
 	end
 end)
+
+netstream.Hook("impulseATMWithdraw", function(ply, amount)
+	if not isnumber(amount) or amount < 1 or amount >= 1 / 0 or amount > 10000000000000 then return end
+	if (ply.NextATM or 0) > CurTime() then return end
+
+	amount = math.floor(amount)
+
+	if ply:CanAffordBank(amount) then
+		ply:TakeBankMoney(amount)
+		ply:GiveMoney(amount)
+		ply:Notify("You have withdrawn "..impulse.Config.CurrencyPrefix..amount.." from your bank account.")
+	else
+		ply:Notify("You cannot afford to withdraw this amount of money.")
+	end
+	ply.NextATM = CurTime() + 1
+end)
+
+netstream.Hook("impulseATMDeposit", function(ply, amount)
+	if not isnumber(amount) or amount < 1 or amount >= 1 / 0 or amount > 10000000000000 then return end
+	if (ply.NextATM or 0) > CurTime() then return end
+
+	amount = math.floor(amount)
+
+	if ply:CanAfford(amount) then
+		ply:TakeMoney(amount)
+		ply:GiveBankMoney(amount)
+		ply:Notify("You have deposited "..impulse.Config.CurrencyPrefix..amount.." to your bank account.")
+	else
+		ply:Notify("You cannot afford to deposit this amount of money.")
+	end
+	ply.NextATM = CurTime() + 1
+end)
