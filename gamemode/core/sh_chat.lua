@@ -123,7 +123,7 @@ local rollCommand = {
 	onRun = function(ply, arg, rawText)
 		for v,k in pairs(player.GetAll()) do
 			if (ply:GetPos() - k:GetPos()):LengthSqr() <= (impulse.Config.TalkDistance ^ 2) then 
-				k:AddChatText(ply, yellCol, " rolled ", tostring(math.random(0,101)))
+				k:AddChatText(ply, yellCol, " rolled ", tostring(math.random(1,100)))
 			end
 		end
 	end

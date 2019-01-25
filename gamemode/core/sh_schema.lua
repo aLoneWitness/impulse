@@ -19,11 +19,13 @@ function impulse.schema.boot(name)
     	AddCSLuaFile(mapPath)
 
         if SERVER and impulse.Config.BlacklistEnts then
-            for v,k in pairs(ents.GetAll()) do
-                if impulse.Config.BlacklistEnts[k:GetClass()] then
-                    k:Remove()
+            hook.Add("InitPostEntity", "impulseBlaclistents", function()
+                for v,k in pairs(ents.GetAll()) do
+                    if impulse.Config.BlacklistEnts[k:GetClass()] then
+                        k:Remove()
+                    end
                 end
-            end
+            end)
         end
 	end
 

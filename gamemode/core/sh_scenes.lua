@@ -18,10 +18,6 @@ function impulse.Scenes.Play(stage, sceneData, onDone)
 	impulse.Scenes.ang = nil
 	sceneData.speed = sceneData.speed or 1
 
-	if sceneData.text then
-		impulse.Scenes.markup = markup.Parse("<font=Impulse-Elements27-Shadow>"..sceneData.text.."</font>")
-	end
-
 	netstream.Start("impulseScenePVS", stage)
 
 	hook.Add("CalcView", "impulseScene", function()
@@ -54,8 +50,19 @@ function impulse.Scenes.Play(stage, sceneData, onDone)
 		return view
 	end)
 
+	local outputText = ""
+	local textPos = 1
+	local nextTime = 0
+
 	if sceneData.text then
 		hook.Add("HUDPaint", "impulseScene", function()
+			if CurTime() > nextTime and textPos != string.len(sceneData.text) then
+				textPos = textPos + 1
+				nextTime = CurTime() + .08
+				surface.PlaySound("impulse/typewriter"..tostring(math.random(1,4))..".wav")
+			end
+
+			impulse.Scenes.markup = markup.Parse("<font=Impulse-Elements27-Shadow>"..string.sub(sceneData.text, 1, textPos).."</font>", ScrW() * .7)
 			impulse.Scenes.markup:Draw(ScrW()/2, ScrH() * .8, TEXT_ALIGN_CENTER, TEXT_ALIGN_CENTER)
 		end)
 	end

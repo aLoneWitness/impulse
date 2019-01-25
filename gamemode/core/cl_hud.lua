@@ -61,6 +61,16 @@ local hudBlackGrad = Color(40,40,40,180)
 local hudBlack = Color(20,20,20,140)
 local darkCol = Color(30, 30, 30, 190)
 
+local function DrawOverheadInfo(target)
+	local pos = target:EyePos()
+
+	pos.z = pos.z + 5
+	pos = pos:ToScreen()
+	pos.y = pos.y - 50
+
+	draw.DrawText(target:Name(), "Impulse-Elements18-Shadow", pos.x, pos.y, team.GetColor(target:Team()), 1)
+end
+
 function IMPULSE:HUDPaint()
 	if impulse.hudEnabled == false or IsValid(impulse.MainMenu) then
 		if IsValid(PlayerIcon) then
@@ -147,6 +157,24 @@ function IMPULSE:HUDPaint()
 	surface.SetTextColor(watermarkCol)
 	surface.DrawText("TEST BUILD - "..IMPULSE.Version.." - "..LocalPlayer():SteamID64().. " - ".. os.date("%H:%M:%S - %d/%m/%Y", os.time()))
 
+
+	-- NEEDS RECODE, THIS LOSES LIKE 60 FPS SEE NUTSCRIPT DRAW ENTITY INFO
+	local shootPos = LocalPlayer():GetShootPos()
+	local aimPos = LocalPlayer():GetAimVector()
+
+	for v, target in pairs(player.GetAll()) do
+		if not target:Alive() then continue end
+		local targetShootPos = target:GetShootPos()
+		if targetShootPos:Distance(shootPos) < 450 then
+			local pos = targetShootPos - shootPos
+			local trace = util.QuickTrace(shootPos, pos, LocalPlayer())
+			if trace.Hit and trace.Entity != ply then return end
+			if target:GetNoDraw() == true then return end
+
+			DrawOverheadInfo(target)
+		end
+	end
+
 	lasthealth = health
 end
 
@@ -170,7 +198,6 @@ function IMPULSE:RenderScreenspaceEffects()
 		DrawColorModify(blackandwhite)
 	end
 end
-
 
 concommand.Add("impulse_cameratoggle", function()
 	impulse.hudEnabled = (!impulse.hudEnabled)
