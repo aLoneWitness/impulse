@@ -72,6 +72,7 @@ local infoCol = Color(135, 206, 250)
 function IMPULSE:PlayerSay(ply, text, teamChat)
 	if not ply.beenSetup or ply.beenSetup == false then return "" end -- keep out players who are not setup yet
 	if teamChat == true then return "" end -- disabled team chat
+	if not ply:Alive() then return "" end
 
 	if string.StartWith(text, "/") then
 		local args = string.Explode(" ", text)

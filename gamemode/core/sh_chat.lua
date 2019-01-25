@@ -80,7 +80,7 @@ local radioCommand = {
 	onRun = function(ply, arg, rawText)
 		if not ply:IsCP() then return end
 		for v,k in pairs(player.GetAll()) do
-			if ply:IsCP() then 
+			if k:IsCP() then 
 				k:AddChatText(radioCol, "[RADIO] ", ply:Name(), ":", rawText)
 			end
 		end
