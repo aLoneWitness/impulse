@@ -148,6 +148,7 @@ local dropMoneyCommand = {
 				local tr = util.TraceLine(trace)
 				impulse.SpawnMoney(tr.HitPos, value)
 				hook.Run("PlayerDropMoney")
+				ply:Notify("You have dropped "..impulse.Config.CurrencyPrefix..value..".")
 			else
 				return ply:Notify("You cannot afford to drop that amount of money.")
 			end

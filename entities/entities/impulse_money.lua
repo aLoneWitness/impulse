@@ -33,7 +33,7 @@ if SERVER then
 		if activator:IsPlayer() then
 			self:Remove()
 			activator:GiveMoney(self.money)
-			activator:Notify("You have picked up "..impulse.Config.CurrencyPrefix..self.money)
+			activator:Notify("You have picked up "..impulse.Config.CurrencyPrefix..self.money..".")
 		end
 	end
 else
