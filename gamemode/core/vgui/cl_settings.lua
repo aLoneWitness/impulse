@@ -83,6 +83,17 @@ function PANEL:Init()
 			end
 		end
 	end
+
+	local settingSheetScroll = vgui.Create("DScrollPanel", settingsPages)
+	settingsPages:AddSheet("Options", settingSheetScroll)
+
+	local button = settingSheetScroll:Add("DButton")
+	button:SetText("Reset all settings")
+	button:Dock(TOP)
+	function button:DoClick()
+		LocalPlayer():ConCommand("impulse_resetsettings")
+    end
+
 end
 
 
