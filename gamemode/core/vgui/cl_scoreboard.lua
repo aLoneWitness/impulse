@@ -12,7 +12,12 @@ function PANEL:Init()
  	self.scrollPanel = vgui.Create("DScrollPanel", self)
 	self.scrollPanel:Dock(FILL)
 
-	for v,k in pairs(player.GetAll()) do
+	local playerList = player.GetAll()
+	table.sort(playerList, function(a,b)
+		return a:Team() > b:Team()
+	end)
+	
+	for v,k in pairs(playerList) do
 		local playerCard = self.scrollPanel:Add("impulseScoreboardCard")
 		playerCard:SetPlayer(k)
 		playerCard:SetHeight(60)
