@@ -47,6 +47,14 @@ function PANEL:Init()
 		surface.PlaySound("ui/buttonclick.wav")
 		if impulse_isNewPlayer == true then
 			vgui.Create("impulseCharacterCreator", selfPanel)
+		elseif not impulse.MainMenu.popup then
+			LocalPlayer():ScreenFade(SCREENFADE.OUT, color_black, 1, .6)
+			impulse.MainMenu:AlphaTo(0, .5)
+			timer.Simple(1.5, function()
+    			LocalPlayer():ScreenFade(SCREENFADE.IN, color_black, 4, 0)
+    			selfPanel:Remove()
+				impulse.hudEnabled = true
+			end)
 		else
 			selfPanel:Remove()
 			impulse.hudEnabled = true
@@ -145,38 +153,12 @@ function PANEL:OnChildAdded(child)
 	self.openElement = child
 end
 
-function PANEL:IsLoading(isLoading)
-	self.loading = isLoading
-end
-
-local gradient = Material("vgui/gradient-d")
-local singleDot = "."
-local multiDot = "."
-
 function PANEL:Paint(w,h)
 	Derma_DrawBackgroundBlur(self)
 
 	surface.SetDrawColor(Color( 30, 30, 30, 190 )) -- menu body
 	surface.DrawRect(70,0,400,h)
 	impulse.render.glowgo(100,50,337,91)
-
-
---	if self.loading == false then return end
---
---	local time = CurTime()
---
---	if time > (lastTime or 0) + 1 then
---		if multiDot:len() == 3 then 
---			multiDot = "." 
---		else
---			multiDot = multiDot .. singleDot
---		end
---
---		lastTime = time
---	end
---
---	draw.SimpleText("Loading"..multiDot, "Impulse-Elements32", 100, 150, Color(255,255,255,255), TEXT_ALIGN_LEFT, TEXT_ALIGN_CENTER)
---	draw.SimpleText("("..self.loadComplete.."/"..self.loadSize..")", "Impulse-Elements18-Shadow", 100, 180, Color(255,255,255,255), TEXT_ALIGN_LEFT, TEXT_ALIGN_CENTER)
 end
 
 vgui.Register("impulseMainMenu", PANEL, "DPanel")

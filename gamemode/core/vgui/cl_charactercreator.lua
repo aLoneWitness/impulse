@@ -28,8 +28,14 @@ function PANEL:Init()
 		Derma_Query("Are you sure you are finished? You can edit your character later, but it will cost a fee.", "impulse", "Yes", function()
 			print("[impulse] Sending character data to server")
 			netstream.Start("impulseCharacterCreate", characterName, characterModel, characterSkin) -- send the completed character to server for checks and creation
-			self:GetParent():Remove() -- close main menu menu
-			impulse.hudEnabled = true
+
+			LocalPlayer():ScreenFade(SCREENFADE.OUT, color_black, 1, .6)
+			self:GetParent():AlphaTo(0, .5)
+			timer.Simple(1.5, function()
+    			LocalPlayer():ScreenFade(SCREENFADE.IN, color_black, 4, 0)
+    			self:GetParent():Remove()
+				impulse.hudEnabled = true
+			end)
 			impulse_isNewPlayer = false
 		end, "No, take me back")
 	end
