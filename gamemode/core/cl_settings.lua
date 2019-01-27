@@ -17,7 +17,12 @@ end
 function impulse.LoadSettings()
 	for v,k in pairs(impulse.Settings) do
 		if k.type == "tickbox" or k.type == "slider" or k.type == "plainint" then
-			k.value = cookie.GetNumber("impulse-setting-"..v, k.default) -- Cache the data into a variable instead of sql so its fast
+			local def = k.default
+			if k.type == "tickbox" then 
+				def = tonumber(k.default) 
+			end
+			
+			k.value = cookie.GetNumber("impulse-setting-"..v, def) -- Cache the data into a variable instead of sql so its fast
 		elseif k.type == "dropdown" or k.type == "textbox" then
 			k.value = cookie.GetString("impulse-setting-"..v, k.default)
 		end
@@ -41,3 +46,5 @@ concommand.Add("impulse_resetsettings", function()
 	end
 	print("[impulse] Settings reset!")
 end)
+
+hook.Run("DefineSettings")

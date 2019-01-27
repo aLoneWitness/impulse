@@ -20,3 +20,7 @@ end
 function IMPULSE:ScoreboardHide()
     impulse_scoreboard:Remove()
 end
+
+function IMPULSE:DefineSettings()
+	impulse.DefineSetting("hud_vignette", {name="Vignette enabled", category="HUD", type="tickbox", default=true})
+end
