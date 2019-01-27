@@ -29,13 +29,9 @@ function PANEL:Init()
 			print("[impulse] Sending character data to server")
 			netstream.Start("impulseCharacterCreate", characterName, characterModel, characterSkin) -- send the completed character to server for checks and creation
 
-			LocalPlayer():ScreenFade(SCREENFADE.OUT, color_black, 1, .6)
-			self:GetParent():AlphaTo(0, .5)
-			timer.Simple(1.5, function()
-    			LocalPlayer():ScreenFade(SCREENFADE.IN, color_black, 4, 0)
-    			self:GetParent():Remove()
-				impulse.hudEnabled = true
-			end)
+    		LocalPlayer():ScreenFade(SCREENFADE.IN, color_black, 4, 0)
+    		self:GetParent():Remove()
+			impulse.hudEnabled = true
 			impulse_isNewPlayer = false
 		end, "No, take me back")
 	end
