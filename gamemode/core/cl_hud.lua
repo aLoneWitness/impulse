@@ -61,6 +61,19 @@ local hudBlackGrad = Color(40,40,40,180)
 local hudBlack = Color(20,20,20,140)
 local darkCol = Color(30, 30, 30, 190)
 
+local healthIcon = Material("impulse/icons/heart-128.png")
+local armourIcon = Material("impulse/icons/shield-128.png")
+local hungerIcon = Material("impulse/icons/bread-128.png")
+local moneyIcon = Material("impulse/icons/banknotes-128.png")
+local timeIcon = Material("impulse/icons/clock-128.png")
+local xpIcon = Material("impulse/icons/star-128.png")
+local warningIcon = Material("impulse/icons/warning-128.png")
+local infoIcon = Material("impulse/icons/info-128.png")
+local announcementIcon = Material("impulse/icons/megaphone-128.png")
+
+local lastModel = ""
+local lastSkin = ""
+
 local function DrawOverheadInfo(target, alpha)
 	local pos = target:EyePos()
 
@@ -81,6 +94,7 @@ function IMPULSE:HUDPaint()
 
 	local health = LocalPlayer():Health()
 	local lp = LocalPlayer()
+	local lpTeam = lp:Team()
 	local scrW, scrH = ScrW(), ScrH()
 	local hudWidth, hudHeight = 300, 178
 
@@ -120,32 +134,70 @@ function IMPULSE:HUDPaint()
 
 	surface.SetFont("Impulse-Elements23")
 	surface.SetTextColor(color_white)
-	surface.SetTextPos(15, y+5)
+	surface.SetDrawColor(color_white)
+	surface.SetTextPos(30, y+10)
 	surface.DrawText(LocalPlayer():Name())
 
-	surface.SetFont("Impulse-Elements18")
-	surface.SetTextPos(hudWidth/2, y+50)
+	surface.SetTextColor(team.GetColor(lpTeam))
+	surface.SetTextPos(30, y+30)
+	surface.DrawText(team.GetName(lpTeam))
+
+	surface.SetTextColor(color_white)
+	surface.SetFont("Impulse-Elements19")
+
+	surface.SetTextPos(136, y+55)
 	surface.DrawText("Health: "..LocalPlayer():Health())
+	surface.SetMaterial(healthIcon)
+	surface.DrawTexturedRect(110, y+55, 18, 18)
 
-	surface.SetTextPos(hudWidth/2, y+70)
+	surface.SetTextPos(136, y+75)
 	surface.DrawText("Armour: "..LocalPlayer():Armor())
+	surface.SetMaterial(armourIcon)
+	surface.DrawTexturedRect(110, y+75, 18, 18)
 
-	surface.SetTextPos(hudWidth/2, y+90)
-	surface.DrawText("Tokens: "..LocalPlayer():GetSyncVar(SYNC_MONEY, 0))
+	surface.SetTextPos(136, y+95)
+	surface.DrawText("Hunger: "..LocalPlayer():GetSyncVar(SYNC_HUNGER, 100))
+	surface.SetMaterial(hungerIcon)
+	surface.DrawTexturedRect(110, y+95, 18, 18)
+
+	surface.SetTextPos(136, y+115)
+	surface.DrawText("Money: "..impulse.Config.CurrencyPrefix..LocalPlayer():GetSyncVar(SYNC_MONEY, 0))
+	surface.SetMaterial(moneyIcon)
+	surface.DrawTexturedRect(110, y+115, 18, 18)
+
+	draw.DrawText("23:23", "Impulse-Elements19", hudWidth-27, y+150, color_white, TEXT_ALIGN_RIGHT)
+	surface.SetMaterial(timeIcon)
+	surface.DrawTexturedRect(hudWidth-20, y+150, 18, 18)
+
+	draw.DrawText(lp:GetSyncVar(SYNC_XP, 0).."XP", "Impulse-Elements19", 55, y+150, color_white, TEXT_ALIGN_LEFT)
+	surface.SetMaterial(xpIcon)
+	surface.DrawTexturedRect(30, y+150, 18, 18)
 
 	local weapon = LocalPlayer():GetActiveWeapon()
-	if IsValid(weapon) and weapon:Clip1() != -1 then
-		surface.SetDrawColor(darkCol)
-		surface.DrawRect(scrW-70, scrH-45, 70, 30)
-		surface.SetTextPos(scrW-60, scrH-40)
-		surface.DrawText(weapon:Clip1().."/"..LocalPlayer():GetAmmoCount(weapon:GetPrimaryAmmoType()))
+	if IsValid(weapon) then
+		if weapon:Clip1() != -1 then
+			surface.SetDrawColor(darkCol)
+			surface.DrawRect(scrW-70, scrH-45, 70, 30)
+			surface.SetTextPos(scrW-60, scrH-40)
+			surface.DrawText(weapon:Clip1().."/"..LocalPlayer():GetAmmoCount(weapon:GetPrimaryAmmoType()))
+		elseif weapon:GetClass() == "weapon_physgun" or weapon:GetClass() == "gmod_tool" then
+			draw.DrawText("Make sure you dont have this weapon out in RP. You may be punished.", "Impulse-Elements16", 35, y-30, color_white, TEXT_ALIGN_LEFT)
+			surface.SetMaterial(warningIcon)
+			surface.DrawTexturedRect(10, y-30, 18, 18)
+		end
 	end
 
 	if not IsValid(PlayerIcon) and impulse.hudEnabled == true then
 		PlayerIcon = vgui.Create("SpawnIcon")
-		PlayerIcon:SetPos(30, y+100)
+		PlayerIcon:SetPos(30, y+60)
 		PlayerIcon:SetSize(64, 64)
 		PlayerIcon:SetModel(LocalPlayer():GetModel())
+	end
+
+	if lp:GetModel() != lastModel or lp:GetSkin() != lastSkin and IsValid(PlayerIcon) then
+		PlayerIcon:SetModel(lp:GetModel(), lp:GetSkin())
+		lastModel = lp:GetModel()
+		lastSkin = lp:GetSkin()
 	end
 
 	-- watermark
