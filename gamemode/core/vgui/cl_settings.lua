@@ -7,6 +7,8 @@ function PANEL:Init()
 	self:SetTitle("Settings")
 	self:MakePopup()
 
+	local panelSelf = self
+
 	local settingsPages = vgui.Create("DPropertySheet", self)
 	settingsPages:Dock(FILL)
 	--settingsPages:InvalidateParent(true) -- this is called to sync the new positions and sizes with the dock
@@ -92,6 +94,7 @@ function PANEL:Init()
 	button:Dock(TOP)
 	function button:DoClick()
 		LocalPlayer():ConCommand("impulse_resetsettings")
+		panelSelf:Remove()
     end
 
 end

@@ -50,7 +50,7 @@ end
 
 
 local vignette = Material("impulse/vignette.png")
-local vig_alpha_normal = Color(10,10,10,180)
+local vig_alpha_normal = Color(10,10,10,190)
 local lasthealth = 100
 local time = 0
 local gradient = Material("vgui/gradient-l")
@@ -61,14 +61,14 @@ local hudBlackGrad = Color(40,40,40,180)
 local hudBlack = Color(20,20,20,140)
 local darkCol = Color(30, 30, 30, 190)
 
-local function DrawOverheadInfo(target)
+local function DrawOverheadInfo(target, alpha)
 	local pos = target:EyePos()
 
 	pos.z = pos.z + 5
 	pos = pos:ToScreen()
 	pos.y = pos.y - 50
 
-	draw.DrawText(target:Name(), "Impulse-Elements18-Shadow", pos.x, pos.y, team.GetColor(target:Team()), 1)
+	draw.DrawText(target:Name(), "Impulse-Elements18-Shadow", pos.x, pos.y, ColorAlpha(team.GetColor(target:Team()), alpha), 1)
 end
 
 function IMPULSE:HUDPaint()
@@ -157,25 +157,69 @@ function IMPULSE:HUDPaint()
 	surface.SetTextColor(watermarkCol)
 	surface.DrawText("TEST BUILD - "..IMPULSE.Version.." - "..LocalPlayer():SteamID64().. " - ".. os.date("%H:%M:%S - %d/%m/%Y", os.time()))
 
+	lasthealth = health
+end
 
-	-- NEEDS RECODE, THIS LOSES LIKE 60 FPS SEE NUTSCRIPT DRAW ENTITY INFO
-	local shootPos = LocalPlayer():GetShootPos()
-	local aimPos = LocalPlayer():GetAimVector()
+local nextOverheadCheck = 0
+local lastEnt
+local trace = {}
+local approach = math.Approach
+overheadEntCache = {}
+-- overhead info is HEAVILY based off nutscript. I'm not taking credit for it. but it saves clients like 70 fps so its worth it
+function IMPULSE:HUDPaintBackground()
 
-	for v, target in pairs(player.GetAll()) do
-		if not target:Alive() then continue end
-		local targetShootPos = target:GetShootPos()
-		if targetShootPos:Distance(shootPos) < 450 then
-			local pos = targetShootPos - shootPos
-			local trace = util.QuickTrace(shootPos, pos, LocalPlayer())
-			if trace.Hit and trace.Entity != ply then return end
-			if target:GetNoDraw() == true then return end
+	if impulse.GetSetting("hud_vignette") == true then
+		surface.SetMaterial(vignette)
+		surface.SetDrawColor(vig_alpha_normal)
+		surface.DrawTexturedRect(0, 0, ScrW(), ScrH())
+	end
 
-			DrawOverheadInfo(target)
+	local lp = LocalPlayer()
+	local realTime = RealTime()
+	local frameTime = FrameTime()
+
+	if nextOverheadCheck < realTime then
+		nextOverheadCheck = realTime + 0.5
+		
+		trace.start = lp.GetShootPos(lp)
+		trace.endpos = trace.start + lp.GetAimVector(lp) * 300
+		trace.filter = lp
+		trace.mins = Vector(-4, -4, -4)
+		trace.maxs = Vector(4, 4, 4)
+		trace.mask = MASK_SHOT_HULL
+
+		lastEnt = util.TraceHull(trace).Entity
+
+		if IsValid(lastEnt) then
+			overheadEntCache[lastEnt] = true
 		end
 	end
 
-	lasthealth = health
+	for entTarg, shouldDraw in pairs(overheadEntCache) do
+		if IsValid(entTarg) then
+			local goal = shouldDraw and 255 or 0
+			local alpha = approach(entTarg.overheadAlpha or 0, goal, frameTime * 1000)
+
+			if lastEnt != entTarg then
+				overheadEntCache[entTarg] = false
+			end
+
+			if alpha > 0 then
+				if entTarg:IsPlayer() then
+					DrawOverheadInfo(entTarg, alpha)
+				end
+			end
+
+			entTarg.overheadAlpha = alpha
+
+			if alpha == 0 and goal == 0 then
+				overheadEntCache[entTarg] = nil
+			end
+		else
+			overheadEntCache[entTarg] = nil
+		end
+	end
+	--PrintTable(overheadEntCache)
 end
 
 local blackandwhite = {
