@@ -566,3 +566,42 @@ function IMPULSE:CalcMainActivity(ply, velocity)
 
 	return seqIdeal, ply.impulseForceSeq or oldSeqOverride or ply.CalcSeqOverride
 end
+
+function IMPULSE:DoAnimationEvent(ply, event, data)
+	local model = ply:GetModel():lower()
+	local class = impulse.anim.GetModelClass(model)
+
+	if class == "player" then
+		return self.BaseClass:DoAnimationEvent(ply, event, data)
+	else
+		local weapon = ply:GetActiveWeapon()
+
+		if IsValid(weapon) then
+			local holdType = weapon.HoldType or weapon:GetHoldType()
+			holdType = HOLDTYPE_TRANSLATOR[holdType] or holdType
+
+			local animation = impulse.anim[class][holdType]
+
+			if event == PLAYERANIMEVENT_ATTACK_PRIMARY then
+				ply:AnimRestartGesture(GESTURE_SLOT_ATTACK_AND_RELOAD, animation.attack or ACT_GESTURE_RANGE_ATTACK_SMG1, true)
+				return ACT_VM_PRIMARYATTACK
+			elseif event == PLAYERANIMEVENT_ATTACK_SECONDARY then
+				ply:AnimRestartGesture(GESTURE_SLOT_ATTACK_AND_RELOAD, animation.attack or ACT_GESTURE_RANGE_ATTACK_SMG1, true)
+				return ACT_VM_SECONDARYATTACK
+			elseif event == PLAYERANIMEVENT_RELOAD then
+				ply:AnimRestartGesture(GESTURE_SLOT_ATTACK_AND_RELOAD, animation.reload or ACT_GESTURE_RELOAD_SMG1, true)
+				return ACT_INVALID
+			elseif event == PLAYERANIMEVENT_JUMP then
+				ply.m_bJumping = true
+				ply.m_bFirstJumpFrame = true
+				ply.m_flJumpStartTime = CurTime()
+				ply:AnimRestartMainSequence()
+				return ACT_INVALID
+			elseif event == PLAYERANIMEVENT_CANCEL_RELOAD then
+				ply:AnimResetGestureSlot(GESTURE_SLOT_ATTACK_AND_RELOAD)
+				return ACT_INVALID
+			end
+		end
+	end
+	return ACT_INVALID
+end
