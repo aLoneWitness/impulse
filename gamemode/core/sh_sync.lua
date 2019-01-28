@@ -25,11 +25,11 @@ if SERVER then
 
 			if syncType == SYNC_TYPE_PUBLIC then
 				if target then
-					netstream.Start(target, "impulseSyncUpdate", varID, targetID, value)
+					netstream.Start(target, "iSyncU", varID, targetID, value)
 				else
 					for v, ply in pairs(player.GetAll()) do
 						if ply:UserID() != targetID then
-							netstream.Start(ply, "impulseSyncUpdate", varID, targetID, value)
+							netstream.Start(ply, "iSyncU", varID, targetID, value)
 						end
 					end
 				end
@@ -47,11 +47,11 @@ if SERVER then
 
 		if syncType == SYNC_TYPE_PUBLIC then
 			if target then
-				netstream.Start(target, "impulseSyncUpdate", varID, targetID, value)
+				netstream.Start(target, "iSyncU", varID, targetID, value)
 			else
 				for v, ply in pairs(player.GetAll()) do
 					if ply:UserID() != targetID then
-						netstream.Start(ply, "impulseSyncUpdate", varID, targetID, value)
+						netstream.Start(ply, "iSyncU", varID, targetID, value)
 					end
 				end
 			end
@@ -63,14 +63,14 @@ if SERVER then
 		local targetID = self:UserID()
 
 		impulse.Sync.Data[targetID] = nil
-		netstream.Start(self, "impulseSyncRemove", targetID)
+		netstream.Start(self, "iSyncR", targetID)
 	end
 
 	-- instantSync is optional. SetSyncVar will set the SyncVar however it will not update it with all clients unless instantSync is true.
 	function meta:SetSyncVar(varID, newValue, instantSync)
 		local instantSync = instantSync or false
 		local targetID = self:UserID()
-		netstream.Start(self, "impulseSyncUpdate", varID, targetID, newValue)
+		netstream.Start(self, "iSyncU", varID, targetID, newValue)
 		
 		local targetData = impulse.Sync.Data[targetID]
 		targetData[varID] = {newValue, SYNC_TYPE_PUBLIC}
@@ -84,7 +84,7 @@ if SERVER then
 	function meta:SetLocalSyncVar(varID, newValue)
 		local targetID = self:UserID()
 
-		netstream.Start(self, "impulseSyncUpdate", varID, targetID, newValue)
+		netstream.Start(self, "iSyncU", varID, targetID, newValue)
 		local targetData = impulse.Sync.Data[targetID]
 		targetData[varID] = {newValue, SYNC_TYPE_PRIVATE}
 	end
@@ -93,7 +93,11 @@ if SERVER then
 		local targetData = impulse.Sync.Data[self:UserID()]
 
 		if targetData then
-			return (targetData[varID][1]) or fallback
+			if targetData[varID] then
+				return targetData[varID][1]
+			else
+				return fallback
+			end
 		else
 			return fallback
 		end
@@ -118,7 +122,7 @@ else
 		end
 	end
 
-	netstream.Hook("impulseSyncUpdate", function(varID, targetID, newValue)
+	netstream.Hook("iSyncU", function(varID, targetID, newValue)
 		local targetData = impulse.Sync.Data[targetID]
 		if not targetData then
 			impulse.Sync.Data[targetID] = {}
@@ -130,7 +134,7 @@ else
 		hook.Run("OnSyncUpdate", varID, targetID, newValue)
 	end)
 
-	netstream.Hook("impulseSyncRemove", function(targetID)
+	netstream.Hook("iSyncR", function(targetID)
 		impulse.Sync.Data[targetID] = nil
 	end)
 end
@@ -139,6 +143,7 @@ SYNC_RPNAME = impulse.Sync.RegisterVar()
 SYNC_XP = impulse.Sync.RegisterVar()
 SYNC_MONEY = impulse.Sync.RegisterVar()
 SYNC_BANKMONEY = impulse.Sync.RegisterVar()
+SYNC_WEPRAISED = impulse.Sync.RegisterVar()
 SYNC_CLASS = impulse.Sync.RegisterVar()
 SYNC_RANK = impulse.Sync.RegisterVar()
 SYNC_ARRESTED = impulse.Sync.RegisterVar()

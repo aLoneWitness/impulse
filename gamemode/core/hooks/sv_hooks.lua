@@ -118,3 +118,30 @@ function IMPULSE:SetupPlayerVisibility(ply)
 		AddOriginToPVS(ply.extraPVS)
 	end
 end
+
+function IMPULSE:KeyPress(ply, key)
+	if key == IN_RELOAD then
+		timer.Create("impulseRaiseWait"..ply:SteamID(), 1, 1, function()
+			if IsValid(ply) then
+				ply:ToggleWeaponRaised()
+			end
+		end)
+	elseif key == IN_USE then
+		local trace = {}
+		trace.start = ply:GetShootPos()
+		trace.endpos = trace.start + ply:GetAimVector() * 96
+		trace.filter = ply
+
+		local entity = util.TraceLine(trace).Entity
+
+		if IsValid(entity) and entity:IsDoor() or entity:IsPlayer() then
+			hook.Run("PlayerUse", ply, entity)
+		end
+	end
+end
+
+function IMPULSE:KeyRelease(ply, key)
+	if key == IN_RELOAD then
+		timer.Remove("impulseRaiseWait"..ply:SteamID())
+	end
+end
