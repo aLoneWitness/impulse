@@ -9,7 +9,7 @@ function impulse.GetSetting(name)
 	local settingData = impulse.Settings[name]
 
 	if settingData.type == "tickbox" then
-		return tobool(settingData.value) or settingData.default
+		return tobool(settingData.value)
 	end
 	return settingData.value or settingData.default
 end

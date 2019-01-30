@@ -62,9 +62,13 @@ local hudBlack = Color(20,20,20,140)
 local darkCol = Color(30, 30, 30, 190)
 
 local healthIcon = Material("impulse/icons/heart-128.png")
+local healthCol = Color(254, 0, 0, 255)
 local armourIcon = Material("impulse/icons/shield-128.png")
+local armourCol = Color(255, 255, 0, 255)
 local hungerIcon = Material("impulse/icons/bread-128.png")
+local hungerCol = Color(205, 133, 63, 255)
 local moneyIcon = Material("impulse/icons/banknotes-128.png")
+local moneyCol = Color(133, 187, 101, 255)
 local timeIcon = Material("impulse/icons/clock-128.png")
 local xpIcon = Material("impulse/icons/star-128.png")
 local warningIcon = Material("impulse/icons/warning-128.png")
@@ -98,6 +102,7 @@ function IMPULSE:HUDPaint()
 	local lpTeam = lp:Team()
 	local scrW, scrH = ScrW(), ScrH()
 	local hudWidth, hudHeight = 300, 178
+	local seeColIcons = impulse.GetSetting("hud_iconcolours")
 
 	if not lp:Alive() then
 		local ft = FrameTime()
@@ -146,25 +151,31 @@ function IMPULSE:HUDPaint()
 	surface.SetTextColor(color_white)
 	surface.SetFont("Impulse-Elements19")
 
-	surface.SetTextPos(136, y+55)
+	surface.SetTextPos(136, y+53)
 	surface.DrawText("Health: "..LocalPlayer():Health())
+	if seeColIcons == true then surface.SetDrawColor(healthCol) end
 	surface.SetMaterial(healthIcon)
-	surface.DrawTexturedRect(110, y+55, 18, 18)
+	surface.DrawTexturedRect(110, y+55, 18, 16)
 
 	surface.SetTextPos(136, y+75)
 	surface.DrawText("Armour: "..LocalPlayer():Armor())
+	if seeColIcons == true then surface.SetDrawColor(armourCol) end
 	surface.SetMaterial(armourIcon)
 	surface.DrawTexturedRect(110, y+75, 18, 18)
 
 	surface.SetTextPos(136, y+95)
 	surface.DrawText("Hunger: "..LocalPlayer():GetSyncVar(SYNC_HUNGER, 100))
+	if seeColIcons == true then surface.SetDrawColor(hungerCol) end
 	surface.SetMaterial(hungerIcon)
 	surface.DrawTexturedRect(110, y+95, 18, 18)
 
 	surface.SetTextPos(136, y+115)
 	surface.DrawText("Money: "..impulse.Config.CurrencyPrefix..LocalPlayer():GetSyncVar(SYNC_MONEY, 0))
+	if seeColIcons == true then surface.SetDrawColor(moneyCol) end
 	surface.SetMaterial(moneyIcon)
 	surface.DrawTexturedRect(110, y+115, 18, 18)
+
+	surface.SetDrawColor(color_white)
 
 	draw.DrawText("23:23", "Impulse-Elements19", hudWidth-27, y+150, color_white, TEXT_ALIGN_RIGHT)
 	surface.SetMaterial(timeIcon)
