@@ -401,7 +401,7 @@ do
 
 	if SERVER then
 		function meta:SetWeaponRaised(state)
-			self:SetSyncVar(SYNC_WEPRAISED, state)
+			self:SetSyncVar(SYNC_WEPRAISED, state, true)
 
 			local weapon = self:GetActiveWeapon()
 
