@@ -10,6 +10,21 @@ function IMPULSE:Think()
 		mainMenu:SetAlpha(0)
 		mainMenu:AlphaTo(255, .3)
 		mainMenu.popup = true
+	elseif input.IsKeyDown(KEY_LALT) then
+		local trace = {}
+		trace.start = LocalPlayer():EyePos()
+		trace.endpos = trace.start + LocalPlayer():GetAimVector() * 85
+		trace.filter = LocalPlayer()
+
+		local traceEnt = util.TraceLine(trace).Entity
+
+		if (not impulse.doorMenu or not IsValid(impulse.doorMenu)) and IsValid(traceEnt) and traceEnt:IsDoor() then
+			local doorData = traceEnt:GetDoorData()
+			if not doorData or not doorData.buyable or doorData.buyable == true then
+				impulse.doorMenu = vgui.Create("impulseDoorMenu")
+				impulse.doorMenu:SetDoor(traceEnt, doorData)
+			end
+		end
 	end
 end
 
@@ -23,6 +38,7 @@ end
 
 function IMPULSE:DefineSettings()
 	impulse.DefineSetting("hud_vignette", {name="Vignette enabled", category="HUD", type="tickbox", default=true})
+	impulse.DefineSetting("hud_iconcolours", {name="Icon colours enabled", category="HUD", type="tickbox", default=true})
 end
 
 local loweredAngles = Angle(30, -30, -25)

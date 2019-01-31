@@ -70,14 +70,20 @@ if (CLIENT) then
 			local y = (ScrH() * 0.4) + (k * 24)
 			local y2 = y
 
-			local color = Color(255, 255, 255)
+			local col = Color(255, 255, 255)
 
 			if (k == lastSlot) then
-				color = impulse.Config.MainColour
+				col = impulse.Config.MainColour
 			end
 
-			color.a = math.Clamp(255 - math.TimeFraction(lifeTime, deathTime, CurTime()) * 255, 0, 255)
-			draw.DrawText(string.upper(v:GetPrintName()), "Impulse-Elements18-Shadow", x, y, color, nil, TEXT_ALIGN_LEFT)
+			local c = math.Clamp(255 - math.TimeFraction(lifeTime, deathTime, CurTime()) * 255, 0, 255)
+
+			surface.SetTextColor(ColorAlpha(col, c))
+			surface.SetFont("Impulse-Elements18-Shadow")
+			surface.SetTextPos(x, y)
+			surface.DrawText(string.upper(v:GetPrintName()))
+			surface.SetTextColor(color_white)
+			--draw.DrawText(string.upper(v:GetPrintName()), "Impulse-Elements18-Shadow", x, y, col, nil, TEXT_ALIGN_LEFT)
 
 		end
 	end)

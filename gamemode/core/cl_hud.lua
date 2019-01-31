@@ -89,6 +89,27 @@ local function DrawOverheadInfo(target, alpha)
 	draw.DrawText(target:Name(), "Impulse-Elements18-Shadow", pos.x, pos.y, ColorAlpha(team.GetColor(target:Team()), alpha), 1)
 end
 
+local function DrawDoorInfo(target)
+	local pos = target:GetPos():ToScreen()
+	local scrW = ScrW()
+	local scrH = ScrH()
+	local doorData = target:GetDoorData()
+	local ownedBy = "Owner(s):"
+
+	if doorData then
+		if doorData.name then
+			draw.DrawText(doorData.name, "Impulse-Elements18-Shadow", scrW * .5, scrH * .6, impulse.Config.MainColour, 1)
+		elseif doorData.owners then
+			for owner,v in pairs(doorData.owners) do
+				ownedBy = ownedBy.."\n"..owner:Name()
+			end
+			draw.DrawText(ownedBy, "Impulse-Elements18-Shadow", scrW * .5, scrH * .6, impulse.Config.MainColour, 1)
+		end
+	else
+		draw.DrawText("Ownable door (LALT)", "Impulse-Elements18-Shadow", scrW * .5, scrH * .6, impulse.Config.MainColour, 1)
+	end
+end
+
 function IMPULSE:HUDPaint()
 	if impulse.hudEnabled == false or IsValid(impulse.MainMenu) then
 		if IsValid(PlayerIcon) then
@@ -213,6 +234,17 @@ function IMPULSE:HUDPaint()
 		lastTeam = lp:Team()
 	end
 
+	local trace = {}
+	trace.start = lp:EyePos()
+	trace.endpos = trace.start + lp:GetAimVector() * 85
+	trace.filter = lp
+
+	local traceEnt = util.TraceLine(trace).Entity
+
+	if IsValid(traceEnt) and traceEnt:IsDoor() then
+		DrawDoorInfo(traceEnt)
+	end
+
 	-- watermark
 	surface.SetDrawColor(watermarkCol)
 	surface.SetMaterial(watermark)
@@ -220,6 +252,7 @@ function IMPULSE:HUDPaint()
 
 	surface.SetTextPos(10, 40)
 	surface.SetTextColor(watermarkCol)
+	surface.SetFont("Impulse-Elements18-Shadow")
 	surface.DrawText("TEST BUILD - "..IMPULSE.Version.." - "..LocalPlayer():SteamID64().. " - ".. os.date("%H:%M:%S - %d/%m/%Y", os.time()))
 
 	lasthealth = health

@@ -1,9 +1,17 @@
 function IMPULSE:PlayerInitialSpawn(ply)
 	local isNew = true
 
+	-- sync players with all other clients
 	impulse.Sync.Data[ply:UserID()] = {}
 	for v,k in pairs(player.GetAll()) do
 		k:Sync(ply)
+	end
+
+	-- sync players with all other doors
+	for doorID, doorData in pairs(impulse.Doors.Data) do
+		for key, value in pairs(doorData) do
+			netstream.Start(ply, "iDoorU", doorID, key, value)
+		end
 	end
 
 	local query = mysql:Select("impulse_players")
@@ -56,6 +64,7 @@ function IMPULSE:SetupPlayer(ply, dbData)
 
 	ply.defaultModel = dbData.model
 	ply.defaultSkin = dbData.skin
+	ply:SetFOV(90, 0)
 	ply:SetTeam(impulse.Config.DefaultTeam)
 	ply.beenSetup = true
 
@@ -144,4 +153,8 @@ function IMPULSE:KeyRelease(ply, key)
 	if key == IN_RELOAD then
 		timer.Remove("impulseRaiseWait"..ply:SteamID())
 	end
+end
+
+function IMPULSE:InitPostEntity()
+	impulse.Doors.Load()
 end
