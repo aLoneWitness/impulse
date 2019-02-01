@@ -330,7 +330,6 @@ impulse.anim.SetModelClass("models/vortigaunt.mdl", "vort")
 impulse.anim.SetModelClass("models/vortigaunt_blue.mdl", "vort")
 impulse.anim.SetModelClass("models/vortigaunt_doctor.mdl", "vort")
 impulse.anim.SetModelClass("models/vortigaunt_slave.mdl", "vort")
-impulse.anim.SetModelClass("models/player/zelpa/male_08.mdl", "citizen_male")
 
 local ALWAYS_RAISED = {}
 ALWAYS_RAISED["weapon_physgun"] = true
