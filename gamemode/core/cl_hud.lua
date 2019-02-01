@@ -99,13 +99,21 @@ local function DrawDoorInfo(target)
 	if doorData then
 		if doorData.name then
 			draw.DrawText(doorData.name, "Impulse-Elements18-Shadow", scrW * .5, scrH * .6, impulse.Config.MainColour, 1)
+		elseif doorData.group then
+			draw.DrawText(impulse.Config.DoorGroups[doorData.group], "Impulse-Elements18-Shadow", scrW * .5, scrH * .6, impulse.Config.MainColour, 1)
 		elseif doorData.owners then
-			for owner,v in pairs(doorData.owners) do
-				ownedBy = ownedBy.."\n"..owner:Name()
+			for ownerID,v in pairs(doorData.owners) do
+				local owner = Player(ownerID)
+
+				if IsValid(owner) and owner:IsPlayer() then
+					ownedBy = ownedBy.."\n"..owner:Name()
+				end
 			end
 			draw.DrawText(ownedBy, "Impulse-Elements18-Shadow", scrW * .5, scrH * .6, impulse.Config.MainColour, 1)
 		end
-	else
+	end
+
+	if LocalPlayer():CanBuyDoor(doorData) then
 		draw.DrawText("Ownable door (LALT)", "Impulse-Elements18-Shadow", scrW * .5, scrH * .6, impulse.Config.MainColour, 1)
 	end
 end

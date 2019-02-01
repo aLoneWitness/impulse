@@ -35,22 +35,35 @@ function PANEL:AddAction(icon, name, onClick)
 end
 
 function PANEL:SetDoor(door, data)
-	print(door:EntIndex())
-	PrintTable(data or {})
-	if data and data.owners and data.owners[LocalPlayer()] then
-		self:AddAction("impulse/icons/padlock-2-256.png", "Unlock")
-		self:AddAction("impulse/icons/padlock-256.png", "Lock")
-	end
+	local panel = self
 
-	if not data then
-		self:AddAction("impulse/icons/banknotes-256.png", "Buy", function()
-			print(door:EntIndex())
-			netstream.Start("impulseDoorBuy", door:EntIndex())
+	if LocalPlayer():CanLockUnlockDoor(data) then
+		self:AddAction("impulse/icons/padlock-2-256.png", "Unlock", function()
+			netstream.Start("impulseDoorUnlock")
+			panel:Remove()
+		end)
+		self:AddAction("impulse/icons/padlock-256.png", "Lock", function()
+			netstream.Start("impulseDoorLock")
+			panel:Remove()
 		end)
 	end
 
-	if data and data.owners and data.owners[LocalPlayer()] then
-		self:AddAction("impulse/icons/group-256.png", "Permissions")
+	if LocalPlayer():CanBuyDoor(data) then
+		self:AddAction("impulse/icons/banknotes-256.png", "Buy", function()
+			print(door:EntIndex())
+			netstream.Start("impulseDoorBuy")
+			panel:Remove()
+		end)
+	end
+
+	if LocalPlayer():IsDoorOwner(data) then
+		self:AddAction("impulse/icons/group-256.png", "Permissions", function()
+			chat.AddText("Permissions are coming to doors near you soon.")
+		end)
+		self:AddAction("impulse/icons/banknotes-256.png", "Sell", function()
+			netstream.Start("impulseDoorSell")
+			panel:Remove()
+		end)
 	end
 end
 

@@ -14,12 +14,15 @@ if SERVER then
 			if k:IsDoor() and k:CreatedByMap() then
 				local doorData = k:GetDoorData()
 				if doorData then
-					doors[k:MapCreationID()] = {
-						name = doorData.name or nil,
-						teams = doorData.teams or nil,
-						pos = k:GetPos(),
-						buyable = doorData.buyable or false
-					}
+					if doorData.buyable == false then
+						doors[k:MapCreationID()] = {
+							name = doorData.name or nil,
+							group = doorData.group or nil,
+							hidden = doorData.hidden or nil,
+							pos = k:GetPos(),
+							buyable = doorData.buyable or false
+						}
+					end
 				end
 			end
 		end
@@ -51,8 +54,10 @@ if SERVER then
 
 	function eMeta:DoorDataUpdate(key, value)
 		local entID = self:EntIndex()
+
 		impulse.Doors.Data[entID] = impulse.Doors.Data[self:EntIndex()] or {}
 		impulse.Doors.Data[entID][key] = value
+
 		netstream.Start(nil, "iDoorU", entID, key, value)
 	end
 
@@ -62,11 +67,62 @@ if SERVER then
 
 	function eMeta:DoorUnlock()
 		self:Fire("unlock", "", 0)
+		if self:GetClass() == "func_door" then
+			self:Fire("open")
+		end
 	end
 
-	netstream.Hook("impulseDoorBuy", function(ply, doorIndex)
-		local door = Entity(doorIndex)
-		if not IsValid(door) then return end
+	netstream.Hook("impulseDoorBuy", function(ply)
+		if (ply.nextDoorBuy or 0) > CurTime() then return end
+
+		local trace = {}
+		trace.start = ply:EyePos()
+		trace.endpos = trace.start + ply:GetAimVector() * 85
+		trace.filter = ply
+
+		local traceEnt = util.TraceLine(trace).Entity
+		local doorData = traceEnt:GetDoorData()
+
+		if IsValid(traceEnt) and ply:CanBuyDoor(doorData) then
+			if ply:CanAfford(impulse.Config.DoorPrice) then
+				local owners = (doorData and doorData.owners) or {}
+				owners[ply:UserID()] = true
+
+				traceEnt:DoorDataUpdate("owners", owners)
+
+				ply:TakeMoney(impulse.Config.DoorPrice)
+				ply:Notify("You have bought a door for "..impulse.Config.CurrencyPrefix..impulse.Config.DoorPrice..".")
+			else
+				ply:Notify("You cannot afford to buy this door.")
+			end
+		end
+		ply.nextDoorBuy = CurTime() + 1
+	end)
+
+	netstream.Hook("impulseDoorSell", function(ply)
+		if (ply.nextDoorSell or 0) > CurTime() then return end
+
+		local trace = {}
+		trace.start = ply:EyePos()
+		trace.endpos = trace.start + ply:GetAimVector() * 85
+		trace.filter = ply
+
+		local traceEnt = util.TraceLine(trace).Entity
+		local doorData = traceEnt:GetDoorData()
+
+		if IsValid(traceEnt) and doorData and ply:IsDoorOwner(doorData) then
+			traceEnt:DoorDataUpdate("owners", nil)
+			traceEnt:DoorUnlock()
+
+			ply:GiveMoney(impulse.Config.DoorPrice - 2)
+			ply:Notify("You have sold a door for "..impulse.Config.CurrencyPrefix..(impulse.Config.DoorPrice - 2)..".")
+		end
+		ply.nextDoorSell = CurTime() + 1
+	end)
+
+	netstream.Hook("impulseDoorLock", function(ply)
+		if (ply.nextDoorLock or 0) > CurTime() then return end
+
 		local trace = {}
 		trace.start = ply:EyePos()
 		trace.endpos = trace.start + ply:GetAimVector() * 85
@@ -74,18 +130,38 @@ if SERVER then
 
 		local traceEnt = util.TraceLine(trace).Entity
 
-		if IsValid(traceEnt) and traceEnt == door then
-			if ply:CanAfford(impulse.Config.DoorPrice) then
-				local doorData = door:GetDoorData()
-				local owners = (doorData and doorData.owners) or {}
-				owners[ply] = true
-				door:DoorDataUpdate("owners", owners)
-				ply:TakeMoney(impulse.Config.DoorPrice)
-				ply:Notify("You have bought a door for "..impulse.Config.CurrencyPrefix..impulse.Config.DoorPrice..".")
-			else
-				ply:Notify("You cannot afford to buy this door.")
+		if IsValid(traceEnt) and traceEnt:IsDoor() then
+			local doorData = traceEnt:GetDoorData()
+
+			if ply:CanLockUnlockDoor(doorData) then
+				traceEnt:DoorLock()
+				traceEnt:EmitSound("doors/latchunlocked1.wav")
 			end
 		end
+
+		ply.nextDoorLock = CurTime() + 1
+	end)
+
+	netstream.Hook("impulseDoorUnlock", function(ply)
+		if (ply.nextDoorUnlock or 0) > CurTime() then return end
+
+		local trace = {}
+		trace.start = ply:EyePos()
+		trace.endpos = trace.start + ply:GetAimVector() * 85
+		trace.filter = ply
+
+		local traceEnt = util.TraceLine(trace).Entity
+
+		if IsValid(traceEnt) and traceEnt:IsDoor() then
+			local doorData = traceEnt:GetDoorData()
+
+			if ply:CanLockUnlockDoor(doorData) then
+				traceEnt:DoorUnlock()
+				traceEnt:EmitSound("doors/latchunlocked1.wav")
+			end
+		end
+
+		ply.nextDoorUnlock = CurTime() + 1
 	end)
 else
 	netstream.Hook("iDoorU", function(entIndex, key, doorData)
@@ -99,3 +175,98 @@ end
 function eMeta:GetDoorData()
 	return impulse.Doors.Data[self:EntIndex()]
 end
+
+function meta:CanLockUnlockDoor(doorData)
+	if not doorData then return false end
+
+	hook.Run("playerCanUnlockLock", self, doorData)
+
+	if doorData.owners and doorData.owners[self:UserID()] then
+		return true
+	elseif doorData.group and doorData.group == impulse.Teams.Data[self:Team()].doorGroup then
+		return true
+	end
+end
+
+function meta:IsDoorOwner(doorData)
+	if doorData and doorData.owners and doorData.owners[self:UserID()] then
+		return true
+	end
+	return false
+end
+
+function meta:CanBuyDoor(doorData)
+	if doorData then
+		if (doorData.owners) or doorData.buyable == false then
+			return false
+		end
+	end
+	return true
+end
+
+concommand.Add("impulse_doorsethidden", function(ply, cmd, args)
+	if not ply:IsSuperAdmin() then return false end
+
+	local trace = {}
+	trace.start = ply:EyePos()
+	trace.endpos = trace.start + ply:GetAimVector() * 200
+	trace.filter = ply
+
+	local traceEnt = util.TraceLine(trace).Entity
+
+	if IsValid(traceEnt) and traceEnt:IsDoor() then
+		traceEnt:DoorDataUpdate("buyable", !tobool(args[1]))
+		traceEnt:DoorDataUpdate("group", nil)
+		traceEnt:DoorDataUpdate("name", nil)
+		traceEnt:DoorDataUpdate("group", nil)
+		traceEnt:DoorDataUpdate("owners", nil)
+
+		ply:Notify("Door "..traceEnt:EntIndex().." show = "..args[1])
+
+		impulse.Doors.Save()
+	end
+end)
+
+concommand.Add("impulse_doorsetgroup", function(ply, cmd, args)
+	if not ply:IsSuperAdmin() then return false end
+
+	local trace = {}
+	trace.start = ply:EyePos()
+	trace.endpos = trace.start + ply:GetAimVector() * 200
+	trace.filter = ply
+
+	local traceEnt = util.TraceLine(trace).Entity
+
+	if IsValid(traceEnt) and traceEnt:IsDoor() then
+		traceEnt:DoorDataUpdate("buyable", false)
+		traceEnt:DoorDataUpdate("group", tonumber(args[1]))
+		traceEnt:DoorDataUpdate("name", nil)
+		traceEnt:DoorDataUpdate("owners", nil)
+
+		ply:Notify("Door "..traceEnt:EntIndex().." group = "..args[1])
+
+		impulse.Doors.Save()
+	end
+end)
+
+concommand.Add("impulse_doorremovegroup", function(ply, cmd, args)
+	if not ply:IsSuperAdmin() then return false end
+
+	local trace = {}
+	trace.start = ply:EyePos()
+	trace.endpos = trace.start + ply:GetAimVector() * 200
+	trace.filter = ply
+
+	local traceEnt = util.TraceLine(trace).Entity
+
+	if IsValid(traceEnt) and traceEnt:IsDoor() then
+		traceEnt:DoorDataUpdate("buyable", nil)
+		traceEnt:DoorDataUpdate("group", nil)
+		traceEnt:DoorDataUpdate("name", nil)
+		traceEnt:DoorDataUpdate("owners", nil)
+
+		ply:Notify("Door "..traceEnt:EntIndex().." group = nil")
+
+		impulse.Doors.Save()
+	end
+end)

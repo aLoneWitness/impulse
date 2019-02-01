@@ -20,7 +20,7 @@ function IMPULSE:Think()
 
 		if (not impulse.doorMenu or not IsValid(impulse.doorMenu)) and IsValid(traceEnt) and traceEnt:IsDoor() then
 			local doorData = traceEnt:GetDoorData()
-			if not doorData or not doorData.buyable or doorData.buyable == true then
+			if LocalPlayer():CanBuyDoor(doorData) or LocalPlayer():CanLockUnlockDoor(doorData) then
 				impulse.doorMenu = vgui.Create("impulseDoorMenu")
 				impulse.doorMenu:SetDoor(traceEnt, doorData)
 			end

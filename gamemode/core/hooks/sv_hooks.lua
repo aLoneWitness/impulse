@@ -44,6 +44,19 @@ end
 
 function IMPULSE:PlayerDisconnected(ply)
 	ply:SyncRemove()
+
+	for doorID, doorData in pairs(impulse.Doors.Data) do -- remove player from owned doors on disconnect
+		local door = Entity(doorID)
+		local owners = doorData.owners
+		if IsValid(door) and owners and owners[ply:UserID()] then
+			if #owners <= 1 then
+				owners = nil
+			else
+				owners[ply:UserID()] = nil
+			end
+			door:DoorDataUpdate("owners", owners)
+		end
+	end
 end
 
 function IMPULSE:PlayerLoadout(ply)
