@@ -50,7 +50,6 @@ function PANEL:SetDoor(door, data)
 
 	if LocalPlayer():CanBuyDoor(data) then
 		self:AddAction("impulse/icons/banknotes-256.png", "Buy", function()
-			print(door:EntIndex())
 			netstream.Start("impulseDoorBuy")
 			panel:Remove()
 		end)
