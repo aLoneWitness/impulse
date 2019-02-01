@@ -63,7 +63,7 @@ function meta:SetTeam(teamID, forced)
 	self:StripWeapons()
 	if teamData.loadout then
 		for v,weapon in pairs(teamData.loadout) do
-			self:Give(v)
+			self:Give(weapon)
 		end
 	end
 	self:OldSetTeam(teamID)

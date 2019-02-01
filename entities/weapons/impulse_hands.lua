@@ -31,13 +31,49 @@ SWEP.Secondary.Automatic = false
 SWEP.Secondary.Ammo = ""
 SWEP.IsAlwaysRaised = true
 
+function SWEP:Initialize()
+	self:SetHoldType("normal")
+end
+
 function SWEP:Deploy()
 	if SERVER then
 		self.Owner:DrawWorldModel(false)
 	end
 end
 
+function SWEP:Holster()
+    return true
+end
+
 function SWEP:PrimaryAttack()
+	if CLIENT then return end
+	local ply = self.Owner
+
+	if (ply.nextDoorLock or 0) > CurTime() then return end
+
+	local trace = {}
+	trace.start = ply:EyePos()
+	trace.endpos = trace.start + ply:GetAimVector() * 85
+	trace.filter = ply
+
+	local traceEnt = util.TraceLine(trace).Entity
+
+	if IsValid(traceEnt) and traceEnt:IsDoor() then
+		local doorData = traceEnt:GetDoorData()
+
+		if ply:CanLockUnlockDoor(doorData) then
+			traceEnt:DoorLock()
+			traceEnt:EmitSound("doors/latchunlocked1.wav")
+		else
+			ply:EmitSound("physics/wood/wood_crate_impact_hard3.wav", 100, math.random(90, 110))
+		end
+	end
+
+	ply.nextDoorLock = CurTime() + 1
+end
+
+function SWEP:SecondaryAttack()
+	if CLIENT then return end
 	local ply = self.Owner
 
 	if (ply.nextDoorUnlock or 0) > CurTime() then return end
@@ -55,33 +91,11 @@ function SWEP:PrimaryAttack()
 		if ply:CanLockUnlockDoor(doorData) then
 			traceEnt:DoorUnlock()
 			traceEnt:EmitSound("doors/latchunlocked1.wav")
+		else
+			ply:EmitSound("physics/wood/wood_crate_impact_hard3.wav", 100, math.random(90, 110))
 		end
 	end
 
 	ply.nextDoorUnlock = CurTime() + 1
-end
-
-function SWEP:SecondaryAttack()
-	local ply = self.Owner
-	
-	if (ply.nextDoorLock or 0) > CurTime() then return end
-
-	local trace = {}
-	trace.start = ply:EyePos()
-	trace.endpos = trace.start + ply:GetAimVector() * 85
-	trace.filter = ply
-
-	local traceEnt = util.TraceLine(trace).Entity
-
-	if IsValid(traceEnt) and traceEnt:IsDoor() then
-		local doorData = traceEnt:GetDoorData()
-
-		if ply:CanLockUnlockDoor(doorData) then
-			traceEnt:DoorLock()
-			traceEnt:EmitSound("doors/latchunlocked1.wav")
-		end
-	end
-
-	ply.nextDoorLock = CurTime() + 1
 end
 
