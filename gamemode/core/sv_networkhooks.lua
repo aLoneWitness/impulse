@@ -1,4 +1,6 @@
 netstream.Hook("impulseCharacterCreate", function(player, charName, charModel, charSkin)
+	if (player.NextCreate or 0) > CurTime() then return end
+
 	local playerID = player:SteamID()
 	local playerGroup = player:GetUserGroup()
 	local timestamp = math.floor(os.time())
@@ -43,18 +45,19 @@ netstream.Hook("impulseCharacterCreate", function(player, charName, charModel, c
 		insertQuery:Execute()
 	end)
 	query:Execute()
+	player.NextCreate = ply.NextCreate + 10
 end)
 
 netstream.Hook("msg", function(ply, text)
-	if (ply.NextChat or 0) < CurTime() then
+	if (ply.NextChat or 0) < CurTime() and string.len(text) < 1000 then
 		hook.Run("PlayerSay", ply, text, false)
 		ply.NextChat = CurTime() + math.max(#text / 250, 0.4)
 	end
 end)
 
 netstream.Hook("impulseATMWithdraw", function(ply, amount)
-	if not isnumber(amount) or amount < 1 or amount >= 1 / 0 or amount > 10000000000000 then return end
 	if (ply.NextATM or 0) > CurTime() then return end
+	if not isnumber(amount) or amount < 1 or amount >= 1 / 0 or amount > 10000000000000 then return end
 
 	amount = math.floor(amount)
 
@@ -69,8 +72,8 @@ netstream.Hook("impulseATMWithdraw", function(ply, amount)
 end)
 
 netstream.Hook("impulseATMDeposit", function(ply, amount)
-	if not isnumber(amount) or amount < 1 or amount >= 1 / 0 or amount > 10000000000000 then return end
 	if (ply.NextATM or 0) > CurTime() then return end
+	if not isnumber(amount) or amount < 1 or amount >= 1 / 0 or amount > 10000000000000 then return end
 
 	amount = math.floor(amount)
 

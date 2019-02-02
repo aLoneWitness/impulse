@@ -10,6 +10,29 @@ function impulse.RegisterChatCommand(name, cmdData)
     impulse.chatCommands[name] = cmdData
 end
 
+function impulse.FindPlayer(searchKey)
+	if not searchKey or searchKey == "" then return nil end
+	local searchPlayers = player.GetAll()
+	local lowerKey = string.lower(tostring(searchKey))
+
+	for k = 1, #searchPlayers do
+		local v = searchPlayers[k]
+
+		if searchKey == v:SteamID() then
+			return v
+		end
+
+        if string.find(string.lower(v:Name()), lowerKey, 1, true) ~= nil then
+            return v
+        end
+
+        if string.find(string.lower(v:SteamName()), lowerKey, 1, true) ~= nil then
+            return v
+		end
+	end
+	return nil
+end
+
 local oocCol = color_white
 local oocTagCol = Color(200, 0, 0)
 local yellCol = Color(255, 140, 0)
@@ -17,6 +40,7 @@ local whisperCol = Color(65, 105, 225)
 local infoCol = Color(135, 206, 250)
 local talkCol = Color(255, 255, 100)
 local radioCol = Color(55, 146, 21)
+local pmCol = Color(45, 154, 6)
 
 local oocCommand = {
 	description = "Talk out of character globally.",
@@ -45,6 +69,33 @@ local loocCommand = {
 
 impulse.RegisterChatCommand("/looc", loocCommand)
 impulse.RegisterChatCommand("//.", loocCommand)
+
+local pmCommand = {
+	description = "Directly messages the player specified.",
+	requiresArg = true,
+	onRun = function(ply, arg, rawText)
+		local name = arg[1]
+		local message = string.sub(rawText, (string.len(name) + 2))
+		message = string.Trim(message)
+
+		if not message or message == "" then
+			return ply:Notify("Invalid argument.")
+		end
+
+		local plyTarget = impulse.FindPlayer(name)
+
+		if plyTarget and ply != plyTarget then
+			plyTarget:AddChatText(pmCol, "[PM] ", ply:SteamName(), (team.GetColor(ply:Team())), " (", ply:Name(), ")", pmCol, ": ", message)
+			ply:AddChatText(pmCol, "[PM SENT] ", ply:SteamName(), (team.GetColor(ply:Team())), " (", ply:Name(), ")", pmCol, ": ", message)
+			plyTarget:SurfacePlaySound("buttons/blip1.wav")
+			ply:SurfacePlaySound("buttons/blip1.wav")
+		else
+			return ply:Notify("Could not find player: "..tostring(name))
+		end
+	end
+}
+
+impulse.RegisterChatCommand("/pm", pmCommand)
 
 local yellCommand = {
 	description = "Yell in character.",

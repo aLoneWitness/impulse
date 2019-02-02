@@ -98,7 +98,7 @@ function impulse.chatBox.buildBox()
 		if (impulse.chatBox.frame:IsActive() and IsValid(entry)) then
 			local text = entry:GetValue()
 			if (text:sub(1, 1) == "/") then
-				local command = string.lower(text)
+				local command = string.PatternSafe(string.lower(text))
 
 				impulse.blur( self, 10, 20, 255 )
 
@@ -112,7 +112,7 @@ function impulse.chatBox.buildBox()
  						--local color = impulse.Config.MainColour
  						--if v.adminOnly == true and LocalPlayer():IsAdmin() == false then color = color_red end
  						--if v.superAdminOnly == true and LocalPlayer():IsSuperAdmin() == false then color = color_red end
-						draw.DrawText(k.." - "..v.description, "Impulse-ChatMedium", 10, 10 + i, color_white, TEXT_ALIGN_LEFT)
+						draw.DrawText(k.." - "..v.description, "Impulse-ChatMedium", 10, 10 + i, impulse.Config.MainColour, TEXT_ALIGN_LEFT)
 						i = i + 15
  					end
  				end

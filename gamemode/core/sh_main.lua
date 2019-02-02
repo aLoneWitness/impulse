@@ -12,7 +12,7 @@ if SERVER then
 		netstream.Start(self, "IMPULSE-ColoredMessage", package)
 	end
 
-	function meta:surfacePlaySound(sound)
+	function meta:SurfacePlaySound(sound)
 	    net.Start("IMPULSE-SurfaceSound")
 	    net.WriteString(sound)
 	    net.Send(self)
