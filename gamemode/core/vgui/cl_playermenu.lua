@@ -6,27 +6,67 @@ function PANEL:Init()
 	self:SetTitle("Player menu")
 	self:MakePopup()
 
+	local darkOverlay = Color(40, 40, 40, 160)
+
 	self.tabSheet = vgui.Create("DColumnSheet", self)
 	self.tabSheet:Dock(FILL)
+	self.tabSheet.Navigation:SetWidth(100)
 
 	self.quickActions = vgui.Create("DPanel", self.tabSheet)
 	self.quickActions:Dock(FILL)
 
-	local tab = self.tabSheet:AddSheet("Actions", self.quickActions, "icon16/money.png")
-	tab.Button:SetFont("Impulse-Elements16")
+	function self.quickActions:Paint(w, h)
+		surface.SetDrawColor(darkOverlay)
+		surface.DrawRect(0, 0, w, h)
+		return true
+	end
 
-	local tab = self.tabSheet:AddSheet("Teams", self.quickActions, "icon16/user_suit.png")
-	tab.Button:SetFont("Impulse-Elements16")
+	self.collapsableOptions = vgui.Create("DCollapsibleCategory", self.quickActions)
+	self.collapsableOptions:SetLabel("Actions")
+	self.collapsableOptions:Dock(TOP)
+	function self.collapsableOptions:Paint()
+		self:SetBGColor(color_green)
+	end
 
-	local tab = self.tabSheet:AddSheet("Business", self.quickActions, "icon16/cart.png")
-	tab.Button:SetFont("Impulse-Elements16")
+	self.collapsableOptionsScroll = vgui.Create("DScrollPanel", self.collapsableOptions)
+	self.collapsableOptionsScroll:Dock(FILL)
+	self.collapsableOptions:SetContents(self.collapsableOptionsScroll)
 
-	local tab = self.tabSheet:AddSheet("Help", self.quickActions, "icon16/information.png")
-	tab.Button:SetFont("Impulse-Elements16")
+	self.list = vgui.Create("DIconLayout", self.collapsableOptionsScroll)
+	self.list:Dock(FILL)
+	self.list:SetSpaceY(5)
+	self.list:SetSpaceX(5)
 
-	local tab = self.tabSheet:AddSheet("Rules", self.quickActions, "icon16/delete.png")
-	tab.Button:SetFont("Impulse-Elements16")
+	local btn = self.list:Add("DButton")
+	btn:Dock(TOP)
+	btn:SetText("cowabunga")
+
+	local defaultButton = self:AddSheet("Actions", Material("impulse/icons/banknotes-256.png"), self.quickActions)
+	self:AddSheet("Teams", Material("impulse/icons/group-256.png"), self.quickActions)
+	self:AddSheet("Business", Material("impulse/icons/cart-73-256.png"), self.quickActions)
+	self:AddSheet("Information", Material("impulse/icons/info-256.png"), self.quickActions)
+
+	--timer.Simple(1, function() self.tabSheet:SetActiveButton(defaultButton) end)
 end
 
+function PANEL:AddSheet(name, icon, pnl)
+	local tab = self.tabSheet:AddSheet(name, pnl)
+	local panel = self
+	tab.Button:SetSize(120, 130)
+	function tab.Button:Paint(w, h)
+		if panel.tabSheet.ActiveButton == self then
+			surface.SetDrawColor(impulse.Config.MainColour)
+		else
+			surface.SetDrawColor(color_white)
+		end
+		surface.SetMaterial(icon)
+		surface.DrawTexturedRect(0, 0, w-10, h-40)
+
+		draw.DrawText(name, "Impulse-Elements18", (w-10)/2, 95, color_white, TEXT_ALIGN_CENTER)
+
+		return true
+	end
+	return tab.Button
+end
 
 vgui.Register("impulsePlayerMenu", PANEL, "DFrame")

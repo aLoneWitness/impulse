@@ -90,17 +90,14 @@ if SERVER then
 	end
 
 	function meta:GetSyncVar(varID, fallback)
-		local targetData = impulse.Sync.Data[self:UserID()]
+		local targetData = impulse.Sync.Data[self.UserID(self)]
 
 		if targetData then
 			if targetData[varID] then
 				return targetData[varID][1]
-			else
-				return fallback
 			end
-		else
-			return fallback
 		end
+		return fallback
 	end
 	
 	netstream.Hook("impulseRequestSync", function(ply)
@@ -113,13 +110,12 @@ if SERVER then
 	end)
 else
 	function meta:GetSyncVar(varID, fallback)
-		local targetData = impulse.Sync.Data[self:UserID()]
+		local targetData = impulse.Sync.Data[self.UserID(self)]
 
 		if targetData then
 			return targetData[varID] or fallback
-		else
-			return fallback
 		end
+		return fallback
 	end
 
 	netstream.Hook("iSyncU", function(varID, targetID, newValue)
