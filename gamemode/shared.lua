@@ -40,7 +40,6 @@ function impulse.lib.LoadFile(fileName)
 		if (SERVER) then
 			AddCSLuaFile(fileName)
 		end
-
 		include(fileName)
 	elseif fileName:find("cl_") then
 		if (SERVER) then

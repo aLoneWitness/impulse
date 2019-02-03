@@ -10,6 +10,8 @@ function IMPULSE:Think()
 		mainMenu:SetAlpha(0)
 		mainMenu:AlphaTo(255, .3)
 		mainMenu.popup = true
+	elseif input.IsKeyDown(KEY_F4) and not IsValid(impulse.playerMenu) then
+		impulse.playerMenu = vgui.Create("impulsePlayerMenu")
 	elseif input.IsKeyDown(KEY_LALT) then
 		local trace = {}
 		trace.start = LocalPlayer():EyePos()

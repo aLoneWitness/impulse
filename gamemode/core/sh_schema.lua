@@ -8,6 +8,7 @@ impulse.schema = impulse.schema or {}
 function impulse.schema.boot(name)
     SCHEMA = name
     MsgC( Color( 83, 143, 239 ), "[IMPULSE] Loading '"..SCHEMA.."' schema...\n" )
+    
     impulse.lib.includeDir(SCHEMA.."/schema/teams")
     impulse.lib.includeDir(SCHEMA.."/schema/npcs")
     impulse.lib.includeDir(SCHEMA.."/schema/config")
