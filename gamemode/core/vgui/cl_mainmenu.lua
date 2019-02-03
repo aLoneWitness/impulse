@@ -11,17 +11,6 @@ function PANEL:Init()
 	self:SetSize(ScrW(), ScrH())
 	self:MakePopup()
 	self:SetPopupStayAtBack(true)
-	--self:SetBackgroundBlur(true)
-
-
---	self.loadSize = #impulse.GetLoadCache() or 0
---	self.loadComplete = 0
---	self.loading = false
-	--for _, k in pairs(impulse.GetLoadCache()) do
-	--	impulse.TriggerLoad(k)
-	--	self.loadComplete = self.loadComplete + 1
-	--end
-	--impulse.loaded = false
 
 	local button = vgui.Create("DButton", self)
 	button:SetPos(100,200)
@@ -144,6 +133,16 @@ function PANEL:Init()
 	--schemaLabel:SetTextColor(Color(impulse.Config.MainColour.r, impulse.Config.MainColour.g, impulse.Config.MainColour.b)) not sure if i like this
 	schemaLabel:SizeToContents()
 	schemaLabel:SetPos(100,140)
+
+	if not impulse.MainMenu.popup and impulse.GetSetting("perf_mcore") == false then
+		Derma_Query("Would you like to enable Multi-core rendering? This will improve your FPS by about 60FPS, however if your computer has a low core count and/or a small amount of RAM it can cause crashes and performance problems.",
+			"impulse",
+			"Enable Multi-core rendering",
+			function()
+				impulse.SetSetting("perf_mcore", true)
+			end,
+			"No thanks")
+	end
 end
 
 function PANEL:OnChildAdded(child)

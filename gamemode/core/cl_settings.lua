@@ -26,6 +26,10 @@ function impulse.LoadSettings()
 		elseif k.type == "dropdown" or k.type == "textbox" then
 			k.value = cookie.GetString("impulse-setting-"..v, k.default)
 		end
+
+		if k.onChanged then
+			k.onChanged(k.value)
+		end
 	end
 end
 
@@ -38,6 +42,11 @@ function impulse.SetSetting(name, newValue)
 
 		cookie.Set("impulse-setting-"..name, newValue)
 		settingData.value = newValue
+
+		if settingData.onChanged then
+			settingData.onChanged(newValue)
+		end
+
 		return
 	end
 	return print("[impulse] Error, could not SetSetting. You've probably got the name wrong! Attempted name: "..name)

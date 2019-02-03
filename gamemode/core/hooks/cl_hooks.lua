@@ -39,6 +39,11 @@ end
 function IMPULSE:DefineSettings()
 	impulse.DefineSetting("hud_vignette", {name="Vignette enabled", category="HUD", type="tickbox", default=true})
 	impulse.DefineSetting("hud_iconcolours", {name="Icon colours enabled", category="HUD", type="tickbox", default=true})
+	impulse.DefineSetting("perf_mcore", {name="Multi-core rendering enabled", category="Performance", type="tickbox", default=false, onChanged = function(newValue)
+		if newValue then
+			RunConsoleCommand("gmod_mcore_test", tostring(tonumber(newValue)))
+		end
+	end})
 end
 
 local loweredAngles = Angle(30, -30, -25)
