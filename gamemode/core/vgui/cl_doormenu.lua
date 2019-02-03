@@ -64,6 +64,8 @@ function PANEL:SetDoor(door, data)
 			panel:Remove()
 		end)
 	end
+
+	hook.Run("DoorMenuAddOptions", self, door, data)
 end
 
 
