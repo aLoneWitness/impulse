@@ -134,15 +134,17 @@ function PANEL:Init()
 	schemaLabel:SizeToContents()
 	schemaLabel:SetPos(100,140)
 
-	if not impulse.MainMenu.popup and impulse.GetSetting("perf_mcore") == false then
-		Derma_Query("Would you like to enable Multi-core rendering? This will improve your FPS by about 60FPS, however if your computer has a low core count and/or a small amount of RAM it can cause crashes and performance problems.",
-			"impulse",
-			"Enable Multi-core rendering",
-			function()
-				impulse.SetSetting("perf_mcore", true)
-			end,
-			"No thanks")
-	end
+	timer.Simple(0, function()
+		if not impulse.MainMenu.popup and impulse.GetSetting("perf_mcore") == false then
+			Derma_Query("Would you like to enable Multi-core rendering? This will improve your FPS by about 60FPS, however if your computer has a low core count and/or a small amount of RAM it can cause crashes and performance problems.",
+				"impulse",
+				"Enable Multi-core rendering",
+				function()
+					impulse.SetSetting("perf_mcore", true)
+				end,
+				"No thanks")
+		end
+	end)
 end
 
 function PANEL:OnChildAdded(child)

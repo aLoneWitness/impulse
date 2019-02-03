@@ -235,7 +235,7 @@ function IMPULSE:HUDPaint()
 		PlayerIcon:SetModel(LocalPlayer():GetModel())
 	end
 
-	if lp:GetModel() != lastModel or lp:GetSkin() != lastSkin or lastTeam != lp:Team() and IsValid(PlayerIcon) then
+	if (lp:GetModel() != lastModel or lp:GetSkin() != lastSkin or lastTeam != lp:Team()) and IsValid(PlayerIcon) then
 		PlayerIcon:SetModel(lp:GetModel(), lp:GetSkin())
 		lastModel = lp:GetModel()
 		lastSkin = lp:GetSkin()

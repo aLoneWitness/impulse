@@ -2,8 +2,8 @@
 -- i claim no credit for this
 -- check out NS at https://github.com/rebel1324/NutScript/
 
-impulse.anim = impulse.anim or {}
-impulse.anim.citizen_male = {
+impulse.Anim = impulse.Anim or {}
+impulse.Anim.citizen_male = {
 	normal = {
 		[ACT_MP_STAND_IDLE] = {ACT_IDLE, ACT_IDLE_ANGRY_SMG1},
 		[ACT_MP_CROUCH_IDLE] = {ACT_COVER_LOW, ACT_COVER_LOW},
@@ -62,7 +62,7 @@ impulse.anim.citizen_male = {
 	},
 }
 
-impulse.anim.citizen_female = {
+impulse.Anim.citizen_female = {
 	normal = {
 		[ACT_MP_STAND_IDLE] = {ACT_IDLE, ACT_IDLE_MANNEDGUN},
 		[ACT_MP_CROUCH_IDLE] = {ACT_COVER_LOW, ACT_COVER_LOW},
@@ -113,9 +113,9 @@ impulse.anim.citizen_female = {
 		attack = ACT_MELEE_ATTACK_SWING
 	},
 	glide = ACT_GLIDE,
-	vehicle = impulse.anim.citizen_male.vehicle
+	vehicle = impulse.Anim.citizen_male.vehicle
 }
-impulse.anim.metrocop = {
+impulse.Anim.metrocop = {
 	normal = {
 		[ACT_MP_STAND_IDLE] = {ACT_IDLE, ACT_IDLE},
 		[ACT_MP_CROUCH_IDLE] = {ACT_COVER_PISTOL_LOW, ACT_COVER_PISTOL_LOW},
@@ -170,7 +170,7 @@ impulse.anim.metrocop = {
 		["prop_vehicle_prisoner_pod"] = {ACT_IDLE, Vector(-4, -0.5, 0)}
 	}
 }
-impulse.anim.overwatch = {
+impulse.Anim.overwatch = {
 	normal = {
 		[ACT_MP_STAND_IDLE] = {"idle_unarmed", ACT_IDLE_ANGRY},
 		[ACT_MP_CROUCH_IDLE] = {ACT_CROUCHIDLE, ACT_CROUCHIDLE},
@@ -216,7 +216,7 @@ impulse.anim.overwatch = {
 	},
 	glide = ACT_GLIDE
 }
-impulse.anim.vort = {
+impulse.Anim.vort = {
 	normal = {
 		[ACT_MP_STAND_IDLE] = {ACT_IDLE, "actionidle"},
 		[ACT_MP_CROUCH_IDLE] = {"crouchidle", "crouchidle"},
@@ -261,7 +261,7 @@ impulse.anim.vort = {
 	},
 	glide = ACT_GLIDE
 }
-impulse.anim.player = {
+impulse.Anim.player = {
 	normal = {
 		[ACT_MP_STAND_IDLE] = ACT_HL2MP_IDLE,
 		[ACT_MP_CROUCH_IDLE] = ACT_HL2MP_IDLE_CROUCH,
@@ -275,14 +275,14 @@ impulse.anim.player = {
 		[ACT_MP_RUN] = ACT_HL2MP_RUN_PASSIVE
 	}
 }
-impulse.anim.zombie = {
+impulse.Anim.zombie = {
 	[ACT_MP_STAND_IDLE] = ACT_HL2MP_IDLE_ZOMBIE,
 	[ACT_MP_CROUCH_IDLE] = ACT_HL2MP_IDLE_CROUCH_ZOMBIE,
 	[ACT_MP_CROUCHWALK] = ACT_HL2MP_WALK_CROUCH_ZOMBIE_01,
 	[ACT_MP_WALK] = ACT_HL2MP_WALK_ZOMBIE_02,
 	[ACT_MP_RUN] = ACT_HL2MP_RUN_ZOMBIE
 }
-impulse.anim.fastZombie = {
+impulse.Anim.fastZombie = {
 	[ACT_MP_STAND_IDLE] = ACT_HL2MP_WALK_ZOMBIE,
 	[ACT_MP_CROUCH_IDLE] = ACT_HL2MP_IDLE_CROUCH_ZOMBIE,
 	[ACT_MP_CROUCHWALK] = ACT_HL2MP_WALK_CROUCH_ZOMBIE_05,
@@ -293,8 +293,8 @@ impulse.anim.fastZombie = {
 
 local translations = {}
 
-function impulse.anim.SetModelClass(model, class)
-	if not impulse.anim[class] then
+function impulse.Anim.SetModelClass(model, class)
+	if not impulse.Anim[class] then
 		error("'"..tostring(class).."' is not a valid animation class!")
 	end
 	
@@ -305,7 +305,7 @@ end
 local stringLower = string.lower
 local stringFind = string.find
 
-function impulse.anim.GetModelClass(model)
+function impulse.Anim.GetModelClass(model)
 	model = stringLower(model)
 	local class = translations[model]
 
@@ -322,14 +322,14 @@ function impulse.anim.GetModelClass(model)
 	return class
 end
 
-impulse.anim.SetModelClass("models/police.mdl", "metrocop")
-impulse.anim.SetModelClass("models/combine_super_soldier.mdl", "overwatch")
-impulse.anim.SetModelClass("models/combine_soldier_prisonGuard.mdl", "overwatch")
-impulse.anim.SetModelClass("models/combine_soldier.mdl", "overwatch")
-impulse.anim.SetModelClass("models/vortigaunt.mdl", "vort")
-impulse.anim.SetModelClass("models/vortigaunt_blue.mdl", "vort")
-impulse.anim.SetModelClass("models/vortigaunt_doctor.mdl", "vort")
-impulse.anim.SetModelClass("models/vortigaunt_slave.mdl", "vort")
+impulse.Anim.SetModelClass("models/police.mdl", "metrocop")
+impulse.Anim.SetModelClass("models/combine_super_soldier.mdl", "overwatch")
+impulse.Anim.SetModelClass("models/combine_soldier_prisonGuard.mdl", "overwatch")
+impulse.Anim.SetModelClass("models/combine_soldier.mdl", "overwatch")
+impulse.Anim.SetModelClass("models/vortigaunt.mdl", "vort")
+impulse.Anim.SetModelClass("models/vortigaunt_blue.mdl", "vort")
+impulse.Anim.SetModelClass("models/vortigaunt_doctor.mdl", "vort")
+impulse.Anim.SetModelClass("models/vortigaunt_slave.mdl", "vort")
 
 local ALWAYS_RAISED = {}
 ALWAYS_RAISED["weapon_physgun"] = true
@@ -462,7 +462,7 @@ PLAYER_HOLDTYPE_TRANSLATOR["knife"] = "normal"
 PLAYER_HOLDTYPE_TRANSLATOR["duel"] = "normal"
 PLAYER_HOLDTYPE_TRANSLATOR["bugbait"] = "normal"
 
-local getModelClass = impulse.anim.GetModelClass
+local getModelClass = impulse.Anim.GetModelClass
 local IsValid = IsValid
 local string  = string
 local type = type
@@ -482,7 +482,7 @@ function IMPULSE:TranslateActivity(ply, act)
 				holdType = PLAYER_HOLDTYPE_TRANSLATOR[holdType] or "passive"
 			end
 
-			local animTree = impulse.anim.player[holdType]
+			local animTree = impulse.Anim.player[holdType]
 
 			if animTree and animTree[act] then
 				if type(animTree[act]) == "string" then
@@ -496,7 +496,7 @@ function IMPULSE:TranslateActivity(ply, act)
 		return self.BaseClass.TranslateActivity(self.BaseClass, ply, act)
 	end
 
-	local animTree = impulse.anim[class]
+	local animTree = impulse.Anim[class]
 
 	if animTree then
 		local subClass = "normal"
@@ -568,7 +568,7 @@ end
 
 function IMPULSE:DoAnimationEvent(ply, event, data)
 	local model = ply:GetModel():lower()
-	local class = impulse.anim.GetModelClass(model)
+	local class = impulse.Anim.GetModelClass(model)
 
 	if class == "player" then
 		return self.BaseClass:DoAnimationEvent(ply, event, data)
@@ -579,7 +579,7 @@ function IMPULSE:DoAnimationEvent(ply, event, data)
 			local holdType = weapon.HoldType or weapon:GetHoldType()
 			holdType = HOLDTYPE_TRANSLATOR[holdType] or holdType
 
-			local animation = impulse.anim[class][holdType]
+			local animation = impulse.Anim[class][holdType]
 
 			if event == PLAYERANIMEVENT_ATTACK_PRIMARY then
 				ply:AnimRestartGesture(GESTURE_SLOT_ATTACK_AND_RELOAD, animation.attack or ACT_GESTURE_RANGE_ATTACK_SMG1, true)
