@@ -45,7 +45,7 @@ netstream.Hook("impulseCharacterCreate", function(player, charName, charModel, c
 		insertQuery:Execute()
 	end)
 	query:Execute()
-	player.NextCreate = ply.NextCreate + 10
+	player.NextCreate = player.NextCreate + 10
 end)
 
 netstream.Hook("msg", function(ply, text)

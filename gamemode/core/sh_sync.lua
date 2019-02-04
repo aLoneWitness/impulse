@@ -2,76 +2,150 @@
 ** Copyright (c) 2019 Jake Green (vin)
 ** This file is private and may not be shared, downloaded, used or sold.
 */
+-- This is Sync version 3 by vin.
+-- Sync V3 has massive networking speed improvements over sync V2, however these improvements require a bit more effort on the coders part
+-- SYNC V3 SHOULD NOT BE USED TO SEND VERY LARGE DATA TABLES, FOR EXAMPLE AN INVENTORY. FOR THAT USE NETSTREAM.
+-- 
 
 impulse.Sync = impulse.Sync or {}
+impulse.Sync.Vars = impulse.Sync.Vars or {}
 impulse.Sync.Data = impulse.Sync.Data or {}
 local syncVarsID = 0
+
+local SYNC_ID_BITS = 6
+local SYNC_MAX_VARS = 63
+
+SYNC_BOOL = 1
+SYNC_STRING =  2
+SYNC_INT = 3
+SYNC_BIGINT = 4
+SYNC_HUGEINT = 5
+
 local SYNC_TYPE_PUBLIC = 1
 local SYNC_TYPE_PRIVATE = 2
 
-function impulse.Sync.RegisterVar()
+function impulse.Sync.RegisterVar(type)
 	syncVarsID = syncVarsID + 1
+
+	if syncVarsID > SYNC_MAX_VARS then
+		print("[impulse] WARNING: Sync var limit hit! (63)")
+	end
+
+	impulse.Sync.Vars[syncVarsID] = type
 	return syncVarsID
 end
 
+function impulse.Sync.DoType(type, value)
+	if SERVER then
+		if type == SYNC_BOOL then
+			return net.WriteBool(value)
+		elseif type == SYNC_INT then
+			return net.WriteUInt(value, 8)
+		elseif type == SYNC_STRING then
+			return net.WriteString(value)
+		elseif type == SYNC_BIGINT then
+			return net.WriteUInt(value, 16)
+		elseif type == SYNC_HUGEINT then
+			return net.WriteUInt(value, 32)
+		end
+	else
+		if type == SYNC_BOOL then
+			return net.ReadBool()
+		elseif type == SYNC_INT then
+			return net.ReadUInt(8)
+		elseif type == SYNC_STRING then
+			return net.ReadString()
+		elseif type == SYNC_BIGINT then
+			return net.ReadUInt(16)
+		elseif type == SYNC_HUGEINT then
+			return net.ReadUInt(32)
+		end
+	end
+end
+
 if SERVER then
+	util.AddNetworkString("iSyncU")
+	util.AddNetworkString("iSyncUlcl")
+	util.AddNetworkString("iSyncR")
+
 	-- target is optional. Sync will take the player and sync their all SyncVars with all clients or the single target if provided.
 	function meta:Sync(target)
-		local targetID = self:UserID()
+		local targetID = self:EntIndex()
 		local syncUser = impulse.Sync.Data[targetID]
 		for varID, syncData in pairs(syncUser) do
 			local value = syncData[1]
-			local syncType = syncData[2]
+			local syncRealm = syncData[2]
+			local syncType = impulse.Sync.Vars[varID]
 
-			if syncType == SYNC_TYPE_PUBLIC then
+			if syncRealm == SYNC_TYPE_PUBLIC then
 				if target then
-					netstream.Start(target, "iSyncU", varID, targetID, value)
+					net.Start("iSyncU")
+						net.WriteUInt(targetID, 16)
+						net.WriteUInt(varID, SYNC_ID_BITS)
+						impulse.Sync.DoType(syncType, value)
+					net.Send(target)
 				else
-					for v, ply in pairs(player.GetAll()) do
-						if ply:UserID() != targetID then
-							netstream.Start(ply, "iSyncU", varID, targetID, value)
-						end
-					end
+					net.Start("iSyncU")
+						net.WriteUInt(targetID, 16)
+						net.WriteUInt(varID, SYNC_ID_BITS)
+						impulse.Sync.DoType(syncType, value)
+					net.Broadcast()
 				end
+			elseif target and target:EntIndex() == targetID then
+				net.Start("iSyncUlcl")
+					net.WriteUInt(varID, SYNC_ID_BITS)
+					impulse.Sync.DoType(syncType, value)
+				net.Send(target)
 			end
 		end
 	end
 
 	-- target is optional. SyncSingle will take the player and sync the SyncVar provided with all clients or the single target if provided.
 	function meta:SyncSingle(varID, target)
-		local targetID = self:UserID()
+		local targetID = self:EntIndex()
 		local syncUser = impulse.Sync.Data[targetID]
 		local syncData = syncUser[varID]
 		local value = syncData[1]
-		local syncType = syncData[2]
+		local syncRealm = syncData[2]
+		local syncType = impulse.Sync.Vars[varID]
 
-		if syncType == SYNC_TYPE_PUBLIC then
+		if syncRealm == SYNC_TYPE_PUBLIC then
 			if target then
-				netstream.Start(target, "iSyncU", varID, targetID, value)
+				net.Start("iSyncU")
+					net.WriteUInt(targetID, 16)
+					net.WriteUInt(varID, SYNC_ID_BITS)
+					impulse.Sync.DoType(syncType, value)
+				net.Send(target)
 			else
-				for v, ply in pairs(player.GetAll()) do
-					if ply:UserID() != targetID then
-						netstream.Start(ply, "iSyncU", varID, targetID, value)
-					end
-				end
+				net.Start("iSyncU")
+					net.WriteUInt(targetID, 16)
+					net.WriteUInt(varID, SYNC_ID_BITS)
+					impulse.Sync.DoType(syncType, value)
+				net.Broadcast()
 			end
+		elseif target and target:EntIndex() == targetID then
+			net.Start("iSyncUlcl")
+				net.WriteUInt(varID, SYNC_ID_BITS)
+				impulse.Sync.DoType(syncType, value)
+			net.Send(target)
 		end
 	end
 
 	-- SyncRemove will remove all SyncVars for this player, then it will update all clients to remove this player.
 	function meta:SyncRemove()
-		local targetID = self:UserID()
+		local targetID = self:EntIndex()
 
 		impulse.Sync.Data[targetID] = nil
-		netstream.Start(self, "iSyncR", targetID)
+
+		net.Start("iSyncR")
+			net.WriteUInt(targetID, 16)
+		net.Send(self)
 	end
 
 	-- instantSync is optional. SetSyncVar will set the SyncVar however it will not update it with all clients unless instantSync is true.
 	function meta:SetSyncVar(varID, newValue, instantSync)
 		local instantSync = instantSync or false
-		local targetID = self:UserID()
-		netstream.Start(self, "iSyncU", varID, targetID, newValue)
-		
+		local targetID = self:EntIndex()
 		local targetData = impulse.Sync.Data[targetID]
 		targetData[varID] = {newValue, SYNC_TYPE_PUBLIC}
 
@@ -82,15 +156,15 @@ if SERVER then
 	
 	-- SetLocalSyncVar will set a local (to the player) SyncVar that will not be communicated with any other players.
 	function meta:SetLocalSyncVar(varID, newValue)
-		local targetID = self:UserID()
-
-		netstream.Start(self, "iSyncU", varID, targetID, newValue)
+		local targetID = self:EntIndex()
 		local targetData = impulse.Sync.Data[targetID]
 		targetData[varID] = {newValue, SYNC_TYPE_PRIVATE}
+
+		self:SyncSingle(varID, self)
 	end
 
 	function meta:GetSyncVar(varID, fallback)
-		local targetData = impulse.Sync.Data[self.UserID(self)]
+		local targetData = impulse.Sync.Data[self.EntIndex(self)]
 
 		if targetData then
 			if targetData[varID] then
@@ -99,18 +173,9 @@ if SERVER then
 		end
 		return fallback
 	end
-	
-	netstream.Hook("impulseRequestSync", function(ply)
-		if ply.lastSync and ply.lastSync > (CurTime() - 3) then return end
-		ply.lastSync = CurTime()
-
-		for v,k in pairs(player.GetAll()) do
-			k:Sync(ply)
-		end
-	end)
 else
 	function meta:GetSyncVar(varID, fallback)
-		local targetData = impulse.Sync.Data[self.UserID(self)]
+		local targetData = impulse.Sync.Data[self.EntIndex(self)]
 
 		if targetData then
 			return targetData[varID] or fallback
@@ -118,8 +183,15 @@ else
 		return fallback
 	end
 
-	netstream.Hook("iSyncU", function(varID, targetID, newValue)
+	net.Receive("iSyncU", function(len)
+		local targetID = net.ReadUInt(16)
+		local varID = net.ReadUInt(SYNC_ID_BITS)
+		local syncType = impulse.Sync.Vars[varID]
+		local newValue = impulse.Sync.DoType(syncType)
 		local targetData = impulse.Sync.Data[targetID]
+
+		print("[impulse] Sync V3 DEBUG:\nsize:"..len.."\ntype: "..syncType.."\nvarid:"..varID.."\nval: "..tostring(newValue).."\ntarget: "..targetID)
+
 		if not targetData then
 			impulse.Sync.Data[targetID] = {}
 			targetData = impulse.Sync.Data[targetID]
@@ -130,17 +202,38 @@ else
 		hook.Run("OnSyncUpdate", varID, targetID, newValue)
 	end)
 
-	netstream.Hook("iSyncR", function(targetID)
+	net.Receive("iSyncUlcl", function(len)
+		local targetID = LocalPlayer():EntIndex()
+		local varID = net.ReadUInt(SYNC_ID_BITS)
+		local syncType = impulse.Sync.Vars[varID]
+		local newValue = impulse.Sync.DoType(syncType)
+		local targetData = impulse.Sync.Data[targetID]
+
+		print("[impulse] Sync V3 DEBUG:\nsize:"..len.."\ntype: "..syncType.."\nvarid:"..varID.."\nval: "..tostring(newValue).."\ntarget: "..targetID)
+
+		if not targetData then
+			impulse.Sync.Data[targetID] = {}
+			targetData = impulse.Sync.Data[targetID]
+		end
+
+		targetData[varID] = newValue
+
+		hook.Run("OnSyncUpdate", varID, targetID, newValue)
+	end)
+
+	net.Receive("iSyncR", function()
+		local targetID = net.ReadUInt(16)
+
 		impulse.Sync.Data[targetID] = nil
 	end)
 end
 
-SYNC_RPNAME = impulse.Sync.RegisterVar()
-SYNC_XP = impulse.Sync.RegisterVar()
-SYNC_MONEY = impulse.Sync.RegisterVar()
-SYNC_BANKMONEY = impulse.Sync.RegisterVar()
-SYNC_WEPRAISED = impulse.Sync.RegisterVar()
-SYNC_CLASS = impulse.Sync.RegisterVar()
-SYNC_RANK = impulse.Sync.RegisterVar()
-SYNC_ARRESTED = impulse.Sync.RegisterVar()
-SYNC_HAT = impulse.Sync.RegisterVar()
+SYNC_RPNAME = impulse.Sync.RegisterVar(SYNC_STRING)
+SYNC_XP = impulse.Sync.RegisterVar(SYNC_HUGEINT)
+SYNC_MONEY = impulse.Sync.RegisterVar(SYNC_HUGEINT)
+SYNC_BANKMONEY = impulse.Sync.RegisterVar(SYNC_HUGEINT)
+SYNC_WEPRAISED = impulse.Sync.RegisterVar(SYNC_BOOL)
+SYNC_CLASS = impulse.Sync.RegisterVar(SYNC_INT)
+SYNC_RANK = impulse.Sync.RegisterVar(SYNC_INT)
+SYNC_ARRESTED = impulse.Sync.RegisterVar(SYNC_BOOL)
+SYNC_HAT = impulse.Sync.RegisterVar(SYNC_INT)

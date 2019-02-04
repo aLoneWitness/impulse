@@ -14,12 +14,13 @@ function impulse.schema.boot(name)
     impulse.lib.includeDir(SCHEMA.."/schema/config")
 
     local mapPath = SCHEMA.."/schema/config/maps/"..game.GetMap()..".lua"
-    if file.Exists("gamemodes/"..mapPath, "GAME") then
+
+    if SERVER and file.Exists("gamemodes/"..mapPath, "GAME") then
     	MsgC( Color( 83, 143, 239 ), "[IMPULSE] Loading map config for '"..game.GetMap().."'\n" )
     	include(mapPath)
     	AddCSLuaFile(mapPath)
 
-        if SERVER and impulse.Config.BlacklistEnts then
+        if impulse.Config.BlacklistEnts then
             hook.Add("InitPostEntity", "impulseBlaclistents", function()
                 for v,k in pairs(ents.GetAll()) do
                     if impulse.Config.BlacklistEnts[k:GetClass()] then
@@ -28,6 +29,9 @@ function impulse.schema.boot(name)
                 end
             end)
         end
+    else
+        include(mapPath)
+        AddCSLuaFile(mapPath)
 	end
 
     impulse.lib.includeDir(SCHEMA.."/schema/scripts")

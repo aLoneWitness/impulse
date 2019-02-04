@@ -2,7 +2,7 @@ function IMPULSE:PlayerInitialSpawn(ply)
 	local isNew = true
 
 	-- sync players with all other clients
-	impulse.Sync.Data[ply:UserID()] = {}
+	impulse.Sync.Data[ply:EntIndex()] = {}
 	for v,k in pairs(player.GetAll()) do
 		k:Sync(ply)
 	end
@@ -170,4 +170,8 @@ end
 
 function IMPULSE:InitPostEntity()
 	impulse.Doors.Load()
+end
+
+function IMPULSE:GetFallDamage(ply, speed)
+	return (speed / 8)
 end
