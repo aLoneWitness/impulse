@@ -17,7 +17,7 @@ if SERVER then
 	    net.WriteString(sound)
 	    net.Send(self)
 	end
-elseif CLIENT then
+else
 	netstream.Hook("IMPULSE-ColoredMessage",function(msg)
 		chat.AddText(unpack(msg))
 	end)
