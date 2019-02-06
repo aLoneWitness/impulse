@@ -14,7 +14,8 @@ function IMPULSE:CalcView(player, origin, angles, fov)
 
 	if( !ragdoll || ragdoll == NULL || !ragdoll:IsValid() ) then return; end
 
-	local eyes = ragdoll:GetAttachment( ragdoll:LookupAttachment( "eyes" ) );
+	local eyes = ragdoll:GetAttachment(ragdoll:LookupAttachment( "eyes" ))
+	if not eyes then return end
 	view = {
 		origin = eyes.Pos,
 		angles = eyes.Ang,

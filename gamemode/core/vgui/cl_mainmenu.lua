@@ -39,6 +39,8 @@ function PANEL:Init()
 		elseif not impulse.MainMenu.popup then
 			LocalPlayer():ScreenFade(SCREENFADE.OUT, color_black, 1, .6)
 			impulse.MainMenu:AlphaTo(0, .5)
+			LocalPlayer().defaultModel = LocalPlayer():GetModel()
+			LocalPlayer().defaultSkin = LocalPlayer():GetSkin()
 			timer.Simple(1.5, function()
     			LocalPlayer():ScreenFade(SCREENFADE.IN, color_black, 4, 0)
     			selfPanel:Remove()

@@ -139,10 +139,17 @@ function PANEL:Init()
  	end
 
  	self.descLbl = vgui.Create("DLabel", self.teams)
- 	self.descLbl:SetText("Class: ".."error")
+ 	self.descLbl:SetText("Description:")
  	self.descLbl:SetFont("Impulse-Elements18")
  	self.descLbl:SizeToContents()
- 	self.descLbl:SetPos(420, 380)
+ 	self.descLbl:SetPos(410, 380)
+
+  	self.descLblT = vgui.Create("DLabel", self.teams)
+ 	self.descLblT:SetText("")
+ 	self.descLblT:SetFont("Impulse-Elements16")
+ 	self.descLblT:SetPos(410, 400)
+ 	self.descLblT:SetContentAlignment(7)
+  	self.descLblT:SetSize(230, 230)
 
 	self.teamsInner = vgui.Create("DPanel", self.teams)
 	self.teamsInner:SetSize(400, 580)
@@ -172,8 +179,36 @@ function PANEL:Init()
 	for v,k in pairs(impulse.Teams.Data) do
 		local teamCard = list:Add("impulseTeamCard")
 		teamCard:SetTeam(v)
+		teamCard.team = v
 		teamCard:Dock(TOP)
 		teamCard:SetHeight(60)
+		teamCard:SetMouseInputEnabled(true)
+		
+		local realSelf = self
+
+		function teamCard:OnCursorEntered()
+			local model = impulse.Teams.Data[self.team].model
+			local skin = impulse.Teams.Data[self.team].skin or 0
+			local desc = impulse.Teams.Data[self.team].description
+			local bodygroups = impulse.Teams.Data[self.team].bodygroups
+
+			if not model then
+				model = LocalPlayer().defaultModel or "models/Humans/Group01/male_02.mdl" 
+				skin = LocalPlayer().defaultSkin or 0
+			end
+
+			realSelf.modelPreview:SetModel(model)
+			realSelf.modelPreview.Entity:SetSkin(skin)
+
+			if bodygroups then
+				for v, bodygroupData in pairs(bodygroups) do
+					realSelf.modelPreview.Entity:SetBodygroup(bodygroupData[1], (bodygroupData[2] or 0))
+				end
+			end
+
+			realSelf.descLblT:SetText(desc)
+			realSelf.descLblT:SetWrap(true)
+		end
 	end
 
 
@@ -193,8 +228,6 @@ function PANEL:Init()
 	self.list:Dock(FILL)
 	self.list:SetSpaceY(5)
 	self.list:SetSpaceX(5)
-
-
 
 	local defaultButton = self:AddSheet("Actions", Material("impulse/icons/banknotes-256.png"), self.quickActions)
 	self:AddSheet("Teams", Material("impulse/icons/group-256.png"), self.teams)

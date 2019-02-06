@@ -3,8 +3,11 @@ function IMPULSE:PlayerInitialSpawn(ply)
 
 	-- sync players with all other clients
 	impulse.Sync.Data[ply:EntIndex()] = {}
-	for v,k in pairs(player.GetAll()) do
-		k:Sync(ply)
+	for v,k in pairs(impulse.Sync.Data) do
+		local ent = Entity(v)
+		if IsValid(ent) then
+			ent:Sync(ply)
+		end
 	end
 
 	-- sync players with all other doors
