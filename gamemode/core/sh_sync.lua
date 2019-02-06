@@ -237,10 +237,6 @@ else
 		local targetData = impulse.Sync.Data[self.EntIndex(self)]
 
 		if targetData then
-			if self:EntIndex() == 1665 then
-				--print(varID)
-				--print(targetData[varID])
-			end
 			return targetData[varID] or fallback
 		end
 		return fallback
@@ -295,7 +291,6 @@ else
 		local varID = net.ReadUInt(SYNC_ID_BITS)
 		local syncEnt = impulse.Sync.Data[targetID]
 
-		print("rvar")
 		if syncEnt then
 			local syncVar = impulse.Sync.Data[targetID][varID]
 
