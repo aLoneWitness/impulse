@@ -35,6 +35,10 @@ function IMPULSE:PlayerInitialSpawn(ply)
 		netstream.Start(ply, "impulseJoinData", isNew)
 	end)
 	query:Execute()
+
+	timer.Create(ply:UserID().."impulseXP", impulse.Config.XPTime, 0, function()
+		ply:GiveTimedXP()
+	end)
 end
 
 function IMPULSE:PlayerSpawn(ply)
@@ -60,6 +64,8 @@ function IMPULSE:PlayerDisconnected(ply)
 			door:DoorDataUpdate("owners", owners)
 		end
 	end
+
+	timer.Remove(ply:UserID().."impulseXP")
 end
 
 function IMPULSE:PlayerLoadout(ply)
