@@ -209,6 +209,14 @@ function PANEL:Init()
 			realSelf.descLblT:SetText(desc)
 			realSelf.descLblT:SetWrap(true)
 		end
+
+		function teamCard:OnMousePressed()
+			net.Start("impulseTeamChange")
+			net.WriteUInt(self.team, 8)
+			net.SendToServer()
+
+			realSelf:Remove()
+		end
 	end
 
 

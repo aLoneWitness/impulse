@@ -41,6 +41,7 @@ local reportCommand = {
             end
             if reportId then
                 ply:Notify("Report submitted for review. Thank you for doing your part in keeping the community clean. Report ID: #"..reportId..".")
+                ply:Notify("If you have any further requests or info for us, just send another report.")
                 return
             else
                 ply:Notify("Unfortunatley, no game moderators are currently availble to review your report. Please goto impulse-community.com and submit a ban request.")
@@ -197,4 +198,42 @@ local viewReportsCommand = {
 
 impulse.RegisterChatCommand("/rv", viewReportsCommand)
 
-impulse.RegisterChatCommand("/report", reportCommand)
+local gotoReportCommand = {
+    description = "Teleports yourself to the reportee of your claimed report.",
+    adminOnly = true,
+    onRun = function(ply, arg, rawText)
+        local reportId = arg[1]
+
+        if reportId then
+            reportId = tonumber(reportId)
+        else
+            for id, data in pairs(impulse.Ops.Reports) do
+                if data[3] and data[3] == ply then
+                    reportId = id
+                    break
+                end
+            end
+        end
+
+        if not reportId then
+            return ply:AddChatText(newReportCol, "You must claim a report to use this command.")
+        end
+
+        local targetReport = impulse.Ops.Reports[reportId]
+
+        if targetReport then
+            local reporter = targetReport[1]
+
+            if not IsValid(reporter) then
+                impulse.Ops.Reports[reportId] = nil
+                return ply:AddChatText(newReportCol, "The player who submitted this report has left the game. Report closed.")
+            end
+            
+            ply:ConCommand("say /goto "..reporter:SteamID())
+        else
+            ply:AddChatText(claimedReportCol, "Report #"..reportId.." does not exist.")
+        end
+    end
+}
+
+impulse.RegisterChatCommand("/rgoto", gotoReportCommand)

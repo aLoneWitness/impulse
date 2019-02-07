@@ -31,7 +31,7 @@ function PANEL:SetMessage(...)
 	-- set frame position and height to suit the markup
 	local shiftHeight = self.message:GetHeight()
 	self:SetHeight(shiftHeight+baseSizeH)
-	surface.PlaySound("ambient/water/drip2.wav")
+	surface.PlaySound("buttons/lightswitch2.wav")
 end
 
 local gradient = Material("vgui/gradient-r")

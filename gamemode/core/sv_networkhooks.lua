@@ -86,3 +86,12 @@ netstream.Hook("impulseATMDeposit", function(ply, amount)
 	end
 	ply.NextATM = CurTime() + 1
 end)
+
+util.AddNetworkString("impulseTeamChange")
+net.Receive("impulseTeamChange", function(len, ply)
+	local teamId = net.ReadUInt(8)
+
+	if teamId then
+		ply:SetTeam(teamId)
+	end
+end)
