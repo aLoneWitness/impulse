@@ -81,7 +81,7 @@ if (CLIENT) then
 			surface.SetTextColor(ColorAlpha(col, c))
 			surface.SetFont("Impulse-Elements18-Shadow")
 			surface.SetTextPos(x, y)
-			surface.DrawText(string.upper(v:GetPrintName()))
+			surface.DrawText(v:GetPrintName())
 			surface.SetTextColor(color_white)
 			--draw.DrawText(string.upper(v:GetPrintName()), "Impulse-Elements18-Shadow", x, y, col, nil, TEXT_ALIGN_LEFT)
 

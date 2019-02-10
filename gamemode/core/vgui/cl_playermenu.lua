@@ -146,7 +146,7 @@ function PANEL:Init()
 
   	self.descLblT = vgui.Create("DLabel", self.teams)
  	self.descLblT:SetText("")
- 	self.descLblT:SetFont("Impulse-Elements16")
+ 	self.descLblT:SetFont("Impulse-Elements14")
  	self.descLblT:SetPos(410, 400)
  	self.descLblT:SetContentAlignment(7)
   	self.descLblT:SetSize(230, 230)
@@ -171,13 +171,37 @@ function PANEL:Init()
 	self.availibleTeamsScroll:Dock(FILL)
 	self.availibleTeams:SetContents(self.availibleTeamsScroll)
 
-	local list = vgui.Create("DIconLayout", self.availibleTeamsScroll)
-	list:Dock(FILL)
-	list:SetSpaceY(5)
-	list:SetSpaceX(5)
+	local availibleList = vgui.Create("DIconLayout", self.availibleTeamsScroll)
+	availibleList:Dock(FILL)
+	availibleList:SetSpaceY(5)
+	availibleList:SetSpaceX(5)
+
+	self.unavailibleTeams = vgui.Create("DCollapsibleCategory", self.teamsInner)
+	self.unavailibleTeams:SetLabel("Unavailable teams")
+	self.unavailibleTeams:Dock(TOP)
+	function self.unavailibleTeams:Paint()
+		self:SetBGColor(colInv)
+	end
+
+	self.unavailibleTeamsScroll = vgui.Create("DScrollPanel", self.unavailibleTeams)
+	self.unavailibleTeamsScroll:Dock(FILL)
+	self.unavailibleTeams:SetContents(self.unavailibleTeamsScroll)
+
+	local unavailibleList = vgui.Create("DIconLayout", self.unavailibleTeamsScroll)
+	unavailibleList:Dock(FILL)
+	unavailibleList:SetSpaceY(5)
+	unavailibleList:SetSpaceX(5)
 
 	for v,k in pairs(impulse.Teams.Data) do
-		local teamCard = list:Add("impulseTeamCard")
+		local selectedList
+
+		if (k.xp > LocalPlayer():GetXP()) or (k.donatorOnly and k.donatorOnly == true and LocalPlayer():IsDonator() == false) then
+			selectedList = unavailibleList
+		else
+			selectedList = availibleList
+		end
+
+		local teamCard = selectedList:Add("impulseTeamCard")
 		teamCard:SetTeam(v)
 		teamCard.team = v
 		teamCard:Dock(TOP)
@@ -218,24 +242,6 @@ function PANEL:Init()
 			realSelf:Remove()
 		end
 	end
-
-
-	self.collapsableOptions = vgui.Create("DCollapsibleCategory", self.teamsInner)
-	self.collapsableOptions:SetLabel("Unavailable teams")
-	self.collapsableOptions:Dock(TOP)
-	local colInv = Color(0, 0, 0, 0)
-	function self.collapsableOptions:Paint()
-		self:SetBGColor(colInv)
-	end
-
-	self.collapsableOptionsScroll = vgui.Create("DScrollPanel", self.collapsableOptions)
-	self.collapsableOptionsScroll:Dock(FILL)
-	self.collapsableOptions:SetContents(self.collapsableOptionsScroll)
-
-	self.list = vgui.Create("DIconLayout", self.collapsableOptionsScroll)
-	self.list:Dock(FILL)
-	self.list:SetSpaceY(5)
-	self.list:SetSpaceX(5)
 
 	local defaultButton = self:AddSheet("Actions", Material("impulse/icons/banknotes-256.png"), self.quickActions)
 	self:AddSheet("Teams", Material("impulse/icons/group-256.png"), self.teams)
