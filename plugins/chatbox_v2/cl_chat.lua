@@ -127,16 +127,10 @@ function impulse.chatBox.buildBox()
  					end
  				end
 			end
+			impulse.chatBox.chatLog:ResetAllFades(false, true, -1)
 		end
 	end
 	impulse.chatBox.chatLog.Think = function( self )
-		if impulse.chatBox.lastMessage then
-			if CurTime() - impulse.chatBox.lastMessage > impulse.GetSetting("chat_fadetime") then
-				self:SetVisible( false )
-			else
-				self:SetVisible( true )
-			end
-		end
 		self:SetSize( impulse.chatBox.frame:GetWide() - 10, impulse.chatBox.frame:GetTall() - impulse.chatBox.entry:GetTall() - 40 )
 	end
 	impulse.chatBox.chatLog.PerformLayout = function( self )
@@ -241,7 +235,7 @@ function impulse.chatBox.showBox()
 	-- MakePopup calls the input functions so we don't need to call those
 	impulse.chatBox.frame:MakePopup()
 	impulse.chatBox.entry:RequestFocus()
-	
+
 	-- Make sure other addons know we are chatting
 	gamemode.Call("StartChat")
 end
@@ -263,6 +257,7 @@ function chat.AddText(...)
 			table.insert( msg, Color(obj.r, obj.g, obj.b, obj.a) )
 		elseif type(obj) == "string"  then
 			impulse.chatBox.chatLog:AppendText( obj )
+			impulse.chatBox.chatLog:InsertFade(impulse.GetSetting("chat_fadetime"), 3)
 			table.insert( msg, obj )
 		elseif obj:IsPlayer() then
 			local ply = obj
@@ -270,9 +265,11 @@ function chat.AddText(...)
 			local col = GAMEMODE:GetTeamColor( obj )
 			impulse.chatBox.chatLog:InsertColorChange( col.r, col.g, col.b, 255 )
 			impulse.chatBox.chatLog:AppendText( obj:Name() )
+			impulse.chatBox.chatLog:InsertFade(impulse.GetSetting("chat_fadetime"), 3)
 			table.insert( msg, obj:Name() )
 		end
 	end
+
 	impulse.chatBox.chatLog:AppendText("\n")
 	
 	impulse.chatBox.chatLog:SetVisible( true )

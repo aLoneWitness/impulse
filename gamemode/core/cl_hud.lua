@@ -126,6 +126,7 @@ function IMPULSE:HUDPaint()
 		return
 	end
 
+
 	local health = LocalPlayer():Health()
 	local lp = LocalPlayer()
 	local lpTeam = lp:Team()
@@ -141,6 +142,11 @@ function IMPULSE:HUDPaint()
 		surface.DrawRect(-1, -1, ScrW()+2, ScrH()+2)
 
 		draw.SimpleText("You have died", "Impulse-Elements23", ScrW()/2,ScrH()/2, Color(255,255,255,math.ceil(fde*255)),TEXT_ALIGN_CENTER)
+
+		if IsValid(PlayerIcon) then
+			PlayerIcon:Remove()
+		end
+		
 		return
 	else
 		fde = 0

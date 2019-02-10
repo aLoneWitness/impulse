@@ -23,17 +23,22 @@ function meta:SetTeam(teamID, forced)
 	local teamPlayers = team.NumPlayers(teamID)
 	local forced = forced or false
 
+	if teamData.xp and teamData.xp > self:GetXP() and forced == false then
+		self:Notify("You don't have the XP required to play as this team.")
+		return false
+	end
+
 	if teamData.limit and forced == false then
 		if teamData.percentLimit and teamData.percentLimit == true then
 			local percentTeam = teamPlayers / #player.GetAll()
 			if percentTeam > teamData.limit then
 				self:Notify(teamData.name .. " is full.")
-				return
+				return false
 			end
 		else
 			if teamData.limit >= teamPlayers then
 				self:Notify(teamData.name .. " is full.")
-				return
+				return false
 			end
 		end
 	end
@@ -67,6 +72,8 @@ function meta:SetTeam(teamID, forced)
 		end
 	end
 	self:OldSetTeam(teamID)
+
+	return true
 end
 
 function meta:SetClass(className, forced)

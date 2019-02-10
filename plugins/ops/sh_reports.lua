@@ -42,6 +42,8 @@ local reportCommand = {
             if reportId then
                 ply:Notify("Report submitted for review. Thank you for doing your part in keeping the community clean. Report ID: #"..reportId..".")
                 ply:Notify("If you have any further requests or info for us, just send another report.")
+
+                opsDiscordLog(":warning: **[NEW REPORT]** [#"..reportId.."] ".. ply:SteamName().. " (".. ply:Name().. ") ("..ply:SteamID().."): ```".. rawText.."```")
                 return
             else
                 ply:Notify("Unfortunatley, no game moderators are currently availble to review your report. Please goto impulse-community.com and submit a ban request.")
@@ -62,6 +64,7 @@ local reportCommand = {
             end
 
             impulse.Ops.Reports[reportId][2] = impulse.Ops.Reports[reportId][2].." +"..rawText
+            opsDiscordLog(":speech_left: **[REPORT UPDATE]** [#"..reportId.."] ".. ply:SteamName().. " (".. ply:Name().. ") ("..ply:SteamID().."): ```".. rawText.."```")
 
             ply:Notify("Your report has been updated. Thank you for keeping us informed. Report ID: #"..reportId..".")
         end
@@ -116,6 +119,7 @@ local claimReportCommand = {
                     k:AddChatText(newReportCol, "[REPORT] [#"..reportId.."] claimed by "..ply:SteamName())
                 end
             end
+            opsDiscordLog(":passport_control: **[REPORT CLAIMED]** [#"..reportId.."] claimed by "..ply:SteamName().." ("..ply:SteamID()..")")
 
             reporter:Notify("Your report has been claimed for review by a game moderator ("..ply:SteamName()..").")
         else
@@ -166,6 +170,7 @@ local closeReportCommand = {
 
             impulse.Ops.Reports[reportId] = nil
             ply:AddChatText(claimedReportCol, "[REPORT] [#"..reportId.."] closed by "..ply:SteamName())
+            opsDiscordLog(":closed_book: **[REPORT CLOSED]** [#"..reportId.."] closed by "..ply:SteamName().." ("..ply:SteamID()..")")
             reporter:Notify("Your report has been closed by a game moderator ("..ply:SteamName().."). We hope we have managed to resolve your issue.")
         else
             ply:AddChatText(claimedReportCol, "Report #"..reportId.." does not exist.")

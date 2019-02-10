@@ -23,12 +23,12 @@ if SERVER then
 	end
 
 	function meta:GiveTimedXP()
-		if ply:IsVIP() then
-			ply:AddXP(impulse.Config.XPGetVIP)
-			ply:Notify("For playing the server for 10 minutes you have recieved 10 XP.")
+		if self:IsDonator() then
+			self:AddXP(impulse.Config.XPGetVIP)
+			self:Notify("For playing the server for 10 minutes you have recieved 10 XP.")
 		else
-			ply:AddXP(impulse.Config.XPGet)
-			ply:Notify("For playing the server for 10 minutes you have recieved 5 XP.")
+			self:AddXP(impulse.Config.XPGet)
+			self:Notify("For playing the server for 10 minutes you have recieved 5 XP.")
 		end
 	end
 end

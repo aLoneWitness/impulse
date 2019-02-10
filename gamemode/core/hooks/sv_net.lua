@@ -89,9 +89,27 @@ end)
 
 util.AddNetworkString("impulseTeamChange")
 net.Receive("impulseTeamChange", function(len, ply)
+	if ply.lastTeamTry and ply.lastTeamTry < CurTime() + 1 then return end
+	
+	local teamChangeTime = impulse.Config.TeamChangeTime
+
+	if ply:IsDonator() or ply:IsAdmin() then
+		teamChangeTime = impulse.Config.TeamChangeTimeDonator
+	end
+
+	if ply.lastTeamChange and ply.lastTeamChange + teamChangeTime > CurTime() then
+		ply:Notify("Wait "..math.ceil((ply.lastTeamChange + teamChangeTime) - CurTime()).." seconds before switching team again.")
+		return
+	end
+
 	local teamId = net.ReadUInt(8)
 
-	if teamId then
-		ply:SetTeam(teamId)
+	if teamId and isnumber(teamId) then
+		local setTeam = ply:SetTeam(teamId)
+		if setTeam == true then
+			ply.lastTeamChange = CurTime()
+			ply:Notify("You have changed your team to "..team.GetName(teamId)..".")
+			ply:EmitSound("items/ammo_pickup.wav")
+		end
 	end
 end)
