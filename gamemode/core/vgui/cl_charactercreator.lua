@@ -60,6 +60,7 @@ function PANEL:Init()
  	self.nameEntry = vgui.Create("DTextEntry", self)
  	self.nameEntry:SetSize(180,23)
  	self.nameEntry:SetPos(10,60)
+ 	self.nameEntry:SetAllowNonAsciiCharacters(false)
 
 	self.genderLbl = vgui.Create("DLabel", self)
 	self.genderLbl:SetFont("Impulse-Elements18-Shadow")
