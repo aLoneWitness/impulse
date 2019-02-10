@@ -13,7 +13,7 @@ if SERVER then
 		query:Where("steamid", self:SteamID())
 		query:Execute()
 
-		return self:SetLocalSyncVar(SYNC_XP, amount)
+		return self:SetSyncVar(SYNC_XP, amount, true)
 	end
 
 	function meta:AddXP(amount)

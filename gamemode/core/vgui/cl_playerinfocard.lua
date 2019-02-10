@@ -90,30 +90,32 @@ function PANEL:Init()
 		-- xp/playtime
 		self.playtime = vgui.Create("DLabel", self)
 		self.playtime:SetFont("Impulse-Elements18")
-		self.playtime:SetText("Playtime: ".."1hr")
+		self.playtime:SetText("XP: "..self.Player:GetXP())
 		self.playtime:SizeToContents()
 		self.playtime:SetPos(10,150)
 
 		-- admin stuff
-		self.adminTools = vgui.Create("DCollapsibleCategory", self)
-		self.adminTools:SetPos(10,180)
-		self.adminTools:SetSize(400, 150)
-		self.adminTools:SetExpanded(0)
-		self.adminTools:SetLabel("Admin tools (Click to expand)")
+		if LocalPlayer():IsAdmin() then
+			self.adminTools = vgui.Create("DCollapsibleCategory", self)
+			self.adminTools:SetPos(10,180)
+			self.adminTools:SetSize(400, 150)
+			self.adminTools:SetExpanded(0)
+			self.adminTools:SetLabel("Admin tools (Click to expand)")
 
-		self.adminList = vgui.Create("DIconLayout", self.adminTools)
-		self.adminList:Dock(FILL)
-		self.adminList:SetSpaceY(5)
-		self.adminList:SetSpaceX(5)
-	 
-	 	for v,k in pairs(quickTools) do
-	 		local action = self.adminList:Add("DButton")
-		 	action:SetSize(100,30)
-		 	action:SetText(k.name)
-		 	action.DoClick = function()
-		 		LocalPlayer():ConCommand(k.command)
-		 	end
-		action:SetIcon(k.icon)
+			self.adminList = vgui.Create("DIconLayout", self.adminTools)
+			self.adminList:Dock(FILL)
+			self.adminList:SetSpaceY(5)
+			self.adminList:SetSpaceX(5)
+		 
+		 	for v,k in pairs(quickTools) do
+		 		local action = self.adminList:Add("DButton")
+			 	action:SetSize(100,30)
+			 	action:SetText(k.name)
+			 	action.DoClick = function()
+			 		LocalPlayer():ConCommand(k.command)
+			 	end
+				action:SetIcon(k.icon)
+			end
 		end
 	end)
 
