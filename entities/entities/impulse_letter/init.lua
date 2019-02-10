@@ -11,7 +11,9 @@ function ENT:Initialize()
 end
 
 function ENT:Use(ply)
-	netstream.Start(ply, "impulseOpenLetter", self.letterText)
+	net.Start("impulseReadNote")
+	net.WriteString(self.letterText)
+	net.Send(ply)
 end
 
 function ENT:SetText(text)

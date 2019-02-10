@@ -92,3 +92,20 @@ function IMPULSE:CalcViewModelView(weapon, viewmodel, oldEyePos, oldEyeAng, eyeP
 
 	return vm_origin, vm_angles
 end
+
+net.Receive("impulseReadNote", function()
+	local text = net.ReadString()
+
+	local mainFrame = vgui.Create("DFrame")
+	mainFrame:SetSize(300, 500)
+	mainFrame:Center()
+	mainFrame:MakePopup()
+	mainFrame:SetTitle("Letter")
+
+	local textFrame = vgui.Create( "DTextEntry", mainFrame ) 
+	textFrame:SetPos(25, 50)
+	textFrame:Dock(FILL)
+	textFrame:SetText(text)
+	textFrame:SetEditable(false)
+	textFrame:SetMultiline(true)
+end)

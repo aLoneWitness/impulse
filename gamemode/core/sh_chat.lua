@@ -220,6 +220,11 @@ local writeCommand = {
 			return
 		end
 
+		if string.len(text) > 900 then
+			ply:Notify("Letter max character limit reached. (900)")
+			return
+		end
+
 		local trace = {}
 		trace.start = ply:EyePos()
 		trace.endpos = trace.start + ply:GetAimVector() * 85

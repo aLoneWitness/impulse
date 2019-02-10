@@ -1,5 +1,5 @@
 netstream.Hook("impulseCharacterCreate", function(player, charName, charModel, charSkin)
-	if (ply.NextCreate or 0) > CurTime() then return end
+	if (player.NextCreate or 0) > CurTime() then return end
 
 	local playerID = player:SteamID()
 	local playerGroup = player:GetUserGroup()
@@ -45,7 +45,7 @@ netstream.Hook("impulseCharacterCreate", function(player, charName, charModel, c
 		insertQuery:Execute()
 	end)
 	query:Execute()
-	ply.NextCreate = ply.NextCreate + 10
+	player.NextCreate = CurTime() + 10
 end)
 
 netstream.Hook("msg", function(ply, text)
@@ -113,3 +113,5 @@ net.Receive("impulseTeamChange", function(len, ply)
 		end
 	end
 end)
+
+util.AddNetworkString("impulseReadNote")
