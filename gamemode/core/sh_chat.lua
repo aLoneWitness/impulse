@@ -210,3 +210,34 @@ local dropMoneyCommand = {
 }
 
 impulse.RegisterChatCommand("/dropmoney", dropMoneyCommand)
+
+local writeCommand = {
+	description = "Writes a letter with the text specified.",
+	requiresArg = true,
+	onRun = function(ply, args, text)
+		if ply.letterCount and ply.letterCount > impulse.Config.MaxLetters then
+			ply:Notify("You have reached the max amount of letters.")
+			return
+		end
+
+		local trace = {}
+		trace.start = ply:EyePos()
+		trace.endpos = trace.start + ply:GetAimVector() * 85
+		trace.filter = ply
+
+		local tr = util.TraceLine(trace)
+
+		local letter = ents.Create("impulse_letter")
+		letter:SetPos(tr.HitPos)
+		letter:SetText(text)
+		letter:SetPlayerOwner(ply)
+		letter:Spawn()
+
+		undo.Create("letter")
+		undo.AddEntity(letter)
+		undo.SetPlayer(ply)
+		undo.Finish()
+	end
+}
+
+impulse.RegisterChatCommand("/write", writeCommand)

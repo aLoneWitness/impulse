@@ -98,13 +98,34 @@ function PANEL:Init()
 	end
 
 	local button = vgui.Create("DButton", self)
+	button:SetPos(100,310)
+	button:SetFont("Impulse-Elements32")
+	button:SetText("Donate")
+	button:SizeToContents()
+
+	local normalCol = button:GetColor()
+	local highlightCol = Color(impulse.Config.MainColour.r, impulse.Config.MainColour.g, impulse.Config.MainColour.b)
+	local goldCol = Color(218, 165, 32)
+	function button:Paint()
+		if self:IsHovered() then
+			self:SetColor(highlightCol)
+		else
+			self:SetColor(goldCol)
+		end
+	end
+
+	function button:OnCursorEntered()
+		surface.PlaySound("ui/buttonrollover.wav")
+	end
+
+	local button = vgui.Create("DButton", self)
 	button:SetPos(100,ScrH()-200)
 	button:SetFont("Impulse-Elements32")
 	button:SetText("Disconnect")
 	button:SizeToContents()
 
 	local normalCol = button:GetColor()
-	local highlightCol = Color(impulse.Config.MainColour.r, impulse.Config.MainColour.g, impulse.Config.MainColour.b)
+	local highlightCol = Color(240, 0, 0)
 	function button:Paint()
 		if self:IsHovered() then
 			self:SetColor(highlightCol)

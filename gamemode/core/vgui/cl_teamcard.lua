@@ -13,6 +13,7 @@ function PANEL:SetTeam(teamID)
 	self.playerCount = self.players
 	self.model = LocalPlayer().defaultModel or "models/Humans/Group01/male_02.mdl" 
 	self.skin = LocalPlayer().defaultSkin or 0
+	self.requirements = ""
 	local teamData = impulse.Teams.Data[teamID]
 
 	if teamData.limit then
@@ -26,6 +27,14 @@ function PANEL:SetTeam(teamID)
 	if teamData.model then
 		self.model = teamData.model
 		self.skin = 0
+	end
+
+	if teamData.xp > 0 then
+		self.requirements = teamData.xp.."XP"
+	end
+
+	if teamData.donatorOnly and teamData.donatorOnly == true then
+		self.requirements = self.requirements.." (Donator only)"
 	end
 
  	self.modelIcon = vgui.Create("SpawnIcon", self)
@@ -56,6 +65,10 @@ function PANEL:Paint(w,h)
 	surface.SetTextColor(color_white)
 	surface.SetTextPos(65,10)
 	surface.DrawText(self.name)
+
+	-- team requirements
+	surface.SetTextPos(65,25)
+	surface.DrawText(self.requirements)
 
 	 -- team size
 	surface.SetTextPos(w-30,10)
