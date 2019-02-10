@@ -42,6 +42,7 @@ function PANEL:OnKeyCodeReleased()
 		end
 
 		impulse.Scenes.Play(1, impulse.Config.IntroScenes[counter], playIntroScenes)
+		surface.PlaySound("music/HL2_intro.mp3")
 	else
 		vgui.Create("impulseMainMenu")
 	end
