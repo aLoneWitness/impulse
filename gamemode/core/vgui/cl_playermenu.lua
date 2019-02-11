@@ -26,6 +26,14 @@ function PANEL:Init()
 		return true
 	end
 
+	-- business
+	self.business = vgui.Create("DPanel", self.tabSheet)
+	self.business:Dock(FILL)
+	function self.business:Paint()
+		return true
+	end
+
+	-- info
 	self.info = vgui.Create("DPanel", self.tabSheet)
 	self.info:Dock(FILL)
 	function self.info:Paint(w, h)
@@ -34,7 +42,7 @@ function PANEL:Init()
 
 	local defaultButton = self:AddSheet("Actions", Material("impulse/icons/banknotes-256.png"), self.quickActions, self.QuickActions)
 	self:AddSheet("Teams", Material("impulse/icons/group-256.png"), self.teams, self.Teams)
-	self:AddSheet("Business", Material("impulse/icons/cart-73-256.png"), self.quickActions)
+	self:AddSheet("Business", Material("impulse/icons/cart-73-256.png"), self.business, self.Business)
 	self:AddSheet("Information", Material("impulse/icons/info-256.png"), self.info, self.Info)
 
 	self.tabSheet:SetActiveButton(defaultButton)
@@ -44,10 +52,18 @@ function PANEL:Init()
 end
 
 function PANEL:QuickActions()
+	local model = LocalPlayer().defaultModel or "models/Humans/Group01/male_02.mdl"
+	local skin = LocalPlayer().defaultSkin or 0
+
+	if impulse.Teams.Data[LocalPlayer():Team()].model then
+		model = LocalPlayer():GetModel()
+		skin = LocalPlayer():GetSkin()
+	end
 	self.modelPreview = vgui.Create("DModelPanel", self.quickActions)
 	self.modelPreview:SetPos(373, 0)
 	self.modelPreview:SetSize(300, 370)
-	self.modelPreview:SetModel(LocalPlayer():GetModel() or "models/error.mdl")
+	self.modelPreview:SetModel(model)
+	self.modelPreview.Entity:SetSkin(skin)
 	self.modelPreview:MoveToBack()
 	self.modelPreview:SetCursor("arrow")
 	self.modelPreview:SetFOV(self.modelPreview:GetFOV() - 19)
@@ -264,6 +280,42 @@ function PANEL:Teams()
 
 			realSelf:Remove()
 		end
+	end
+end
+
+function PANEL:Business()
+	self.buyableItems = vgui.Create("DCollapsibleCategory", self.business)
+	self.buyableItems:SetLabel("Available items")
+	self.buyableItems:Dock(TOP)
+	local colInv = Color(0, 0, 0, 0)
+	function self.buyableItems:Paint()
+		self:SetBGColor(colInv)
+	end
+
+	self.buyableItemsScroll = vgui.Create("DScrollPanel", self.availibleTeams)
+	self.buyableItemsScroll:Dock(FILL)
+	self.buyableItems:SetContents(self.buyableItemsScroll)
+
+	local availibleList = vgui.Create("DIconLayout", self.buyableItemsScroll)
+	availibleList:Dock(FILL)
+	availibleList:SetSpaceY(5)
+	availibleList:SetSpaceX(5)
+
+	for name,k in pairs(impulse.Business.Data) do
+		if not LocalPlayer():CanBuy(name) then
+			continue
+		end
+
+		local item = availibleList:Add("SpawnIcon")
+		item:SetModel(k.model)
+		item:SetSize(58,58)
+		item:SetTooltip(name.." \n"..impulse.Config.CurrencyPrefix..k.price)
+
+		local costLbl = vgui.Create("DLabel", item)
+		costLbl:SetPos(5,35)
+		costLbl:SetFont("Impulse-Elements20-Shadow")
+		costLbl:SetText(impulse.Config.CurrencyPrefix..k.price)
+		costLbl:SizeToContents()
 	end
 end
 

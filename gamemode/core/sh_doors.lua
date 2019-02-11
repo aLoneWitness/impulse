@@ -183,7 +183,7 @@ function meta:CanLockUnlockDoor(doorData)
 
 	if doorData.owners and doorData.owners[self:UserID()] then
 		return true
-	elseif doorData.group and doorData.group == impulse.Teams.Data[self:Team()].doorGroup then
+	elseif doorData.group and table.HasValue(impulse.Teams.Data[self:Team()].doorGroup, doorData.group) then
 		return true
 	end
 end
