@@ -1,4 +1,4 @@
-local function LoadEnts()
+function LoadSaveEnts()
 	if file.Exists( "impulse/"..string.lower(game.GetMap())..".txt", "DATA") then
 		local savedEnts = util.JSONToTable( file.Read( "impulse/" .. string.lower( game.GetMap() ) .. ".txt" ) )
 		for v,k in pairs(savedEnts) do
@@ -63,14 +63,4 @@ concommand.Add("impulse_removesaveent", function(ply)
 		ent:Remove()
 		ply:AddChatText("Removed "..ent:GetClass().." for saving.")
 	end
-end)
-
-hook.Add("InitPostEntity", "impulseLoadSavedEnts", function()
-	for v,k in pairs(ents.GetAll()) do
-		if k.impulseSaveEnt then
-			k:Remove()
-		end
-	end
-
-	LoadEnts()
 end)

@@ -179,6 +179,14 @@ end
 
 function IMPULSE:InitPostEntity()
 	impulse.Doors.Load()
+
+	for v,k in pairs(ents.GetAll()) do
+		if k.impulseSaveEnt then
+			k:Remove()
+		end
+	end
+
+	LoadSaveEnts()
 end
 
 function IMPULSE:GetFallDamage(ply, speed)
