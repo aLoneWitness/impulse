@@ -6,7 +6,7 @@ function PANEL:Init()
 	self:SetTitle("Player menu")
 	self:MakePopup()
 
-	local darkOverlay = Color(40, 40, 40, 160)
+	self.darkOverlay = Color(40, 40, 40, 160)
 
 	self.tabSheet = vgui.Create("DColumnSheet", self)
 	self.tabSheet:Dock(FILL)
@@ -19,6 +19,31 @@ function PANEL:Init()
 		return true
 	end
 
+	-- teams
+	self.teams = vgui.Create("DPanel", self.tabSheet)
+	self.teams:Dock(FILL)
+	function self.teams:Paint(w, h)
+		return true
+	end
+
+	self.info = vgui.Create("DPanel", self.tabSheet)
+	self.info:Dock(FILL)
+	function self.info:Paint(w, h)
+		return true
+	end
+
+	local defaultButton = self:AddSheet("Actions", Material("impulse/icons/banknotes-256.png"), self.quickActions, self.QuickActions)
+	self:AddSheet("Teams", Material("impulse/icons/group-256.png"), self.teams, self.Teams)
+	self:AddSheet("Business", Material("impulse/icons/cart-73-256.png"), self.quickActions)
+	self:AddSheet("Information", Material("impulse/icons/info-256.png"), self.info, self.Info)
+
+	self.tabSheet:SetActiveButton(defaultButton)
+	self:QuickActions()
+	self.tabSheet.ActiveButton.Target:SetVisible(true)
+	self.tabSheet.Content:InvalidateLayout()
+end
+
+function PANEL:QuickActions()
 	self.modelPreview = vgui.Create("DModelPanel", self.quickActions)
 	self.modelPreview:SetPos(373, 0)
 	self.modelPreview:SetSize(300, 370)
@@ -46,8 +71,10 @@ function PANEL:Init()
 
 	self.quickActionsInner = vgui.Create("DPanel", self.quickActions)
 	self.quickActionsInner:SetSize(400, 580)
+
+	local panel = self
 	function self.quickActionsInner:Paint(w, h)
-		surface.SetDrawColor(darkOverlay)
+		surface.SetDrawColor(panel.darkOverlay)
 		surface.DrawRect(0, 0, w, h)
 		return true
 	end
@@ -118,14 +145,9 @@ function PANEL:Init()
 	self.list:Dock(FILL)
 	self.list:SetSpaceY(5)
 	self.list:SetSpaceX(5)
+end
 
-	-- teams
-	self.teams = vgui.Create("DPanel", self.tabSheet)
-	self.teams:Dock(FILL)
-	function self.teams:Paint(w, h)
-		return true
-	end
-
+function PANEL:Teams()
 	self.modelPreview = vgui.Create("DModelPanel", self.teams)
 	self.modelPreview:SetPos(373, 0)
 	self.modelPreview:SetSize(300, 370)
@@ -153,8 +175,9 @@ function PANEL:Init()
 
 	self.teamsInner = vgui.Create("DPanel", self.teams)
 	self.teamsInner:SetSize(400, 580)
+	local panel = self
 	function self.teamsInner:Paint(w, h)
-		surface.SetDrawColor(darkOverlay)
+		surface.SetDrawColor(panel.darkOverlay)
 		surface.DrawRect(0, 0, w, h)
 		return true
 	end
@@ -242,19 +265,97 @@ function PANEL:Init()
 			realSelf:Remove()
 		end
 	end
-
-	local defaultButton = self:AddSheet("Actions", Material("impulse/icons/banknotes-256.png"), self.quickActions)
-	self:AddSheet("Teams", Material("impulse/icons/group-256.png"), self.teams)
-	self:AddSheet("Business", Material("impulse/icons/cart-73-256.png"), self.quickActions)
-	self:AddSheet("Information", Material("impulse/icons/info-256.png"), self.quickActions)
-
-	--timer.Simple(1, function() self.tabSheet:SetActiveButton(defaultButton) end)
 end
 
-function PANEL:AddSheet(name, icon, pnl)
+function PANEL:Info()
+	self.infoSheet = vgui.Create("DPropertySheet", self.info)
+	self.infoSheet:Dock(FILL)
+
+	local webRules = vgui.Create("DHTML", self.infoSheet)
+	webRules:OpenURL(impulse.Config.RulesURL)
+
+	self.infoSheet:AddSheet("Rules", webRules)
+
+	local webTutorial = vgui.Create("DHTML", self.infoSheet)
+	webTutorial:OpenURL(impulse.Config.TutorialURL)
+
+	self.infoSheet:AddSheet("Help & Tutorials", webTutorial)
+
+	local credits = vgui.Create("DLabel")
+	credits:SetText([[impulse framework:
+		Jake Green - vin - framework creator
+
+		impulse Half-Life 2 Roleplay schema:
+		Jake Green - vin - schema creator
+		Sander van Dinteren - aLoneWitness - contributor
+
+		Third-party modules:
+		Alex Grist - MySQL wrapper and netstream2
+		thelastpenguin - pON
+		Cat.jpeg - some string functions
+		Kyle Smith - UTF-8 module
+		rebel1324 and Chessnut - animations base
+
+		Early testing (and feedback) team:
+		confused
+		Bwah
+		KTG
+		Law
+		Oscar Holmes
+		Lefton
+		Y Tho
+		Morgan
+
+
+
+		Find out how impulse was made at www.vingard.ovh/category/impulse
+		Copyright Jake Green 2019]])
+	credits:SetContentAlignment(7)
+	credits:SetFont("Impulse-Elements18")
+	credits:SetPos(5,5)
+
+	self.infoSheet:AddSheet("Credits", credits)
+
+	local gdpr = vgui.Create("DLabel")
+	gdpr:SetText([[What information impulse stores:
+		Your SteamID
+		A unique ID code for your account
+		Your RP name
+		Your group
+		Your RP group
+		Your XP
+		Your money and bank money
+		Your inventory
+		Your ranks
+		Your model
+		Your skin
+		Misc. cosmetic data
+		UNIX epoch of first join
+		Misc. data that can be stored by plugins or the schema
+		Chat logs (including private messages)
+
+		If you have any issues or wish for your data to be removed, 
+		please contact admin@impulse-community.com. Please note, we
+		reserve the right to refuse to remove your data as none of
+		it is personal. Your data will never be sold to a third-party.
+
+		Please do not use impulse as a method for private communitcation,
+		all communication data is stored and reviewed.
+
+		All log data will be deleted after 30 days automatically, however
+		the data may be stored idefinitely if it violates server rules.]])
+	gdpr:SetContentAlignment(7)
+	gdpr:SetFont("Impulse-Elements18")
+	gdpr:SetPos(5,5)
+
+	self.infoSheet:AddSheet("Privacy", gdpr)
+end
+
+function PANEL:AddSheet(name, icon, pnl, loadFunc)
 	local tab = self.tabSheet:AddSheet(name, pnl)
 	local panel = self
 	tab.Button:SetSize(120, 130)
+
 	function tab.Button:Paint(w, h)
 		if panel.tabSheet.ActiveButton == self then
 			surface.SetDrawColor(impulse.Config.MainColour)
@@ -267,6 +368,16 @@ function PANEL:AddSheet(name, icon, pnl)
 		draw.DrawText(name, "Impulse-Elements18", (w-10)/2, 95, color_white, TEXT_ALIGN_CENTER)
 
 		return true
+	end
+
+	local oldClick = tab.Button.DoClick
+	function tab.Button:DoClick()
+		oldClick()
+
+		if loadFunc and not self.loaded then
+			loadFunc(panel)
+			self.loaded = true
+		end
 	end
 	return tab.Button
 end
