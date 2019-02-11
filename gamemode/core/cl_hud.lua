@@ -78,6 +78,7 @@ local announcementIcon = Material("impulse/icons/megaphone-128.png")
 local lastModel = ""
 local lastSkin = ""
 local lastTeam = 99
+local iconLoaded = false
 
 local function DrawOverheadInfo(target, alpha)
 	local pos = target:EyePos()
@@ -241,7 +242,7 @@ function IMPULSE:HUDPaint()
 		PlayerIcon:SetModel(LocalPlayer():GetModel())
 	end
 
-	if (lp:GetModel() != lastModel) or (lp:GetSkin() != lastSkin) or (lastTeam != lp:Team()) or not lp.entsLoaded and IsValid(PlayerIcon) then
+	if (lp:GetModel() != lastModel) or (lp:GetSkin() != lastSkin) or (lastTeam != lp:Team()) or (iconLoaded == false and input.IsKeyDown(KEY_W)) and IsValid(PlayerIcon) then -- input is super hacking fix for SpawnIcon issue
 		PlayerIcon:SetModel(lp:GetModel(), lp:GetSkin())
 		lastModel = lp:GetModel()
 		lastSkin = lp:GetSkin()

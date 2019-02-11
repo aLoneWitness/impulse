@@ -92,9 +92,3 @@ function IMPULSE:CalcViewModelView(weapon, viewmodel, oldEyePos, oldEyeAng, eyeP
 
 	return vm_origin, vm_angles
 end
-
-function IMPULSE:InitPostEntity()
-	timer.Simple(2, function()
-		LocalPlayer().entsLoaded = true
-	end)
-end
