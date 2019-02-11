@@ -46,6 +46,7 @@ function PANEL:Init()
 	self:AddSheet("Information", Material("impulse/icons/info-256.png"), self.info, self.Info)
 
 	self.tabSheet:SetActiveButton(defaultButton)
+	defaultButton.loaded = true
 	self:QuickActions()
 	self.tabSheet.ActiveButton.Target:SetVisible(true)
 	self.tabSheet.Content:InvalidateLayout()
