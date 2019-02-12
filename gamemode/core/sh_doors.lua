@@ -181,9 +181,11 @@ function meta:CanLockUnlockDoor(doorData)
 
 	hook.Run("playerCanUnlockLock", self, doorData)
 
+	local teamDoorGroups = impulse.Teams.Data[self:Team()].doorGroup
+
 	if doorData.owners and doorData.owners[self:UserID()] then
 		return true
-	elseif doorData.group and table.HasValue(impulse.Teams.Data[self:Team()].doorGroup, doorData.group) then
+	elseif doorData.group and teamDoorGroups and table.HasValue(teamDoorGroups, doorData.group) then
 		return true
 	end
 end
