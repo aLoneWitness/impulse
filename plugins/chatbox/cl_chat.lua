@@ -89,9 +89,9 @@ function impulse.chatBox.buildBox()
 		end
 	end
 
-	impulse.chatBox.chatLog = vgui.Create("RichText", impulse.chatBox.frame) 
-	impulse.chatBox.chatLog:SetSize( impulse.chatBox.frame:GetWide() - 10, impulse.chatBox.frame:GetTall() - 70 )
-	impulse.chatBox.chatLog:SetPos( 5, 30 )
+	impulse.chatBox.chatLog = vgui.Create("impulseRichText", impulse.chatBox.frame)
+	impulse.chatBox.chatLog:SetPos(5, 30)
+	impulse.chatBox.chatLog:SetSize(impulse.chatBox.frame:GetWide() - 10, impulse.chatBox.frame:GetTall() - 70)
 	impulse.chatBox.chatLog.PaintOver = function(self, w, h)
 		local entry = impulse.chatBox.entry
 
@@ -127,17 +127,11 @@ function impulse.chatBox.buildBox()
  					end
  				end
 			end
-			impulse.chatBox.chatLog:ResetAllFades(false, true, -1)
 		end
 	end
 	impulse.chatBox.chatLog.Think = function( self )
 		self:SetSize( impulse.chatBox.frame:GetWide() - 10, impulse.chatBox.frame:GetTall() - impulse.chatBox.entry:GetTall() - 40 )
 	end
-	impulse.chatBox.chatLog.PerformLayout = function( self )
-		self:SetFontInternal("Impulse-Chat"..impulse.GetSetting("chat_fontsize"))
-		self:SetFGColor( color_white )
-	end
-	impulse.chatBox.oldPaint2 = impulse.chatBox.chatLog.Paint
 	
 	local text = "Say:"
 
@@ -185,10 +179,10 @@ end
 --// Hides the chat box but not the messages
 function impulse.chatBox.hideBox()
 	impulse.chatBox.frame.Paint = function() end
-	impulse.chatBox.chatLog.Paint = function() end
+	impulse.chatBox.chatLog:SetScrollBarVisible(false)
+	impulse.chatBox.chatLog.active = false
 	
-	impulse.chatBox.chatLog:SetVerticalScrollbarEnabled( false )
-	impulse.chatBox.chatLog:GotoTextEnd()
+	--impulse.chatBox.chatLog:GotoTextEnd()
 	
 	impulse.chatBox.lastMessage = impulse.chatBox.lastMessage or CurTime() - impulse.GetSetting("chat_fadetime")
 	
@@ -208,20 +202,21 @@ function impulse.chatBox.hideBox()
 	gui.EnableScreenClicker( false )
 	
 	-- We are done chatting
-	gamemode.Call("FinishChat")
+	hook.Run("FinishChat")
 	
 	-- Clear the text entry
 	impulse.chatBox.entry:SetText( "" )
-	gamemode.Call( "ChatTextChanged", "" )
+	hook.Run( "ChatTextChanged", "" )
 end
 
 --// Shows the chat box
 function impulse.chatBox.showBox()
 	-- Draw the chat box again
 	impulse.chatBox.frame.Paint = impulse.chatBox.oldPaint
-	impulse.chatBox.chatLog.Paint = impulse.chatBox.oldPaint2
+
+	impulse.chatBox.chatLog:SetScrollBarVisible(true)
+	impulse.chatBox.chatLog.active = true
 	
-	impulse.chatBox.chatLog:SetVerticalScrollbarEnabled( true )
 	impulse.chatBox.lastMessage = nil
 	
 	-- Show any hidden children
@@ -237,7 +232,7 @@ function impulse.chatBox.showBox()
 	impulse.chatBox.entry:RequestFocus()
 
 	-- Make sure other addons know we are chatting
-	gamemode.Call("StartChat")
+	hook.Run("StartChat")
 end
 
 local oldAddText = chat.AddText
@@ -248,37 +243,8 @@ function chat.AddText(...)
 		impulse.chatBox.buildBox()
 	end
 	
-	local msg = {}
-	
-	-- Iterate through the strings and colors
-	for _, obj in pairs( {...} ) do
-		if type(obj) == "table" then
-			impulse.chatBox.chatLog:InsertColorChange( obj.r, obj.g, obj.b, obj.a )
-			table.insert( msg, Color(obj.r, obj.g, obj.b, obj.a) )
-		elseif type(obj) == "string"  then
-			impulse.chatBox.chatLog:AppendText( obj )
-			impulse.chatBox.chatLog:InsertFade(impulse.GetSetting("chat_fadetime"), 3)
-			table.insert( msg, obj )
-		elseif obj:IsPlayer() then
-			local ply = obj
-			
-			local col = GAMEMODE:GetTeamColor( obj )
-			impulse.chatBox.chatLog:InsertColorChange( col.r, col.g, col.b, 255 )
-			impulse.chatBox.chatLog:AppendText( obj:Name() )
-			impulse.chatBox.chatLog:InsertFade(impulse.GetSetting("chat_fadetime"), 3)
-			table.insert( msg, obj:Name() )
-		end
-	end
-
-	impulse.chatBox.chatLog:AppendText("\n")
-	
-	impulse.chatBox.chatLog:SetVisible( true )
-	impulse.chatBox.lastMessage = CurTime()
-	impulse.chatBox.chatLog:InsertColorChange( 255, 255, 255, 255 )
+	impulse.chatBox.chatLog:AddText(...)
 	chat.PlaySound()
-	MsgC(unpack(msg)) -- print to console
-	MsgN("")
-	--oldAddText(unpack(msg))
 end
 
 --// Stops the default chat box from being opened

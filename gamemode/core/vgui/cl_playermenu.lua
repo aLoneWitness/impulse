@@ -285,7 +285,17 @@ function PANEL:Teams()
 end
 
 function PANEL:Business()
-	self.buyableItems = vgui.Create("DCollapsibleCategory", self.business)
+	self.businessInner = vgui.Create("DPanel", self.business)
+	self.businessInner:Dock(FILL)
+
+	local panel = self
+	function self.businessInner:Paint(w, h)
+		surface.SetDrawColor(panel.darkOverlay)
+		surface.DrawRect(0, 0, w, h)
+		return true
+	end
+
+	self.buyableItems = vgui.Create("DCollapsibleCategory", self.businessInner)
 	self.buyableItems:SetLabel("Available items")
 	self.buyableItems:Dock(TOP)
 	local colInv = Color(0, 0, 0, 0)
