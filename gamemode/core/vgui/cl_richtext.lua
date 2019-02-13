@@ -66,9 +66,9 @@ function PANEL:AddText(...)
 	local plainText = ""
 	local luaMsg = {}
 
-	if self.customFont then
-		text = "<font="..self.customFont..">"
-		self.customFont = nil
+	if impulse.customChatFont then
+		text = "<font="..impulse.customChatFont..">"
+		impulse.customChatFont = nil
 	end
 	
 	for k, v in ipairs({...}) do

@@ -288,6 +288,7 @@ if CLIENT then
 	end)
 
 	impulse.RegisterChatClass(8, function(message, speaker)
+		impulse.customChatFont = "Impulse-ChatRadio" 
 		chat.AddText(radioCol, "[RADIO] ", speaker:Name(), ":", message)
 	end)
 
