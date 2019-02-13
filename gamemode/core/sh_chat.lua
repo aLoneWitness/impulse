@@ -164,6 +164,29 @@ local itCommand = {
 
 impulse.RegisterChatCommand("/it", itCommand)
 
+local advertCommand = {
+	description = "Send an advert to the city.",
+	requiresArg = true,
+	onRun = function(ply, arg, rawText)
+		if not impulse.Teams.Data[ply:Team()].canAdvert or impulse.Teams.Data[ply:Team()].canAdvert == false then 
+			return ply:Notify("Your team cannot make an advert.") 
+		end
+
+
+		timer.Simple(15, function()
+			if IsValid(ply) and ply:IsPlayer() then
+				for v,k in pairs(player.GetAll()) do
+					k:SendChatClassMessage(12, rawText, ply)
+				end
+			end
+		end)
+
+		ply:Notify("Your advert has been sent and will be broadcast shortly.")
+	end
+}
+
+impulse.RegisterChatCommand("/advert", advertCommand)
+
 local rollCommand = {
 	description = "Generate a random number between 0 and 100.",
 	onRun = function(ply, arg, rawText)
@@ -253,6 +276,7 @@ if CLIENT then
 	local talkCol = Color(255, 255, 100)
 	local radioCol = Color(55, 146, 21)
 	local pmCol = Color(45, 154, 6)
+	local advertCol = Color(255, 174, 66)
 	local rankCols = {}
 	rankCols["superadmin"] = Color(53, 209, 22)
 	rankCols["admin"] = Color(34, 88, 216)
@@ -302,5 +326,9 @@ if CLIENT then
 
 	impulse.RegisterChatClass(11, function(message, speaker)
 		chat.AddText(speaker, yellCol, " rolled ", message)
+	end)
+
+	impulse.RegisterChatClass(12, function(message, speaker)
+		chat.AddText(advertCol, "[ADVERT] ", speaker:Name(), ":", message)
 	end)
 end
