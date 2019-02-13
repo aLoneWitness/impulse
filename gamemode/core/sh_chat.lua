@@ -165,7 +165,7 @@ local itCommand = {
 impulse.RegisterChatCommand("/it", itCommand)
 
 local advertCommand = {
-	description = "Send an advert to the city.",
+	description = "Broadcasts the advert provided.",
 	requiresArg = true,
 	onRun = function(ply, arg, rawText)
 		if not impulse.Teams.Data[ply:Team()].canAdvert or impulse.Teams.Data[ply:Team()].canAdvert == false then 
@@ -277,8 +277,9 @@ if CLIENT then
 	local radioCol = Color(55, 146, 21)
 	local pmCol = Color(45, 154, 6)
 	local advertCol = Color(255, 174, 66)
+	local fallbackRankCol = Color(211, 211, 211)
 	local rankCols = {}
-	rankCols["superadmin"] = Color(53, 209, 22)
+	rankCols["superadmin"] = Color(245, 140, 0)
 	rankCols["admin"] = Color(34, 88, 216)
 	rankCols["moderator"] = Color(34, 88, 216)
 	rankCols["vip"] = Color(212, 185, 9)
@@ -288,11 +289,11 @@ if CLIENT then
 	end)
 
 	impulse.RegisterChatClass(2, function(message, speaker)
-		chat.AddText(oocTagCol, "[OOC] ", (rankCols[speaker:GetUserGroup()] or color_white), speaker:SteamName(), oocCol, ":", message)
+		chat.AddText(oocTagCol, "[OOC] ", (rankCols[speaker:GetUserGroup()] or fallbackRankCol), speaker:SteamName(), oocCol, ":", message)
 	end)
 
 	impulse.RegisterChatClass(3, function(message, speaker)
-		chat.AddText(oocTagCol, "[LOOC] ", (rankCols[speaker:GetUserGroup()] or color_white), speaker:SteamName(), (team.GetColor(speaker:Team())), " (", speaker:Name(), ")", oocCol, ":",  message)
+		chat.AddText(oocTagCol, "[LOOC] ", (rankCols[speaker:GetUserGroup()] or fallbackRankCol), speaker:SteamName(), (team.GetColor(speaker:Team())), " (", speaker:Name(), ")", oocCol, ":",  message)
 	end)
 
 	impulse.RegisterChatClass(4, function(message, speaker)

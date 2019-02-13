@@ -311,6 +311,7 @@ SYNC_CLASS = impulse.Sync.RegisterVar(SYNC_INT)
 SYNC_RANK = impulse.Sync.RegisterVar(SYNC_INT)
 SYNC_ARRESTED = impulse.Sync.RegisterVar(SYNC_BOOL)
 SYNC_HAT = impulse.Sync.RegisterVar(SYNC_INT)
+SYNC_HUNGER = impulse.Sync.RegisterVar(SYNC_INT)
 
 -- ent sync vars
 SYNC_DOOR_NAME = impulse.Sync.RegisterVar(SYNC_STRING)

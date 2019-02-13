@@ -46,6 +46,8 @@ function IMPULSE:PlayerSpawn(ply)
 		ply:SetTeam(impulse.Config.DefaultTeam)
 	end
 
+	ply:SetHunger(100)
+
 	hook.Run("PlayerLoadout", ply)
 end
 
@@ -191,4 +193,20 @@ end
 
 function IMPULSE:GetFallDamage(ply, speed)
 	return (speed / 8)
+end
+
+function IMPULSE:Think()
+	for v,k in pairs(player.GetAll()) do
+		if not k.nextHungerUpdate then k.nextHungerUpdate = CurTime() + impulse.Config.HungerTime end
+		
+		if k:Alive() and k.nextHungerUpdate < CurTime() then
+			k:FeedHunger(-1)
+			if k:GetSyncVar(SYNC_HUNGER, 100) < 1 then
+				k:TakeDamage(1, k, k)
+				k.nextHungerUpdate = CurTime() + 1
+			else
+				k.nextHungerUpdate = CurTime() + impulse.Config.HungerTime
+			end
+		end
+	end
 end
