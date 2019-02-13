@@ -20,6 +20,10 @@ function impulse.Scenes.Play(stage, sceneData, onDone)
 
 	netstream.Start("impulseScenePVS", stage)
 
+	for k,v in pairs(ents.FindByClass("prop_physics")) do
+		v:SetNoDraw(true)
+	end
+
 	hook.Add("CalcView", "impulseScene", function()
 		impulse.Scenes.pos = impulse.Scenes.pos or sceneData.pos
 		impulse.Scenes.ang = impulse.Scenes.ang or sceneData.ang
@@ -40,6 +44,10 @@ function impulse.Scenes.Play(stage, sceneData, onDone)
 			impulse.hudEnabled = true
 			if onDone then
 				onDone()
+			end
+
+			for k,v in pairs(ents.FindByClass("prop_physics")) do
+				v:SetNoDraw(false)
 			end
 		end
 
@@ -81,6 +89,10 @@ function impulse.Scenes.Play(stage, sceneData, onDone)
 				onDone()
 			end
 		end)
+
+		for k,v in pairs(ents.FindByClass("prop_physics")) do
+			v:SetNoDraw(false)
+		end
 	end
 
 	impulse.hudEnabled = false
