@@ -1,5 +1,6 @@
 
 impulse.chatCommands = impulse.chatCommands or {}
+impulse.chatClasses = impulse.chatClasses or {}
 
 function impulse.RegisterChatCommand(name, cmdData)
 	if not cmdData.adminOnly then cmdData.adminOnly = false end
@@ -10,27 +11,21 @@ function impulse.RegisterChatCommand(name, cmdData)
     impulse.chatCommands[name] = cmdData
 end
 
-function impulse.FindPlayer(searchKey)
-	if not searchKey or searchKey == "" then return nil end
-	local searchPlayers = player.GetAll()
-	local lowerKey = string.lower(tostring(searchKey))
-
-	for k = 1, #searchPlayers do
-		local v = searchPlayers[k]
-
-		if searchKey == v:SteamID() then
-			return v
+if SERVER then
+	util.AddNetworkString("impulseChatNetMessage")
+	function meta:SendChatClassMessage(id, message, target)
+		net.Start("impulseChatNetMessage")
+		net.WriteUInt(id, 8)
+		net.WriteString(message)
+		if target then
+			net.WriteUInt(target:UserID(), 8)
 		end
-
-        if string.find(string.lower(v:Name()), lowerKey, 1, true) ~= nil then
-            return v
-        end
-
-        if string.find(string.lower(v:SteamName()), lowerKey, 1, true) ~= nil then
-            return v
-		end
+		net.Send(self)
 	end
-	return nil
+else
+	function impulse.RegisterChatClass(id, onReceive)
+		impulse.chatClasses[id] = onReceive
+	end
 end
 
 local oocCol = color_white
@@ -47,7 +42,7 @@ local oocCommand = {
 	requiresArg = true,
 	onRun = function(ply, arg, rawText)
 		for v,k in pairs(player.GetAll()) do
-			k:AddChatText(oocTagCol, "[OOC] ", ply:SteamName(), oocCol, ":", rawText)
+			k:SendChatClassMessage(2, rawText, ply)
 		end
 	end
 }
@@ -61,7 +56,7 @@ local loocCommand = {
 	onRun = function(ply, arg, rawText)
 		for v,k in pairs(player.GetAll()) do
 			if (ply:GetPos() - k:GetPos()):LengthSqr() <= (impulse.Config.TalkDistance ^ 2) then 
-				k:AddChatText(oocTagCol, "[LOOC] ", ply:SteamName(), (team.GetColor(ply:Team())), " (", ply:Name(), ")", oocCol, ":",  rawText)
+				k:SendChatClassMessage(3, rawText, ply)
 			end
 		end
 	end
@@ -85,8 +80,8 @@ local pmCommand = {
 		local plyTarget = impulse.FindPlayer(name)
 
 		if plyTarget and ply != plyTarget then
-			plyTarget:AddChatText(pmCol, "[PM] ", ply:SteamName(), (team.GetColor(ply:Team())), " (", ply:Name(), ")", pmCol, ": ", message)
-			ply:AddChatText(pmCol, "[PM SENT] ", ply:SteamName(), (team.GetColor(ply:Team())), " (", ply:Name(), ")", pmCol, ": ", message)
+			plyTarget:SendChatClassMessage(4, message, ply)
+			ply:SendChatClassMessage(5, message, ply)
 			plyTarget:SurfacePlaySound("buttons/blip1.wav")
 			ply:SurfacePlaySound("buttons/blip1.wav")
 		else
@@ -103,7 +98,7 @@ local yellCommand = {
 	onRun = function(ply, arg, rawText)
 		for v,k in pairs(player.GetAll()) do
 			if (ply:GetPos() - k:GetPos()):LengthSqr() <= (impulse.Config.YellDistance ^ 2) then 
-				k:AddChatText(ply, yellCol, " yells:", rawText)
+				k:SendChatClassMessage(6, rawText, ply)
 			end
 		end
 	end
@@ -117,7 +112,7 @@ local whisperCommand = {
 	onRun = function(ply, arg, rawText)
 		for v,k in pairs(player.GetAll()) do
 			if (ply:GetPos() - k:GetPos()):LengthSqr() <= (impulse.Config.WhisperDistance ^ 2) then 
-				k:AddChatText(ply, whisperCol, " whispers:", rawText)
+				k:SendChatClassMessage(7, rawText, ply)
 			end
 		end
 	end
@@ -132,7 +127,7 @@ local radioCommand = {
 		if not ply:IsCP() then return end
 		for v,k in pairs(player.GetAll()) do
 			if k:IsCP() then 
-				k:AddChatText(radioCol, "[RADIO] ", ply:Name(), ":", rawText)
+				k:SendChatClassMessage(8, rawText, ply)
 			end
 		end
 	end
@@ -147,7 +142,7 @@ local meCommand = {
 	onRun = function(ply, arg, rawText)
 		for v,k in pairs(player.GetAll()) do
 			if (ply:GetPos() - k:GetPos()):LengthSqr() <= (impulse.Config.TalkDistance ^ 2) then 
-				k:AddChatText(talkCol, ply:Name(), rawText)
+				k:SendChatClassMessage(9, rawText, ply)
 			end
 		end
 	end
@@ -161,7 +156,7 @@ local itCommand = {
 	onRun = function(ply, arg, rawText)
 		for v,k in pairs(player.GetAll()) do
 			if (ply:GetPos() - k:GetPos()):LengthSqr() <= (impulse.Config.TalkDistance ^ 2) then 
-				k:AddChatText(infoCol, "**", rawText)
+				k:SendChatClassMessage(10, rawText)
 			end
 		end
 	end
@@ -174,7 +169,7 @@ local rollCommand = {
 	onRun = function(ply, arg, rawText)
 		for v,k in pairs(player.GetAll()) do
 			if (ply:GetPos() - k:GetPos()):LengthSqr() <= (impulse.Config.TalkDistance ^ 2) then 
-				k:AddChatText(ply, yellCol, " rolled ", tostring(math.random(1,100)))
+				k:SendChatClassMessage(11, (tostring(math.random(1,100))), ply)
 			end
 		end
 	end
@@ -246,3 +241,65 @@ local writeCommand = {
 }
 
 impulse.RegisterChatCommand("/write", writeCommand)
+
+if CLIENT then
+	local talkCol = Color(255, 255, 100)
+	local infoCol = Color(135, 206, 250)
+	local oocCol = color_white
+	local oocTagCol = Color(200, 0, 0)
+	local yellCol = Color(255, 140, 0)
+	local whisperCol = Color(65, 105, 225)
+	local infoCol = Color(135, 206, 250)
+	local talkCol = Color(255, 255, 100)
+	local radioCol = Color(55, 146, 21)
+	local pmCol = Color(45, 154, 6)
+	local rankCols = {}
+	rankCols["superadmin"] = Color(53, 209, 22)
+	rankCols["admin"] = Color(34, 88, 216)
+	rankCols["moderator"] = Color(34, 88, 216)
+	rankCols["vip"] = Color(212, 185, 9)
+
+	impulse.RegisterChatClass(1, function(message, speaker)
+		chat.AddText(speaker, talkCol, " says: ", message)
+	end)
+
+	impulse.RegisterChatClass(2, function(message, speaker)
+		chat.AddText(oocTagCol, "[OOC] ", (rankCols[speaker:GetUserGroup()] or color_white), speaker:SteamName(), oocCol, ":", message)
+	end)
+
+	impulse.RegisterChatClass(3, function(message, speaker)
+		chat.AddText(oocTagCol, "[LOOC] ", (rankCols[speaker:GetUserGroup()] or color_white), speaker:SteamName(), (team.GetColor(speaker:Team())), " (", speaker:Name(), ")", oocCol, ":",  message)
+	end)
+
+	impulse.RegisterChatClass(4, function(message, speaker)
+		chat.AddText(pmCol, "[PM] ", speaker:SteamName(), (team.GetColor(speaker:Team())), " (", speaker:Name(), ")", pmCol, ": ", message)
+	end)
+
+	impulse.RegisterChatClass(5, function(message, speaker)
+		chat.AddText(pmCol, "[PM SENT] ", speaker:SteamName(), (team.GetColor(speaker:Team())), " (", speaker:Name(), ")", pmCol, ": ", message)
+	end)
+
+	impulse.RegisterChatClass(6, function(message, speaker)
+		chat.AddText(speaker, yellCol, " yells:", message)
+	end)
+
+	impulse.RegisterChatClass(7, function(message, speaker)
+		chat.AddText(speaker, whisperCol, " whispers:", message)
+	end)
+
+	impulse.RegisterChatClass(8, function(message, speaker)
+		chat.AddText(radioCol, "[RADIO] ", speaker:Name(), ":", message)
+	end)
+
+	impulse.RegisterChatClass(9, function(message, speaker)
+		chat.AddText(talkCol, speaker:Name(), message)
+	end)
+
+	impulse.RegisterChatClass(10, function(message, speaker)
+		chat.AddText(infoCol, "**", message)
+	end)
+
+	impulse.RegisterChatClass(11, function(message, speaker)
+		chat.AddText(speaker, yellCol, " rolled ", message)
+	end)
+end

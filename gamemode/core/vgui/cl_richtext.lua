@@ -65,6 +65,11 @@ function PANEL:AddText(...)
 	local text = "<font=".."Impulse-Chat"..impulse.GetSetting("chat_fontsize")..">"
 	local plainText = ""
 	local luaMsg = {}
+
+	if self.customFont then
+		text = "<font="..self.customFont..">"
+		self.customFont = nil
+	end
 	
 	for k, v in ipairs({...}) do
 		if (type(v) == "table" and v.r and v.g and v.b) then
@@ -75,7 +80,7 @@ function PANEL:AddText(...)
 			local str = v:Name():gsub("<", "&lt;"):gsub(">", "&gt;")
 
 			text = text.."<color="..color.r..","..color.g..","..color.b..">"..str
-			painText = plainText..str
+			painText = plainText..v:Name()
 			table.insert(luaMsg, str)
 		else
 			local str = tostring(v):gsub("<", "&lt;"):gsub(">", "&gt;")
@@ -88,11 +93,12 @@ function PANEL:AddText(...)
 	text = text.."</font>"
 
 	local textElement = self:Add("DPanel")
-	textElement:SetWide(self:GetWide() - 8)
+	textElement:SetWide(self:GetWide() - 15)
 	textElement:SetDrawBackground(false)
+	textElement:SetMouseInputEnabled(true)
 	textElement.plainText = plainText
 
-	local mrkup = markup.Parse(text, self:GetWide())
+	local mrkup = markup.Parse(text, self:GetWide() - 15)
 	mrkup.OnDrawText = drawText
 
 	textElement:SetTall(mrkup:GetHeight())
@@ -108,6 +114,23 @@ function PANEL:AddText(...)
 		else
 			this:SetAlpha((1 - math.TimeFraction(this.start, this.finish, CurTime())) * 255)
 		end
+	end
+
+	textElement.OnMousePressed = function()
+		local subMenu = DermaMenu()
+
+		subMenu.Think = function()
+			subMenu:MoveToFront()
+		end
+
+		local copyText = subMenu:AddOption("Copy text to clipboard", function()
+			SetClipboardText(textElement.plainText)
+			chat.AddText(color_white, "Text copied to clipboard.")
+		end)
+		copyText:SetIcon("icon16/page_copy.png")
+
+		subMenu:Open()
+		subMenu:SetPos(gui.MouseX(), gui.MouseY())
 	end
 
 	textElement:Dock(TOP)

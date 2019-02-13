@@ -128,7 +128,7 @@ function IMPULSE:PlayerSay(ply, text, teamChat)
 	else
 		for v,k in pairs(player.GetAll()) do
 			if (ply:GetPos() - k:GetPos()):LengthSqr() <= (impulse.Config.TalkDistance ^ 2) then 
-				k:AddChatText(ply, talkCol, " says: ", text)
+				k:SendChatClassMessage(1, text, ply)
 			end
 		end
 	end

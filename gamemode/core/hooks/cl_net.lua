@@ -26,3 +26,18 @@ net.Receive("impulseReadNote", function()
 	textFrame:SetEditable(false)
 	textFrame:SetMultiline(true)
 end)
+
+net.Receive("impulseChatNetMessage", function(len)
+	print("chat class data size: "..len)
+	local id = net.ReadUInt(8)
+	local message = net.ReadString()
+	local target = net.ReadUInt(8)
+	local chatClass = impulse.chatClasses[id]
+	local plyTarget = Player(target)
+
+	if target == 0 then
+		chatClass(message)
+	elseif IsValid(plyTarget) then
+		chatClass(message, plyTarget)
+	end
+end)
