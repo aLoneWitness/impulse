@@ -94,27 +94,29 @@ local function DrawDoorInfo(target)
 	local pos = target:GetPos():ToScreen()
 	local scrW = ScrW()
 	local scrH = ScrH()
-	local doorData = target:GetDoorData()
+	local doorOwners = target:GetSyncVar(SYNC_DOOR_OWNERS, nil) 
+	local doorName = target:GetSyncVar(SYNC_DOOR_NAME, nil) 
+	local doorGroup =  target:GetSyncVar(SYNC_DOOR_GROUP, nil)
+	local doorBuyable = target:GetSyncVar(SYNC_DOOR_BUYABLE, nil)
 	local ownedBy = "Owner(s):"
 
-	if doorData then
-		if doorData.name then
-			draw.DrawText(doorData.name, "Impulse-Elements18-Shadow", scrW * .5, scrH * .6, impulse.Config.MainColour, 1)
-		elseif doorData.group then
-			draw.DrawText(impulse.Config.DoorGroups[doorData.group], "Impulse-Elements18-Shadow", scrW * .5, scrH * .6, impulse.Config.MainColour, 1)
-		elseif doorData.owners then
-			for ownerID,v in pairs(doorData.owners) do
-				local owner = Player(ownerID)
 
-				if IsValid(owner) and owner:IsPlayer() then
-					ownedBy = ownedBy.."\n"..owner:Name()
-				end
+	if doorName then
+		draw.DrawText(doorName, "Impulse-Elements18-Shadow", scrW * .5, scrH * .6, impulse.Config.MainColour, 1)
+	elseif doorGroup then
+		draw.DrawText(impulse.Config.DoorGroups[doorGroup], "Impulse-Elements18-Shadow", scrW * .5, scrH * .6, impulse.Config.MainColour, 1)
+	elseif doorOwners then
+		for ownerID,v in pairs(doorOwners) do
+			local owner = Player(ownerID)
+
+			if IsValid(owner) and owner:IsPlayer() then
+				ownedBy = ownedBy.."\n"..owner:Name()
 			end
-			draw.DrawText(ownedBy, "Impulse-Elements18-Shadow", scrW * .5, scrH * .6, impulse.Config.MainColour, 1)
 		end
+		draw.DrawText(ownedBy, "Impulse-Elements18-Shadow", scrW * .5, scrH * .6, impulse.Config.MainColour, 1)
 	end
 
-	if LocalPlayer():CanBuyDoor(doorData) then
+	if LocalPlayer():CanBuyDoor(doorOwners, doorBuyable) then
 		draw.DrawText("Ownable door (LALT)", "Impulse-Elements18-Shadow", scrW * .5, scrH * .6, impulse.Config.MainColour, 1)
 	end
 end

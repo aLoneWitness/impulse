@@ -59,9 +59,9 @@ function SWEP:PrimaryAttack()
 	local traceEnt = util.TraceLine(trace).Entity
 
 	if IsValid(traceEnt) and traceEnt:IsDoor() then
-		local doorData = traceEnt:GetDoorData()
+		local doorOwners, doorGroup = traceEnt:GetSyncVar(SYNC_DOOR_OWNERS, nil), traceEnt:GetSyncVar(SYNC_DOOR_GROUP, nil)
 
-		if ply:CanLockUnlockDoor(doorData) then
+		if ply:CanLockUnlockDoor(doorOwners, doorGroup) then
 			traceEnt:DoorLock()
 			traceEnt:EmitSound("doors/latchunlocked1.wav")
 		else
@@ -86,9 +86,9 @@ function SWEP:SecondaryAttack()
 	local traceEnt = util.TraceLine(trace).Entity
 
 	if IsValid(traceEnt) and traceEnt:IsDoor() then
-		local doorData = traceEnt:GetDoorData()
+		local doorOwners, doorGroup = traceEnt:GetSyncVar(SYNC_DOOR_OWNERS, nil), traceEnt:GetSyncVar(SYNC_DOOR_GROUP, nil)
 
-		if ply:CanLockUnlockDoor(doorData) then
+		if ply:CanLockUnlockDoor(doorOwners, doorGroup) then
 			traceEnt:DoorUnlock()
 			traceEnt:EmitSound("doors/latchunlocked1.wav")
 		else

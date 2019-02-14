@@ -21,10 +21,13 @@ function IMPULSE:Think()
 		local traceEnt = util.TraceLine(trace).Entity
 
 		if (not impulse.doorMenu or not IsValid(impulse.doorMenu)) and IsValid(traceEnt) and traceEnt:IsDoor() then
-			local doorData = traceEnt:GetDoorData()
-			if LocalPlayer():CanBuyDoor(doorData) or LocalPlayer():CanLockUnlockDoor(doorData) then
+			local doorOwners = traceEnt:GetSyncVar(SYNC_DOOR_OWNERS, nil) 
+			local doorGroup =  traceEnt:GetSyncVar(SYNC_DOOR_GROUP, nil)
+			local doorBuyable = traceEnt:GetSyncVar(SYNC_DOOR_BUYABLE, true)
+
+			if LocalPlayer():CanBuyDoor(doorOwners, doorBuyable) or LocalPlayer():CanLockUnlockDoor(doorOwners, doorGroup) then
 				impulse.doorMenu = vgui.Create("impulseDoorMenu")
-				impulse.doorMenu:SetDoor(traceEnt, doorData)
+				impulse.doorMenu:SetDoor(traceEnt)
 			end
 		end
 	end

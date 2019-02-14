@@ -34,10 +34,13 @@ function PANEL:AddAction(icon, name, onClick)
 	self.addY = self.addY + 125
 end
 
-function PANEL:SetDoor(door, data)
+function PANEL:SetDoor(door)
 	local panel = self
+	local doorOwners = door:GetSyncVar(SYNC_DOOR_OWNERS, nil) 
+	local doorGroup =  door:GetSyncVar(SYNC_DOOR_GROUP, nil)
+	local doorBuyable = door:GetSyncVar(SYNC_DOOR_BUYABLE, true)
 
-	if LocalPlayer():CanLockUnlockDoor(data) then
+	if LocalPlayer():CanLockUnlockDoor(doorOwners, doorGroup) then
 		self:AddAction("impulse/icons/padlock-2-256.png", "Unlock", function()
 			netstream.Start("impulseDoorUnlock")
 			panel:Remove()
@@ -48,14 +51,14 @@ function PANEL:SetDoor(door, data)
 		end)
 	end
 
-	if LocalPlayer():CanBuyDoor(data) then
+	if LocalPlayer():CanBuyDoor(doorOwners, doorBuyable) then
 		self:AddAction("impulse/icons/banknotes-256.png", "Buy", function()
 			netstream.Start("impulseDoorBuy")
 			panel:Remove()
 		end)
 	end
 
-	if LocalPlayer():IsDoorOwner(data) then
+	if LocalPlayer():IsDoorOwner(doorOwners) then
 		self:AddAction("impulse/icons/group-256.png", "Permissions", function()
 			chat.AddText("Permissions are coming to doors near you soon.")
 		end)
@@ -65,7 +68,7 @@ function PANEL:SetDoor(door, data)
 		end)
 	end
 
-	hook.Run("DoorMenuAddOptions", self, door, data)
+	hook.Run("DoorMenuAddOptions", self, door, doorOwners, doorGroup, doorBuyable)
 end
 
 

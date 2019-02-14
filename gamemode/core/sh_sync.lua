@@ -195,6 +195,16 @@ if SERVER then
 		net.Broadcast()	
 	end
 
+	function entMeta:SyncRemoveVar(varID)
+		local targetID = self:EntIndex()
+
+		impulse.Sync.Data[targetID][varID] = nil
+
+		net.Start("iSyncR")
+			net.WriteUInt(targetID, 16)
+		net.Broadcast()	
+	end
+
 	-- instantSync is optional. SetSyncVar will set the SyncVar however it will not update it with all clients unless instantSync is true.
 	function entMeta:SetSyncVar(varID, newValue, instantSync)
 		local instantSync = instantSync or false
@@ -225,8 +235,8 @@ if SERVER then
 	function entMeta:GetSyncVar(varID, fallback)
 		local targetData = impulse.Sync.Data[self.EntIndex(self)]
 
-		if targetData then
-			if targetData[varID] then
+		if targetData != nil then
+			if targetData[varID] != nil then
 				return targetData[varID][1]
 			end
 		end
@@ -236,8 +246,10 @@ else
 	function entMeta:GetSyncVar(varID, fallback)
 		local targetData = impulse.Sync.Data[self.EntIndex(self)]
 
-		if targetData then
-			return targetData[varID] or fallback
+		if targetData != nil then
+			if targetData[varID] != nil then
+				return targetData[varID]
+			end
 		end
 		return fallback
 	end
@@ -292,10 +304,8 @@ else
 		local syncEnt = impulse.Sync.Data[targetID]
 
 		if syncEnt then
-			local syncVar = impulse.Sync.Data[targetID][varID]
-
-			if syncVar then
-				impulse.Sync.Data[targetID][varID] = nil	
+			if impulse.Sync.Data[targetID][varID] != nil then
+				impulse.Sync.Data[targetID][varID] = nil
 			end
 		end
 	end)
