@@ -6,6 +6,7 @@
 if SERVER then
 	util.AddNetworkString( "IMPULSE-ColoredMessage" )
 	util.AddNetworkString( "IMPULSE-SurfaceSound" )
+    util.AddNetworkString("impulseNotify")
 
 	function meta:AddChatText(...)
 		local package = {...}
@@ -59,13 +60,12 @@ local function OrganizeNotices(i)
     end
 end
 
-function meta:Notify(...)
+function meta:Notify(message)
     if CLIENT then
         local notice = vgui.Create("impulseNotify")
         local i = table.insert(impulse.notices, notice)
-        local package = {...}
 
-        notice:SetMessage(unpack(package))
+        notice:SetMessage(message)
         notice:SetPos(ScrW(), ScrH() - (i - 1) * (notice:GetTall() + 4) + 4) -- needs to be recoded to support variable heights
         notice:MoveToFront() 
         OrganizeNotices(i)
@@ -86,8 +86,9 @@ function meta:Notify(...)
             end
         end)
     else
-        local package = {...}
-        netstream.Start(self, "impulseNotify", package)
+        net.Start("impulseNotify")
+        net.WriteString(message)
+        net.Send(self)
     end
 end
 
