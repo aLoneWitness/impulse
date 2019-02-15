@@ -8,7 +8,7 @@ net.Receive("impulseNotify", function(len)
 	LocalPlayer():Notify(message)
 end)
 
-netstream.Hook("impulseATMOpen", function()
+net.Receive("impulseATMOpen", function()
 	vgui.Create("impulseATMMenu")
 end)
 

@@ -27,7 +27,10 @@ function PANEL:Init()
 	self.withdrawButton:SetSize(55, 20)
 	function self.withdrawButton:DoClick()
 		if parent.withdrawInput:GetValue() == "" then return true end
-		netstream.Start("impulseATMWithdraw", tonumber(parent.withdrawInput:GetValue()))
+
+		net.Start("impulseATMWithdraw")
+		net.WriteUInt(tonumber(parent.withdrawInput:GetValue()), 32)
+		net.SendToServer()
 
 		timer.Simple(0.1, function()
 			bankBalance = LocalPlayer():GetSyncVar(SYNC_BANKMONEY, 0)
@@ -48,9 +51,12 @@ function PANEL:Init()
 	self.despoitButton:SetSize(55, 20)
 	function self.despoitButton:DoClick()
 		if parent.depositInput:GetValue() == "" then return true end
-		netstream.Start("impulseATMDeposit", tonumber(parent.depositInput:GetValue()))
 
-		timer.Simple(0.1, function()
+		net.Start("impulseATMDeposit")
+		net.WriteUInt(tonumber(parent.depositInput:GetValue()), 32)
+		net.SendToServer()
+
+		timer.Simple(0.2, function()
 			bankBalance = LocalPlayer():GetSyncVar(SYNC_BANKMONEY, 0)
 			parent.balance:SetText("Balance: "..prefix..bankBalance)
 			parent.balance:SizeToContents()

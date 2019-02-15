@@ -23,7 +23,10 @@ end
 
 function ENT:Use(activator, caller)
 	if activator:IsPlayer() and activator:Alive() then
-		netstream.Start(activator, "impulseATMOpen")
+		net.Start("impulseATMOpen")
+		net.Send(activator)
+
+		activator.currentATM = self
 	end
 end
 

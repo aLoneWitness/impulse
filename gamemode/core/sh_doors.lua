@@ -42,7 +42,6 @@ if SERVER then
 
 				if IsValid(doorEnt) and doorEnt:IsDoor() then
 					local doorIndex = doorEnt:EntIndex()
-					PrintTable(doorData)
 					
 					if doorData.name then doorEnt:SetSyncVar(SYNC_DOOR_NAME, doorData.name, true) end
 					if doorData.group then doorEnt:SetSyncVar(SYNC_DOOR_GROUP, doorData.group, true) end

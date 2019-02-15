@@ -1,3 +1,7 @@
+util.AddNetworkString("impulseATMWithdraw")
+util.AddNetworkString("impulseATMDeposit")
+util.AddNetworkString("impulseATMOpen")
+
 netstream.Hook("impulseCharacterCreate", function(player, charName, charModel, charSkin)
 	if (player.NextCreate or 0) > CurTime() then return end
 
@@ -55,9 +59,12 @@ netstream.Hook("msg", function(ply, text)
 	end
 end)
 
-netstream.Hook("impulseATMWithdraw", function(ply, amount)
-	if (ply.NextATM or 0) > CurTime() then return end
-	if not isnumber(amount) or amount < 1 or amount >= 1 / 0 or amount > 10000000000000 then return end
+net.Receive("impulseATMWithdraw", function(len, ply)
+	if (ply.NextATM or 0) > CurTime() or not ply.currentATM then return end
+	if IsValid(ply.currentATM) and (ply:GetPos() - ply.currentATM:GetPos()):LengthSqr() > (120 ^ 2) then return end
+
+	local amount = net.ReadUInt(32)
+	if not isnumber(amount) or amount < 1 or amount >= 1 / 0 or amount > 1000000000 then return end
 
 	amount = math.floor(amount)
 
@@ -71,9 +78,12 @@ netstream.Hook("impulseATMWithdraw", function(ply, amount)
 	ply.NextATM = CurTime() + 1
 end)
 
-netstream.Hook("impulseATMDeposit", function(ply, amount)
-	if (ply.NextATM or 0) > CurTime() then return end
-	if not isnumber(amount) or amount < 1 or amount >= 1 / 0 or amount > 10000000000000 then return end
+net.Receive("impulseATMDeposit", function(len, ply)
+	if (ply.NextATM or 0) > CurTime() or not ply.currentATM then return end
+
+	local amount = net.ReadUInt(32)
+	if not isnumber(amount) or amount < 1 or amount >= 1 / 0 or amount > 10000000000 then return end
+	if IsValid(ply.currentATM) and (ply:GetPos() - ply.currentATM:GetPos()):LengthSqr() > (120 ^ 2) then return end
 
 	amount = math.floor(amount)
 
