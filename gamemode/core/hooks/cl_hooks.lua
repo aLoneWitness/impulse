@@ -104,6 +104,24 @@ function IMPULSE:ShouldDrawLocalPlayer()
 	end
 end
 
+function IMPULSE:InitPostEntity()
+	if not g_SpawnMenu.CreateMenu.beenImpulsed then
+		if LocalPlayer():IsAdmin() then
+			g_SpawnMenu.CreateMenu:CloseTab(g_SpawnMenu.CreateMenu.Items[8].Tab, true)
+			g_SpawnMenu.CreateMenu:CloseTab(g_SpawnMenu.CreateMenu.Items[7].Tab, true)
+			g_SpawnMenu.CreateMenu:CloseTab(g_SpawnMenu.CreateMenu.Items[6].Tab, true)
+		else
+			g_SpawnMenu.CreateMenu:CloseTab(g_SpawnMenu.CreateMenu.Items[8].Tab, true)
+			g_SpawnMenu.CreateMenu:CloseTab(g_SpawnMenu.CreateMenu.Items[7].Tab, true)
+			g_SpawnMenu.CreateMenu:CloseTab(g_SpawnMenu.CreateMenu.Items[6].Tab, true)
+			g_SpawnMenu.CreateMenu:CloseTab(g_SpawnMenu.CreateMenu.Items[4].Tab, true)
+			g_SpawnMenu.CreateMenu:CloseTab(g_SpawnMenu.CreateMenu.Items[3].Tab, true)
+			g_SpawnMenu.CreateMenu:CloseTab(g_SpawnMenu.CreateMenu.Items[2].Tab, true)
+		end
+	end
+	g_SpawnMenu.CreateMenu.beenImpulsed = true
+end
+
 function IMPULSE:CalcView(player, origin, angles, fov)
 	local view
 
