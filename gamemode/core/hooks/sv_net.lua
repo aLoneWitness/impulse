@@ -130,7 +130,7 @@ net.Receive("impulseBuyItem", function(len, ply)
 	if (ply.nextBuy or 0) > CurTime() then return end
 
 	local buyableID = net.ReadUInt(8)
-	print(impulse.Business.DataRef[buyableID])
+
 	local buyableName = impulse.Business.DataRef[buyableID]
 	local buyable = impulse.Business.Data[buyableName]
 
