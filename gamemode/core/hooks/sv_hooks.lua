@@ -48,6 +48,18 @@ function IMPULSE:PlayerSpawn(ply)
 
 	ply:SetHunger(100)
 
+	ply:GodEnable()
+	ply:SetRenderMode(RENDERMODE_TRANSALPHA)
+	ply:SetColor(Color(255, 255, 255, 180))
+
+	timer.Simple(10, function()
+		if IsValid(ply) then
+			ply:GodDisable()
+			ply:SetRenderMode(RENDERMODE_NORMAL)
+			ply:SetColor(color_white)
+		end
+	end)
+
 	hook.Run("PlayerLoadout", ply)
 end
 

@@ -3,8 +3,10 @@ hook.Add("PlayerNoClip", "opsNoclip", function(ply, state)
 		if SERVER then
 			if state then
 				impulse.Ops.Cloak(ply)
+				ply:GodEnable()
 			else
 				impulse.Ops.Uncloak(ply)
+				ply:GodDisable()
 			end
 		end
 
