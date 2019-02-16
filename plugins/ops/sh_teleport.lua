@@ -7,8 +7,21 @@ if SERVER then
 	end
 
 	function opsBring(ply, target)
+		local hasPhysgun = false
+
 		if not target:IsBot() and target:GetActiveWeapon() and target:GetActiveWeapon():GetClass() == "weapon_physgun" and target:KeyDown(IN_ATTACK) then
 			target:ConCommand("-attack")
+			target:GetActiveWeapon():Remove()
+			hasPhysgun = true
+		end
+
+		if hasPhysgun then
+			timer.Simple(0.5, function() 
+				if IsValid(target) and target:Alive() then
+					target:Give("weapon_physgun")
+					target:SelectWeapon("weapon_physgun")
+				end
+			end)
 		end
 
 		target.lastPos = target:GetPos()

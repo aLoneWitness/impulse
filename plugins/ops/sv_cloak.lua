@@ -51,7 +51,6 @@ local nextCloakThink = 0
 
 function cloakThink()
 	if nextCloakThink > CurTime() then return end -- put a limiter on this because it can go very fast
-	print("cloak")
 
 	for v,k in ipairs(player.GetAll()) do
 		if k.isCloaked then

@@ -90,6 +90,7 @@ function IMPULSE:SetupPlayer(ply, dbData)
 	ply.defaultSkin = dbData.skin
 	ply:SetFOV(90, 0)
 	ply:SetTeam(impulse.Config.DefaultTeam)
+	ply:AllowFlashlight(true)
 	ply.beenSetup = true
 
 	hook.Run("PostSetupPlayer", ply)
@@ -144,6 +145,28 @@ function IMPULSE:PlayerCanHearPlayersVoice(listener, speaker)
 	end 
 
 	return true, true
+end
+
+function IMPULSE:PlayerDeath(ply)
+	local wait = impulse.Config.RespawnTime
+
+	if ply:IsDonator() then
+		wait = impulse.Config.RespawnTimeDonator
+	end
+
+	ply.respawnWait = CurTime() + wait
+end
+
+function IMPULSE:PlayerDeathThink(ply)
+	if ply.respawnWait < CurTime() then
+		ply:Spawn()
+	end
+
+	return true
+end
+
+function IMPULSE:PlayerDeathSound()
+	return false
 end
 
 function IMPULSE:SetupPlayerVisibility(ply)

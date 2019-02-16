@@ -136,6 +136,7 @@ function IMPULSE:HUDPaint()
 	local scrW, scrH = ScrW(), ScrH()
 	local hudWidth, hudHeight = 300, 178
 	local seeColIcons = impulse.GetSetting("hud_iconcolours")
+	local deathSoundPlayed
 
 	if not lp:Alive() then
 		local ft = FrameTime()
@@ -149,10 +150,16 @@ function IMPULSE:HUDPaint()
 		if IsValid(PlayerIcon) then
 			PlayerIcon:Remove()
 		end
+
+		if not deathSoundPlayed then
+			surface.PlaySound("impulse/death.mp3")
+			deathSoundPlayed = true
+		end
 		
 		return
 	else
 		fde = 0
+		deathSoundPlayed = false
 	end
 
 	if health < 45 then
