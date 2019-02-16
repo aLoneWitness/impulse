@@ -134,6 +134,14 @@ function IMPULSE:CalcView(player, origin, angles, fov)
 		local angles = player:GetAimVector():Angle()
 		local targetpos = Vector(0, 0, 60)
 
+		if player:KeyDown(IN_DUCK) then
+			if player:GetVelocity():Length() > 0 then
+				targetpos.z = 50
+			else
+				targetpos.z = 40
+			end
+		end
+
 		player:SetAngles(angles)
 
 		local pos = targetpos

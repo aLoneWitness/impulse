@@ -233,3 +233,58 @@ function IMPULSE:Think()
 		end
 	end
 end
+
+function IMPULSE:PlayerSpawnRagdoll(ply)
+	return ply:IsAdmin()
+end
+
+function IMPULSE:PlayerSpawnSENT(ply)
+	return ply:IsSuperAdmin()
+end
+
+function IMPULSE:PlayerSpawnSWEP(ply)
+	return ply:IsAdmin()
+end
+
+function IMPULSE:PlayerSpawnNPC(ply)
+	return ply:IsAdmin()
+end
+
+function IMPULSE:PlayerSpawnProp(ply, model)
+	if not ply.beenSetup then
+		return false
+	end
+
+	return self.BaseClass:PlayerSpawnProp(ply, model)
+end
+
+function IMPULSE:PlayerSpawnVehicle(ply, model)
+	if ply:IsDonator() and model:find("chair") or model:find("seat") or model:find("pod") then
+		return true
+	else
+		return ply:IsSuperAdmin()
+	end
+end
+
+function IMPULSE:PlayerSpawnedProp(ply, model, ent)
+	--self.BaseClass:PlayerSpawnedProp(ply, model, ent)
+
+	if ply:IsAdmin() then
+		return
+	end
+
+	local price = impulse.Config.PropPrice
+
+	if ply:IsDonator() then
+		price = impulse.Config.PropPriceDonator
+	end
+
+	if ply:CanAffordBank(price) then
+		ply:TakeBankMoney(price)
+		ply:Notify("You have purchased a prop for "..impulse.Config.CurrencyPrefix..price.." (deducted from bank account).")
+	else
+		ply:Notify("You need "..impulse.Config.CurrencyPrefix..price.." to spawn this prop.")
+		SafeRemoveEntity(ent)
+		return false
+	end
+end
