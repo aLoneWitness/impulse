@@ -61,6 +61,9 @@ local hudBlackGrad = Color(40,40,40,180)
 local hudBlack = Color(20,20,20,140)
 local darkCol = Color(30, 30, 30, 190)
 
+local crosshairGap = 5
+local crosshairLength = crosshairGap + 5
+
 local healthIcon = Material("impulse/icons/heart-128.png")
 local healthCol = Color(254, 0, 0, 255)
 local armourIcon = Material("impulse/icons/shield-128.png")
@@ -74,6 +77,7 @@ local xpIcon = Material("impulse/icons/star-128.png")
 local warningIcon = Material("impulse/icons/warning-128.png")
 local infoIcon = Material("impulse/icons/info-128.png")
 local announcementIcon = Material("impulse/icons/megaphone-128.png")
+
 
 local lastModel = ""
 local lastSkin = ""
@@ -148,7 +152,6 @@ function IMPULSE:HUDPaint()
 			if lp:IsDonator() then
 				deathWait = CurTime() + impulse.Config.RespawnTimeDonator
 			end
-			print(deathWait)
 
 			deathRegistered = true
 		end
@@ -163,7 +166,7 @@ function IMPULSE:HUDPaint()
 		draw.SimpleText("You have died", "Impulse-Elements23", scrW/2, scrH/2, textCol, TEXT_ALIGN_CENTER)
 
 		local wait = math.ceil(deathWait - CurTime())
-		
+
 		if wait > 0 then
 			draw.SimpleText("You will respawn in "..wait.." seconds.", "Impulse-Elements23", scrW/2, (scrH/2)+30, textCol, TEXT_ALIGN_CENTER)
 			draw.SimpleText("WARNING: NLR applies, you may not return to this area until 5 minutes after your death.", "Impulse-Elements23", scrW/2, (scrH/2)+60, textCol, TEXT_ALIGN_CENTER)
@@ -197,8 +200,27 @@ function IMPULSE:HUDPaint()
 	if health < lasthealth then
 		LocalPlayer():ScreenFade(SCREENFADE.IN, Color(255,10,10,80), 1, 0)
 	end
+	   
+	     
+	--Crosshair
+	local x, y
 
-	local y = scrH-hudHeight-8-10
+	if impulse.GetSetting("view_thirdperson") == true then
+		local p = LocalPlayer():GetEyeTrace().HitPos:ToScreen()
+		x, y = p.x, p.y
+	else
+		x, y = scrW/2, scrH/2
+	end
+
+	surface.SetDrawColor(color_white)
+	surface.DrawLine(x - crosshairLength, y, x - crosshairGap, y)
+	surface.DrawLine(x + crosshairLength, y, x + crosshairGap, y)
+	surface.DrawLine(x, y - crosshairLength, x, y - crosshairGap)
+	surface.DrawLine(x, y + crosshairLength, x, y + crosshairGap)
+
+	-- HUD
+
+	y = scrH-hudHeight-8-10
 	BlurRect(10, y, hudWidth, hudHeight)
 	surface.SetDrawColor(darkCol)
 	surface.DrawRect(10, y, hudWidth, hudHeight)

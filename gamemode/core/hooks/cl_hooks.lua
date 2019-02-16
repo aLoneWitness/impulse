@@ -44,6 +44,8 @@ end
 function IMPULSE:DefineSettings()
 	impulse.DefineSetting("hud_vignette", {name="Vignette enabled", category="HUD", type="tickbox", default=true})
 	impulse.DefineSetting("hud_iconcolours", {name="Icon colours enabled", category="HUD", type="tickbox", default=false})
+	impulse.DefineSetting("view_thirdperson", {name="Thirdperson enabled", category="View", type="tickbox", default=false})
+	impulse.DefineSetting("view_thirdperson_fov", {name="Thirdperson FOV", category="View", type="slider", default=90, minValue=60, maxValue=95})
 	impulse.DefineSetting("perf_mcore", {name="Multi-core rendering enabled", category="Performance", type="tickbox", default=false, onChanged = function(newValue)
 		if newValue then
 			RunConsoleCommand("gmod_mcore_test", tostring(tonumber(newValue)))
@@ -94,4 +96,76 @@ function IMPULSE:CalcViewModelView(weapon, viewmodel, oldEyePos, oldEyeAng, eyeP
 	end
 
 	return vm_origin, vm_angles
+end
+
+function IMPULSE:ShouldDrawLocalPlayer()
+	if impulse.GetSetting("view_thirdperson") then
+		return true
+	end
+end
+
+function IMPULSE:CalcView(player, origin, angles, fov)
+	local view
+
+	if IsValid(impulse.MainMenu) and not impulse.MainMenu.popup then
+		view = {
+			origin = impulse.Config.MenuCamPos,
+			angles = impulse.Config.MenuCamAng,
+			fov = 70
+		}
+		return view
+	end
+	
+	local ragdoll = player:GetRagdollEntity()
+
+	if ragdoll and IsValid(ragdoll) then
+		local eyes = ragdoll:GetAttachment(ragdoll:LookupAttachment( "eyes" ))
+		if not eyes then return end
+
+		view = {
+			origin = eyes.Pos,
+			angles = eyes.Ang,
+			fov = 70
+		}
+		return view
+	end
+
+	if impulse.GetSetting("view_thirdperson") then
+		local angles = player:GetAimVector():Angle()
+		local targetpos = Vector(0, 0, 60)
+
+		player:SetAngles(angles)
+
+		local pos = targetpos
+
+		local offset = Vector(5, 5, 5)
+
+		offset.x = 75
+		offset.y = 20
+		offset.z = 5
+		angles.yaw = angles.yaw + 3
+
+		local t = {}
+
+		t.start = player:GetPos() + pos
+		t.endpos = t.start + angles:Forward() * -offset.x
+
+		t.endpos = t.endpos + angles:Right() * offset.y
+		t.endpos = t.endpos + angles:Up() * offset.z
+		t.filter = player
+		
+		local tr = util.TraceLine(t)
+
+		pos = tr.HitPos
+
+		if (tr.Fraction < 1.0) then
+			pos = pos + tr.HitNormal * 5
+		end
+
+		return {
+			origin = pos,
+			angles = angles,
+			fov = impulse.GetSetting("view_thirdperson_fov")
+		}
+	end
 end
