@@ -7,6 +7,7 @@ function impulse.RegisterChatCommand(name, cmdData)
 	if not cmdData.superAdminOnly then cmdData.superAdminOnly = false end
 	if not cmdData.description then cmdData.description = "" end
 	if not cmdData.requiresArg then cmdData.requiresArg = false end
+	if not cmdData.requiresAlive then cmdData.requiresAlive = false end
 
     impulse.chatCommands[name] = cmdData
 end
@@ -95,6 +96,7 @@ impulse.RegisterChatCommand("/pm", pmCommand)
 local yellCommand = {
 	description = "Yell in character.",
 	requiresArg = true,
+	requiresAlive = true,
 	onRun = function(ply, arg, rawText)
 		for v,k in pairs(player.GetAll()) do
 			if (ply:GetPos() - k:GetPos()):LengthSqr() <= (impulse.Config.YellDistance ^ 2) then 
@@ -109,6 +111,7 @@ impulse.RegisterChatCommand("/y", yellCommand)
 local whisperCommand = {
 	description = "Whisper in character.",
 	requiresArg = true,
+	requiresAlive = true,
 	onRun = function(ply, arg, rawText)
 		for v,k in pairs(player.GetAll()) do
 			if (ply:GetPos() - k:GetPos()):LengthSqr() <= (impulse.Config.WhisperDistance ^ 2) then 
@@ -123,6 +126,7 @@ impulse.RegisterChatCommand("/w", whisperCommand)
 local radioCommand = {
 	description = "Send a radio message to all units.",
 	requiresArg = true,
+	requiresAlive = true,
 	onRun = function(ply, arg, rawText)
 		if not ply:IsCP() then return end
 		for v,k in pairs(player.GetAll()) do
@@ -139,6 +143,7 @@ impulse.RegisterChatCommand("/r", radioCommand)
 local meCommand = {
 	description = "Preform an action in character.",
 	requiresArg = true,
+	requiresAlive = true,
 	onRun = function(ply, arg, rawText)
 		for v,k in pairs(player.GetAll()) do
 			if (ply:GetPos() - k:GetPos()):LengthSqr() <= (impulse.Config.TalkDistance ^ 2) then 
@@ -153,6 +158,7 @@ impulse.RegisterChatCommand("/me", meCommand)
 local itCommand = {
 	description = "Perform an action from a third party.",
 	requiresArg = true,
+	requiresAlive = true,
 	onRun = function(ply, arg, rawText)
 		for v,k in pairs(player.GetAll()) do
 			if (ply:GetPos() - k:GetPos()):LengthSqr() <= (impulse.Config.TalkDistance ^ 2) then 
@@ -167,6 +173,7 @@ impulse.RegisterChatCommand("/it", itCommand)
 local advertCommand = {
 	description = "Broadcasts the advert provided.",
 	requiresArg = true,
+	requiresAlive = true,
 	onRun = function(ply, arg, rawText)
 		if not impulse.Teams.Data[ply:Team()].canAdvert or impulse.Teams.Data[ply:Team()].canAdvert == false then 
 			return ply:Notify("Your team cannot make an advert.") 
@@ -189,6 +196,7 @@ impulse.RegisterChatCommand("/advert", advertCommand)
 
 local rollCommand = {
 	description = "Generate a random number between 0 and 100.",
+	requiresAlive = true,
 	onRun = function(ply, arg, rawText)
 		for v,k in pairs(player.GetAll()) do
 			if (ply:GetPos() - k:GetPos()):LengthSqr() <= (impulse.Config.TalkDistance ^ 2) then 
@@ -203,6 +211,7 @@ impulse.RegisterChatCommand("/roll", rollCommand)
 local dropMoneyCommand = {
 	description = "Drops the specified amount of money on the floor.",
 	requiresArg = true,
+	requiresAlive = true,
 	onRun = function(ply, arg, rawText)
 		if arg[1] and tonumber(arg[1]) then
 			local value = math.floor(tonumber(arg[1]))
@@ -232,6 +241,7 @@ impulse.RegisterChatCommand("/dropmoney", dropMoneyCommand)
 local writeCommand = {
 	description = "Writes a letter with the text specified.",
 	requiresArg = true,
+	requiresAlive = true,
 	onRun = function(ply, args, text)
 		if ply.letterCount and ply.letterCount > impulse.Config.MaxLetters then
 			ply:Notify("You have reached the max amount of letters.")

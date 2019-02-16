@@ -106,7 +106,6 @@ local infoCol = Color(135, 206, 250)
 function IMPULSE:PlayerSay(ply, text, teamChat)
 	if not ply.beenSetup or ply.beenSetup == false then return "" end -- keep out players who are not setup yet
 	if teamChat == true then return "" end -- disabled team chat
-	if not ply:Alive() then return "" end
 
 	if string.StartWith(text, "/") then
 		local args = string.Explode(" ", text)
@@ -121,6 +120,7 @@ function IMPULSE:PlayerSay(ply, text, teamChat)
 				return "" 
 			end
 			if command.requiresArg == true and (not args[2] or string.Trim(args[2]) == "") then return "" end
+			if command.requiresAlive == true and not ply:Alive() then return "" end
 
 			text = string.sub(text, string.len(args[1]) + 1)
 			table.remove(args, 1)
@@ -128,7 +128,7 @@ function IMPULSE:PlayerSay(ply, text, teamChat)
 		else
 			ply:AddChatText(infoCol, "The command "..args[1].." does not exist.")
 		end
-	else
+	elseif ply:Alive() then
 		for v,k in pairs(player.GetAll()) do
 			if (ply:GetPos() - k:GetPos()):LengthSqr() <= (impulse.Config.TalkDistance ^ 2) then 
 				k:SendChatClassMessage(1, text, ply)

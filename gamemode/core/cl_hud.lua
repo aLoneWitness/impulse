@@ -140,26 +140,48 @@ function IMPULSE:HUDPaint()
 
 	if not lp:Alive() then
 		local ft = FrameTime()
+
+		if not deathRegistered then
+			surface.PlaySound("impulse/death.mp3")
+
+			deathWait = CurTime() + impulse.Config.RespawnTime
+			if lp:IsDonator() then
+				deathWait = CurTime() + impulse.Config.RespawnTimeDonator
+			end
+			print(deathWait)
+
+			deathRegistered = true
+		end
+
 		fde = math.Clamp(fde+ft*0.2, 0, 1)
 
 		surface.SetDrawColor(0,0,0,math.ceil(fde*255))
 		surface.DrawRect(-1, -1, ScrW()+2, ScrH()+2)
 
-		draw.SimpleText("You have died", "Impulse-Elements23", ScrW()/2,ScrH()/2, Color(255,255,255,math.ceil(fde*255)),TEXT_ALIGN_CENTER)
+		local textCol = Color(255,255,255,math.ceil(fde*255))
+
+		draw.SimpleText("You have died", "Impulse-Elements23", scrW/2, scrH/2, textCol, TEXT_ALIGN_CENTER)
+
+		local wait = math.ceil(deathWait - CurTime())
+		
+		if wait > 0 then
+			draw.SimpleText("You will respawn in "..wait.." seconds.", "Impulse-Elements23", scrW/2, (scrH/2)+30, textCol, TEXT_ALIGN_CENTER)
+			draw.SimpleText("WARNING: NLR applies, you may not return to this area until 5 minutes after your death.", "Impulse-Elements23", scrW/2, (scrH/2)+60, textCol, TEXT_ALIGN_CENTER)
+
+			draw.SimpleText("If you feel you were unfairly killed, contact the game moderators with /report <message> for assistance.", "Impulse-Elements16", scrW/2, scrH-20, textCol, TEXT_ALIGN_CENTER)
+		end
 
 		if IsValid(PlayerIcon) then
 			PlayerIcon:Remove()
-		end
-
-		if not deathSoundPlayed then
-			surface.PlaySound("impulse/death.mp3")
-			deathSoundPlayed = true
 		end
 		
 		return
 	else
 		fde = 0
-		deathSoundPlayed = false
+
+		if deathRegistered then
+			deathRegistered = false
+		end
 	end
 
 	if health < 45 then
