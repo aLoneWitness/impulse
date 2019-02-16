@@ -1,6 +1,9 @@
 util.AddNetworkString("impulseATMWithdraw")
 util.AddNetworkString("impulseATMDeposit")
 util.AddNetworkString("impulseATMOpen")
+util.AddNetworkString("impulseReadNote")
+util.AddNetworkString("impulseTeamChange")
+util.AddNetworkString("impulseBuyItem")
 
 netstream.Hook("impulseCharacterCreate", function(player, charName, charModel, charSkin)
 	if (player.NextCreate or 0) > CurTime() then return end
@@ -53,14 +56,14 @@ netstream.Hook("impulseCharacterCreate", function(player, charName, charModel, c
 end)
 
 netstream.Hook("msg", function(ply, text)
-	if (ply.NextChat or 0) < CurTime() and string.len(text) < 1000 then
+	if (ply.nextChat or 0) < CurTime() and string.len(text) < 1000 then
 		hook.Run("PlayerSay", ply, text, false)
-		ply.NextChat = CurTime() + math.max(#text / 250, 0.4)
+		ply.nextChat = CurTime() + math.max(#text / 250, 0.4)
 	end
 end)
 
 net.Receive("impulseATMWithdraw", function(len, ply)
-	if (ply.NextATM or 0) > CurTime() or not ply.currentATM then return end
+	if (ply.nextATM or 0) > CurTime() or not ply.currentATM then return end
 	if IsValid(ply.currentATM) and (ply:GetPos() - ply.currentATM:GetPos()):LengthSqr() > (120 ^ 2) then return end
 
 	local amount = net.ReadUInt(32)
@@ -75,11 +78,11 @@ net.Receive("impulseATMWithdraw", function(len, ply)
 	else
 		ply:Notify("You cannot afford to withdraw this amount of money.")
 	end
-	ply.NextATM = CurTime() + 1
+	ply.nextATM = CurTime() + 1
 end)
 
 net.Receive("impulseATMDeposit", function(len, ply)
-	if (ply.NextATM or 0) > CurTime() or not ply.currentATM then return end
+	if (ply.nextATM or 0) > CurTime() or not ply.currentATM then return end
 
 	local amount = net.ReadUInt(32)
 	if not isnumber(amount) or amount < 1 or amount >= 1 / 0 or amount > 10000000000 then return end
@@ -94,10 +97,9 @@ net.Receive("impulseATMDeposit", function(len, ply)
 	else
 		ply:Notify("You cannot afford to deposit this amount of money.")
 	end
-	ply.NextATM = CurTime() + 1
+	ply.nextATM = CurTime() + 1
 end)
 
-util.AddNetworkString("impulseTeamChange")
 net.Receive("impulseTeamChange", function(len, ply)
 	if ply.lastTeamTry and ply.lastTeamTry < CurTime() + 1 then return end
 	
@@ -124,4 +126,29 @@ net.Receive("impulseTeamChange", function(len, ply)
 	end
 end)
 
-util.AddNetworkString("impulseReadNote")
+net.Receive("impulseBuyItem", function(len, ply)
+	if (ply.nextBuy or 0) > CurTime() then return end
+
+	local buyableID = net.ReadUInt(8)
+	print(impulse.Business.DataRef[buyableID])
+	local buyableName = impulse.Business.DataRef[buyableID]
+	local buyable = impulse.Business.Data[buyableName]
+
+	if buyable and ply:CanBuy(buyableName) and ply:CanAfford(buyable.price) then
+		ply:TakeMoney(buyable.price)
+
+		local trace = {}
+		trace.start = ply:EyePos()
+		trace.endpos = trace.start + ply:GetAimVector() * 85
+		trace.filter = ply
+
+		local tr = util.TraceLine(trace)
+		impulse.SpawnBuyable(tr.HitPos, buyable)
+
+		ply:Notify("You have purchased "..buyableName.." for "..impulse.Config.CurrencyPrefix..buyable.price..".")
+	else
+		ply:Notify("You cannot afford this purchase.")
+	end
+
+	ply.nextBuy = CurTime() + 1
+end)

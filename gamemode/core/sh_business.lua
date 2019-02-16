@@ -5,9 +5,14 @@
 
 impulse.Business = impulse.Business or {}
 impulse.Business.Data = impulse.Business.Data or {}
+impulse.Business.DataRef = impulse.Business.DataRef or {}
+
+local busID = 0
 
 function impulse.Business.Define(name, buyableData)
+	busID = busID + 1
     impulse.Business.Data[name] = buyableData
+    impulse.Business.DataRef[busID] = name
 end
 
 function meta:CanBuy(name)
@@ -18,4 +23,15 @@ function meta:CanBuy(name)
 	end
 
 	return false
+end
+
+function impulse.SpawnBuyable(pos, buyable)
+	local spawnedBuyable = ents.Create(buyable.entity)
+
+	if buyable.model then
+		spawnedBuyable:SetModel(buyable.model)
+	end
+	
+	spawnedBuyable:SetPos(pos)
+	spawnedBuyable:Spawn()
 end

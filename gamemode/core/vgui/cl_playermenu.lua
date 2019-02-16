@@ -321,6 +321,13 @@ function PANEL:Business()
 		item:SetModel(k.model)
 		item:SetSize(58,58)
 		item:SetTooltip(name.." \n"..impulse.Config.CurrencyPrefix..k.price)
+		item.id = table.KeyFromValue(impulse.Business.DataRef, name)
+
+		function item:DoClick()
+			net.Start("impulseBuyItem")
+			net.WriteUInt(item.id, 8)
+			net.SendToServer()
+		end
 
 		local costLbl = vgui.Create("DLabel", item)
 		costLbl:SetPos(5,35)
