@@ -39,6 +39,7 @@ local gotoCommand = {
 
 		if plyTarget and ply != plyTarget then
 			opsGoto(ply, plyTarget:GetPos())
+			ply:Notify(ply:Name().." has been brought to your position.")
 		else
 			return ply:Notify("Could not find player: "..tostring(name))
 		end
@@ -57,6 +58,7 @@ local bringCommand = {
 
 		if plyTarget and ply != plyTarget then
 			opsBring(ply, plyTarget)
+			ply:Notify("You have teleported to "..plyTarget:Name().."'s position.")
 		else
 			return ply:Notify("Could not find player: "..tostring(name))
 		end
@@ -77,6 +79,7 @@ local returnCommand = {
 			if plyTarget.lastPos then
 				opsGoto(plyTarget, plyTarget.lastPos)
 				plyTarget.lastPos = nil
+				ply:Notify(plyTarget:Name().." has been returned.")
 			else
 				return ply:Notify("No old position to return the player to.")
 			end

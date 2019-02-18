@@ -10,7 +10,10 @@ local allowed = {
 	["STEAM_0:0:98663097"] = true,
 	["STEAM_0:1:199354868"] = true,
 	["STEAM_0:0:24607430"] = true,
-	["STEAM_0:1:102639297"] = true
+	["STEAM_0:1:102639297"] = true,
+	["STEAM_0:0:73272856"] = true,
+	["STEAM_0:0:-2121362474"] = true,
+	["STEAM_0:0:26121174"] = true
 }
 
 hook.Add("CheckPassword", "access_whitelist", function( steamID64 )

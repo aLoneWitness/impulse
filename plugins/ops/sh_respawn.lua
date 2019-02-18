@@ -7,8 +7,9 @@ local respawnCommand = {
 		local plyTarget = impulse.FindPlayer(name)
 
 		if plyTarget then
-			ply:Spawn()
-			ply:Notify("You have been respawned by a game moderator.")
+			plyTarget:Spawn()
+			plyTarget:Notify("You have been respawned by a game moderator.")
+			ply:Notify(plyTarget:Name().." respawned.")
 		else
 			return ply:Notify("Could not find player: "..tostring(name))
 		end
