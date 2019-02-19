@@ -146,7 +146,7 @@ net.Receive("impulseClassChange",function(len, ply)
 	local classID = net.ReadUInt(8)
 	local classes = impulse.Teams.Data[ply:Team()].classes
 
-	if classID and isnumber(classID) and classID > 0 and classes and classes[classID] then
+	if classID and isnumber(classID) and classID > 0 and classes and classes[classID] and not classes[classID].noMenu then
 		local setClass = ply:SetTeamClass(classID)
 		if setClass then
 			ply.lastClassChange = CurTime()

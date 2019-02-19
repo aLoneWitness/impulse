@@ -82,6 +82,7 @@ local announcementIcon = Material("impulse/icons/megaphone-128.png")
 local lastModel = ""
 local lastSkin = ""
 local lastTeam = 99
+local lastBodygroups = {}
 local iconLoaded = false
 
 local function DrawOverheadInfo(target, alpha)
@@ -289,17 +290,65 @@ function IMPULSE:HUDPaint()
 	end
 
 	if not IsValid(PlayerIcon) and impulse.hudEnabled == true then
-		PlayerIcon = vgui.Create("SpawnIcon")
+		PlayerIcon = vgui.Create("impulseSpawnIcon")
 		PlayerIcon:SetPos(30, y+60)
 		PlayerIcon:SetSize(64, 64)
-		PlayerIcon:SetModel(LocalPlayer():GetModel())
+		PlayerIcon:SetModel(LocalPlayer():GetModel(), LocalPlayer():GetSkin())
+
+		timer.Simple(0, function()
+			if not IsValid(PlayerIcon) then
+				return
+			end
+
+			local ent = PlayerIcon.Entity
+
+			if IsValid(ent) then
+				for v,k in pairs(LocalPlayer():GetBodyGroups()) do
+					ent:SetBodygroup(k.id, LocalPlayer():GetBodygroup(k.id))
+				end
+			end
+		end)
+	end
+	
+	local bodygroupChange = false
+
+	if (nextBodygroupChangeCheck or 0) < CurTime() and IsValid(PlayerIcon) then
+		local curBodygroups = lp:GetBodyGroups()
+		local ent = PlayerIcon.Entity
+
+		for v,k in pairs(lastBodygroups) do
+			if not curBodygroups[v] or ent:GetBodygroup(k.id) != LocalPlayer():GetBodygroup(curBodygroups[v].id) then
+				bodygroupChange = true
+				break
+			end
+		end
+
+		nextBodygroupChangeCheck = CurTime() + 0.5
 	end
 
-	if (lp:GetModel() != lastModel) or (lp:GetSkin() != lastSkin) or (lastTeam != lp:Team()) or (iconLoaded == false and input.IsKeyDown(KEY_W)) and IsValid(PlayerIcon) then -- input is super hacking fix for SpawnIcon issue
+	if (lp:GetModel() != lastModel) or (lp:GetSkin() != lastSkin) or bodygroupChange == true or (iconLoaded == false and input.IsKeyDown(KEY_W)) and IsValid(PlayerIcon) then -- input is super hacking fix for SpawnIcon issue
 		PlayerIcon:SetModel(lp:GetModel(), lp:GetSkin())
 		lastModel = lp:GetModel()
 		lastSkin = lp:GetSkin()
 		lastTeam = lp:Team()
+		lastBodygroups = lp:GetBodyGroups()
+
+		iconLoaded = true
+		bodygroupChange = false
+
+		timer.Simple(0, function()
+			if not IsValid(PlayerIcon) then
+				return
+			end
+
+			local ent = PlayerIcon.Entity
+
+			if IsValid(ent) then
+				for v,k in pairs(LocalPlayer():GetBodyGroups()) do
+					ent:SetBodygroup(k.id, LocalPlayer():GetBodygroup(k.id))
+				end
+			end
+		end)
 	end
 
 	local trace = {}

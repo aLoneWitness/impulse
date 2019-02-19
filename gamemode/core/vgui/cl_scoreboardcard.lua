@@ -24,13 +24,27 @@ function PANEL:SetPlayer(player)
 		dev = player:IsDeveloper()
  	}
 
- 	self.modelIcon = vgui.Create("SpawnIcon", self)
+ 	self.modelIcon = vgui.Create("impulseSpawnIcon", self)
 	self.modelIcon:SetPos(10,4)
 	self.modelIcon:SetSize(52,52)
 	self.modelIcon:SetModel(player:GetModel(), player:GetSkin())
 	self.modelIcon:SetTooltip(false)
 	self.modelIcon:SetDisabled(true)
-	self.modelIcon:SetDrawBorder(false)
+
+	timer.Simple(0, function()
+		if not IsValid(self) then
+			return
+		end
+
+		local ent = self.modelIcon.Entity
+
+		if IsValid(ent) and IsValid(self.Player) then
+			for v,k in pairs(self.Player:GetBodyGroups()) do
+				ent:SetBodygroup(k.id, self.Player:GetBodygroup(k.id))
+			end
+		end
+	end)
+
 	function self.modelIcon:PaintOver() -- remove that mouse hover effect
 		return false
 	end

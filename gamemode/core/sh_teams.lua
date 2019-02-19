@@ -67,7 +67,7 @@ if SERVER then
 
 		if teamData.bodygroups then
 			for v, bodygroupData in pairs(teamData.bodygroups) do
-				self:SetBodygroup(bodygroupData[1], (bodygroupData[2] or math.random(0, self:GetBodyGroupCount(bodygroupData[1]))))
+				self:SetBodygroup(bodygroupData[1], (bodygroupData[2] or math.random(0, self:GetBodygroupCount(bodygroupData[1]))))
 			end
 		else
 			self:SetBodyGroups("0000000")
@@ -134,11 +134,11 @@ if SERVER then
 
 		if classData.bodygroups then
 			for v, bodygroupData in pairs(classData.bodygroups) do
-				self:SetBodygroup(bodygroupData[1], (bodygroupData[2] or math.random(0, self:GetBodyGroupCount(bodygroupData[1]))))
+				self:SetBodygroup(bodygroupData[1], (bodygroupData[2] or math.random(0, self:GetBodygroupCount(bodygroupData[1]))))
 			end
 		elseif teamData.bodygroups then
 			for v, bodygroupData in pairs(teamData.bodygroups) do
-				self:SetBodygroup(bodygroupData[1], (bodygroupData[2] or math.random(0, self:GetBodyGroupCount(bodygroupData[1]))))
+				self:SetBodygroup(bodygroupData[1], (bodygroupData[2] or math.random(0, self:GetBodygroupCount(bodygroupData[1]))))
 			end
 		else
 			self:SetBodyGroups("0000000")
