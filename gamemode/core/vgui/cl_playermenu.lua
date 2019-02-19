@@ -60,11 +60,10 @@ function PANEL:QuickActions()
 		model = LocalPlayer():GetModel()
 		skin = LocalPlayer():GetSkin()
 	end
-	self.modelPreview = vgui.Create("DModelPanel", self.quickActions)
+	self.modelPreview = vgui.Create("impulseModelPanel", self.quickActions)
 	self.modelPreview:SetPos(373, 0)
 	self.modelPreview:SetSize(300, 370)
-	self.modelPreview:SetModel(model)
-	self.modelPreview.Entity:SetSkin(skin)
+	self.modelPreview:SetModel(model, skin)
 	self.modelPreview:MoveToBack()
 	self.modelPreview:SetCursor("arrow")
 	self.modelPreview:SetFOV(self.modelPreview:GetFOV() - 19)
@@ -73,6 +72,20 @@ function PANEL:QuickActions()
  		--ent:SetSequence(ACT_IDLE)
  		--self:RunAnimation()
  	end
+
+ 	timer.Simple(0, function()
+		if not IsValid(self.modelPreview) then
+			return
+		end
+
+		local ent = self.modelPreview.Entity
+
+		if IsValid(ent) then
+			for v,k in pairs(LocalPlayer():GetBodyGroups()) do
+				ent:SetBodygroup(k.id, LocalPlayer():GetBodygroup(k.id))
+			end
+		end
+	end)
 
  	self.classLbl = vgui.Create("DLabel", self.quickActions)
  	self.classLbl:SetText("Class: ".."error")

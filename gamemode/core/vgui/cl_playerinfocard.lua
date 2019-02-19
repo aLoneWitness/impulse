@@ -13,11 +13,11 @@ function PANEL:Init()
 		self:MakePopup()
 
 		-- 3d model
-		self.characterPreview = vgui.Create("DModelPanel", self)
+		self.characterPreview = vgui.Create("impulseModelPanel", self)
 		self.characterPreview:SetSize(600,400)
 		self.characterPreview:SetPos(200,30)
 		self.characterPreview:SetFOV(80)
-		self.characterPreview:SetModel(self.Player:GetModel())
+		self.characterPreview:SetModel(self.Player:GetModel(), self.Player:GetSkin())
 		self.characterPreview:MoveToBack()
 		self.characterPreview:SetCursor("arrow")
 		--local charPreview = self.characterPreview
@@ -27,12 +27,34 @@ function PANEL:Init()
 			--charPreview:RunAnimation()
 		end
 		
+		timer.Simple(0, function()
+			if not IsValid(self.characterPreview) then
+				return
+			end
+
+			local ent = self.characterPreview.Entity
+
+			if IsValid(ent) and IsValid(self.Player) then
+				for v,k in pairs(self.Player:GetBodyGroups()) do
+					ent:SetBodygroup(k.id, self.Player:GetBodygroup(k.id))
+				end
+			end
+		end)
+
 		-- Steam name
 		self.oocName = vgui.Create("DLabel", self)
 		self.oocName:SetFont("Impulse-CharacterInfo-NO")
 		self.oocName:SetText(self.Player:SteamName())
 		self.oocName:SizeToContents()
 		self.oocName:SetPos(10,30)
+
+		if LocalPlayer():IsAdmin() then
+			self.rpName = vgui.Create("DLabel", self)
+			self.rpName:SetFont("Impulse-Elements18")
+			self.rpName:SetText(self.Player:Name())
+			self.rpName:SizeToContents()
+			self.rpName:SetPos(self.oocName:GetWide() + 15, 42)
+		end
 
 		-- team name
 		self.teamName = vgui.Create("DLabel", self)
@@ -101,6 +123,11 @@ function PANEL:Init()
 			self.adminTools:SetSize(400, 150)
 			self.adminTools:SetExpanded(0)
 			self.adminTools:SetLabel("Admin tools (Click to expand)")
+
+			local colInv = Color(0, 0, 0, 0)
+			function self.adminTools:Paint()
+				self:SetBGColor(colInv)
+			end
 
 			self.adminList = vgui.Create("DIconLayout", self.adminTools)
 			self.adminList:Dock(FILL)

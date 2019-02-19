@@ -13,6 +13,7 @@ function PANEL:SetTeam(teamID)
 	self.playerCount = self.players
 	self.model = LocalPlayer().defaultModel or "models/Humans/Group01/male_02.mdl" 
 	self.skin = LocalPlayer().defaultSkin or 0
+	self.bodygroups = impulse.Teams.Data[teamID].bodygroups
 	self.requirements = ""
 	local teamData = impulse.Teams.Data[teamID]
 
@@ -37,13 +38,29 @@ function PANEL:SetTeam(teamID)
 		self.requirements = self.requirements.." (Donator only)"
 	end
 
- 	self.modelIcon = vgui.Create("SpawnIcon", self)
+ 	self.modelIcon = vgui.Create("impulseSpawnIcon", self)
 	self.modelIcon:SetPos(10,4)
 	self.modelIcon:SetSize(52,52)
 	self.modelIcon:SetModel(self.model, self.skin)
 	self.modelIcon:SetTooltip(false)
 	self.modelIcon:SetDisabled(true)
 	self.modelIcon:SetDrawBorder(false)
+
+	if self.bodygroups then
+	 	timer.Simple(0, function()
+			if not IsValid(self.modelIcon) then
+				return
+			end
+
+			local ent = self.modelIcon.Entity
+
+			if IsValid(ent) then
+				for v,bodygroupData in pairs(self.bodygroups) do
+					ent:SetBodygroup(bodygroupData[1], (bodygroupData[2]) or 0)
+				end
+			end
+		end)
+ 	end
 end
 
 local gradient = Material("vgui/gradient-l")
