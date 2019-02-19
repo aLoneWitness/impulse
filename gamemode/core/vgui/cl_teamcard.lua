@@ -18,7 +18,7 @@ function PANEL:SetTeam(teamID)
 
 	if teamData.limit then
 		if teamData.percentLimit and teamData.percentLimit == true then
-			self.playerCount = self.players.."/"..(self.players / #player.GetAll())
+			self.playerCount = self.players.."/"..math.ceil((self.players / #player.GetAll()))
 		else
 			self.playerCount = self.players.."/"..teamData.limit
 		end

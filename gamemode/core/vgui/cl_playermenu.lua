@@ -162,6 +162,35 @@ function PANEL:QuickActions()
 	self.list:Dock(FILL)
 	self.list:SetSpaceY(5)
 	self.list:SetSpaceX(5)
+
+	local classes = impulse.Teams.Data[LocalPlayer():Team()].classes
+	if classes and LocalPlayer():InSpawn() then
+		if LocalPlayer():GetTeamClass() != 0 then
+			local btn = self.list:Add("DButton")
+			btn:Dock(TOP)
+			btn:SetText("Become normal "..team.GetName(LocalPlayer():Team()))
+		end
+
+		for v,classData in pairs(classes) do
+			if not classData.noMenu and LocalPlayer():GetTeamClass() != v then
+				local btn = self.list:Add("DButton")
+				btn:Dock(TOP)
+				btn.classID = v
+
+				local btnText = "Become "..classData.name
+				if classData.xp then
+					btnText = btnText.." ("..classData.xp.."XP)"
+				end
+				btn:SetText("Become "..classData.name.." ("..classData.xp.."XP)")
+
+				function btn:DoClick()
+					net.Start("impulseClassChange")
+					net.WriteUInt(btn.classID, 8)
+					net.SendToServer()
+				end
+			end
+		end
+	end
 end
 
 function PANEL:Teams()

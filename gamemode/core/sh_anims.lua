@@ -218,39 +218,39 @@ impulse.Anim.overwatch = {
 }
 impulse.Anim.vort = {
 	normal = {
-		[ACT_MP_STAND_IDLE] = {ACT_IDLE, "actionidle"},
+		[ACT_MP_STAND_IDLE] = {ACT_IDLE, ACT_IDLE},
 		[ACT_MP_CROUCH_IDLE] = {"crouchidle", "crouchidle"},
-		[ACT_MP_WALK] = {ACT_WALK, "walk_all_holdgun"},
-		[ACT_MP_CROUCHWALK] = {ACT_WALK, "walk_all_holdgun"},
+		[ACT_MP_WALK] = {ACT_WALK, ACT_WALK},
+		[ACT_MP_CROUCHWALK] = {ACT_WALK, ACT_WALK},
 		[ACT_MP_RUN] = {ACT_RUN, ACT_RUN}
 	},
 	pistol = {
-		[ACT_MP_STAND_IDLE] = {ACT_IDLE, "tcidle"},
+		[ACT_MP_STAND_IDLE] = {ACT_IDLE, ACT_IDLE},
 		[ACT_MP_CROUCH_IDLE] = {"crouchidle", "crouchidle"},
-		[ACT_MP_WALK] = {ACT_WALK, "walk_all_holdgun"},
-		[ACT_MP_CROUCHWALK] = {ACT_WALK, "walk_all_holdgun"},
-		[ACT_MP_RUN] = {ACT_RUN, "run_all_tc"}
+		[ACT_MP_WALK] = {ACT_WALK, ACT_WALK},
+		[ACT_MP_CROUCHWALK] = {ACT_WALK, ACT_WALK},
+		[ACT_MP_RUN] = {ACT_RUN, ACT_RUN}
 	},
 	smg = {
-		[ACT_MP_STAND_IDLE] = {ACT_IDLE, "tcidle"},
+		[ACT_MP_STAND_IDLE] = {ACT_IDLE, ACT_IDLE},
 		[ACT_MP_CROUCH_IDLE] = {"crouchidle", "crouchidle"},
-		[ACT_MP_WALK] = {ACT_WALK, "walk_all_holdgun"},
-		[ACT_MP_CROUCHWALK] = {ACT_WALK, "walk_all_holdgun"},
-		[ACT_MP_RUN] = {ACT_RUN, "run_all_tc"}
+		[ACT_MP_WALK] = {ACT_WALK, ACT_WALK},
+		[ACT_MP_CROUCHWALK] = {ACT_WALK, ACT_WALK},
+		[ACT_MP_RUN] = {ACT_RUN, ACT_RUN}
 	},
 	shotgun = {
-		[ACT_MP_STAND_IDLE] = {ACT_IDLE, "tcidle"},
+		[ACT_MP_STAND_IDLE] = {ACT_IDLE, ACT_IDLE},
 		[ACT_MP_CROUCH_IDLE] = {"crouchidle", "crouchidle"},
-		[ACT_MP_WALK] = {ACT_WALK, "walk_all_holdgun"},
-		[ACT_MP_CROUCHWALK] = {ACT_WALK, "walk_all_holdgun"},
-		[ACT_MP_RUN] = {ACT_RUN, "run_all_tc"}
+		[ACT_MP_WALK] = {ACT_WALK, ACT_WALK},
+		[ACT_MP_CROUCHWALK] = {ACT_WALK, ACT_WALK},
+		[ACT_MP_RUN] = {ACT_RUN, ACT_RUN}
 	},
 	grenade = {
-		[ACT_MP_STAND_IDLE] = {ACT_IDLE, "tcidle"},
+		[ACT_MP_STAND_IDLE] = {ACT_IDLE, ACT_IDLE},
 		[ACT_MP_CROUCH_IDLE] = {"crouchidle", "crouchidle"},
-		[ACT_MP_WALK] = {ACT_WALK, "walk_all_holdgun"},
-		[ACT_MP_CROUCHWALK] = {ACT_WALK, "walk_all_holdgun"},
-		[ACT_MP_RUN] = {ACT_RUN, "run_all_tc"}
+		[ACT_MP_WALK] = {ACT_WALK, ACT_WALK},
+		[ACT_MP_CROUCHWALK] = {ACT_WALK, ACT_WALK},
+		[ACT_MP_RUN] = {ACT_RUN, ACT_RUN}
 	},
 	melee = {
 		[ACT_MP_STAND_IDLE] = {ACT_IDLE, "tcidle"},
@@ -330,6 +330,8 @@ impulse.Anim.SetModelClass("models/vortigaunt.mdl", "vort")
 impulse.Anim.SetModelClass("models/vortigaunt_blue.mdl", "vort")
 impulse.Anim.SetModelClass("models/vortigaunt_doctor.mdl", "vort")
 impulse.Anim.SetModelClass("models/vortigaunt_slave.mdl", "vort")
+
+hook.Run("LoadAnimationClasses")
 
 local ALWAYS_RAISED = {}
 ALWAYS_RAISED["weapon_physgun"] = true

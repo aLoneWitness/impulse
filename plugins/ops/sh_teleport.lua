@@ -38,8 +38,14 @@ local gotoCommand = {
 		local plyTarget = impulse.FindPlayer(name)
 
 		if plyTarget and ply != plyTarget then
+			if not plyTarget:Alive() then
+				plyTarget:Spawn()
+				plyTarget:Notify("You have been respawned by a game moderator.")
+				ply:Notify("Target was dead, automatically respawned.")
+			end
+
 			opsGoto(ply, plyTarget:GetPos())
-			ply:Notify(ply:Name().." has been brought to your position.")
+			ply:Notify("You have teleported to "..plyTarget:Name().."'s position.")
 		else
 			return ply:Notify("Could not find player: "..tostring(name))
 		end
@@ -58,7 +64,7 @@ local bringCommand = {
 
 		if plyTarget and ply != plyTarget then
 			opsBring(ply, plyTarget)
-			ply:Notify("You have teleported to "..plyTarget:Name().."'s position.")
+			ply:Notify(plyTarget:Name().." has been brought to your position.")
 		else
 			return ply:Notify("Could not find player: "..tostring(name))
 		end
@@ -77,6 +83,10 @@ local returnCommand = {
 
 		if plyTarget and ply != plyTarget then
 			if plyTarget.lastPos then
+				if not plyTarget:Alive() then
+					return ply:Notify("Player is dead.")
+				end
+				
 				opsGoto(plyTarget, plyTarget.lastPos)
 				plyTarget.lastPos = nil
 				ply:Notify(plyTarget:Name().." has been returned.")

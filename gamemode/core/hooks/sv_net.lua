@@ -4,6 +4,7 @@ util.AddNetworkString("impulseATMOpen")
 util.AddNetworkString("impulseReadNote")
 util.AddNetworkString("impulseTeamChange")
 util.AddNetworkString("impulseBuyItem")
+util.AddNetworkString("impulseClassChange")
 
 netstream.Hook("impulseCharacterCreate", function(player, charName, charModel, charSkin)
 	if (player.NextCreate or 0) > CurTime() then return end
@@ -101,7 +102,8 @@ net.Receive("impulseATMDeposit", function(len, ply)
 end)
 
 net.Receive("impulseTeamChange", function(len, ply)
-	if ply.lastTeamTry and ply.lastTeamTry < CurTime() + 1 then return end
+	if (ply.lastTeamTry or 0) > CurTime() then return end
+	ply.lastTeamTry = CurTime() + 1
 	
 	local teamChangeTime = impulse.Config.TeamChangeTime
 
@@ -114,14 +116,41 @@ net.Receive("impulseTeamChange", function(len, ply)
 		return
 	end
 
-	local teamId = net.ReadUInt(8)
+	local teamID = net.ReadUInt(8)
 
-	if teamId and isnumber(teamId) then
-		local setTeam = ply:SetTeam(teamId)
-		if setTeam == true then
+	if teamID and isnumber(teamID) and impulse.Teams.Data[teamID] then
+		local setTeam = ply:SetTeam(teamID)
+		if setTeam then
 			ply.lastTeamChange = CurTime()
-			ply:Notify("You have changed your team to "..team.GetName(teamId)..".")
+			ply:Notify("You have changed your team to "..team.GetName(teamID)..".")
 			ply:EmitSound("items/ammo_pickup.wav")
+		end
+	end
+end)
+
+net.Receive("impulseClassChange",function(len, ply)
+	if (ply.lastTeamTry or 0) > CurTime() then return end
+	ply.lastTeamTry = CurTime() + 1
+
+	local classChangeTime = impulse.Config.ClassChangeTime
+
+	if ply:IsAdmin() then
+		classChangeTime = 5
+	end
+
+	if ply.lastClassChange and ply.lastClassChange + classChangeTime > CurTime() then
+		ply:Notify("Wait "..math.ceil((ply.lastClassChange + classChangeTime) - CurTime()).." seconds before switching class again.")
+		return
+	end
+
+	local classID = net.ReadUInt(8)
+	local classes = impulse.Teams.Data[ply:Team()].classes
+
+	if classID and isnumber(classID) and classID > 0 and classes and classes[classID] then
+		local setClass = ply:SetTeamClass(classID)
+		if setClass then
+			ply.lastClassChange = CurTime()
+			ply:Notify("You have changed your class to "..classes[classID].name..".")
 		end
 	end
 end)

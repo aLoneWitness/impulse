@@ -9,7 +9,7 @@ local respawnCommand = {
 		if plyTarget then
 			plyTarget:Spawn()
 			plyTarget:Notify("You have been respawned by a game moderator.")
-			ply:Notify(plyTarget:Name().." respawned.")
+			ply:Notify(plyTarget:Name().." has been respawned.")
 		else
 			return ply:Notify("Could not find player: "..tostring(name))
 		end
