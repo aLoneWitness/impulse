@@ -291,7 +291,7 @@ impulse.Anim.fastZombie = {
 }
 
 
-local translations = {}
+local translations = translations or {}
 
 function impulse.Anim.SetModelClass(model, class)
 	if not impulse.Anim[class] then
