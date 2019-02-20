@@ -5,12 +5,19 @@ function LoadSaveEnts()
 			local x = ents.Create(k.class)
 			x:SetPos(k.pos)
 			x:SetAngles(k.angle)
+			
 			if k.class == "prop_physics" or k.class == "prop_dynamic" then
 				x:SetModel(k.model)
 			end
 			x.impulseSaveEnt = true
 			x:Spawn()
 			x:Activate()
+
+			local phys = x:GetPhysicsObject()
+
+			if phys and phys:IsValid() then
+				phys:EnableMotion(false)
+			end
 		end
 	end
 end
@@ -39,7 +46,7 @@ concommand.Add("impulse_reloadents", function(ply)
 		end
 	end
 
-	LoadEnts()
+	LoadSaveEnts()
 
 	ply:AddChatText("All saved ents have been reloaded.")
 end)
