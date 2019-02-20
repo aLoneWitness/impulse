@@ -198,9 +198,11 @@ local rollCommand = {
 	description = "Generate a random number between 0 and 100.",
 	requiresAlive = true,
 	onRun = function(ply, arg, rawText)
+		local rollResult = (tostring(math.random(1,100)))
+
 		for v,k in pairs(player.GetAll()) do
 			if (ply:GetPos() - k:GetPos()):LengthSqr() <= (impulse.Config.TalkDistance ^ 2) then 
-				k:SendChatClassMessage(11, (tostring(math.random(1,100))), ply)
+				k:SendChatClassMessage(11, rollResult, ply)
 			end
 		end
 	end

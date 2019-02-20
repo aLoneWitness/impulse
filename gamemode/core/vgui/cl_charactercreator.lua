@@ -31,6 +31,7 @@ function PANEL:Init()
 			LocalPlayer().defaultModel = characterModel
 			LocalPlayer().defaultSkin = characterSkin
     		LocalPlayer():ScreenFade(SCREENFADE.IN, color_black, 4, 0)
+    		self:Remove()
     		self:GetParent():Remove()
 			impulse.hudEnabled = true
 			impulse_isNewPlayer = false
