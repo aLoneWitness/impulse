@@ -5,8 +5,9 @@ function IMPULSE:OnSchemaLoaded()
 end
 
 function IMPULSE:Think()
-	if input.IsKeyDown(KEY_F1) and not IsValid(impulse.MainMenu) then
-		local mainMenu = vgui.Create("impulseMainMenu")
+	if input.IsKeyDown(KEY_F1) and (not IsValid(impulse.MainMenu) or not impulse.MainMenu:IsVisible()) then
+		local mainMenu = impulse.MainMenu or vgui.Create("impulseMainMenu")
+		mainMenu:SetVisible(true)
 		mainMenu:SetAlpha(0)
 		mainMenu:AlphaTo(255, .3)
 		mainMenu.popup = true
@@ -125,7 +126,7 @@ end
 function IMPULSE:CalcView(player, origin, angles, fov)
 	local view
 
-	if IsValid(impulse.MainMenu) and not impulse.MainMenu.popup then
+	if IsValid(impulse.MainMenu) and impulse.MainMenu:IsVisible() and not impulse.MainMenu.popup then
 		view = {
 			origin = impulse.Config.MenuCamPos,
 			angles = impulse.Config.MenuCamAng,

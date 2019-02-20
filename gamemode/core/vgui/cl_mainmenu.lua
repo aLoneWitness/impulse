@@ -157,6 +157,16 @@ function PANEL:Init()
 	schemaLabel:SizeToContents()
 	schemaLabel:SetPos(100,140)
 
+	local newsLabel = vgui.Create("DLabel", self)
+	newsLabel:SetFont("Impulse-Elements32")
+	newsLabel:SetText("News")
+	newsLabel:SizeToContents()
+	newsLabel:SetPos(self:GetWide()-530, 60)
+
+	local newsfeed = vgui.Create("impulseNewsfeed", self)
+	newsfeed:SetSize(500,270)
+	newsfeed:SetPos(self:GetWide()-530, 100)
+
 	timer.Simple(0, function()
 		if not impulse.MainMenu.popup and impulse.GetSetting("perf_mcore") == false then
 			Derma_Query("Would you like to enable Multi-core rendering? This will improve your FPS by about 60FPS, however if your computer has a low core count and/or a small amount of RAM it can cause crashes and performance problems.",
@@ -170,6 +180,11 @@ function PANEL:Init()
 	end)
 end
 
+PANEL.FullRemove = PANEL.Remove 
+function PANEL:Remove()
+	self:SetVisible(false)
+end
+
 function PANEL:OnChildAdded(child)
 	if IsValid(self.openElement) then
 		self.openElement:Remove()
@@ -177,11 +192,13 @@ function PANEL:OnChildAdded(child)
 	self.openElement = child
 end
 
+local bodyCol = Color(30, 30, 30, 190)
 function PANEL:Paint(w,h)
 	Derma_DrawBackgroundBlur(self)
 
-	surface.SetDrawColor(Color( 30, 30, 30, 190 )) -- menu body
-	surface.DrawRect(70,0,400,h)
+	surface.SetDrawColor(bodyCol) -- menu body
+	surface.DrawRect(70,0,400,h) -- left body
+	surface.DrawRect(w-540,0,520,380)-- news body
 	impulse.render.glowgo(100,50,337,91)
 end
 

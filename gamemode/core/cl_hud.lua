@@ -127,7 +127,7 @@ local function DrawDoorInfo(target)
 end
 
 function IMPULSE:HUDPaint()
-	if impulse.hudEnabled == false or IsValid(impulse.MainMenu) then
+	if impulse.hudEnabled == false or (IsValid(impulse.MainMenu) and impulse.MainMenu:IsVisible()) then
 		if IsValid(PlayerIcon) then
 			PlayerIcon:Remove()
 		end
