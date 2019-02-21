@@ -562,6 +562,10 @@ function IMPULSE:CalcMainActivity(ply, velocity)
 
 	ply.SetPoseParameter(ply, "move_yaw", normalized)
 
+	if CLIENT then
+		ply.SetIK(ply, false)
+	end
+
 	local oldSeqOverride = ply.CalcSeqOverride
 	local seqIdeal, seqOverride = self.BaseClass.CalcMainActivity(self.BaseClass, ply, velocity)
 
