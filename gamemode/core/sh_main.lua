@@ -92,6 +92,10 @@ function meta:Notify(message)
     end
 end
 
+function meta:IsFemale()
+    return string.find(self:GetModel(), "female")
+end
+
 function impulse.FindPlayer(searchKey)
     if not searchKey or searchKey == "" then return nil end
     local searchPlayers = player.GetAll()
