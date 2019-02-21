@@ -37,3 +37,34 @@ function entityMeta:CanBeCarried()
 
 	return true
 end
+
+local ADJUST_SOUND = SoundDuration("npc/metropolice/pain1.wav") > 0 and "" or "../../hl2/sound/"
+
+function entityMeta:EmitQueuedSounds(sounds, delay, spacing, volume, pitch)
+	delay = delay or 0
+	spacing = spacing or 0.1
+
+	PrintTable(sounds)
+
+	for k, v in ipairs(sounds) do
+		local postSet, preSet = 0, 0
+
+		if (type(v) == "table") then
+			postSet, preSet = v[2] or 0, v[3] or 0
+			v = v[1]
+		end
+
+		local length = SoundDuration(ADJUST_SOUND..v)
+		delay = delay + preSet
+
+		timer.Simple(delay, function()
+			if (IsValid(self)) then
+				self:EmitSound(v, volume, pitch)
+			end
+		end)
+
+		delay = delay + length + postSet + spacing
+	end
+
+	return delay
+end

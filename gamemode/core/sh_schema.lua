@@ -36,6 +36,8 @@ function impulse.schema.boot(name)
 	end
 
     impulse.lib.includeDir(SCHEMA.."/schema/scripts")
+    impulse.lib.includeDir(SCHEMA.."/schema/scripts/vgui")
+    impulse.lib.includeDir(SCHEMA.."/schema/scripts/hooks")
     local files, plugins = file.Find(SCHEMA.."/plugins/*", "LUA")
 
     for v, dir in ipairs(plugins) do

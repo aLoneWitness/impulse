@@ -88,7 +88,7 @@ function PANEL:QuickActions()
 	end)
 
  	self.classLbl = vgui.Create("DLabel", self.quickActions)
- 	self.classLbl:SetText("Class: ".."error")
+ 	self.classLbl:SetText("Class: "..LocalPlayer():GetTeamClassName())
  	self.classLbl:SetFont("Impulse-Elements18")
  	self.classLbl:SizeToContents()
  	self.classLbl:SetPos(420, 380)
@@ -196,10 +196,17 @@ function PANEL:QuickActions()
 				end
 				btn:SetText("Become "..classData.name.." ("..classData.xp.."XP)")
 
+				local panel = self
 				function btn:DoClick()
 					net.Start("impulseClassChange")
 					net.WriteUInt(btn.classID, 8)
 					net.SendToServer()
+
+					timer.Simple(0.5, function()
+						if IsValid(btn) then
+							panel.classLbl:SetText("Class: "..LocalPlayer():GetTeamClassName())
+						end
+					end)
 				end
 			end
 		end

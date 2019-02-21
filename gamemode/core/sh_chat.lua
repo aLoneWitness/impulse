@@ -118,6 +118,8 @@ local whisperCommand = {
 				k:SendChatClassMessage(7, rawText, ply)
 			end
 		end
+
+		hook.Run("PostChatClassMessageSend", 7, rawText, ply)
 	end
 }
 
@@ -134,6 +136,8 @@ local radioCommand = {
 				k:SendChatClassMessage(8, rawText, ply)
 			end
 		end
+
+		hook.Run("PostChatClassMessageSend", 8, rawText, ply)
 	end
 }
 

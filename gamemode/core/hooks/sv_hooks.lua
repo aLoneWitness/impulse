@@ -146,6 +146,8 @@ function IMPULSE:PlayerSay(ply, text, teamChat)
 				k:SendChatClassMessage(1, text, ply)
 			end
 		end
+		
+		hook.Run("PostChatClassMessageSend", 1, text, ply)
 	end
 
 	return ""
