@@ -134,13 +134,17 @@ function IMPULSE:PlayerSay(ply, text, teamChat)
 			if command.requiresArg == true and (not args[2] or string.Trim(args[2]) == "") then return "" end
 			if command.requiresAlive == true and not ply:Alive() then return "" end
 
-			text = string.sub(text, string.len(args[1]) + 1)
+			text = string.sub(text, string.len(args[1]) + 2)
+
 			table.remove(args, 1)
 			command.onRun(ply, args, text)
 		else
 			ply:AddChatText(infoCol, "The command "..args[1].." does not exist.")
 		end
 	elseif ply:Alive() then
+		text = hook.Run("ProcessICChatMessage", ply, text) or text
+		text = hook.Run("ChatClassMessageSend", 1, text, ply) or text
+
 		for v,k in pairs(player.GetAll()) do
 			if (ply:GetPos() - k:GetPos()):LengthSqr() <= (impulse.Config.TalkDistance ^ 2) then 
 				k:SendChatClassMessage(1, text, ply)
