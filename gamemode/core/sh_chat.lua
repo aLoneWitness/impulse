@@ -103,6 +103,8 @@ local yellCommand = {
 				k:SendChatClassMessage(6, rawText, ply)
 			end
 		end
+
+		hook.Run("PostChatClassMessageSend", 6, rawText, ply)
 	end
 }
 

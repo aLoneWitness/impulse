@@ -44,8 +44,6 @@ function entityMeta:EmitQueuedSounds(sounds, delay, spacing, volume, pitch)
 	delay = delay or 0
 	spacing = spacing or 0.1
 
-	PrintTable(sounds)
-
 	for k, v in ipairs(sounds) do
 		local postSet, preSet = 0, 0
 
