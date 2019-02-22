@@ -327,12 +327,14 @@ if CLIENT then
 	impulse.RegisterChatClass(6, function(message, speaker)
 		message = hook.Run("ProcessICChatMessage", speaker, message) or message
 
+		impulse.customChatFont = "Impulse-ChatLarge"
 		chat.AddText(speaker, yellCol, " yells: ", message)
 	end)
 
 	impulse.RegisterChatClass(7, function(message, speaker)
 		message = hook.Run("ProcessICChatMessage", speaker, message) or message
 		
+		impulse.customChatFont = "Impulse-ChatSmall"
 		chat.AddText(speaker, whisperCol, " whispers: ", message)
 	end)
 

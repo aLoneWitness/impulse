@@ -183,5 +183,9 @@ function meta:GetTeamClass()
 end
 
 function meta:IsCP()
-	return impulse.Teams.Data[self:Team()].cp or false
+	local teamData = impulse.Teams.Data[self:Team()]
+
+	if teamData then
+		return teamData.cp or false
+	end
 end
