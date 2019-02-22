@@ -32,6 +32,13 @@ function IMPULSE:PlayerInitialSpawn(ply)
 	timer.Create(ply:UserID().."impulseXP", impulse.Config.XPTime, 0, function()
 		ply:GiveTimedXP()
 	end)
+
+	local jailTime = impulse.Arrest.DCRemember[ply:SteamID()]
+
+	if jailTime then
+		ply:Jail(jailTime)
+		impulse.Arrest.DCRemember[ply:SteamID()] = nil
+	end
 end
 
 function IMPULSE:PlayerSpawn(ply)
@@ -71,6 +78,15 @@ function IMPULSE:PlayerDisconnected(ply)
 	end
 
 	timer.Remove(ply:UserID().."impulseXP")
+
+	local jailCell = ply.InJail
+
+	if jailCell then
+		timer.Remove(ply:UserID().."impulsePrison")
+		local duration = impulse.Arrest.Prison[jailCell][self:UserID()].duration
+		impulse.Arrest.Prison[jailCell][self:UserID()] = nil
+		impulse.Arrest.DCRemember[self:SteamID()] = duration
+	end
 end
 
 function IMPULSE:PlayerLoadout(ply)

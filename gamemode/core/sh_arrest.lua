@@ -52,6 +52,9 @@ if SERVER then
 	impulse.Arrest = impulse.Arrest or {}
 	impulse.Arrest.Dragged = impulse.Arrest.Dragged or {}
 	impulse.Arrest.Prison = impulse.Arrest.Prison or {}
+	impulse.Arrest.DCRemember = impulse.Arrest.DCRemember or {}
+
+	util.AddNetworkString("impulseSendJailInfo")
 
 	function meta:Arrest()
 		self.ArrestedWeapons = {}
@@ -105,5 +108,87 @@ if SERVER then
 			dragger.ArrestedDragging = nil
 		end
 		self.ArrestedDragger = nil
+	end
+
+	function meta:SendJailInfo(time, jailData)
+		net.Start("impulseSendJailInfo")
+		net.WriteFloat((CurTime() + time))
+		
+		if jailData then
+			net.WriteBool(true)
+			net.WriteTable(jailData)
+		else
+			net.WriteBool(false)
+		end
+
+		net.Send(self)
+	end
+
+	function meta:Jail(time, jailData)
+		local doCellMates = false
+		local pos
+		local cellID
+
+		if self.InJail then
+			return
+		end
+
+		if table.Count(impulse.Arrest.Prison) >= table.Count(impulse.Config.PrisonCells) then
+			doCellMates = true
+		end
+
+		for v,k in pairs(impulse.Config.PrisonCells) do
+			local cellData = impulse.Arrest.Prison[v]
+			
+			if cellData and not doCellMates then -- if something is assigned to this cell
+				continue
+			end
+
+			pos = k
+			cellID = v
+
+			if doCellMates then
+				local cell = impulse.Arrest.Prison[v]
+				cell[self:UserID()] = {
+					inmate = self,
+					jailData = jailData,
+					duration = time
+				} 
+
+				break
+			else
+				impulse.Arrest.Prison[v] = {}
+				impulse.Arrest.Prison[v][self:UserID()] = {
+					inmate = self,
+					jailData = jailData,
+					duration = time
+				}
+
+				break
+			end
+		end
+
+		if pos then
+			self:SetPos(impulse.FindEmptyPos(pos, {self}, 150, 30, Vector(16, 16, 64)))
+			self:SetEyeAngles(impulse.Config.PrisonAngle)
+			self:Notify("You have been imprisoned for "..time)
+			self:SendJailInfo(time, jailData)
+			self.InJail = cellID
+
+			timer.Create(self:UserID().."impulsePrison", time, 1, function()
+				if IsValid(self) and self.InJail then
+					self:UnJail()
+				end
+			end)
+		end
+	end
+	
+	function meta:UnJail()
+		impulse.Arrest.Prison[self.InJail][self:UserID()] = nil
+
+		self:Spawn()
+		self:StopDrag()
+		self:UnArrest()
+		self.InJail = nil
 	end
 end

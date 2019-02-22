@@ -30,7 +30,6 @@ net.Receive("impulseReadNote", function()
 end)
 
 net.Receive("impulseChatNetMessage", function(len)
-	print("chat class data size: "..len)
 	local id = net.ReadUInt(8)
 	local message = net.ReadString()
 	local target = net.ReadUInt(8)
@@ -42,4 +41,19 @@ net.Receive("impulseChatNetMessage", function(len)
 	elseif IsValid(plyTarget) then
 		chatClass(message, plyTarget)
 	end
+end)
+
+net.Receive("impulseSendJailInfo", function()
+	local endTime = net.ReadFloat(32)
+	local hasJailData = net.ReadBool()
+	local jailData
+
+	if hasJailData then
+		jailData = net.ReadTable()
+	end
+
+	impulse.JailTimeEnd = endTime
+	impulse.JailData = jailData or nil
+
+	hook.Run("PlayerGetJailData", endTime, jailData)
 end)

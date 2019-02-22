@@ -77,6 +77,7 @@ local xpIcon = Material("impulse/icons/star-128.png")
 local warningIcon = Material("impulse/icons/warning-128.png")
 local infoIcon = Material("impulse/icons/info-128.png")
 local announcementIcon = Material("impulse/icons/megaphone-128.png")
+local exitIcon = Material("impulse/icons/exit-128.png")
 
 
 local lastModel = ""
@@ -267,9 +268,13 @@ function IMPULSE:HUDPaint()
 
 	surface.SetDrawColor(color_white)
 
-	draw.DrawText("23:23", "Impulse-Elements19", hudWidth-27, y+150, color_white, TEXT_ALIGN_RIGHT)
-	surface.SetMaterial(timeIcon)
-	surface.DrawTexturedRect(hudWidth-20, y+150, 18, 18)
+	if lp:GetSyncVar(SYNC_ARRESTED, false) == true and impulse.JailTimeEnd and impulse.JailTimeEnd > CurTime() then
+		local timeLeft = math.ceil(impulse.JailTimeEnd - CurTime())
+
+		surface.SetMaterial(exitIcon)
+		surface.DrawTexturedRect(10, y-30, 18, 18)
+		draw.DrawText("Sentence remaining: "..string.FormattedTime(timeLeft, "%02i:%02i"), "Impulse-Elements19", 35, y-30, color_white, TEXT_ALIGN_LEFT)
+	end
 
 	draw.DrawText(lp:GetSyncVar(SYNC_XP, 0).."XP", "Impulse-Elements19", 55, y+150, color_white, TEXT_ALIGN_LEFT)
 	surface.SetMaterial(xpIcon)

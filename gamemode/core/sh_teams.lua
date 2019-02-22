@@ -36,7 +36,7 @@ if SERVER then
 		end
 
 		if forced == false then
-			if self.Arrested then
+			if self:GetSyncVar(SYNC_ARRESTED, false) then
 				return false
 			end
 
