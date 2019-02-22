@@ -203,16 +203,20 @@ function IMPULSE:KeyPress(ply, key)
 
 		local entity = util.TraceLine(trace).Entity
 
-		if IsValid(entity) and entity:IsDoor() or entity:IsPlayer() then
-			hook.Run("PlayerUse", ply, entity)
+		if IsValid(entity) and entity:IsPlayer() then
+			if ply:CanArrest(entity) then
+				if not entity.ArrestedDragger then
+					ply:DragPlayer(entity)
+				else
+					entity:StopDrag()
+				end
+			end
 		end
 	end
 end
 
 function IMPULSE:PlayerUse(ply, entity)
-	if entity:IsPlayer() and ply:CanArrest(entity) then
-		ply:DragPlayer(entity)
-	end
+	
 end
 
 function IMPULSE:KeyRelease(ply, key)

@@ -344,7 +344,7 @@ if CLIENT then
 	end)
 
 	impulse.RegisterChatClass(9, function(message, speaker)
-		chat.AddText(talkCol, speaker:Name(), message)
+		chat.AddText(talkCol, speaker:Name(), " ", message)
 	end)
 
 	impulse.RegisterChatClass(10, function(message, speaker)

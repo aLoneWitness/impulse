@@ -85,11 +85,13 @@ if SERVER then
 	end
 
 	function meta:DragPlayer(ply)
-		if self:CanArrest(ply) and ply:GetSyncVar(SYNC_ARRESTED, false) and not ply.ArrestedDragger then
+		if self:CanArrest(ply) and ply:GetSyncVar(SYNC_ARRESTED, false) then
 			ply.ArrestedDragger = self
 			self.ArrestedDragging = ply
 			impulse.Arrest.Dragged[ply] = true
 			ply:Freeze(true)
+
+			self:Say("/me starts dragging "..ply:Name()..".")
 		end
 	end
 
