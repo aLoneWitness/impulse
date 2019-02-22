@@ -1,19 +1,12 @@
 function IMPULSE:PlayerInitialSpawn(ply)
 	local isNew = true
 
-	-- sync players with all other clients
+	-- sync players with all other clients/ents
 	impulse.Sync.Data[ply:EntIndex()] = {}
 	for v,k in pairs(impulse.Sync.Data) do
 		local ent = Entity(v)
 		if IsValid(ent) then
 			ent:Sync(ply)
-		end
-	end
-
-	-- sync players with all other doors
-	for doorID, doorData in pairs(impulse.Doors.Data) do
-		for key, value in pairs(doorData) do
-			netstream.Start(ply, "iDoorU", doorID, key, value)
 		end
 	end
 
@@ -43,10 +36,11 @@ end
 
 function IMPULSE:PlayerSpawn(ply)
 	if ply.beenSetup then
-		ply:SetTeam(impulse.Config.DefaultTeam)
+		ply:SetTeam(impulse.Config.DefaultTeam, true)
 	end
 
 	ply:SetHunger(100)
+	ply.Arrested = false
 
 	ply:GodEnable()
 	ply:SetRenderMode(RENDERMODE_TRANSALPHA)
@@ -269,7 +263,7 @@ function IMPULSE:PlayerSpawnNPC(ply)
 end
 
 function IMPULSE:PlayerSpawnProp(ply, model)
-	if not ply.beenSetup then
+	if not ply:Alive() or not ply.beenSetup or ply.Arrested then
 		return false
 	end
 

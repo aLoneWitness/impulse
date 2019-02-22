@@ -32,6 +32,15 @@ function IMPULSE:Think()
 			end
 		end
 	end
+
+	for v,k in pairs(player.GetAll()) do
+		local isArrested = k:GetSyncVar(SYNC_ARRESTED, false)
+
+		if isArrested != (k.BoneArrested or false) then
+			k:SetHandsBehindBack(isArrested)
+			k.BoneArrested = isArrested
+		end
+	end
 end
 
 function IMPULSE:ScoreboardShow()

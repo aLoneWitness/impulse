@@ -31,22 +31,32 @@ if SERVER then
 		local teamPlayers = team.NumPlayers(teamID)
 		local forced = forced or false
 
-		if teamData.xp and teamData.xp > self:GetXP() and forced == false then
-			self:Notify("You don't have the XP required to play as this team.")
+		if not ply:Alive() then
 			return false
 		end
 
-		if teamData.limit and forced == false then
-			if teamData.percentLimit and teamData.percentLimit == true then
-				local percentTeam = teamPlayers / #player.GetAll()
-				if not self:IsDonator() and percentTeam > teamData.limit then
-					self:Notify(teamData.name .. " is full.")
-					return false
-				end
-			else
-				if not self:IsDonator() and teamData.limit >= teamPlayers then
-					self:Notify(teamData.name .. " is full.")
-					return false
+		if forced == false then
+			if ply.Arrested then
+				return false
+			end
+
+			if teamData.xp and teamData.xp > self:GetXP() then
+				self:Notify("You don't have the XP required to play as this team.")
+				return false
+			end
+
+			if teamData.limit then
+				if teamData.percentLimit and teamData.percentLimit == true then
+					local percentTeam = teamPlayers / #player.GetAll()
+					if not self:IsDonator() and percentTeam > teamData.limit then
+						self:Notify(teamData.name .. " is full.")
+						return false
+					end
+				else
+					if not self:IsDonator() and teamData.limit >= teamPlayers then
+						self:Notify(teamData.name .. " is full.")
+						return false
+					end
 				end
 			end
 		end
