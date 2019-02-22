@@ -31,12 +31,12 @@ if SERVER then
 		local teamPlayers = team.NumPlayers(teamID)
 		local forced = forced or false
 
-		if not ply:Alive() then
+		if not self:Alive() then
 			return false
 		end
 
 		if forced == false then
-			if ply.Arrested then
+			if self.Arrested then
 				return false
 			end
 

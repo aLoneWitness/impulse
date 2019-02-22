@@ -40,7 +40,10 @@ function IMPULSE:PlayerSpawn(ply)
 	end
 
 	ply:SetHunger(100)
-	ply.Arrested = false
+
+	if ply:GetSyncVar(SYNC_ARRESTED, false) == true then
+		ply:SetSyncVar(SYNC_ARRESTED, false, true)
+	end
 
 	ply:GodEnable()
 	ply:SetRenderMode(RENDERMODE_TRANSALPHA)
@@ -271,7 +274,7 @@ function IMPULSE:PlayerSpawnProp(ply, model)
 end
 
 function IMPULSE:PlayerSpawnVehicle(ply, model)
-	if ply:IsDonator() and model:find("chair") or model:find("seat") or model:find("pod") then
+	if (ply.Arrested or false) == false and ply:IsDonator() and model:find("chair") or model:find("seat") or model:find("pod") then
 		return true
 	else
 		return ply:IsSuperAdmin()
