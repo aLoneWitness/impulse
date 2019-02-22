@@ -98,7 +98,6 @@ local yellCommand = {
 	requiresArg = true,
 	requiresAlive = true,
 	onRun = function(ply, arg, rawText)
-		rawText = hook.Run("ProcessICChatMessage", ply, rawText) or rawText
 		rawText = hook.Run("ChatClassMessageSend", 6, rawText, ply) or rawText
 
 		for v,k in pairs(player.GetAll()) do
@@ -116,7 +115,6 @@ local whisperCommand = {
 	requiresArg = true,
 	requiresAlive = true,
 	onRun = function(ply, arg, rawText)
-		rawText = hook.Run("ProcessICChatMessage", ply, rawText) or rawText
 		rawText = hook.Run("ChatClassMessageSend", 7, rawText, ply) or rawText
 
 		for v,k in pairs(player.GetAll()) do
@@ -134,7 +132,6 @@ local radioCommand = {
 	requiresArg = true,
 	requiresAlive = true,
 	onRun = function(ply, arg, rawText)
-		rawText = (hook.Run("ProcessChatMessage", ply, rawText)) or rawText
 		rawText = hook.Run("ChatClassMessageSend", 8, rawText, ply) or rawText
 
 		if not ply:IsCP() then return end
@@ -306,6 +303,8 @@ if CLIENT then
 	rankCols["vip"] = Color(212, 185, 9)
 
 	impulse.RegisterChatClass(1, function(message, speaker)
+		message = hook.Run("ProcessICChatMessage", speaker, message) or message
+
 		chat.AddText(speaker, talkCol, " says: ", message)
 	end)
 
@@ -326,10 +325,14 @@ if CLIENT then
 	end)
 
 	impulse.RegisterChatClass(6, function(message, speaker)
+		message = hook.Run("ProcessICChatMessage", speaker, message) or message
+
 		chat.AddText(speaker, yellCol, " yells: ", message)
 	end)
 
 	impulse.RegisterChatClass(7, function(message, speaker)
+		message = hook.Run("ProcessICChatMessage", speaker, message) or message
+		
 		chat.AddText(speaker, whisperCol, " whispers: ", message)
 	end)
 

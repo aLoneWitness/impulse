@@ -184,7 +184,7 @@ function IMPULSE:PlayerDeathThink(ply)
 end
 
 function IMPULSE:PlayerDeathSound()
-	return false
+	return true
 end
 
 function IMPULSE:SetupPlayerVisibility(ply)
