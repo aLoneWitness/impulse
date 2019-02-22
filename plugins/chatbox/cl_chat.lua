@@ -92,6 +92,7 @@ function impulse.chatBox.buildBox()
 	impulse.chatBox.chatLog = vgui.Create("impulseRichText", impulse.chatBox.frame)
 	impulse.chatBox.chatLog:SetPos(5, 30)
 	impulse.chatBox.chatLog:SetSize(impulse.chatBox.frame:GetWide() - 10, impulse.chatBox.frame:GetTall() - 70)
+	local strFind = string.find
 	impulse.chatBox.chatLog.PaintOver = function(self, w, h)
 		local entry = impulse.chatBox.entry
 
@@ -108,7 +109,7 @@ function impulse.chatBox.buildBox()
 				local i = 0
 
  				for k, v in pairs(impulse.chatCommands) do
- 					if (string.find(k, command)) then
+ 					if (strFind(k, command)) then
  						local c = impulse.Config.MainColour
  						
  						if v.adminOnly == true and LocalPlayer():IsAdmin() == false then 
@@ -116,6 +117,7 @@ function impulse.chatBox.buildBox()
  						elseif v.adminOnly == true then
  							c = Color(255, 0, 0, 255)
  						end
+ 						
  						if v.superAdminOnly == true and LocalPlayer():IsSuperAdmin() == false then 
  							continue 
  						elseif v.superAdminOnly == true then

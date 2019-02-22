@@ -35,7 +35,7 @@ local reportCommand = {
                 if k:IsAdmin() then
                     reportId = reportId or table.insert(impulse.Ops.Reports, {ply, rawText, nil, os.time()})
 
-                    k:AddChatText(newReportCol, "[NEW REPORT] [#"..reportId.."] ", ply:SteamName(), " (", ply:Name(), "):", rawText)
+                    k:AddChatText(newReportCol, "[NEW REPORT] [#"..reportId.."] ", ply:SteamName(), " (", ply:Name(), "): ", rawText)
                     k:SurfacePlaySound("buttons/blip1.wav")
                 end
             end
@@ -43,7 +43,7 @@ local reportCommand = {
                 ply:Notify("Report submitted for review. Thank you for doing your part in keeping the community clean. Report ID: #"..reportId..".")
                 ply:Notify("If you have any further requests or info for us, just send another report.")
 
-                opsDiscordLog(":warning: **[NEW REPORT]** [#"..reportId.."] ".. ply:SteamName().. " (".. ply:Name().. ") ("..ply:SteamID().."): ```".. rawText.."```")
+                opsDiscordLog(":warning: **[NEW REPORT]** [#"..reportId.."] ".. ply:SteamName().. " (".. ply:Name().. ") ("..ply:SteamID().."): ```"..rawText.."```")
                 return
             else
                 ply:Notify("Unfortunatley, no game moderators are currently availble to review your report. Please goto impulse-community.com and submit a ban request.")
@@ -52,18 +52,18 @@ local reportCommand = {
             local reportClaimant = impulse.Ops.Reports[reportId][3]
 
             if reportClaimant and IsValid(reportClaimant) then
-                reportClaimant:AddChatText(claimedReportCol, "[REPORT UPDATE] [#"..reportId.."] ", ply:SteamName(), " (", ply:Name(), "):", rawText)
+                reportClaimant:AddChatText(claimedReportCol, "[REPORT UPDATE] [#"..reportId.."] ", ply:SteamName(), " (", ply:Name(), "): ", rawText)
                 reportClaimant:SurfacePlaySound("buttons/blip1.wav")
             else
                 for v,k in pairs(player.GetAll()) do
                     if k:IsAdmin() then
-                        k:AddChatText(newReportCol, "[REPORT UPDATE] [#"..reportId.."] ", ply:SteamName(), " (", ply:Name(), "):", rawText)
+                        k:AddChatText(newReportCol, "[REPORT UPDATE] [#"..reportId.."] ", ply:SteamName(), " (", ply:Name(), "): ", rawText)
                         k:SurfacePlaySound("buttons/blip1.wav")
                     end
                 end
             end
 
-            impulse.Ops.Reports[reportId][2] = impulse.Ops.Reports[reportId][2].." +"..rawText
+            impulse.Ops.Reports[reportId][2] = impulse.Ops.Reports[reportId][2].." + "..rawText
             opsDiscordLog(":speech_left: **[REPORT UPDATE]** [#"..reportId.."] ".. ply:SteamName().. " (".. ply:Name().. ") ("..ply:SteamID().."): ```".. rawText.."```")
 
             ply:Notify("Your report has been updated. Thank you for keeping us informed. Report ID: #"..reportId..".")
