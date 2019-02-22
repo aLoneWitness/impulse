@@ -35,15 +35,16 @@ function IMPULSE:PlayerInitialSpawn(ply)
 end
 
 function IMPULSE:PlayerSpawn(ply)
+	if ply:GetSyncVar(SYNC_ARRESTED, false) == true then
+		ply:SetSyncVar(SYNC_ARRESTED, false, true)
+	end
+
 	if ply.beenSetup then
 		ply:SetTeam(impulse.Config.DefaultTeam, true)
 	end
 
 	ply:SetHunger(100)
-
-	if ply:GetSyncVar(SYNC_ARRESTED, false) == true then
-		ply:SetSyncVar(SYNC_ARRESTED, false, true)
-	end
+	ply.ArrestedWeapons = nil
 
 	ply:GodEnable()
 	ply:SetRenderMode(RENDERMODE_TRANSALPHA)
@@ -63,17 +64,10 @@ end
 function IMPULSE:PlayerDisconnected(ply)
 	ply:SyncRemove()
 
-	for doorID, doorData in pairs(impulse.Doors.Data) do -- remove player from owned doors on disconnect
-		local door = Entity(doorID)
-		local owners = doorData.owners
-		if IsValid(door) and owners and owners[ply:UserID()] then
-			if #owners <= 1 then
-				owners = nil
-			else
-				owners[ply:UserID()] = nil
-			end
-			door:DoorDataUpdate("owners", owners)
-		end
+	local dragger = ply.ArrestedDragger
+	if IsValid(dragger) then
+		impulse.Arrest.Dragged[ply] = nil
+		dragger.ArrestedDragging = nil
 	end
 
 	timer.Remove(ply:UserID().."impulseXP")
@@ -184,6 +178,10 @@ function IMPULSE:PlayerDeathSound()
 	return true
 end
 
+function IMPULSE:CanPlayerSuicide()
+	return false
+end
+
 function IMPULSE:SetupPlayerVisibility(ply)
 	if ply.extraPVS then
 		AddOriginToPVS(ply.extraPVS)
@@ -197,7 +195,7 @@ function IMPULSE:KeyPress(ply, key)
 				ply:ToggleWeaponRaised()
 			end
 		end)
-	elseif key == IN_USE then
+	elseif key == IN_USE and not ply:InVehicle() then
 		local trace = {}
 		trace.start = ply:GetShootPos()
 		trace.endpos = trace.start + ply:GetAimVector() * 96
@@ -208,6 +206,12 @@ function IMPULSE:KeyPress(ply, key)
 		if IsValid(entity) and entity:IsDoor() or entity:IsPlayer() then
 			hook.Run("PlayerUse", ply, entity)
 		end
+	end
+end
+
+function IMPULSE:PlayerUse(ply, entity)
+	if entity:IsPlayer() and ply:CanArrest(entity) then
+		ply:DragPlayer(entity)
 	end
 end
 
@@ -247,6 +251,31 @@ function IMPULSE:Think()
 			end
 		end
 	end
+
+	for v,k in pairs(impulse.Arrest.Dragged) do
+		if not IsValid(v) then
+			impulse.Arrest.Dragged[v] = nil
+			continue
+		end
+
+		local dragger = v.ArrestedDragger
+
+		if IsValid(dragger) then
+			if (dragger:GetPos() - v:GetPos()):LengthSqr() >= (175 ^ 2) then
+				v:StopDrag()
+			end
+		else
+			v:StopDrag()
+		end
+	end
+end
+
+function IMPULSE:PlayerCanPickupWeapon(ply)
+	if ply:GetSyncVar(SYNC_ARRESTED, false) then
+		return false
+	end
+
+	return true
 end
 
 function IMPULSE:PlayerSpawnRagdoll(ply)
@@ -266,7 +295,7 @@ function IMPULSE:PlayerSpawnNPC(ply)
 end
 
 function IMPULSE:PlayerSpawnProp(ply, model)
-	if not ply:Alive() or not ply.beenSetup or ply.Arrested then
+	if not ply:Alive() or not ply.beenSetup or ply:GetSyncVar(SYNC_ARRESTED, false) then
 		return false
 	end
 
@@ -274,7 +303,11 @@ function IMPULSE:PlayerSpawnProp(ply, model)
 end
 
 function IMPULSE:PlayerSpawnVehicle(ply, model)
-	if (ply.Arrested or false) == false and ply:IsDonator() and model:find("chair") or model:find("seat") or model:find("pod") then
+	if ply:GetSyncVar(SYNC_ARRESTED, false) then
+		return false
+	end
+	
+	if ply:IsDonator() and model:find("chair") or model:find("seat") or model:find("pod") then
 		return true
 	else
 		return ply:IsSuperAdmin()
@@ -302,4 +335,60 @@ function IMPULSE:PlayerSpawnedProp(ply, model, ent)
 		SafeRemoveEntity(ent)
 		return false
 	end
+end
+
+local isValid = IsValid
+local mathAbs = math.abs
+function IMPULSE:Move(ply, mvData)
+	local draggedPlayer = ply.ArrestedDragging
+
+	if isValid(draggedPlayer) and ply == draggedPlayer.ArrestedDragger then
+		local draggerPos = ply:GetPos()
+		local draggedPos = draggedPlayer:GetPos()
+		local dist = (draggerPos - draggedPos):LengthSqr()
+
+		local dragPosNormal = draggerPos:GetNormal()
+		local dX = mathAbs(dragPosNormal.x)
+		local dY = mathAbs(dragPosNormal.y)
+
+		local speed = (dX + dY) * math.Clamp(dist / (100 ^ 2), 0, 30)
+
+		local ang = mvData:GetMoveAngles()
+		local pos = mvData:GetOrigin()
+		local vel = mvData:GetVelocity()
+
+		vel.x = vel.x * speed
+		vel.y = vel.y * speed
+		vel.z =  15
+
+		pos = pos + vel + ang:Right() + ang:Forward() + ang:Up()
+
+		if dist > (55 ^ 2) then
+			draggedPlayer:SetVelocity(vel)
+		end
+	end
+end
+
+function IMPULSE:SetupMove(ply, mvData)
+	if ply:GetSyncVar(SYNC_ARRESTED, false) and ply.ArrestedDragger then
+		mvData:SetMaxClientSpeed(mvData:GetMaxClientSpeed() / 3)
+	elseif isValid(ply.ArrestedDragging) then
+		mvData:SetMaxClientSpeed(mvData:GetMaxClientSpeed() / 3)
+	end
+end
+
+function IMPULSE:CanPlayerEnterVehicle(ply, veh)
+	if ply:GetSyncVar(SYNC_ARRESTED, false) or ply.ArrestedDragging then
+		return false
+	end
+
+	return true
+end
+
+function IMPULSE:CanExitVehicle(veh, ply)
+	if ply:GetSyncVar(SYNC_ARRESTED, false) then
+		return false
+	end
+
+	return true
 end

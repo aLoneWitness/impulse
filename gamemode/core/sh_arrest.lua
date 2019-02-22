@@ -1,4 +1,3 @@
-
 function meta:SetHandsBehindBack(state)
 	local L_UPPERARM = self:LookupBone("ValveBiped.Bip01_L_UpperArm")
 	local R_UPPERARM = self:LookupBone("ValveBiped.Bip01_R_UpperArm")
@@ -35,10 +34,14 @@ function meta:SetHandsBehindBack(state)
 	end
 end
 
-function meta:CanArrest(cuffer)
-	if not cuffer then return true end -- server can arrest anyone
+function meta:CanArrest(arrested)
+	if not arrested then return true end -- server can arrest anyone
 
-	if self:IsCP() then
+	if not self:IsCP() then
+		return false
+	end
+
+	if arrested:IsCP() then
 		return false
 	end
 
@@ -46,6 +49,10 @@ function meta:CanArrest(cuffer)
 end
 
 if SERVER then
+	impulse.Arrest = impulse.Arrest or {}
+	impulse.Arrest.Dragged = impulse.Arrest.Dragged or {}
+	impulse.Arrest.Prison = impulse.Arrest.Prison or {}
+
 	function meta:Arrest()
 		self.ArrestedWeapons = {}
 		for v,k in pairs(self:GetWeapons()) do
@@ -56,22 +63,45 @@ if SERVER then
 		self:StripAmmo()
 		self:SetRunSpeed(impulse.Config.WalkSpeed - 30)
 		self:SetWalkSpeed(impulse.Config.WalkSpeed - 30)
+		self:SetJumpPower(0)
 
 		self:SetSyncVar(SYNC_ARRESTED, true, true)
 	end
 
 	function meta:UnArrest()
+		self:SetSyncVar(SYNC_ARRESTED, false, true)
+
 		if self.ArrestedWeapons then
 			for v,k in pairs(self.ArrestedWeapons) do
 				self:Give(v)
 			end
 
-			self.ArrestedWeapons = {}
+			self.ArrestedWeapons = nil
 		end
 
 		self:SetRunSpeed(impulse.Config.JogSpeed)
 		self:SetWalkSpeed(impulse.Config.WalkSpeed)
+		self:SetJumpPower(160)
+	end
 
-		self:SetSyncVar(SYNC_ARRESTED, false, true)
+	function meta:DragPlayer(ply)
+		if self:CanArrest(ply) and ply:GetSyncVar(SYNC_ARRESTED, false) and not ply.ArrestedDragger then
+			ply.ArrestedDragger = self
+			self.ArrestedDragging = ply
+			impulse.Arrest.Dragged[ply] = true
+			ply:Freeze(true)
+		end
+	end
+
+	function meta:StopDrag()
+		impulse.Arrest.Dragged[self] = nil
+		self:Freeze(false)
+
+		local dragger = self.ArrestedDragger
+
+		if IsValid(dragger) then
+			dragger.ArrestedDragging = nil
+		end
+		self.ArrestedDragger = nil
 	end
 end
