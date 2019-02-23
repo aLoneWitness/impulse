@@ -6,7 +6,7 @@
 -- Sync V3 has massive networking speed improvements over sync V2, however these improvements require a bit more effort on the coders part
 -- SYNC V3 SHOULD NOT BE USED TO SEND VERY LARGE DATA TABLES, FOR EXAMPLE AN INVENTORY. FOR THAT USE NETSTREAM.
 -- Sync V4 is planned to include support for super efficient specific tables (inventory) and client to server to client data requests.
--- Possibly as part of Sync v4 (might push it into v5) I will a special packet based way to sync variables, this will be for inventory, so when a player gets 1 apple
+-- Possibly as part of Sync v4 (might push it into v5) I will a special packet based way to sync tables, this will be for inventory, so when a player gets 1 apple
 -- Instead of resending the whole new inventory table, it will just send an id for the apple. I may have to implement corruption checking with CRC checksums however.
 
 impulse.Sync = impulse.Sync or {}

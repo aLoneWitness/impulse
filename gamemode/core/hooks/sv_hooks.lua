@@ -87,6 +87,14 @@ function IMPULSE:PlayerDisconnected(ply)
 		impulse.Arrest.Prison[jailCell][self:UserID()] = nil
 		impulse.Arrest.DCRemember[self:SteamID()] = duration
 	end
+
+	if ply.CanHear then
+		for v,k in ipairs(player.GetAll()) do
+			if not k.CanHear then continue end
+
+			k.CanHear[ply] = nil
+		end
+	end
 end
 
 function IMPULSE:PlayerLoadout(ply)
@@ -164,12 +172,23 @@ function IMPULSE:PlayerSay(ply, text, teamChat)
 	return ""
 end
 
-function IMPULSE:PlayerCanHearPlayersVoice(listener, speaker)
-	if listener:GetPos():DistToSqr(speaker:GetPos()) > impulse.Config.VoiceDistance ^ 2 then
-		return false, false
-	end 
+local function canHearCheck(listener) -- based on darkrps voice chat optomization this is called every 0.5 seconds in the think hook
+	if not IsValid(listener) then return end
 
-	return true, true
+	listener.CanHear = listener.CanHear or {}
+	local listPos = listener:GetShootPos()
+	local voiceDistance = impulse.Config.VoiceDistance ^ 2
+
+	for _,speaker in ipairs(player.GetAll()) do
+		listener.CanHear[speaker] = (listPos:DistToSqr(speaker:GetShootPos()) < voiceDistance)
+	end
+end
+
+function IMPULSE:PlayerCanHearPlayersVoice(listener, speaker)
+	if not speaker:Alive() then return false end
+
+	local canHear = listener.CanHear and listener.CanHear[speaker]
+	return canHear, true
 end
 
 function IMPULSE:PlayerDeath(ply)
@@ -269,6 +288,11 @@ function IMPULSE:Think()
 			else
 				k.nextHungerUpdate = CurTime() + impulse.Config.HungerTime
 			end
+		end
+
+		if not k.nextHearUpdate or k.nextHearUpdate < CurTime() then -- optomized version of canhear hook based upon darkrp
+			canHearCheck(k)
+			k.nextHearUpdate = CurTime() + 0.65
 		end
 	end
 

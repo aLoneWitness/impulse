@@ -118,3 +118,15 @@ function impulse.FindPlayer(searchKey)
     end
     return nil
 end
+
+function impulse.SafeString(str)
+    local pattern = "[^0-9a-zA-Z%s]+"
+    local clean = tostring(str)
+    local first, last = string.find(str, pattern)
+
+    if first != nil and last != nil then
+        clean = string.gsub(clean, pattern, "") -- remove bad sequences
+    end
+
+    return clean
+end

@@ -261,6 +261,8 @@ local writeCommand = {
 			return
 		end
 
+		text = impulse.StringSafe(text)
+
 		local trace = {}
 		trace.start = ply:EyePos()
 		trace.endpos = trace.start + ply:GetAimVector() * 85
