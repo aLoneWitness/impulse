@@ -60,6 +60,7 @@ local fde = 0
 local hudBlackGrad = Color(40,40,40,180)
 local hudBlack = Color(20,20,20,140)
 local darkCol = Color(30, 30, 30, 190)
+local whiteCol = Color(255, 255, 255, 255)
 
 local crosshairGap = 5
 local crosshairLength = crosshairGap + 5
@@ -125,6 +126,15 @@ local function DrawDoorInfo(target)
 	if LocalPlayer():CanBuyDoor(doorOwners, doorBuyable) then
 		draw.DrawText("Ownable door (LALT)", "Impulse-Elements18-Shadow", scrW * .5, scrH * .6, impulse.Config.MainColour, 1)
 	end
+end
+
+local function DrawCrosshair(x, y)
+	surface.SetDrawColor(color_white)
+
+	surface.DrawLine(x - crosshairLength, y, x - crosshairGap, y)
+	surface.DrawLine(x + crosshairLength, y, x + crosshairGap, y)
+	surface.DrawLine(x, y - crosshairLength, x, y - crosshairGap)
+	surface.DrawLine(x, y + crosshairLength, x, y + crosshairGap)
 end
 
 function IMPULSE:HUDPaint()
@@ -214,11 +224,7 @@ function IMPULSE:HUDPaint()
 		x, y = scrW/2, scrH/2
 	end
 
-	surface.SetDrawColor(color_white)
-	surface.DrawLine(x - crosshairLength, y, x - crosshairGap, y)
-	surface.DrawLine(x + crosshairLength, y, x + crosshairGap, y)
-	surface.DrawLine(x, y - crosshairLength, x, y - crosshairGap)
-	surface.DrawLine(x, y + crosshairLength, x, y + crosshairGap)
+	DrawCrosshair(x, y)
 
 	-- HUD
 

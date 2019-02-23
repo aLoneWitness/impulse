@@ -85,6 +85,7 @@ if SERVER then
 		self:SetRunSpeed(impulse.Config.JogSpeed)
 		self:SetWalkSpeed(impulse.Config.WalkSpeed)
 		self:SetJumpPower(160)
+		self:StopDrag()
 	end
 
 	function meta:DragPlayer(ply)
