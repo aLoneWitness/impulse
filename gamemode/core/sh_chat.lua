@@ -261,7 +261,7 @@ local writeCommand = {
 			return
 		end
 
-		text = impulse.StringSafe(text)
+		text = impulse.SafeString(text)
 
 		local trace = {}
 		trace.start = ply:EyePos()

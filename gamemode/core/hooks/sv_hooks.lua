@@ -33,15 +33,35 @@ function IMPULSE:PlayerInitialSpawn(ply)
 		ply:GiveTimedXP()
 	end)
 
+	timer.Create(ply:UserID().."impulseFullLoad", 0.5, 0, function()
+		if IsValid(ply) and ply:GetModel() != "player/default.mdl" then
+			hook.Run("PlayerInitialSpawnLoaded", ply)
+			timer.Remove(ply:UserID().."impulseFullLoad")
+		end
+	end)
+end
+
+function IMPULSE:PlayerInitialSpawnLoaded(ply) -- called once player is full loaded
 	local jailTime = impulse.Arrest.DCRemember[ply:SteamID()]
 
 	if jailTime then
+		ply:Arrest()
 		ply:Jail(jailTime)
 		impulse.Arrest.DCRemember[ply:SteamID()] = nil
 	end
 end
 
 function IMPULSE:PlayerSpawn(ply)
+	local cellID = ply.InJail
+
+	if ply.InJail then
+		local pos = impulse.Config.PrisonCells[cellID]
+		ply:SetPos(impulse.FindEmptyPos(pos, {self}, 150, 30, Vector(16, 16, 64)))
+		ply:SetEyeAngles(impulse.Config.PrisonAngle)
+
+		return
+	end
+
 	if ply:GetSyncVar(SYNC_ARRESTED, false) == true then
 		ply:SetSyncVar(SYNC_ARRESTED, false, true)
 	end
@@ -69,6 +89,8 @@ function IMPULSE:PlayerSpawn(ply)
 end
 
 function IMPULSE:PlayerDisconnected(ply)
+	local userID = ply:UserID()
+	local steamID = ply:SteamID()
 	ply:SyncRemove()
 
 	local dragger = ply.ArrestedDragger
@@ -77,15 +99,18 @@ function IMPULSE:PlayerDisconnected(ply)
 		dragger.ArrestedDragging = nil
 	end
 
-	timer.Remove(ply:UserID().."impulseXP")
+	timer.Remove(userID.."impulseXP")
+	if timer.Exists(userID.."impulseFullLoad") then
+		timer.Remove(userID.."impulseFullLoad")
+	end
 
 	local jailCell = ply.InJail
 
 	if jailCell then
-		timer.Remove(ply:UserID().."impulsePrison")
-		local duration = impulse.Arrest.Prison[jailCell][self:UserID()].duration
-		impulse.Arrest.Prison[jailCell][self:UserID()] = nil
-		impulse.Arrest.DCRemember[self:SteamID()] = duration
+		timer.Remove(userID.."impulsePrison")
+		local duration = impulse.Arrest.Prison[jailCell][userID].duration
+		impulse.Arrest.Prison[jailCell][userID] = nil
+		impulse.Arrest.DCRemember[steamID] = duration
 	end
 
 	if ply.CanHear then

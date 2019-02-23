@@ -5,7 +5,9 @@ end)
 net.Receive("impulseNotify", function(len)
 	local message = net.ReadString()
 
-	LocalPlayer():Notify(message)
+	if LocalPlayer() and IsValid(LocalPlayer()) then
+		LocalPlayer():Notify(message)
+	end
 end)
 
 net.Receive("impulseATMOpen", function()
@@ -44,7 +46,7 @@ net.Receive("impulseChatNetMessage", function(len)
 end)
 
 net.Receive("impulseSendJailInfo", function()
-	local endTime = net.ReadFloat(32)
+	local endTime = net.ReadUInt(16)
 	local hasJailData = net.ReadBool()
 	local jailData
 
@@ -52,8 +54,9 @@ net.Receive("impulseSendJailInfo", function()
 		jailData = net.ReadTable()
 	end
 
-	impulse.JailTimeEnd = endTime
-	impulse.JailData = jailData or nil
+	impulse_JailDuration = endTime
+	impulse_JailTimeEnd = CurTime() + endTime
+	impulse_JailData = jailData or nil
 
 	hook.Run("PlayerGetJailData", endTime, jailData)
 end)

@@ -268,8 +268,8 @@ function IMPULSE:HUDPaint()
 
 	surface.SetDrawColor(color_white)
 
-	if lp:GetSyncVar(SYNC_ARRESTED, false) == true and impulse.JailTimeEnd and impulse.JailTimeEnd > CurTime() then
-		local timeLeft = math.ceil(impulse.JailTimeEnd - CurTime())
+	if lp:GetSyncVar(SYNC_ARRESTED, false) == true and impulse_JailTimeEnd and impulse_JailTimeEnd > CurTime() then
+		local timeLeft = math.ceil(impulse_JailTimeEnd - CurTime())
 
 		surface.SetMaterial(exitIcon)
 		surface.DrawTexturedRect(10, y-30, 18, 18)
