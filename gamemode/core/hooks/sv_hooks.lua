@@ -461,3 +461,20 @@ function IMPULSE:CanExitVehicle(veh, ply)
 
 	return true
 end
+
+function IMPULSE:PlayerSetHandsModel(ply, hands)
+	local handModel = impulse.Teams.Data[ply:Team()].handModel
+	
+	if handModel then
+		hands:SetModel(handModel)
+		return
+	end
+
+	local simplemodel = player_manager.TranslateToPlayerModelName(ply:GetModel())
+	local info = player_manager.TranslatePlayerHands(simplemodel)
+	if info then
+	 hands:SetModel(info.model)
+	 hands:SetSkin(info.skin)
+	 hands:SetBodyGroups(info.body)
+	end
+end

@@ -67,8 +67,6 @@ if SERVER then
 			self:SetModel(self.defaultModel)
 		end
 
-		self:SetupHands()
-
 		if teamData.skin then
 			self:SetSkin(teamData.skin)
 		elseif not teamData.model then
@@ -92,6 +90,7 @@ if SERVER then
 
 		self:SetLocalSyncVar(SYNC_CLASS, nil, true)
 		self:OldSetTeam(teamID)
+		self:SetupHands()
 
 		return true
 	end
