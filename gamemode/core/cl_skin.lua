@@ -35,12 +35,15 @@ function SKIN:GetTable(panel)
     return panel.__derma__
 end
 
+local topCol = Color(30, 30, 30, 200)
+local bodyCol = Color(80, 80, 80, 100)
 function SKIN:PaintFrame(panel, w, h)
     impulse.blur( panel, 10, 20, 255 )
 	draw.RoundedBox( 0, 0, 0, w, h, Color( 30, 30, 30, 200 ) ) -- this is the body of the frame
     draw.RoundedBox( 0, 0, 0, w, 25, Color( 80, 80, 80, 100 ) ) -- this is the "top bar" of the derma frame
 end
 
+local btnCol = Color(80, 80, 80, 255)
 function SKIN:PaintButton(panel) -- button skin from ns edited
 	if (panel:GetPaintBackground()) then
 		local w, h = panel:GetWide(), panel:GetTall()
@@ -53,13 +56,8 @@ function SKIN:PaintButton(panel) -- button skin from ns edited
 		elseif (panel.Hovered) then
 			alpha = 150
 		end
-		surface.SetDrawColor(ColorAlpha(Color(80, 80, 80, 255), alpha))
+		surface.SetDrawColor(ColorAlpha(btnCol, alpha))
 		surface.DrawRect(0, 0, w, h)
-
-		--surface.SetDrawColor(0, 0, 0, 180)
-		--surface.DrawOutlinedRect(0, 0, w, h)
-		--surface.SetDrawColor(180, 180, 180, 2)
-		--surface.DrawOutlinedRect(1, 1, w - 2, h - 2)
 	end
 end
 
@@ -93,51 +91,49 @@ function SKIN:PaintScrollBarGrip( panel, w, h )
     surface.DrawRect(0, 0, w, h)
 end
 
+local depressedCol = Color(155, 52,1 02, 255)
+local normalCol = Color(240, 240, 240, 255)
 function SKIN:PaintWindowCloseButton( panel, w, h )
     h = 22
-    local min = math.min(w,h)
+    local min = math.min(w, h)
     local tbl = self:GetTable(panel)
     tbl.HoverTime = tbl.HoverTime or 0
 
-	if ( !panel.m_bBackground ) then return end
+	if not panel.m_bBackground then return end
 
-	if ( panel:GetDisabled() ) then
+	if panel:GetDisabled() then
 		return
 	end
 
-	if ( panel.Hovered ) then
+	if panel.Hovered then
         tbl.HoverTime = SysTime()
 	end
 
-	if ( panel.Depressed || panel:IsSelected() ) then
-		surface.SetDrawColor(155,52,102,255)
+	if panel.Depressed and panel:IsSelected() then
+		surface.SetDrawColor(depressedCol)
         surface.DrawRect(0,1,w,h)
 	else
-        local fraction = 1 - math.Clamp(
-            Lerp((SysTime() - tbl.HoverTime) * 2, 0, 1),
-            0,
-            1
-        )
-        surface.SetDrawColor(232,17,35,255*fraction)
+        local fraction = 1 - math.Clamp(Lerp((SysTime() - tbl.HoverTime) * 2, 0, 1), 0, 1)
+        surface.SetDrawColor(232, 17, 35, 255* fraction)
         surface.DrawRect(0, 1, w, h)
 
     end
     local space = math.ceil(min / 6)
     local w2, h2 = math.floor(w / 2), math.floor(h / 2)
-    surface.SetDrawColor(240,240,240,255)
+    surface.SetDrawColor(normalCol)
     surface.DrawLine(w2 + space, h2 + space, w2 - space, h2 - space)
     surface.DrawLine(w2 + space, h2 - space, w2 - space, h2 + space)
 end
 
-function SKIN:PaintComboBox( panel, w, h )
+function SKIN:PaintComboBox(panel, w, h)
     self:PaintButton(panel, w, h)
 end
 
-function SKIN:PaintListBox( panel, w, h )
-	self.tex.Input.ListBox.Background( 0, 0, w, h )
+function SKIN:PaintListBox(panel, w, h)
+	self.tex.Input.ListBox.Background(0, 0, w, h)
 end
 
-function SKIN:PaintProgress( panel, w, h )
+function SKIN:PaintProgress(panel, w, h)
 	surface.SetDrawColor(DARK_25)
 	surface.DrawRect(0, 0, w, h)
 	surface.SetDrawColor(HIGHLIGHT)
@@ -146,41 +142,50 @@ function SKIN:PaintProgress( panel, w, h )
 	surface.DrawOutlinedRect(0, 0, w, h)
 end
 
-function SKIN:PaintCollapsibleCategory( panel, w, h )
+local ccCol = Color(110, 110, 110, 130)
+function SKIN:PaintCollapsibleCategory(panel, w, h)
 	if h < 21 then
     	--surface.SetDrawColor(HIGHLIGHT)
     	--surface.DrawRect(0,0,w,h)
-    	draw.RoundedBox( 0, 0, 0, w, h, Color( 110, 110, 110, 130 ) )
+    	draw.RoundedBox( 0, 0, 0, w, h, ccCol)
     else
-    	draw.RoundedBox( 0, 0, 0, w, h, Color( 110, 110, 110, 130 ) )
+    	draw.RoundedBox( 0, 0, 0, w, h, ccCol)
 	end
 end
 
+local darkCol = Color(0, 0, 0, 255)
 function SKIN:PaintTooltip( panel, w, h )
-    surface.SetDrawColor(255,255,255,255)
+    surface.SetDrawColor(color_white)
     surface.DrawRect(0, 0, w, h)
-    surface.SetDrawColor(0,0,0,255)
+    surface.SetDrawColor(darkCol)
     surface.DrawOutlinedRect(0, 0, w, h)
 end
 
+local propSheetCol = Color(110, 110, 110, 20)
 function SKIN:PaintPropertySheet(panel, w, h)
 	local activeTab = panel:GetActiveTab()
 	local offset = 0
-	if activeTab then offset = activeTab:GetTall() - 8 end
+
+	if activeTab then 
+		offset = activeTab:GetTall() - 8 
+	end
 	
-	surface.SetDrawColor(Color( 110, 110, 110, 20 ))
+	surface.SetDrawColor(propSheetCol)
 	surface.DrawRect(0, 0+offset, w, h)
 end
 
+local tabColActive = Color(80, 80, 80, 100)
+local tabColInactive = Color(80, 80, 80, 40)
 function SKIN:PaintTab(panel, w, h)
 	local h = 20
+
 	if panel:IsActive() then
-		surface.SetDrawColor(Color( 80, 80, 80, 100 ))
-		return surface.DrawRect(0,0,w,h)
+		surface.SetDrawColor(tabColActive)
+		return surface.DrawRect(0, 0, w, h)
 	end
 
-	surface.SetDrawColor(Color( 80, 80, 80, 40 ))
-	surface.DrawRect(0,0,w,h)
+	surface.SetDrawColor(tabColInactive)
+	surface.DrawRect(0, 0, w, h)
 end
 
 derma.DefineSkin("impulse", "Skin made by TheVingard. A nice new lick of paint for BMRP's interfaces.", SKIN)
