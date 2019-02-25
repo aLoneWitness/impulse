@@ -3,7 +3,7 @@
 ** This file is private and may not be shared, downloaded, used or sold.
 */
 
-local blur = Material( "pp/blurscreen" )
+local blur = Material("pp/blurscreen")
 local surface = surface
 local draw = draw
 local Color = Color
@@ -91,7 +91,7 @@ function SKIN:PaintScrollBarGrip( panel, w, h )
     surface.DrawRect(0, 0, w, h)
 end
 
-local depressedCol = Color(155, 52,1 02, 255)
+local depressedCol = Color(155, 52, 102, 255)
 local normalCol = Color(240, 240, 240, 255)
 function SKIN:PaintWindowCloseButton( panel, w, h )
     h = 22
