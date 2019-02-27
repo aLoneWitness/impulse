@@ -81,19 +81,19 @@ function SKIN:DrawGenericBackground(x, y, w, h)
 	surface.DrawOutlinedRect(x + 1, y + 1, w - 2, h - 2)
 end
 
-function SKIN:PaintVScrollBar( panel, w, h )
+function SKIN:PaintVScrollBar(panel, w, h)
     surface.SetDrawColor(DARK_50)
     surface.DrawRect(0, 0, w, h)
 end
 
-function SKIN:PaintScrollBarGrip( panel, w, h )
+function SKIN:PaintScrollBarGrip(panel, w, h)
     surface.SetDrawColor(DARK_100)
     surface.DrawRect(0, 0, w, h)
 end
 
 local depressedCol = Color(155, 52, 102, 255)
 local normalCol = Color(240, 240, 240, 255)
-function SKIN:PaintWindowCloseButton( panel, w, h )
+function SKIN:PaintWindowCloseButton(panel, w, h)
     h = 22
     local min = math.min(w, h)
     local tbl = self:GetTable(panel)
@@ -154,7 +154,7 @@ function SKIN:PaintCollapsibleCategory(panel, w, h)
 end
 
 local darkCol = Color(0, 0, 0, 255)
-function SKIN:PaintTooltip( panel, w, h )
+function SKIN:PaintTooltip(panel, w, h)
     surface.SetDrawColor(color_white)
     surface.DrawRect(0, 0, w, h)
     surface.SetDrawColor(darkCol)
