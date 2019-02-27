@@ -137,7 +137,7 @@ function SKIN:PaintProgress(panel, w, h)
 	surface.SetDrawColor(DARK_25)
 	surface.DrawRect(0, 0, w, h)
 	surface.SetDrawColor(HIGHLIGHT)
-	surface.DrawRect(0, 0, h, w * panel:GetFraction())
+	surface.DrawRect(0, 0, w * panel:GetFraction(), h)
 	surface.SetDrawColor(DARK_50)
 	surface.DrawOutlinedRect(0, 0, w, h)
 end
