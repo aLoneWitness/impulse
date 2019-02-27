@@ -1,6 +1,10 @@
 function IMPULSE:OnSchemaLoaded()
 	if not impulse.MainMenu and not IsValid(impulse.MainMenu) then
 		vgui.Create("impulseSplash")
+
+		if system.IsWindows() then
+			system.FlashWindow()
+		end
 	end
 end
 
