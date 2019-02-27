@@ -9,3 +9,5 @@ ENT.Category 		= "impulse"
 ENT.Spawnable = true
 ENT.AdminOnly = true
 
+ENT.HUDName = "ATM"
+ENT.HUDDesc = "Deposit or withdraw money."

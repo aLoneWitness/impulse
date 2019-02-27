@@ -107,7 +107,6 @@ local function DrawDoorInfo(target)
 	local doorBuyable = target:GetSyncVar(SYNC_DOOR_BUYABLE, nil)
 	local ownedBy = "Owner(s):"
 
-
 	if doorName then
 		draw.DrawText(doorName, "Impulse-Elements18-Shadow", scrW * .5, scrH * .6, impulse.Config.MainColour, 1)
 	elseif doorGroup then
@@ -125,6 +124,22 @@ local function DrawDoorInfo(target)
 
 	if LocalPlayer():CanBuyDoor(doorOwners, doorBuyable) then
 		draw.DrawText("Ownable door (LALT)", "Impulse-Elements18-Shadow", scrW * .5, scrH * .6, impulse.Config.MainColour, 1)
+	end
+end
+
+local defaultEntCol = Color(251, 197, 49)
+local function DrawEntInfo(target)
+	local pos = (target:GetPos() + target:OBBCenter()):ToScreen()
+	local scrW = ScrW()
+	local scrH = ScrH()
+	local hudName = target.HUDName
+	local hudDesc = target.HUDDesc
+	local hudCol = target.HUDColour or defaultEntCol
+
+	draw.DrawText(hudName, "Impulse-Elements19-Shadow", pos.x, pos.y, hudCol, 1)
+
+	if hudDesc then
+		draw.DrawText(hudDesc, "Impulse-Elements16-Shadow", pos.x, pos.y + 20, color_white, 1)
 	end
 end
 
@@ -369,8 +384,12 @@ function IMPULSE:HUDPaint()
 
 	local traceEnt = util.TraceLine(trace).Entity
 
-	if IsValid(traceEnt) and traceEnt:IsDoor() then
-		DrawDoorInfo(traceEnt)
+	if IsValid(traceEnt) then
+		if traceEnt:IsDoor() then
+			DrawDoorInfo(traceEnt)
+		elseif traceEnt.HUDName then
+			DrawEntInfo(traceEnt)
+		end
 	end
 
 	-- watermark

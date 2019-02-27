@@ -10,3 +10,6 @@ ENT.Category		= "impulse"
 
 ENT.Spawnable		= false
 ENT.AdminSpawnable	= false
+
+ENT.HUDName = "Letter"
+ENT.HUDDesc = "A readable letter."
