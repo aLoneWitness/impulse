@@ -216,6 +216,20 @@ function IMPULSE:PlayerCanHearPlayersVoice(listener, speaker)
 	return canHear, true
 end
 
+function IMPULSE:UpdatePlayerSync(ply)
+	for v,k in pairs(impulse.Sync.Data) do
+		local ent = Entity(v)
+
+		if IsValid(ent) then
+			for id,conditional in pairs(impulse.Sync.VarsConditional) do
+				if ent:GetSyncVar(id) and conditional(ply) then
+					ent:SyncSingle(id, ply)
+				end
+			end
+		end
+	end
+end
+
 function IMPULSE:PlayerDeath(ply)
 	local wait = impulse.Config.RespawnTime
 
@@ -472,9 +486,10 @@ function IMPULSE:PlayerSetHandsModel(ply, hands)
 
 	local simplemodel = player_manager.TranslateToPlayerModelName(ply:GetModel())
 	local info = player_manager.TranslatePlayerHands(simplemodel)
+
 	if info then
-	 hands:SetModel(info.model)
-	 hands:SetSkin(info.skin)
-	 hands:SetBodyGroups(info.body)
+		hands:SetModel(info.model)
+		hands:SetSkin(info.skin)
+		hands:SetBodyGroups(info.body)
 	end
 end

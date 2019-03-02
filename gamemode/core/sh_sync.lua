@@ -2,15 +2,14 @@
 ** Copyright (c) 2019 Jake Green (vin)
 ** This file is private and may not be shared, downloaded, used or sold.
 */
--- This is Sync version 3 by vin.
+-- This is Sync version 4 by vin.
 -- Sync V3 has massive networking speed improvements over sync V2, however these improvements require a bit more effort on the coders part
 -- SYNC V3 SHOULD NOT BE USED TO SEND VERY LARGE DATA TABLES, FOR EXAMPLE AN INVENTORY. FOR THAT USE NETSTREAM.
--- Sync V4 is planned to include support for super efficient specific tables (inventory) and client to server to client data requests.
--- Possibly as part of Sync v4 (might push it into v5) I will a special packet based way to sync tables, this will be for inventory, so when a player gets 1 apple
--- Instead of resending the whole new inventory table, it will just send an id for the apple. I may have to implement corruption checking with CRC checksums however.
+-- Sync V4 has been released, new features include the efficient intstack data type and conditional sync vars. However, conditional sync vars will not auto update previous data.
 
 impulse.Sync = impulse.Sync or {}
 impulse.Sync.Vars = impulse.Sync.Vars or {}
+impulse.Sync.VarsConditional = impulse.Sync.VarsConditional or {}
 impulse.Sync.Data = impulse.Sync.Data or {}
 local syncVarsID = 0
 
@@ -30,7 +29,7 @@ local SYNC_TYPE_PRIVATE = 2
 
 local entMeta = FindMetaTable("Entity")
 
-function impulse.Sync.RegisterVar(type)
+function impulse.Sync.RegisterVar(type, conditional)
 	syncVarsID = syncVarsID + 1
 
 	if syncVarsID > SYNC_MAX_VARS then
@@ -38,6 +37,11 @@ function impulse.Sync.RegisterVar(type)
 	end
 
 	impulse.Sync.Vars[syncVarsID] = type
+
+	if conditional then
+		impulse.Sync.VarsConditional[syncVarsID] = conditional
+	end
+
 	return syncVarsID
 end
 
@@ -100,10 +104,16 @@ if SERVER then
 	function entMeta:Sync(target)
 		local targetID = self:EntIndex()
 		local syncUser = impulse.Sync.Data[targetID]
+
 		for varID, syncData in pairs(syncUser) do
 			local value = syncData[1]
 			local syncRealm = syncData[2]
 			local syncType = impulse.Sync.Vars[varID]
+			local syncCondition = impulse.Sync.VarsConditional[varID]
+
+			if target and syncCondition and not syncCondition(target) then
+				return
+			end
 			
 			if syncRealm == SYNC_TYPE_PUBLIC then
 				if target then
@@ -120,18 +130,29 @@ if SERVER then
 						net.Send(target)
 					end
 				else
+					local recipFilter = RecipientFilter()
+
+					if syncCondition then
+						for v,k in pairs(player.GetAll()) do
+							if syncCondition(k) then
+								recipFilter:AddPlayer(k)
+							end
+						end
+					else
+						recipFilter:AddAllPlayers()
+					end
+
 					if value == nil then
 						net.Start("iSyncRvar")
 							net.WriteUInt(targetID, 16)
 							net.WriteUInt(varID, SYNC_ID_BITS)
-						net.Broadcast()
+						net.Send(recipFilter)
 					else
-						print(value)
 						net.Start("iSyncU")
 							net.WriteUInt(targetID, 16)
 							net.WriteUInt(varID, SYNC_ID_BITS)
 							impulse.Sync.DoType(syncType, value)
-						net.Broadcast()
+						net.Send(recipFilter)
 					end
 				end
 			elseif target and target:IsPlayer() and target:EntIndex() == targetID then
@@ -159,6 +180,11 @@ if SERVER then
 		local value = syncData[1]
 		local syncRealm = syncData[2]
 		local syncType = impulse.Sync.Vars[varID]
+		local syncCondition = impulse.Sync.VarsConditional[varID]
+
+		if target and syncCondition and not syncCondition(target) then
+			return
+		end
 
 		if syncRealm == SYNC_TYPE_PUBLIC then
 			if target then
@@ -175,17 +201,29 @@ if SERVER then
 					net.Send(target)
 				end
 			else
+				local recipFilter = RecipientFilter()
+
+				if syncCondition then
+					for v,k in pairs(player.GetAll()) do
+						if syncCondition(k) then
+							recipFilter:AddPlayer(k)
+						end
+					end
+				else
+					recipFilter:AddAllPlayers()
+				end
+
 				if value == nil then
 					net.Start("iSyncRvar")
 						net.WriteUInt(targetID, 16)
 						net.WriteUInt(varID, SYNC_ID_BITS)
-					net.Broadcast()
+					net.Send(recipFilter)
 				else
 					net.Start("iSyncU")
 						net.WriteUInt(targetID, 16)
 						net.WriteUInt(varID, SYNC_ID_BITS)
 						impulse.Sync.DoType(syncType, value)
-					net.Broadcast()
+					net.Send(recipFilter)
 				end
 			end
 		elseif target and target:IsPlayer() and target:EntIndex() == targetID then
@@ -227,7 +265,6 @@ if SERVER then
 
 	-- instantSync is optional. SetSyncVar will set the SyncVar however it will not update it with all clients unless instantSync is true.
 	function entMeta:SetSyncVar(varID, newValue, instantSync)
-		local instantSync = instantSync or false
 		local targetID = self:EntIndex()
 		local targetData = impulse.Sync.Data[targetID]
 
@@ -240,7 +277,7 @@ if SERVER then
 
 		targetData[varID] = {newValue, SYNC_TYPE_PUBLIC}
 
-		if instantSync == true then
+		if instantSync then
 			self:SyncSingle(varID)
 		end
 	end
@@ -350,3 +387,8 @@ SYNC_DOOR_NAME = impulse.Sync.RegisterVar(SYNC_STRING)
 SYNC_DOOR_GROUP = impulse.Sync.RegisterVar(SYNC_INT)
 SYNC_DOOR_BUYABLE = impulse.Sync.RegisterVar(SYNC_BOOL)
 SYNC_DOOR_OWNERS = impulse.Sync.RegisterVar(SYNC_MINITABLE)
+
+-- conditional networking test 1
+SYNC_PRISON_SENTENCE = impulse.Sync.RegisterVar(SYNC_INT, function(ply)
+	return ply:IsCP()
+end)

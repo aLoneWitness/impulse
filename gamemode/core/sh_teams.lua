@@ -92,6 +92,8 @@ if SERVER then
 		self:OldSetTeam(teamID)
 		self:SetupHands()
 
+		hook.Run("UpdatePlayerSync", self)
+
 		return true
 	end
 
