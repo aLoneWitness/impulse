@@ -23,6 +23,7 @@ SYNC_INT = 3
 SYNC_BIGINT = 4
 SYNC_HUGEINT = 5
 SYNC_MINITABLE = 6
+SYNC_INTSTACK = 7
 
 local SYNC_TYPE_PUBLIC = 1
 local SYNC_TYPE_PRIVATE = 2
@@ -54,6 +55,14 @@ function impulse.Sync.DoType(type, value)
 			return net.WriteUInt(value, 32)
 		elseif type == SYNC_MINITABLE then
 			return net.WriteData(pon.encode(value), 32)
+		elseif type == SYNC_INTSTACK then
+			local count = net.WriteUInt(#value, 4)
+
+			for v,k in pairs(value) do
+				net.WriteUInt(k, 8)
+			end
+
+			return
 		end
 	else
 		if type == SYNC_BOOL then
@@ -68,6 +77,15 @@ function impulse.Sync.DoType(type, value)
 			return net.ReadUInt(32)
 		elseif type == SYNC_MINITABLE then
 			return pon.decode(net.ReadData(32))
+		elseif type == SYNC_INTSTACK then
+			local count = net.ReadUInt(#value, 4)
+			local compiled =  {}
+
+			for k in range(1, count) do
+				table.insert(compiled, (net.ReadUInt(8)))
+			end
+
+			return compiled
 		end
 	end
 end
@@ -216,8 +234,10 @@ if SERVER then
 		if not targetData then
 			impulse.Sync.Data[targetID] = {}
 			targetData = impulse.Sync.Data[targetID]
+		elseif targetData[varID] and targetData[varID][1] == newValue then
+			return
 		end
-		
+
 		targetData[varID] = {newValue, SYNC_TYPE_PUBLIC}
 
 		if instantSync == true then
