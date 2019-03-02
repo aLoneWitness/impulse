@@ -14,7 +14,7 @@ local HIGHLIGHT = Color(14, 141, 201)
 SKIN = {}
 
 SKIN.PrintName 		= "impulse"
-SKIN.Author 		= "TheVingard"
+SKIN.Author 		= "vin"
 SKIN.DermaVersion	= 1
 SKIN.fontFrame = "Impulse-UI-SmallFont"
 SKIN.fontTab = "Impulse-UI-SmallFont"
