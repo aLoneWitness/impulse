@@ -60,3 +60,12 @@ net.Receive("impulseSendJailInfo", function()
 
 	hook.Run("PlayerGetJailData", endTime, jailData)
 end)
+
+net.Receive("impulseBudgetSound", function()
+	local ent = Entity(net.ReadUInt(16))
+	local snd = net.ReadString()
+
+	if IsValid(ent) then
+		ent:EmitSound(snd)
+	end
+end)

@@ -66,3 +66,22 @@ function entityMeta:EmitQueuedSounds(sounds, delay, spacing, volume, pitch)
 
 	return delay
 end
+
+if SERVER then
+	util.AddNetworkString("impulseBudgetSound")
+	function entityMeta:EmitBudgetSound(sound, range)
+		local range = range or 600
+		local pos = self:GetPos()
+		local entIndex = self:EntIndex()
+		local range = range ^ 2
+
+		for v,k in pairs(player.GetAll()) do
+			if k:GetPos():DistToSqr(pos) < range then
+				net.Start("impulseBudgetSound")
+				net.WriteUInt(entIndex, 16)
+				net.WriteString(sound)
+				net.Send(k)
+			end
+		end
+	end
+end
