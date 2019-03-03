@@ -117,7 +117,7 @@ else
 
 	hook.Add("PostDrawOpaqueRenderables", "zoneEditor3D", function()
 		local activeWep =  LocalPlayer():GetActiveWeapon()
-		if activeWep and activeWep:GetClass() == "impulse_zoneeditor" then
+		if activeWep and IsValid(activeWep) and activeWep:GetClass() == "impulse_zoneeditor" then
 			local pos1, pos2
 			local col
 			local cent
