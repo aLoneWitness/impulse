@@ -1,11 +1,5 @@
 local PANEL = {}
 
-scoreboardBadgesData = {
-	staff = {Material("icon16/shield.png"), "This player is a staff member."},
-	donator = {Material("icon16/coins.png"), "This player is a donator."},
-	dev = {Material("icon16/cog.png"), "This player is a developer."}
-}
-
 function PANEL:Init()
 	self.Colour = Color(60,255,105,150)
 	self.Name = "Connecting..."
@@ -18,11 +12,13 @@ function PANEL:SetPlayer(player)
 	self.Colour = team.GetColor(player:Team()) -- Store colour and name micro optomization, other things can be calculated on the go.
 	self.Name = player:Nick()
 	self.Player = player
-	self.Badges = {
-		staff = player:IsAdmin(),
-		donator = player:IsDonator(),
-		dev = player:IsDeveloper()
- 	}
+	self.Badges =  {}
+
+	for v,k in pairs(impulse.Badges) do
+		if k[3](player) then
+			self.Badges[v] = k
+		end 	
+	end
 
  	self.modelIcon = vgui.Create("impulseSpawnIcon", self)
 	self.modelIcon:SetPos(10,4)
@@ -88,12 +84,10 @@ function PANEL:Paint(w,h)
 	 surface.SetDrawColor(color_white)
 
 	local xShift = 0
-	for badgeName, conditionMet in pairs(self.Badges) do
-		if conditionMet == true then
-			surface.SetMaterial(scoreboardBadgesData[badgeName][1])
-			surface.DrawTexturedRect(w-34-xShift,30,16,16)
-			xShift = xShift + 20
-	  end
+	for badgeName, badgeData in pairs(self.Badges) do
+		surface.SetMaterial(badgeData[1])
+		surface.DrawTexturedRect(w-34-xShift,30,16,16)
+		xShift = xShift + 20
 	end 
 end
 function PANEL:OnMousePressed()

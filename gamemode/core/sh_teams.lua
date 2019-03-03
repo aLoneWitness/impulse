@@ -20,6 +20,14 @@ function impulse.Teams.Define(teamData)
     	end
     end
 
+    if teamData.ranks then
+    	impulse.Teams.Data[teamID].RankRef = {}
+
+    	for id,k in pairs(teamData.ranks) do
+    		impulse.Teams.Data[teamID].RankRef[id] = k.name
+    	end
+    end
+
     team.SetUp(teamID, teamData.name, teamData.color, false)
     return teamID
 end
@@ -166,6 +174,26 @@ if SERVER then
 
 		return true
 	end
+
+	function meta:AddTeamTime(time)
+		if not self.beenSetup then
+			return
+		end
+		
+		local rankTable = self.impulseRanks
+		local teamTime = rankTable[self:Team()]
+		if not teamTime then
+			rankTable[self:Team()] = 0
+			teamTime = 0
+		end
+
+		rankTable[self:Team()] = teamTime + (time / 60)
+
+		local query = mysql:Update("impulse_players")
+		query:Update("ranks", util.TableToJSON(rankTable))
+		query:Where("steamid", self:SteamID())
+		query:Execute(true) -- queued
+	end
 end
 
 function meta:GetTeamClassName()
@@ -181,6 +209,21 @@ end
 
 function meta:GetTeamClass()
 	return self:GetSyncVar(SYNC_CLASS, 0)
+end
+
+function meta:GetTeamRankName()
+	local rankRef = impulse.Teams.Data[self:Team()].RankRef
+	local plyRank = self:GetSyncVar(SYNC_RANK, nil)
+
+	if rankRef and plyRank then
+		return rankRef[plyRank]
+	end
+
+	return "Default"
+end
+
+function meta:GetRank()
+	return self:GetSyncVar(SYNC_RANK, 0)
 end
 
 function meta:IsCP()

@@ -19,6 +19,7 @@ function IMPULSE:PlayerInitialSpawn(ply)
 	query:Select("model")
 	query:Select("skin")
 	query:Select("data")
+	query:Select("ranks")
 	query:Where("steamid", ply:SteamID())
 	query:Callback(function(result)
 		if IsValid(ply) and type(result) == "table" and #result > 0 then -- if player exists in db
@@ -31,6 +32,7 @@ function IMPULSE:PlayerInitialSpawn(ply)
 
 	timer.Create(ply:UserID().."impulseXP", impulse.Config.XPTime, 0, function()
 		ply:GiveTimedXP()
+		ply:AddTeamTime(impulse.Config.XPTime)
 	end)
 
 	timer.Create(ply:UserID().."impulseFullLoad", 0.5, 0, function()
@@ -137,6 +139,7 @@ function IMPULSE:SetupPlayer(ply, dbData)
 	ply:SetLocalSyncVar(SYNC_BANKMONEY, dbData.bankmoney)
 
 	ply.impulseData = util.JSONToTable(dbData.data or "[]")
+	ply.impulseRanks = util.JSONToTable(dbData.ranks or "[]")
 
 	ply.defaultModel = dbData.model
 	ply.defaultSkin = dbData.skin

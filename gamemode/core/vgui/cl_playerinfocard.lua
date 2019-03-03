@@ -91,13 +91,18 @@ function PANEL:Init()
 
 		-- badges
 		local xShift = 0
-		for badgeName, conditionMet in pairs(self.Badges) do
-			if conditionMet == true then
-				local badge = vgui.Create("DImage", self)
-				badge:SetPos(10+xShift,85)
-				badge:SetSize(16,16)
-				badge:SetMaterial(scoreboardBadgesData[badgeName][1])
-				--badge:SetTooltip(scoreboardBadgesData[badgeName][2]) does not seem to work :/
+		for badgeName, badgeData in pairs(impulse.Badges) do
+			if badgeData[3](self.Player) then
+				local badge = vgui.Create("DImageButton", self)
+				badge:SetPos(10 + xShift, 85)
+				badge:SetSize(16, 16)
+				badge:SetMaterial(badgeData[1])
+				badge.info = badgeData[2]
+
+				function badge:DoClick()
+					Derma_Message(badge.info, "impulse", "Close")
+				end
+
 				xShift = xShift + 20
 	  		end
 		end 

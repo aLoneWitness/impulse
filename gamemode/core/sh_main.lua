@@ -36,7 +36,7 @@ meta.GetName = meta.Name
 meta.Nick = meta.Name
 
 function meta:IsDeveloper()
-    return (self:SteamID() == "STEAM_0:1:95921723")
+    return (self:SteamID() == "STEAM_0:1:95921723" or self:SteamID() == "STEAM_0:1:10263929")
 end
 
 function meta:IsDonator()

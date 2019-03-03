@@ -34,6 +34,7 @@ netstream.Hook("impulseCharacterCreate", function(player, charName, charModel, c
 		insertQuery:Insert("skin", charSkin)
 		insertQuery:Insert("firstjoin", timestamp)
 		insertQuery:Insert("data", "[]")
+		inseryQuert:Insert("ranks", "[]")
 		insertQuery:Callback(function(result, status, lastID)
 			if IsValid(player) then
 				local setupData = {
