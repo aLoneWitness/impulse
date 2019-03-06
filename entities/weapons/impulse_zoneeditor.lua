@@ -90,7 +90,7 @@ else
 			Derma_StringRequest("impulse", "Enter zone name (must be unique):", nil, function(name)
 				local pos1 = "Vector("..self.Pos1.x..", "..self.Pos1.y..", "..self.Pos1.z..")"
 				local pos2 = "Vector("..self.Pos2.x..", "..self.Pos2.y..", "..self.Pos2.z..")"
-				local output = '{Name = "'..name..'", Pos1 = '..pos1..', Pos2 = '..pos2..'}'
+				local output = '{name = "'..name..'", pos1 = '..pos1..', pos2 = '..pos2..'}'
 
 				chat.AddText(output)
 				chat.AddText("Output copied to clipboard.")
@@ -110,8 +110,8 @@ else
 		draw.SimpleText("Warning, when you click your current position\nwill be registered, not your weapon aim position!", "BudgetLabel", 100, 140)
 
 		for v,k in pairs(impulse.Config.Areas) do
-			local cent = (LerpVector(.5, k.Pos1, k.Pos2)):ToScreen()
-			draw.SimpleText(k.Name, "BudgetLabel", cent.x, cent.y)
+			local cent = (LerpVector(.5, k.pos1, k.pos2)):ToScreen()
+			draw.SimpleText(k.name, "BudgetLabel", cent.x, cent.y)
 		end
 	end
 
@@ -123,8 +123,8 @@ else
 			local cent
 
 			for name,k in pairs(impulse.Config.Areas) do
-				pos1 = k.Pos1
-				pos2 = k.Pos2
+				pos1 = k.pos1
+				pos2 = k.pos2
 				col = col
 
 				-- i cba to do this maths, this is from ns

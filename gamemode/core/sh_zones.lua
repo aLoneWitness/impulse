@@ -1,7 +1,7 @@
 function meta:InArea(area)
 	local pos = self:GetPos() + self:OBBCenter()
 
-	return pos:WithinAABox(area.Pos1, area.Pos2)
+	return pos:WithinAABox(area.pos1, area.pos2)
 end
 
 function meta:GetArea()
