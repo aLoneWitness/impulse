@@ -306,12 +306,23 @@ function IMPULSE:InitPostEntity()
 	impulse.Doors.Load()
 
 	for v,k in pairs(ents.GetAll()) do
-		if k.impulseSaveEnt then
+		if k.impulseSaveEnt or k.IsZoneTrigger then
 			k:Remove()
 		end
 	end
 
 	LoadSaveEnts()
+
+	for v,k in pairs(impulse.Config.Zones) do
+		PrintTable(k)
+		local zone = ents.Create("impulse_zone")
+		zone:SetBounds(k.pos1, k.pos2)
+		zone.Zone = v
+	end
+end
+
+function IMPULSE:PostCleanupMap()
+	IMPULSE:InitPostEntity()
 end
 
 function IMPULSE:GetFallDamage(ply, speed)
