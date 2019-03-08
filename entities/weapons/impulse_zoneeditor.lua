@@ -91,7 +91,8 @@ else
 				local pos1 = "Vector("..self.Pos1.x..", "..self.Pos1.y..", "..self.Pos1.z..")"
 				local pos2 = "Vector("..self.Pos2.x..", "..self.Pos2.y..", "..self.Pos2.z..")"
 				local output = '{name = "'..name..'", pos1 = '..pos1..', pos2 = '..pos2..'}'
-
+				
+				chat.AddText("-----------------OUTPUT-----------------")
 				chat.AddText(output)
 				chat.AddText("Output copied to clipboard.")
 				SetClipboardText(output)
@@ -158,42 +159,43 @@ else
 				c8 = Vector(pos2[1], pos2[2], pos1[3])
 				render.DrawLine(c4, c8, col)
 			end
-		end
+		
 
-		local pos1 = activeWep.Pos1
-		local pos2 = activeWep.Pos2 or LocalPlayer():GetPos()
-		col = Color(255, 140, 60)
+			local pos1 = activeWep.Pos1
+			local pos2 = activeWep.Pos2 or LocalPlayer():GetPos()
+			col = Color(255, 140, 60)
 
-		if pos1 then
-			local c1, c2, c3, c4
-			c1 = Vector(pos1[1], pos2[2], pos1[3])
-			render.DrawLine(pos1, c1, col)
-			c2 = Vector(pos2[1], pos1[2], pos1[3])
-			render.DrawLine(pos1, c2, col)
-			c3 = Vector(pos2[1], pos2[2], pos1[3])
-			render.DrawLine(c3, c1, col)
-			c4 = Vector(pos2[1], pos2[2], pos1[3])
-			render.DrawLine(c3, c2, col)
+			if pos1 then
+				local c1, c2, c3, c4
+				c1 = Vector(pos1[1], pos2[2], pos1[3])
+				render.DrawLine(pos1, c1, col)
+				c2 = Vector(pos2[1], pos1[2], pos1[3])
+				render.DrawLine(pos1, c2, col)
+				c3 = Vector(pos2[1], pos2[2], pos1[3])
+				render.DrawLine(c3, c1, col)
+				c4 = Vector(pos2[1], pos2[2], pos1[3])
+				render.DrawLine(c3, c2, col)
 
-			c1 = Vector(pos1[1], pos2[2], pos2[3])
-			render.DrawLine(pos2, c1, col)
-			c2 = Vector(pos2[1], pos1[2], pos2[3])
-			render.DrawLine(pos2, c2, col)
-			c3 = Vector(pos1[1], pos1[2], pos2[3])
-			render.DrawLine(c3, c1, col)
-			c4 = Vector(pos1[1], pos1[2], pos2[3])
-			render.DrawLine(c3, c2, col)
+				c1 = Vector(pos1[1], pos2[2], pos2[3])
+				render.DrawLine(pos2, c1, col)
+				c2 = Vector(pos2[1], pos1[2], pos2[3])
+				render.DrawLine(pos2, c2, col)
+				c3 = Vector(pos1[1], pos1[2], pos2[3])
+				render.DrawLine(c3, c1, col)
+				c4 = Vector(pos1[1], pos1[2], pos2[3])
+				render.DrawLine(c3, c2, col)
 
-			local c5, c6, c7, c8
-			c5 = Vector(pos1[1], pos2[2], pos1[3])
-			render.DrawLine(c1, c5, col)
-			c6 = Vector(pos2[1], pos1[2], pos1[3])
-			render.DrawLine(c2, c6, col)
-			c7 = Vector(pos1[1], pos1[2], pos1[3])
-			render.DrawLine(c3, c7, col)
-			c4 = Vector(pos2[1], pos2[2], pos2[3])
-			c8 = Vector(pos2[1], pos2[2], pos1[3])
-			render.DrawLine(c4, c8, col)
+				local c5, c6, c7, c8
+				c5 = Vector(pos1[1], pos2[2], pos1[3])
+				render.DrawLine(c1, c5, col)
+				c6 = Vector(pos2[1], pos1[2], pos1[3])
+				render.DrawLine(c2, c6, col)
+				c7 = Vector(pos1[1], pos1[2], pos1[3])
+				render.DrawLine(c3, c7, col)
+				c4 = Vector(pos2[1], pos2[2], pos2[3])
+				c8 = Vector(pos2[1], pos2[2], pos1[3])
+				render.DrawLine(c4, c8, col)
+			end
 		end
 	end)
 end
