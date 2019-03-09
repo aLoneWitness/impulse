@@ -134,11 +134,14 @@ local radioCommand = {
 	onRun = function(ply, arg, rawText)
 		rawText = hook.Run("ChatClassMessageSend", 8, rawText, ply) or rawText
 
-		if not ply:IsCP() then return end
-		for v,k in pairs(player.GetAll()) do
-			if k:IsCP() then 
-				k:SendChatClassMessage(8, rawText, ply)
+		if ply:IsCP() then
+			for v,k in pairs(player.GetAll()) do
+				if k:IsCP() then 
+					k:SendChatClassMessage(8, rawText, ply)
+				end
 			end
+		else
+			hook.Run("RadioMessageFallback", ply, rawText)
 		end
 	end
 }
