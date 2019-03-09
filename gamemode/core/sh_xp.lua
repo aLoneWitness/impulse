@@ -2,7 +2,6 @@ function meta:GetXP()
 	return self:GetSyncVar(SYNC_XP, 0)
 end
 
-
 if SERVER then
 	function meta:SetXP(amount)
 		if not self.beenSetup or self.beenSetup == false then return end

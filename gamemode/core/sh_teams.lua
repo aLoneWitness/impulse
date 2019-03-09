@@ -90,6 +90,7 @@ if SERVER then
 		end
 
 		self:StripWeapons()
+		
 		if teamData.loadout then
 			for v,weapon in pairs(teamData.loadout) do
 				self:Give(weapon)
@@ -117,8 +118,10 @@ if SERVER then
 		end
 
 		if classData.limit and forced == false then
+			local classPlayers = 0
+
 			for v,k in pairs(player.GetAll()) do
-				if k:GetTeamClass() == className then
+				if k:GetTeamClass() == classID then
 					classPlayers = classPlayers + 1
 				end
 			end
@@ -164,6 +167,7 @@ if SERVER then
 		end
 
 		self:StripWeapons()
+
 		if classData.loadout then
 			for v,weapon in pairs(teamData.loadout) do
 				self:Give(weapon)
@@ -175,25 +179,125 @@ if SERVER then
 		return true
 	end
 
-	function meta:AddTeamTime(time)
-		if not self.beenSetup then
-			return
-		end
+	function meta:SetTeamRank(rankID, forced)
+		local teamData = impulse.Teams.Data[self:Team()]
+		local rankData = teamData.ranks[rankID]
+		local forced = forced or false
+		local rankPlayers = 0
 		
-		local rankTable = self.impulseRanks
-		local teamTime = rankTable[self:Team()]
-		if not teamTime then
-			rankTable[self:Team()] = 0
-			teamTime = 0
+		if rankData.xp and rankData.xp > self:GetXP() and forced == false then
+			self:Notify("You don't have the XP required to play as this rank.")
+			return false
 		end
 
-		rankTable[self:Team()] = teamTime + (time / 60)
+		if rankData.limit and forced == false then
+			local rankPlayers = 0 
 
-		local query = mysql:Update("impulse_players")
-		query:Update("ranks", util.TableToJSON(rankTable))
-		query:Where("steamid", self:SteamID())
-		query:Execute(true) -- queued
+			for v,k in pairs(player.GetAll()) do
+				if k:GetTeamRank() == rankID then
+					rankPlayers = rankPlayers + 1
+				end
+			end
+
+			if rankData.percentLimit and rankData.percentLimit == true then
+				local percentRank = rankPlayers / #player.GetAll()
+				if percentRank > rankData.limit then
+					self:Notify(rankData.name .. " is full.")
+					return false
+				end
+			else
+				if rankData.limit >= rankPlayers then
+					self:Notify(rankData.name .. " is full.")
+					return false
+				end
+			end
+		end
+
+		if rankData.model then
+			self:SetModel(rankData.model)
+		end
+
+		self:SetupHands()
+
+		if rankData.skin then
+			self:SetSkin(rankData.skin)
+		end
+
+		if rankData.bodygroups then
+			for v, bodygroupData in pairs(rankData.bodygroups) do
+				self:SetBodygroup(bodygroupData[1], (bodygroupData[2] or math.random(0, self:GetBodygroupCount(bodygroupData[1]))))
+			end
+		elseif teamData.bodygroups then
+			for v, bodygroupData in pairs(teamData.bodygroups) do
+				self:SetBodygroup(bodygroupData[1], (bodygroupData[2] or math.random(0, self:GetBodygroupCount(bodygroupData[1]))))
+			end
+		else
+			self:SetBodyGroups("0000000")
+		end
+
+		self:StripWeapons()
+
+		if rankData.loadout then
+			for v,weapon in pairs(rankData.loadout) do
+				self:Give(weapon)
+			end
+		end
+
+		self:SetLocalSyncVar(SYNC_RANK, rankID, true)
+
+		return true
 	end
+
+	function meta:AddTeamTime(time)
+		-- if not self.beenSetup then
+		-- 	return
+		-- end
+		
+		-- local rankTable = self.impulseRanks
+		-- local teamTime = rankTable[self:Team()]
+
+		-- if not teamTime then
+		-- 	rankTable[self:Team()] = 0
+		-- 	teamTime = 0
+		-- end
+
+		-- rankTable[self:Team()] = teamTime + (time / 60)
+
+		-- local query = mysql:Update("impulse_players")
+		-- query:Update("ranks", util.TableToJSON(rankTable))
+		-- query:Where("steamid", self:SteamID())
+		-- query:Execute(true) -- queued
+	end
+
+	-- function meta:SetTeamWhitelist(type, level)
+	-- 	local data = self:GetData()
+	-- 	data.whitelists = data.whitelists or {}
+
+	-- 	data.whitelists[type] = level
+
+	-- 	self:SaveData()
+	-- end
+
+	-- function meta:GetTeamWhitelist(type)
+	-- 	local data = self:GetData()
+	-- 	local whitelist = data.whitelists
+
+	-- 	if whitelist and whitelist[type] then
+	-- 		return whitelist[type]
+	-- 	end
+	-- end
+
+	-- function meta:HasTeamWhitelist(type, level)
+	-- 	local whitelistLevel = self:GetTeamWhitelist(type)
+
+	-- 	if whitelistLevel and not level then
+	-- 		return true
+	-- 	elseif whitelistLevel and level <= whitelistLevel then
+	-- 		return true
+	-- 	end
+
+	-- 	return false
+	-- end
 end
 
 function meta:GetTeamClassName()
@@ -212,17 +316,17 @@ function meta:GetTeamClass()
 end
 
 function meta:GetTeamRankName()
-	local rankRef = impulse.Teams.Data[self:Team()].RankRef
+	local rankData = impulse.Teams.Data[self:Team()].ranks
 	local plyRank = self:GetSyncVar(SYNC_RANK, nil)
 
-	if rankRef and plyRank then
-		return rankRef[plyRank]
+	if rankData and plyRank then
+		return rankData.name
 	end
 
 	return "Default"
 end
 
-function meta:GetRank()
+function meta:GetTeamRank()
 	return self:GetSyncVar(SYNC_RANK, 0)
 end
 

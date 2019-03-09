@@ -153,13 +153,12 @@ local function DrawCrosshair(x, y)
 end
 
 function IMPULSE:HUDPaint()
-	if impulse.hudEnabled == false or (IsValid(impulse.MainMenu) and impulse.MainMenu:IsVisible()) then
+	if impulse.hudEnabled == false or impulse.CinematicIntro or (IsValid(impulse.MainMenu) and impulse.MainMenu:IsVisible()) then
 		if IsValid(PlayerIcon) then
 			PlayerIcon:Remove()
 		end
 		return
 	end
-
 
 	local health = LocalPlayer():Health()
 	local lp = LocalPlayer()
@@ -183,14 +182,14 @@ function IMPULSE:HUDPaint()
 			deathRegistered = true
 		end
 
-		fde = math.Clamp(fde+ft*0.2, 0, 1)
+		fde = math.Clamp(fde + ft * .2, 0, 1)
 
-		surface.SetDrawColor(0,0,0,math.ceil(fde*255))
-		surface.DrawRect(-1, -1, ScrW()+2, ScrH()+2)
+		surface.SetDrawColor(0, 0, 0, math.ceil(fde * 255))
+		surface.DrawRect(-1, -1, ScrW() +2, ScrH() +2)
 
-		local textCol = Color(255,255,255,math.ceil(fde*255))
+		local textCol = Color(255, 255, 255, math.ceil(fde * 255))
 
-		draw.SimpleText("You have died", "Impulse-Elements23", scrW/2, scrH/2, textCol, TEXT_ALIGN_CENTER)
+		draw.SimpleText("You have died", "Impulse-Elements23", scrW / 2, scrH / 2, textCol, TEXT_ALIGN_CENTER)
 
 		local wait = math.ceil(deathWait - CurTime())
 
@@ -409,6 +408,9 @@ local nextOverheadCheck = 0
 local lastEnt
 local trace = {}
 local approach = math.Approach
+local letterboxFde = 0
+local textFde = 0
+local holdTime
 overheadEntCache = {}
 -- overhead info is HEAVILY based off nutscript. I'm not taking credit for it. but it saves clients like 70 fps so its worth it
 function IMPULSE:HUDPaintBackground()
@@ -464,27 +466,38 @@ function IMPULSE:HUDPaintBackground()
 			overheadEntCache[entTarg] = nil
 		end
 	end
-	--PrintTable(overheadEntCache)
-end
+	
+	if impulse.CinematicIntro then
+		local ft = FrameTime()
+		local maxTall =  ScrH() * .12
 
-local blackandwhite = {
-	["$pp_colour_addr"] = 0,
-	["$pp_colour_addg"] = 0,
-	["$pp_colour_addb"] = 0,
-	["$pp_colour_brightness"] = 0,
-	["$pp_colour_contrast"] = 1,
-	["$pp_colour_colour"] = 0,
-	["$pp_colour_mulr"] = 0,
-	["$pp_colour_mulg"] = 0,
-	["$pp_colour_mulb"] = 0
-}
+		if holdTime and holdTime + 6 < CurTime() then
+			letterboxFde = math.Clamp(letterboxFde - ft * .5, 0, 1)
+			textFde = math.Clamp(textFde - ft * .3, 0, 1)
 
+			if letterboxFde == 0 then
+				impulse.CinematicIntro = false
+			end
+		elseif holdTime and holdTime + 4 < CurTime() then
+			textFde = math.Clamp(textFde - ft * .3, 0, 1)
+		else
+			letterboxFde = math.Clamp(letterboxFde + ft * .5, 0, 1)
 
-function IMPULSE:RenderScreenspaceEffects()
-	if impulse.hudEnabled == false or IsValid(impulse.MainMenu) then return end
+			if letterboxFde == 1 then
+				textFde = math.Clamp(textFde + ft * .1, 0, 1)
+				holdTime = holdTime or CurTime()
+			end
+		end
 
-	if LocalPlayer():Health() < 20 then
-		DrawColorModify(blackandwhite)
+		surface.SetDrawColor(color_black)
+		surface.DrawRect(0, 0, ScrW(), (maxTall * letterboxFde))
+		surface.DrawRect(0, (ScrH() - (maxTall * letterboxFde)) + 1, ScrW(), maxTall)
+
+		draw.DrawText(impulse.CinematicTitle, "Impulse-Elements36", ScrW() - 150, ScrH() * .905, ColorAlpha(color_white, (255 * textFde)), TEXT_ALIGN_RIGHT)
+	else
+		letterboxFde = 0
+		textFde = 0
+		holdTime = nil
 	end
 end
 

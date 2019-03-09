@@ -18,6 +18,18 @@ if SERVER then
 	    net.WriteString(sound)
 	    net.Send(self)
 	end
+
+    function impulse.CinematicIntro(message)
+        net.Start("impulseCinematicMessage")
+        net.WriteString(message)
+        net.Broadcast()
+    end
+
+    concommand.Add("impulse_cinematicintro", function(ply, cmd, args)
+        if not ply:IsSuperAdmin() then return end
+
+        impulse.CinematicIntro(args[1])
+    end)
 else
 	netstream.Hook("IMPULSE-ColoredMessage",function(msg)
 		chat.AddText(unpack(msg))

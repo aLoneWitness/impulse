@@ -69,3 +69,10 @@ net.Receive("impulseBudgetSound", function()
 		ent:EmitSound(snd)
 	end
 end)
+
+net.Receive("impulseCinematicMessage", function()
+	local title = net.ReadString()
+
+	impulse.CinematicIntro = true
+	impulse.CinematicTitle = title
+end)

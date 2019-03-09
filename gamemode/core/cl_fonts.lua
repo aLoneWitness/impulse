@@ -114,6 +114,14 @@ surface.CreateFont("Impulse-Elements32", {
 	shadow = false,
 } )
 
+surface.CreateFont("Impulse-Elements36", {
+	font = "Arial",
+	size = 36,
+	weight = 800,
+	antialias = true,
+	shadow = false,
+} )
+
 surface.CreateFont("Impulse-Elements48", {
 	font = "Arial",
 	size = 48,

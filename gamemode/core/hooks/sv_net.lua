@@ -5,6 +5,7 @@ util.AddNetworkString("impulseReadNote")
 util.AddNetworkString("impulseTeamChange")
 util.AddNetworkString("impulseBuyItem")
 util.AddNetworkString("impulseClassChange")
+util.AddNetworkString("impulseCinematicMessage")
 
 netstream.Hook("impulseCharacterCreate", function(player, charName, charModel, charSkin)
 	if (player.NextCreate or 0) > CurTime() then return end
