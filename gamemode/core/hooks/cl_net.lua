@@ -64,9 +64,19 @@ end)
 net.Receive("impulseBudgetSound", function()
 	local ent = Entity(net.ReadUInt(16))
 	local snd = net.ReadString()
+	local level = net.ReadUInt(8)
+	local pitch = net.ReadUInt(8)
+
+	if level == 0 then
+		level = nil
+	end
+
+	if pitch == 0 then
+		pitch = nil
+	end
 
 	if IsValid(ent) then
-		ent:EmitSound(snd)
+		ent:EmitSound(snd, level, pitch)
 	end
 end)
 

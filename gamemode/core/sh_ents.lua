@@ -69,19 +69,32 @@ end
 
 if SERVER then
 	util.AddNetworkString("impulseBudgetSound")
-	function entityMeta:EmitBudgetSound(sound, range)
+	function entityMeta:EmitBudgetSound(sound, range, level, pitch)
 		local range = range or 600
 		local pos = self:GetPos()
 		local entIndex = self:EntIndex()
 		local range = range ^ 2
 
+		local recipFilter = RecipientFilter()
+
 		for v,k in pairs(player.GetAll()) do
 			if k:GetPos():DistToSqr(pos) < range then
-				net.Start("impulseBudgetSound")
-				net.WriteUInt(entIndex, 16)
-				net.WriteString(sound)
-				net.Send(k)
+				recipFilter:AddPlayer(k)
 			end
 		end
+
+		net.Start("impulseBudgetSound")
+		net.WriteUInt(entIndex, 16)
+		net.WriteString(sound)
+
+		if level then
+			net.WriteUInt(level, 8)
+
+			if pitch then
+				net.WriteUInt(pitch, 8)
+			end
+		end
+
+		net.Send(recipFilter)
 	end
 end
