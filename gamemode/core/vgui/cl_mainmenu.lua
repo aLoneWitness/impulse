@@ -169,7 +169,7 @@ function PANEL:Init()
 
 	timer.Simple(0, function()
 		if not impulse.MainMenu.popup and impulse.GetSetting("perf_mcore") == false then
-			Derma_Query("Would you like to enable Multi-core rendering? This will improve your FPS by about 60FPS, however if your computer has a low core count and/or a small amount of RAM it can cause crashes and performance problems.",
+			Derma_Query("Would you like to enable Multi-core rendering?\nThis will often greatly improve your FPS, however if your computer has a low core count and/or\na small amount of RAM it can cause crashes and performance problems.",
 				"impulse",
 				"Enable Multi-core rendering",
 				function()
