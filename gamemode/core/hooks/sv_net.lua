@@ -6,6 +6,7 @@ util.AddNetworkString("impulseTeamChange")
 util.AddNetworkString("impulseBuyItem")
 util.AddNetworkString("impulseClassChange")
 util.AddNetworkString("impulseCinematicMessage")
+util.AddNetworkString("impulseChatMessage")
 
 netstream.Hook("impulseCharacterCreate", function(player, charName, charModel, charSkin)
 	if (player.NextCreate or 0) > CurTime() then return end
@@ -59,9 +60,13 @@ netstream.Hook("impulseCharacterCreate", function(player, charName, charModel, c
 	player.NextCreate = CurTime() + 10
 end)
 
-netstream.Hook("msg", function(ply, text)
-	if (ply.nextChat or 0) < CurTime() and string.len(text) < 1000 then
-		hook.Run("PlayerSay", ply, text, false)
+net.Receive("impulseChatMessage", function(len, ply) -- should implement a check on len here instead of string.len
+	if (ply.nextChat or 0) < CurTime() then
+		local text = net.ReadString()
+		
+		if string.len(text) < 1000 then
+			hook.Run("PlayerSay", ply, text, false)
+		end
 		ply.nextChat = CurTime() + math.max(#text / 250, 0.4)
 	end
 end)
