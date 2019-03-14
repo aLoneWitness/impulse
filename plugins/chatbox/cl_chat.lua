@@ -80,7 +80,9 @@ function impulse.chatBox.buildBox()
 				elseif impulse.chatBox.ChatType == types[3] then
 					LocalPlayer():ConCommand(self:GetText() or "")
 				else
-					netstream.Start("msg", self:GetText()) -- use netstream to send messages its faster + we can send bigger messages
+					net.Start("impulseChatMessage")
+					net.WriteString(self:GetText())
+					net.SendToServer()
 				end
 			end
 
