@@ -214,6 +214,8 @@ function meta:CanBecomeTeam(teamID, notify)
 	local teamData = impulse.Teams.Data[teamID]
 	local teamPlayers = team.NumPlayers(teamID)
 
+	if not self:Alive() then return false end
+
 	if self:GetSyncVar(SYNC_ARRESTED, false) then
 		return false
 	end
@@ -245,6 +247,8 @@ function meta:CanBecomeTeamClass(classID, notify)
 	local teamData = impulse.Teams.Data[self:Team()]
 	local classData = teamData.classes[classID]
 	local classPlayers = 0
+
+	if not self:Alive() then return false end
 
 	if classData.xp and classData.xp > self:GetXP() then
 		if notify then self:Notify("You don't have the XP required to play as this class.") end
@@ -281,6 +285,8 @@ function meta:CanBecomeTeamRank(rankID, notify)
 	local teamData = impulse.Teams.Data[self:Team()]
 	local rankData = teamData.ranks[rankID]
 	local rankPlayers = 0
+
+	if not self:Alive() then return false end
 		
 	if rankData.xp and rankData.xp > self:GetXP() and forced == false then
 		if notify then self:Notify("You don't have the XP required to play as this rank.") end
@@ -290,7 +296,7 @@ function meta:CanBecomeTeamRank(rankID, notify)
 	if rankData.limit and forced == false then
 		local rankPlayers = 0 
 
-		for v,k in pairs(player.GetAll()) do
+		for v,k in pairs(team.GetPlayers(self:Team())) do
 			if k:GetTeamRank() == rankID then
 				rankPlayers = rankPlayers + 1
 			end
