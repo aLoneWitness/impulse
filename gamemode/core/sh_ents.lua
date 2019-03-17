@@ -69,6 +69,7 @@ end
 
 if SERVER then
 	util.AddNetworkString("impulseBudgetSound")
+	util.AddNetworkString("impulseBudgetSoundExtra")
 	function entityMeta:EmitBudgetSound(sound, range, level, pitch)
 		local range = range or 600
 		local pos = self:GetPos()
@@ -83,16 +84,16 @@ if SERVER then
 			end
 		end
 
-		net.Start("impulseBudgetSound")
-		net.WriteUInt(entIndex, 16)
-		net.WriteString(sound)
-
-		if level then
-			net.WriteUInt(level, 8)
-
-			if pitch then
-				net.WriteUInt(pitch, 8)
-			end
+		if level or pitch then
+			net.Start("impulseBudgetSoundExtra")
+			net.WriteUInt(entIndex, 16)
+			net.WriteString(sound)
+			net.WriteUInt(level or 0, 8)
+			net.WriteUInt(pitch or 0, 8)
+		else
+			net.Start("impulseBudgetSound")
+			net.WriteUInt(entIndex, 16)
+			net.WriteString(sound)
 		end
 
 		net.Send(recipFilter)

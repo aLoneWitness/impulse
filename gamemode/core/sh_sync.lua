@@ -13,8 +13,8 @@ impulse.Sync.VarsConditional = impulse.Sync.VarsConditional or {}
 impulse.Sync.Data = impulse.Sync.Data or {}
 local syncVarsID = 0
 
-local SYNC_ID_BITS = 6
-local SYNC_MAX_VARS = 63
+local SYNC_ID_BITS = 8
+local SYNC_MAX_VARS = 255
 
 SYNC_BOOL = 1
 SYNC_STRING =  2
@@ -33,7 +33,7 @@ function impulse.Sync.RegisterVar(type, conditional)
 	syncVarsID = syncVarsID + 1
 
 	if syncVarsID > SYNC_MAX_VARS then
-		print("[impulse] WARNING: Sync var limit hit! (63)")
+		print("[impulse] WARNING: Sync var limit hit! (255)")
 	end
 
 	impulse.Sync.Vars[syncVarsID] = type
