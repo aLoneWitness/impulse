@@ -86,3 +86,10 @@ net.Receive("impulseCinematicMessage", function()
 	impulse.CinematicIntro = true
 	impulse.CinematicTitle = title
 end)
+
+net.Receive("impulseZoneUpdate", function()
+	local zone = net.ReadUInt(8)
+
+	impulse.ShowZone = true
+	LocalPlayer().impulseZone = zone
+end)

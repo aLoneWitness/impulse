@@ -27,7 +27,7 @@ local blur = Material("pp/blurscreen")
 local function BlurRect(x, y, w, h)
 	local X, Y = 0,0
 
-	surface.SetDrawColor(255,255,255, 255)
+	surface.SetDrawColor(color_white)
 	surface.SetMaterial(blur)
 
 	for i = 1, 2 do
@@ -42,7 +42,7 @@ local function BlurRect(x, y, w, h)
 	end
    
    --draw.RoundedBox(0,x,y,w,h,Color(0,0,0,205))
-   surface.SetDrawColor(0,0,0)
+   --surface.SetDrawColor(0,0,0)
    --surface.DrawOutlinedRect(x,y,w,h)
    
 end
@@ -61,6 +61,8 @@ local hudBlackGrad = Color(40,40,40,180)
 local hudBlack = Color(20,20,20,140)
 local darkCol = Color(30, 30, 30, 190)
 local whiteCol = Color(255, 255, 255, 255)
+local zoneFde = 0
+local zoneHoldTime
 
 local crosshairGap = 5
 local crosshairLength = crosshairGap + 5
@@ -166,13 +168,15 @@ function IMPULSE:HUDPaint()
 	local scrW, scrH = ScrW(), ScrH()
 	local hudWidth, hudHeight = 300, 178
 	local seeColIcons = impulse.GetSetting("hud_iconcolours")
+	local aboveHUDUsed = false
 	local deathSoundPlayed
 
 	if not lp:Alive() then
 		local ft = FrameTime()
 
 		if not deathRegistered then
-			surface.PlaySound("impulse/death.mp3")
+			local deathSound = hook.Run("GetDeathSound") or "impulse/death.mp3"
+			surface.PlaySound(deathSound)
 
 			deathWait = CurTime() + impulse.Config.RespawnTime
 			if lp:IsDonator() then
@@ -294,11 +298,13 @@ function IMPULSE:HUDPaint()
 		surface.SetMaterial(exitIcon)
 		surface.DrawTexturedRect(10, y-30, 18, 18)
 		draw.DrawText("Sentence remaining: "..string.FormattedTime(timeLeft, "%02i:%02i"), "Impulse-Elements19", 35, y-30, color_white, TEXT_ALIGN_LEFT)
+		aboveHUDUsed = true
 	end
 
 	draw.DrawText(lp:GetSyncVar(SYNC_XP, 0).."XP", "Impulse-Elements19", 55, y+150, color_white, TEXT_ALIGN_LEFT)
 	surface.SetMaterial(xpIcon)
 	surface.DrawTexturedRect(30, y+150, 18, 18)
+
 
 	local weapon = LocalPlayer():GetActiveWeapon()
 	if IsValid(weapon) then
@@ -311,7 +317,23 @@ function IMPULSE:HUDPaint()
 			draw.DrawText("Make sure you dont have this weapon out in RP. You may be punished.", "Impulse-Elements16", 35, y-30, color_white, TEXT_ALIGN_LEFT)
 			surface.SetMaterial(warningIcon)
 			surface.DrawTexturedRect(10, y-30, 18, 18)
+			aboveHUDUsed = true
 		end
+	end
+
+	if not aboveHUDUsed and (impulse.ShowZone or (zoneHoldTime and zoneHoldTime + 4 > CurTime())) then
+		local ft = FrameTime()
+		zoneFde = math.Clamp(zoneFde + ft * .3, 0, 1)
+
+		draw.DrawText(lp:GetZoneName(), "Impulse-Elements23-Italic", 10, y - 25, ColorAlpha(color_white, (255 * zoneFde)), TEXT_ALIGN_LEFT)
+
+		if zoneFde == 1 then
+			zoneHoldTime = zoneHoldTime or CurTime()
+			impulse.ShowZone = false
+		end
+	else
+		zoneHoldTime = nil
+		zoneFde = 0
 	end
 
 	if not IsValid(PlayerIcon) and impulse.hudEnabled == true then

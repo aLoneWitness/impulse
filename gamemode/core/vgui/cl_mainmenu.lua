@@ -167,15 +167,41 @@ function PANEL:Init()
 	newsfeed:SetSize(500,270)
 	newsfeed:SetPos(self:GetWide()-530, 100)
 
+	local testMessage = function()
+		Derma_Message([[Welcome to the impulse test server!
+			Thanks for coming along and helping us test impulse, before we start though
+			let's get some stuff out the way, please take your time to read the text below:
+
+			- Bugs, expect lot's of them, this is a test, not a live server.
+			- Roleplay, don't expect much roleplay at this early stage in testing.
+			- Don't go around killing people randomly or prop spamming. This is not testing,
+			it is just making it harder for others to give impulse a go.
+			- Clientside lua, if you have an injector, you can run clientside lua to try to
+			break stuff. Don't worry, just don't use it maliciously.
+			- Footage and sharing stuff - Sure, you can record and screenshot whatever you
+			like. Just leave the watermark in the image/video.
+
+			- SUPER COOL TESTER BADGE! - We've got a couple of 'SUPER COOL TESTER BADGES' to
+			give out to the best testers, so get testing. 
+
+			REPORT BUGS/FEEDBACK TO: https://github.com/vingard/impulse-issues/issues
+
+			Happy bug hunting!
+			-vin]], "impulse", "Uh huh")
+	end
+
 	timer.Simple(0, function()
 		if not impulse.MainMenu.popup and impulse.GetSetting("perf_mcore") == false then
-			Derma_Query("Would you like to enable Multi-core rendering?\nThis will often greatly improve your FPS, however if your computer has a low core count and/or\na small amount of RAM it can cause crashes and performance problems.",
+			Derma_Query("Would you like to enable Multi-core rendering?\nThis will often greatly improve your FPS, however if your computer has a low core count and/or\na small amount of RAM, it can cause crashes and performance problems.",
 				"impulse",
 				"Enable Multi-core rendering",
 				function()
 					impulse.SetSetting("perf_mcore", true)
+					testMessage()
 				end,
 				"No thanks")
+		else
+			testMessage()
 		end
 	end)
 end
