@@ -22,6 +22,10 @@ function meta:CanBuy(name)
 		return true
 	end
 
+	if buyable.classes and table.HasValue(buyable.classes, self:GetTeamClass()) then
+		return true
+	end
+
 	return false
 end
 
