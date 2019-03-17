@@ -128,8 +128,8 @@ net.Receive("impulseTeamChange", function(len, ply)
 	local teamID = net.ReadUInt(8)
 
 	if teamID and isnumber(teamID) and impulse.Teams.Data[teamID] then
-		local setTeam = ply:SetTeam(teamID)
-		if setTeam then
+		if ply:CanBecomeTeam(teamID, true) then
+			ply:SetTeam(teamID)
 			ply.lastTeamChange = CurTime()
 			ply:Notify("You have changed your team to "..team.GetName(teamID)..".")
 			ply:EmitSound("items/ammo_pickup.wav")
@@ -156,8 +156,8 @@ net.Receive("impulseClassChange",function(len, ply)
 	local classes = impulse.Teams.Data[ply:Team()].classes
 
 	if classID and isnumber(classID) and classID > 0 and classes and classes[classID] and not classes[classID].noMenu then
-		local setClass = ply:SetTeamClass(classID)
-		if setClass then
+		if ply:CanBecomeTeamClass(classID, true) then
+			ply:SetTeamClass(classID)
 			ply.lastClassChange = CurTime()
 			ply:Notify("You have changed your class to "..classes[classID].name..".")
 		end

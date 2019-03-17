@@ -37,37 +37,6 @@ if SERVER then
 	function meta:SetTeam(teamID, forced)
 		local teamData = impulse.Teams.Data[teamID]
 		local teamPlayers = team.NumPlayers(teamID)
-		local forced = forced or false
-
-		if not self:Alive() then
-			return false
-		end
-
-		if forced == false then
-			if self:GetSyncVar(SYNC_ARRESTED, false) then
-				return false
-			end
-
-			if teamData.xp and teamData.xp > self:GetXP() then
-				self:Notify("You don't have the XP required to play as this team.")
-				return false
-			end
-
-			if teamData.limit then
-				if teamData.percentLimit and teamData.percentLimit == true then
-					local percentTeam = teamPlayers / #player.GetAll()
-					if not self:IsDonator() and percentTeam > teamData.limit then
-						self:Notify(teamData.name .. " is full.")
-						return false
-					end
-				else
-					if not self:IsDonator() and teamData.limit >= teamPlayers then
-						self:Notify(teamData.name .. " is full.")
-						return false
-					end
-				end
-			end
-		end
 
 		if teamData.model then
 			self:SetModel(teamData.model)
@@ -106,39 +75,10 @@ if SERVER then
 		return true
 	end
 
-	function meta:SetTeamClass(classID, forced)
+	function meta:SetTeamClass(classID)
 		local teamData = impulse.Teams.Data[self:Team()]
 		local classData = teamData.classes[classID]
-		local forced = forced or false
 		local classPlayers = 0
-		
-		if classData.xp and classData.xp > self:GetXP() and forced == false then
-			self:Notify("You don't have the XP required to play as this class.")
-			return false
-		end
-
-		if classData.limit and forced == false then
-			local classPlayers = 0
-
-			for v,k in pairs(player.GetAll()) do
-				if k:GetTeamClass() == classID then
-					classPlayers = classPlayers + 1
-				end
-			end
-
-			if classData.percentLimit and classData.percentLimit == true then
-				local percentClass = classPlayers / #player.GetAll()
-				if percentClass > classData.limit then
-					self:Notify(classData.name .. " is full.")
-					return false
-				end
-			else
-				if classData.limit >= classPlayers then
-					self:Notify(classData.name .. " is full.")
-					return false
-				end
-			end
-		end
 
 		if classData.model then
 			self:SetModel(classData.model)
@@ -179,39 +119,9 @@ if SERVER then
 		return true
 	end
 
-	function meta:SetTeamRank(rankID, forced)
+	function meta:SetTeamRank(rankID)
 		local teamData = impulse.Teams.Data[self:Team()]
 		local rankData = teamData.ranks[rankID]
-		local forced = forced or false
-		local rankPlayers = 0
-		
-		if rankData.xp and rankData.xp > self:GetXP() and forced == false then
-			self:Notify("You don't have the XP required to play as this rank.")
-			return false
-		end
-
-		if rankData.limit and forced == false then
-			local rankPlayers = 0 
-
-			for v,k in pairs(player.GetAll()) do
-				if k:GetTeamRank() == rankID then
-					rankPlayers = rankPlayers + 1
-				end
-			end
-
-			if rankData.percentLimit and rankData.percentLimit == true then
-				local percentRank = rankPlayers / #player.GetAll()
-				if percentRank > rankData.limit then
-					self:Notify(rankData.name .. " is full.")
-					return false
-				end
-			else
-				if rankData.limit >= rankPlayers then
-					self:Notify(rankData.name .. " is full.")
-					return false
-				end
-			end
-		end
 
 		if rankData.model then
 			self:SetModel(rankData.model)
@@ -298,6 +208,109 @@ if SERVER then
 
 	-- 	return false
 	-- end
+end
+
+function meta:CanBecomeTeam(teamID, notify)
+	local teamData = impulse.Teams.Data[teamID]
+	local teamPlayers = team.NumPlayers(teamID)
+
+	if self:GetSyncVar(SYNC_ARRESTED, false) then
+		return false
+	end
+
+	if teamData.xp and teamData.xp > self:GetXP() then
+		if notify then self:Notify("You don't have the XP required to play as this team.") end
+		return false
+	end
+
+	if teamData.limit then
+		if teamData.percentLimit and teamData.percentLimit == true then
+			local percentTeam = teamPlayers / #player.GetAll()
+			if not self:IsDonator() and percentTeam > teamData.limit then
+				if notify then self:Notify(teamData.name .. " is full.") end
+				return false
+			end
+		else
+			if not self:IsDonator() and teamData.limit >= teamPlayers then
+				if notify then self:Notify(teamData.name .. " is full.") end
+				return false
+			end
+		end
+	end
+
+	return true
+end
+
+function meta:CanBecomeTeamClass(classID, notify)
+	local teamData = impulse.Teams.Data[self:Team()]
+	local classData = teamData.classes[classID]
+	local classPlayers = 0
+
+	if classData.xp and classData.xp > self:GetXP() then
+		if notify then self:Notify("You don't have the XP required to play as this class.") end
+		return false
+	end
+
+	if classData.limit and forced == false then
+		local classPlayers = 0
+
+		for v,k in pairs(team.GetPlayers(self:Team())) do
+			if k:GetTeamClass() == classID then
+				classPlayers = classPlayers + 1
+			end
+		end
+
+		if classData.percentLimit and classData.percentLimit == true then
+			local percentClass = classPlayers / #player.GetAll()
+			if percentClass > classData.limit then
+				if notify then self:Notify(classData.name .. " is full.") end
+				return false
+			end
+		else
+			if classData.limit >= classPlayers then
+				if notify then self:Notify(classData.name .. " is full.") end
+				return false
+			end
+		end
+	end
+
+	return true
+end
+
+function meta:CanBecomeTeamRank(rankID, notify)
+	local teamData = impulse.Teams.Data[self:Team()]
+	local rankData = teamData.ranks[rankID]
+	local rankPlayers = 0
+		
+	if rankData.xp and rankData.xp > self:GetXP() and forced == false then
+		if notify then self:Notify("You don't have the XP required to play as this rank.") end
+		return false
+	end
+
+	if rankData.limit and forced == false then
+		local rankPlayers = 0 
+
+		for v,k in pairs(player.GetAll()) do
+			if k:GetTeamRank() == rankID then
+				rankPlayers = rankPlayers + 1
+			end
+		end
+
+		if rankData.percentLimit and rankData.percentLimit == true then
+			local percentRank = rankPlayers / #player.GetAll()
+			if percentRank > rankData.limit then
+				if notify then self:Notify(rankData.name .. " is full.") end
+				return false
+			end
+		else
+			if rankData.limit >= rankPlayers then
+				if notify then self:Notify(rankData.name .. " is full.") end
+				return false
+			end
+		end
+	end
+
+	return true
 end
 
 function meta:GetTeamClassName()

@@ -334,6 +334,7 @@ function IMPULSE:HUDPaint()
 	else
 		zoneHoldTime = nil
 		zoneFde = 0
+		impulse.ShowZone = false
 	end
 
 	if not IsValid(PlayerIcon) and impulse.hudEnabled == true then

@@ -17,7 +17,6 @@ if SERVER then
 
 	-- Run when any entity starts touching our trigger
 	function ENT:StartTouch(ent)
-		print(self.Zone)
 	    if not ent:IsPlayer() then
 	        return
 	    end

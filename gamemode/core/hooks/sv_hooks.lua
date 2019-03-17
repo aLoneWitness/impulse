@@ -69,7 +69,7 @@ function IMPULSE:PlayerSpawn(ply)
 	end
 
 	if ply.beenSetup then
-		ply:SetTeam(impulse.Config.DefaultTeam, true)
+		ply:SetTeam(impulse.Config.DefaultTeam)
 	end
 
 	ply:SetHunger(100)
@@ -172,14 +172,14 @@ function IMPULSE:PlayerSay(ply, text, teamChat)
 				end
 			end
 
-			if command.adminOnly == true and ply:IsAdmin() == false then 
+			if command.adminOnly == true and ply:IsAdmin() == false then
 				ply:Notify("You must be an admin to use this command.")
-				return "" 
+				return ""
 			end
 
-			if command.superAdminOnly == true and ply:IsSuperAdmin() == false then 
+			if command.superAdminOnly == true and ply:IsSuperAdmin() == false then
 				ply:Notify("You must be an super admin to use this command.")
-				return "" 
+				return ""
 			end
 
 			if command.requiresArg == true and (not args[2] or string.Trim(args[2]) == "") then return "" end
@@ -197,11 +197,11 @@ function IMPULSE:PlayerSay(ply, text, teamChat)
 		text = hook.Run("ChatClassMessageSend", 1, text, ply) or text
 
 		for v,k in pairs(player.GetAll()) do
-			if (ply:GetPos() - k:GetPos()):LengthSqr() <= (impulse.Config.TalkDistance ^ 2) then 
+			if (ply:GetPos() - k:GetPos()):LengthSqr() <= (impulse.Config.TalkDistance ^ 2) then
 				k:SendChatClassMessage(1, text, ply)
 			end
 		end
-		
+
 		hook.Run("PostChatClassMessageSend", 1, text, ply)
 	end
 
@@ -301,7 +301,7 @@ function IMPULSE:KeyPress(ply, key)
 end
 
 function IMPULSE:PlayerUse(ply, entity)
-	
+
 end
 
 function IMPULSE:KeyRelease(ply, key)
@@ -340,7 +340,7 @@ end
 function IMPULSE:Think()
 	for v,k in pairs(player.GetAll()) do
 		if not k.nextHungerUpdate then k.nextHungerUpdate = CurTime() + impulse.Config.HungerTime end
-		
+
 		if k:Alive() and k.nextHungerUpdate < CurTime() then
 			k:FeedHunger(-1)
 			if k:GetSyncVar(SYNC_HUNGER, 100) < 1 then
@@ -411,7 +411,7 @@ function IMPULSE:PlayerSpawnVehicle(ply, model)
 	if ply:GetSyncVar(SYNC_ARRESTED, false) then
 		return false
 	end
-	
+
 	if ply:IsDonator() and model:find("chair") or model:find("seat") or model:find("pod") then
 		return true
 	else
@@ -500,7 +500,7 @@ end
 
 function IMPULSE:PlayerSetHandsModel(ply, hands)
 	local handModel = impulse.Teams.Data[ply:Team()].handModel
-	
+
 	if handModel then
 		hands:SetModel(handModel)
 		return
