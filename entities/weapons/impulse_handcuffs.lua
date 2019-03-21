@@ -59,7 +59,7 @@ function SWEP:PrimaryAttack()
 					traceEnt:Arrest()
 					
 					ply:Notify("You have detained "..traceEnt:Name()..".")
-					traceEnt:Notify("You have been detained by"..ply:Name()..".")
+					traceEnt:Notify("You have been detained by "..ply:Name()..".")
 				end
 			end)
 		end

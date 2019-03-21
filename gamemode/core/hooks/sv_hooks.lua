@@ -113,6 +113,8 @@ function IMPULSE:PlayerDisconnected(ply)
 		local duration = impulse.Arrest.Prison[jailCell][userID].duration
 		impulse.Arrest.Prison[jailCell][userID] = nil
 		impulse.Arrest.DCRemember[steamID] = duration
+	elseif ply.BeingJailed then
+		impulse.Arrest.DCRemember[steamID] = ply.BeingJailed
 	end
 
 	if ply.CanHear then
@@ -141,8 +143,13 @@ function IMPULSE:SetupPlayer(ply, dbData)
 	ply.impulseData = util.JSONToTable(dbData.data or "[]")
 	ply.impulseRanks = util.JSONToTable(dbData.ranks or "[]")
 
+	if dbData.group and dbData.group != "user" then
+		ply:SetUserGroup(dbData.group)
+	end
+
 	ply.defaultModel = dbData.model
 	ply.defaultSkin = dbData.skin
+	ply.defaultRPName = dbData.rpname
 	ply:SetFOV(90, 0)
 	ply:SetTeam(impulse.Config.DefaultTeam)
 	ply:AllowFlashlight(true)
@@ -249,6 +256,13 @@ function IMPULSE:PlayerDeath(ply)
 	end
 
 	ply.respawnWait = CurTime() + wait
+
+	local money = ply:GetMoney()
+
+	if money > 0 then
+		ply:SetMoney(0)
+		impulse.SpawnMoney(ply:GetPos(), money)
+	end
 end
 
 function IMPULSE:PlayerDeathThink(ply)
@@ -265,6 +279,9 @@ end
 
 function IMPULSE:CanPlayerSuicide()
 	return false
+end
+
+function IMPULSE:OnPlayerChangedTeam() -- get rid of it logging team changes to console
 end
 
 function IMPULSE:SetupPlayerVisibility(ply)

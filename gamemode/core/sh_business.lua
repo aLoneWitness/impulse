@@ -18,15 +18,15 @@ end
 function meta:CanBuy(name)
 	local buyable = impulse.Business.Data[name]
 
-	if buyable.teams and table.HasValue(buyable.teams, self:Team()) then
-		return true
+	if buyable.teams and not table.HasValue(buyable.teams, self:Team()) then
+		return false
 	end
 
-	if buyable.classes and table.HasValue(buyable.classes, self:GetTeamClass()) then
-		return true
+	if buyable.classes and not table.HasValue(buyable.classes, self:GetTeamClass()) then
+		return false
 	end
 
-	return false
+	return true
 end
 
 function impulse.SpawnBuyable(pos, buyable)

@@ -10,6 +10,14 @@ local unArrestCommand = {
 			plyTarget:UnArrest()
 			plyTarget:Notify("You have been un-arrested by a game moderator.")
 			ply:Notify(plyTarget:Name().." has been un-arrested.")
+
+			if plyTarget.InJail then
+				impulse.Arrest.Prison[plyTarget.InJail][plyTarget:UserID()] = nil
+				plyTarget.InJail = nil
+				timer.Remove(plyTarget:UserID().."impulsePrison")
+				plyTarget:StopDrag()
+				plyTarget:Spawn()
+			end
 		else
 			return ply:Notify("Could not find player: "..tostring(name))
 		end

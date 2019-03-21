@@ -10,11 +10,11 @@ end
 local blur = Material("pp/blurscreen")
 
 local superTesters = {
-
+	"STEAM_0:1:19935486" -- engima
 }
 
 local mappers = {
-
+	"STEAM_0:0:24607430" -- stranger
 }
 
 impulse.Badges = {
@@ -24,7 +24,7 @@ impulse.Badges = {
 	vin = {Material("impulse/vin.png"), "This player is the creator of impulse.", function(ply) return (ply:SteamID() == "STEAM_0:1:95921723") end},
 	supertester = {Material("icon16/bug.png"), "This player made large contributions to the testing of impulse.", function(ply) return (superTesters[ply:SteamID()] or false) end},
 	competition = {Material("icon16/rosette.png"), "This player has won a competition.", function(ply) return false end},
-	mapper = {Material("icon16/map.png"), "This player is a impulse mapper.", function(ply) return mappers[ply:SteamID()] end}
+	mapper = {Material("icon16/map.png"), "This player is a mapper that has collaborated with impulse.", function(ply) return mappers[ply:SteamID()] end}
 }
 
 function impulse.blur(panel, layers, density, alpha)

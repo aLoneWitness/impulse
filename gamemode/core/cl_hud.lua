@@ -97,6 +97,9 @@ local function DrawOverheadInfo(target, alpha)
 	pos.y = pos.y - 50
 
 	draw.DrawText(target:Name(), "Impulse-Elements18-Shadow", pos.x, pos.y, ColorAlpha(team.GetColor(target:Team()), alpha), 1)
+	if target:GetSyncVar(SYNC_TYPING, false) then
+		draw.DrawText("Typing...", "Impulse-Elements16-Shadow", pos.x, pos.y + 15, ColorAlpha(color_white, alpha), 1)
+	end
 end
 
 local function DrawDoorInfo(target)
@@ -475,7 +478,7 @@ function IMPULSE:HUDPaintBackground()
 			end
 
 			if alpha > 0 then
-				if entTarg:IsPlayer() then
+				if entTarg:IsPlayer() and not entTarg:GetNoDraw() then
 					DrawOverheadInfo(entTarg, alpha)
 				end
 			end

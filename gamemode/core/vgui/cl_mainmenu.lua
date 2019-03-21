@@ -176,8 +176,6 @@ function PANEL:Init()
 			- Roleplay, don't expect much roleplay at this early stage in testing.
 			- Don't go around killing people randomly or prop spamming. This is not testing,
 			it is just making it harder for others to give impulse a go.
-			- Clientside lua, if you have an injector, you can run clientside lua to try to
-			break stuff. Don't worry, just don't use it maliciously.
 			- Footage and sharing stuff - Sure, you can record and screenshot whatever you
 			like. Just leave the watermark in the image/video.
 

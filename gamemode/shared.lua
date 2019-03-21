@@ -7,10 +7,10 @@
 GM.Name = "IMPULSE"
 GM.Author = "vin"
 GM.Website = "https://www.vingard.ovh"
-GM.Version = 0.2
+GM.Version = 0.5
 MsgC( Color( 83, 143, 239 ), "[IMPULSE] Starting shared load...\n" )
 IMPULSE = GM
-meta = FindMetaTable( "Player" )
+meta = FindMetaTable("Player")
 
 -- Called after the gamemode has loaded.
 function IMPULSE:Initialize()

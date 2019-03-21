@@ -320,8 +320,6 @@ else
 		local newValue = impulse.Sync.DoType(syncType)
 		local targetData = impulse.Sync.Data[targetID]
 
-		print("[impulse] Sync V3 DEBUG:\nsize:"..len.."\ntype: "..syncType.."\nvarid:"..varID.."\nval: "..tostring(newValue).."\ntarget: "..targetID)
-
 		if not targetData then
 			impulse.Sync.Data[targetID] = {}
 			targetData = impulse.Sync.Data[targetID]
@@ -338,8 +336,6 @@ else
 		local syncType = impulse.Sync.Vars[varID]
 		local newValue = impulse.Sync.DoType(syncType)
 		local targetData = impulse.Sync.Data[targetID]
-
-		print("[impulse] Sync V3 DEBUG (LOCAL):\nsize:"..len.."\ntype: "..syncType.."\nvarid:"..varID.."\nval: "..tostring(newValue).."\ntarget: "..targetID)
 
 		if not targetData then
 			impulse.Sync.Data[targetID] = {}
@@ -381,6 +377,7 @@ SYNC_RANK = impulse.Sync.RegisterVar(SYNC_INT)
 SYNC_ARRESTED = impulse.Sync.RegisterVar(SYNC_BOOL)
 SYNC_HAT = impulse.Sync.RegisterVar(SYNC_INT)
 SYNC_HUNGER = impulse.Sync.RegisterVar(SYNC_INT)
+SYNC_TYPING = impulse.Sync.RegisterVar(SYNC_BOOL)
 
 -- ent sync vars
 SYNC_DOOR_NAME = impulse.Sync.RegisterVar(SYNC_STRING)

@@ -232,6 +232,18 @@ function IMPULSE:RenderScreenspaceEffects()
 	end
 end
 
+function IMPULSE:StartChat()
+	net.Start("impulseChatState")
+	net.WriteBool(true)
+	net.SendToServer()
+end
+
+function IMPULSE:FinishChat()
+	net.Start("impulseChatState")
+	net.WriteBool(false)
+	net.SendToServer()
+end
+
 concommand.Add("impulse_togglethirdperson", function() -- ease of use command for binds
 	impulse.SetSetting("view_thirdperson", (!impulse.GetSetting("view_thirdperson")))
 end)

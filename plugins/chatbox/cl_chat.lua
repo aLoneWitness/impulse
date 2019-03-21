@@ -204,7 +204,7 @@ function impulse.chatBox.hideBox()
 	impulse.chatBox.frame:SetMouseInputEnabled( false )
 	impulse.chatBox.frame:SetKeyboardInputEnabled( false )
 	gui.EnableScreenClicker( false )
-	
+
 	-- We are done chatting
 	hook.Run("FinishChat")
 	
@@ -290,7 +290,7 @@ function chat.GetChatBoxSize()
 end
 
 chat.Open = impulse.chatBox.showBox
-function chat.Close(...) 
+function chat.Close(...)
 	if IsValid( impulse.chatBox.frame ) then 
 		impulse.chatBox.hideBox(...)
 	else

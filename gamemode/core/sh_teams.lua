@@ -66,16 +66,22 @@ if SERVER then
 			end
 		end
 
+		hook.Run("OnPlayerChangedTeam", self, self:Team(), teamID)
+
 		self:SetLocalSyncVar(SYNC_CLASS, nil, true)
 		self:OldSetTeam(teamID)
 		self:SetupHands()
 
 		hook.Run("UpdatePlayerSync", self)
 
+		if teamData.onBecome then
+			teamData.onBecome(self)
+		end
+
 		return true
 	end
 
-	function meta:SetTeamClass(classID)
+	function meta:SetTeamClass(classID, skipLoadout)
 		local teamData = impulse.Teams.Data[self:Team()]
 		local classData = teamData.classes[classID]
 		local classPlayers = 0
@@ -106,12 +112,28 @@ if SERVER then
 			self:SetBodyGroups("0000000")
 		end
 
-		self:StripWeapons()
+		if not skipLoadout then
+			self:StripWeapons()
 
-		if classData.loadout then
-			for v,weapon in pairs(teamData.loadout) do
-				self:Give(weapon)
+			if classData.loadout then
+				for v,weapon in pairs(classData.loadout) do
+					self:Give(weapon)
+				end
+			else
+				for v,weapon in pairs(teamData.loadout) do
+					self:Give(weapon)
+				end
+
+				if classData.loadoutAdd then
+					for v,weapon in pairs(classData.loadoutAdd) do
+						self:Give(weapon)
+					end
+				end
 			end
+		end
+
+		if classData.onBecome then
+			classData.onBecome(self)
 		end
 
 		self:SetLocalSyncVar(SYNC_CLASS, classID, true)
@@ -121,6 +143,7 @@ if SERVER then
 
 	function meta:SetTeamRank(rankID)
 		local teamData = impulse.Teams.Data[self:Team()]
+		local classData = teamData.classes[self:GetTeamClass()]
 		local rankData = teamData.ranks[rankID]
 
 		if rankData.model then
@@ -151,6 +174,26 @@ if SERVER then
 			for v,weapon in pairs(rankData.loadout) do
 				self:Give(weapon)
 			end
+		else
+			for v,weapon in pairs(teamData.loadout) do
+				self:Give(weapon)
+			end
+
+			if classData and classData.loadoutAdd then
+				for v,weapon in pairs(classData.loadoutAdd) do
+					self:Give(weapon)
+				end
+			end
+
+			if rankData.loadoutAdd then
+				for v,weapon in pairs(rankData.loadoutAdd) do
+					self:Give(weapon)
+				end
+			end
+		end
+
+		if rankData.onBecome then
+			rankData.onBecome(self)
 		end
 
 		self:SetLocalSyncVar(SYNC_RANK, rankID, true)
@@ -228,6 +271,7 @@ function meta:CanBecomeTeam(teamID, notify)
 	if teamData.limit then
 		if teamData.percentLimit and teamData.percentLimit == true then
 			local percentTeam = teamPlayers / #player.GetAll()
+
 			if not self:IsDonator() and percentTeam > teamData.limit then
 				if notify then self:Notify(teamData.name .. " is full.") end
 				return false

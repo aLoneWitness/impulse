@@ -323,6 +323,11 @@ function impulse.Anim.GetModelClass(model)
 end
 
 impulse.Anim.SetModelClass("models/police.mdl", "metrocop")
+impulse.Anim.SetModelClass("models/dpfilms/metropolice/hdpolice.mdl", "metrocop")
+impulse.Anim.SetModelClass("models/dpfilms/metropolice/civil_medic.mdl", "metrocop")
+impulse.Anim.SetModelClass("models/dpfilms/metropolice/hl2beta_police.mdl", "metrocop")
+impulse.Anim.SetModelClass("models/dpfilms/metropolice/retrocop.mdl", "metrocop")
+impulse.Anim.SetModelClass("models/dpfilms/metropolice/elite_police.mdl", "metrocop")
 impulse.Anim.SetModelClass("models/combine_super_soldier.mdl", "overwatch")
 impulse.Anim.SetModelClass("models/combine_soldier_prisonGuard.mdl", "overwatch")
 impulse.Anim.SetModelClass("models/combine_soldier.mdl", "overwatch")

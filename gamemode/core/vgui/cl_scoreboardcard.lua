@@ -51,6 +51,7 @@ local outlineCol = Color(190,190,190,240)
 local darkCol = Color(30,30,30,200)
 
 function PANEL:Paint(w,h)
+	if not IsValid(self.Player) then return end
 	-- Frame
 	surface.SetDrawColor(outlineCol)
 	surface.DrawOutlinedRect(0,0,w, h)

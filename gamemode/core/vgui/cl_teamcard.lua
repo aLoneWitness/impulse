@@ -19,7 +19,7 @@ function PANEL:SetTeam(teamID)
 
 	if teamData.limit then
 		if teamData.percentLimit and teamData.percentLimit == true then
-			self.playerCount = self.players.."/"..math.ceil((self.players / #player.GetAll()))
+			self.playerCount = self.players.."/"..math.ceil((teamData.limit * #player.GetAll()))
 		else
 			self.playerCount = self.players.."/"..teamData.limit
 		end
@@ -88,7 +88,7 @@ function PANEL:Paint(w,h)
 	surface.DrawText(self.requirements)
 
 	 -- team size
-	surface.SetTextPos(w-30,10)
+	surface.SetTextPos(w-35,10)
 	surface.DrawText(self.playerCount)
 end
 

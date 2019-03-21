@@ -8,6 +8,7 @@ util.AddNetworkString("impulseClassChange")
 util.AddNetworkString("impulseCinematicMessage")
 util.AddNetworkString("impulseChatMessage")
 util.AddNetworkString("impulseZoneUpdate")
+util.AddNetworkString("impulseChatState")
 
 netstream.Hook("impulseCharacterCreate", function(player, charName, charModel, charSkin)
 	if (player.NextCreate or 0) > CurTime() then return end
@@ -141,6 +142,10 @@ net.Receive("impulseClassChange",function(len, ply)
 	if (ply.lastTeamTry or 0) > CurTime() then return end
 	ply.lastTeamTry = CurTime() + 1
 
+	if ply:GetSyncVar(SYNC_ARRESTED, false) then
+		return
+	end
+
 	local classChangeTime = impulse.Config.ClassChangeTime
 
 	if ply:IsAdmin() then
@@ -166,6 +171,11 @@ end)
 
 net.Receive("impulseBuyItem", function(len, ply)
 	if (ply.nextBuy or 0) > CurTime() then return end
+	ply.nextBuy = CurTime() + 1
+
+	if ply:GetSyncVar(SYNC_ARRESTED, false) then
+		return
+	end
 
 	local buyableID = net.ReadUInt(8)
 
@@ -187,6 +197,17 @@ net.Receive("impulseBuyItem", function(len, ply)
 	else
 		ply:Notify("You cannot afford this purchase.")
 	end
+end)
 
-	ply.nextBuy = CurTime() + 1
+net.Receive("impulseChatState", function(len, ply)
+	local state = ply:GetSyncVar(SYNC_TYPING, false)
+
+	if (ply.nextChatState or 0) < CurTime() then
+		local isTyping = net.ReadBool()
+
+		ply:SetSyncVar(SYNC_TYPING, isTyping, true)
+		ply.nextChatState = CurTime() + .1
+	--elseif state then
+	--	ply:SetSyncVar(SYNC_TYPING, false, true)
+	end
 end)
