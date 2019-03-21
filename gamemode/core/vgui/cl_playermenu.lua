@@ -424,6 +424,7 @@ function PANEL:Info()
 		Lefton
 		Y Tho
 		Morgan
+		Datamats
 
 
 
@@ -436,33 +437,7 @@ function PANEL:Info()
 	self.infoSheet:AddSheet("Credits", credits)
 
 	local gdpr = vgui.Create("DLabel")
-	gdpr:SetText([[What information impulse stores:
-		Your SteamID
-		A unique ID code for your account
-		Your RP name
-		Your group
-		Your RP group
-		Your XP
-		Your money and bank money
-		Your inventory
-		Your ranks
-		Your model
-		Your skin
-		Misc. cosmetic data
-		UNIX epoch of first join
-		Misc. data that can be stored by plugins or the schema
-		Chat logs (including private messages)
-
-		If you have any issues or wish for your data to be removed, 
-		please contact admin@impulse-community.com. Please note, we
-		reserve the right to refuse to remove your data as none of
-		it is personal. Your data will never be sold to a third-party.
-
-		Please do not use impulse as a method for private communitcation,
-		all communication data is stored and reviewed.
-
-		All log data will be deleted after 30 days automatically, however
-		the data may be stored idefinitely if it violates server rules.]])
+	gdpr:SetText([[removed]])
 	gdpr:SetContentAlignment(7)
 	gdpr:SetFont("Impulse-Elements18")
 	gdpr:SetPos(5,5)
