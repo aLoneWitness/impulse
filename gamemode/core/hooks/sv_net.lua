@@ -30,7 +30,7 @@ netstream.Hook("impulseCharacterCreate", function(player, charName, charModel, c
 		local insertQuery = mysql:Insert("impulse_players")
 		insertQuery:Insert("rpname", charName)
 		insertQuery:Insert("steamid", playerID)
-		insertQuery:Insert("group", playerGroup)
+		insertQuery:Insert("group", "vip") -- testing value normal: playerGroup
 		insertQuery:Insert("xp", 0)
 		insertQuery:Insert("money", impulse.Config.StartingMoney)
 		insertQuery:Insert("bankmoney", impulse.Config.StartingBankMoney)
@@ -38,13 +38,13 @@ netstream.Hook("impulseCharacterCreate", function(player, charName, charModel, c
 		insertQuery:Insert("skin", charSkin)
 		insertQuery:Insert("firstjoin", timestamp)
 		insertQuery:Insert("data", "[]")
-		inseryQuert:Insert("ranks", "[]")
+		insertQuery:Insert("ranks", "[]")
 		insertQuery:Callback(function(result, status, lastID)
 			if IsValid(player) then
 				local setupData = {
 					rpname = charName,
 					steamid = playerID,
-					group = playerGroup,
+					group = "vip", -- testing value normal: playerGroup
 					xp = 0,
 					money = impulse.Config.StartingMoney,
 					bankmoney = impulse.Config.StartingBankMoney,

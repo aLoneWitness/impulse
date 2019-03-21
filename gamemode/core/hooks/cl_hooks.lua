@@ -9,6 +9,8 @@ function IMPULSE:OnSchemaLoaded()
 end
 
 function IMPULSE:Think()
+	if LocalPlayer():Team() == 0 then return end -- players who have not been loaded yet
+	
 	if input.IsKeyDown(KEY_F1) and (not IsValid(impulse.MainMenu) or not impulse.MainMenu:IsVisible()) then
 		local mainMenu = impulse.MainMenu or vgui.Create("impulseMainMenu")
 		mainMenu:SetVisible(true)
@@ -48,10 +50,14 @@ function IMPULSE:Think()
 end
 
 function IMPULSE:ScoreboardShow()
+	if LocalPlayer():Team() == 0 then return end -- players who have not been loaded yet
+
     impulse_scoreboard = vgui.Create("impulseScoreboard")
 end
 
 function IMPULSE:ScoreboardHide()
+	if LocalPlayer():Team() == 0 then return end -- players who have not been loaded yet
+	
     impulse_scoreboard:Remove()
 end
 

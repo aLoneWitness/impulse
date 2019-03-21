@@ -172,6 +172,8 @@ function PANEL:Init()
 			Thanks for coming along and helping us test impulse, before we start though
 			let's get some stuff out the way, please take your time to read the text below:
 
+			- This is NOWHERE NEAR A FINAL VERSION of impulse. We still have to add many features 
+			such as the inventory and crafting system.
 			- Bugs, expect lot's of them, this is a test, not a live server.
 			- Roleplay, don't expect much roleplay at this early stage in testing.
 			- Don't go around killing people randomly or prop spamming. This is not testing,
