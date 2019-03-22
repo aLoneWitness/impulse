@@ -3,6 +3,8 @@
 ** This file is private and may not be shared, downloaded, used or sold.
 */
 
+resource.AddWorkshop("1651398810") -- framework content
+
 DeriveGamemode("sandbox")
 
 MsgC(Color(83, 143, 239), '[IMPULSE] Starting boot sequence...')
@@ -23,5 +25,4 @@ AddCSLuaFile("shared.lua")
 include("shared.lua")
 
 MsgC( Color( 0, 255, 0 ), "[IMPULSE] Completed server load...\n" )
-
 

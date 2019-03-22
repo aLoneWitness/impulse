@@ -412,6 +412,14 @@ function IMPULSE:PlayerSpawnSWEP(ply)
 	return ply:IsAdmin()
 end
 
+function IMPULSE:PlayerGiveSWEP(ply)
+	return ply:IsAdmin()
+end
+
+function IMPULSE:PlayerSpawnedEffect(ply)
+	return ply:IsAdmin()
+end
+
 function IMPULSE:PlayerSpawnNPC(ply)
 	return ply:IsAdmin()
 end

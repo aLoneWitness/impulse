@@ -409,7 +409,7 @@ function PANEL:Info()
 		Sander van Dinteren - aLoneWitness - contributor
 
 		Third-party modules:
-		Alex Grist - MySQL wrapper and netstream2
+		Alex Grist - MySQL wrapper
 		thelastpenguin - pON
 		Cat.jpeg - some string functions
 		Kyle Smith - UTF-8 module
@@ -425,8 +425,6 @@ function PANEL:Info()
 		Y Tho
 		Morgan
 		Datamats
-
-
 
 		Find out how impulse was made at www.vingard.ovh/category/impulse
 		Copyright Jake Green 2019]])
