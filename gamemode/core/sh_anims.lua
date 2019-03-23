@@ -512,7 +512,7 @@ function IMPULSE:TranslateActivity(ply, act)
 			local class = vehicle:IsChair() and "chair" or vehicle:GetClass()
 
 			if animTree.vehicle and animTree.vehicle[class] then
-				local act = animTree.vehicles[class][1]
+				local act = animTree.vehicle[class][1]
 				local fixvec = animTree.vehicle[class][2]
 
 				if fixvec then
