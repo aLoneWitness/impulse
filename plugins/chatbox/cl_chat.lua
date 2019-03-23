@@ -185,6 +185,10 @@ function impulse.chatBox.hideBox()
 	impulse.chatBox.frame.Paint = function() end
 	impulse.chatBox.chatLog:SetScrollBarVisible(false)
 	impulse.chatBox.chatLog.active = false
+
+	if impulse.chatBox.chatLog.lastChildMessage then
+		impulse.chatBox.chatLog:ScrollToChild(impulse.chatBox.chatLog.lastChildMessage)
+	end
 	
 	--impulse.chatBox.chatLog:GotoTextEnd()
 	
@@ -245,6 +249,10 @@ local oldAddText = chat.AddText
 function chat.AddText(...)
 	if not impulse.chatBox.chatLog then
 		impulse.chatBox.buildBox()
+	end
+
+	if impulse.chatBox.chatLog.active and not impulse.chatBox.entry:IsEditing() then
+		impulse.chatBox.chatLog.BlockScroll = true
 	end
 	
 	impulse.chatBox.chatLog:AddText(...)

@@ -136,9 +136,13 @@ function PANEL:AddText(...)
 	textElement:Dock(TOP)
 	textElement:InvalidateParent(true)
 
-	if not (self.active) then
+	if not self.BlockScroll then
 		self:ScrollToChild(textElement)
+	else
+		self.BlockScroll = false
 	end
+
+	self.lastChildMessage = textElement
 
 	MsgC(unpack(luaMsg))
 	MsgN("")
