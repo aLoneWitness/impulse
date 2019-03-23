@@ -29,7 +29,7 @@ function PANEL:Init()
 		if parent.withdrawInput:GetValue() == "" then return true end
 
 		net.Start("impulseATMWithdraw")
-		net.WriteUInt(tonumber(parent.withdrawInput:GetValue()), 32)
+		net.WriteUInt(math.floor(tonumber(parent.withdrawInput:GetValue())), 32)
 		net.SendToServer()
 
 		timer.Simple(0.1, function()
@@ -53,7 +53,7 @@ function PANEL:Init()
 		if parent.depositInput:GetValue() == "" then return true end
 
 		net.Start("impulseATMDeposit")
-		net.WriteUInt(tonumber(parent.depositInput:GetValue()), 32)
+		net.WriteUInt(math.floor(tonumber(parent.depositInput:GetValue())), 32)
 		net.SendToServer()
 
 		timer.Simple(0.2, function()
