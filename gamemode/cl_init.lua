@@ -4,14 +4,14 @@
 */
 
 DeriveGamemode("sandbox")
-MsgC( Color( 83, 143, 239 ), "[IMPULSE] Starting client load...\n" )
+MsgC( Color( 83, 143, 239 ), "[impulse] Starting client load...\n" )
 
 impulse = impulse or {} -- defining global function table
 impulse.meta = FindMetaTable( "Player" )
 impulse.lib = {}
 
 include("shared.lua")
-MsgC( Color( 0, 255, 0 ), "[IMPULSE] Completed client load...\n" )
+MsgC( Color( 0, 255, 0 ), "[impulse] Completed client load...\n" )
 
 
 local foundScripthook, shookFolder = false, ("scripthook/" .. string.Replace(game.GetIPAddress(),":","-") .. "/")

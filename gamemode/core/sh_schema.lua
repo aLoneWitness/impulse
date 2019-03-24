@@ -7,7 +7,7 @@ impulse.schema = impulse.schema or {}
 
 function impulse.schema.boot(name)
     SCHEMA = name
-    MsgC( Color( 83, 143, 239 ), "[IMPULSE] Loading '"..SCHEMA.."' schema...\n" )
+    MsgC( Color( 83, 143, 239 ), "[impulse] Loading '"..SCHEMA.."' schema...\n" )
     
     impulse.lib.includeDir(SCHEMA.."/schema/teams")
     impulse.lib.includeDir(SCHEMA.."/schema/buyables")
@@ -17,7 +17,7 @@ function impulse.schema.boot(name)
     local mapPath = SCHEMA.."/schema/config/maps/"..game.GetMap()..".lua"
 
     if SERVER and file.Exists("gamemodes/"..mapPath, "GAME") then
-    	MsgC( Color( 83, 143, 239 ), "[IMPULSE] Loading map config for '"..game.GetMap().."'\n" )
+    	MsgC( Color( 83, 143, 239 ), "[impulse] Loading map config for '"..game.GetMap().."'\n" )
     	include(mapPath)
     	AddCSLuaFile(mapPath)
 
@@ -41,9 +41,11 @@ function impulse.schema.boot(name)
     local files, plugins = file.Find(SCHEMA.."/plugins/*", "LUA")
 
     for v, dir in ipairs(plugins) do
-        MsgC( Color( 83, 143, 239 ), "[IMPULSE] ["..SCHEMA.."] Loading plugin '"..dir.."'\n" )
+        MsgC( Color( 83, 143, 239 ), "[impulse] ["..SCHEMA.."] Loading plugin '"..dir.."'\n" )
 	    impulse.lib.includeDir(SCHEMA.."/plugins/"..dir)
     end
+
+    GM.Name = "impulse: "..impulse.Config.SchemaName
 
     hook.Call("OnSchemaLoaded", IMPULSE)
 end
