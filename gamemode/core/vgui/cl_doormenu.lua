@@ -42,18 +42,24 @@ function PANEL:SetDoor(door)
 
 	if LocalPlayer():CanLockUnlockDoor(doorOwners, doorGroup) then
 		self:AddAction("impulse/icons/padlock-2-256.png", "Unlock", function()
-			netstream.Start("impulseDoorUnlock")
+			net.Start("impulseDoorUnlock")
+			net.SendToServer()
+
 			panel:Remove()
 		end)
 		self:AddAction("impulse/icons/padlock-256.png", "Lock", function()
-			netstream.Start("impulseDoorLock")
+			net.Start("impulseDoorLock")
+			net.SendToServer()
+
 			panel:Remove()
 		end)
 	end
 
 	if LocalPlayer():CanBuyDoor(doorOwners, doorBuyable) then
 		self:AddAction("impulse/icons/banknotes-256.png", "Buy", function()
-			netstream.Start("impulseDoorBuy")
+			net.Start("impulseDoorBuy")
+			net.SendToServer()
+
 			panel:Remove()
 		end)
 	end
@@ -63,7 +69,9 @@ function PANEL:SetDoor(door)
 			chat.AddText("Permissions are coming to doors near you soon.")
 		end)
 		self:AddAction("impulse/icons/banknotes-256.png", "Sell", function()
-			netstream.Start("impulseDoorSell")
+			net.Start("impulseDoorSell")
+			net.SendToServer()
+
 			panel:Remove()
 		end)
 	end
