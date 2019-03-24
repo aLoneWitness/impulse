@@ -91,72 +91,75 @@ function meta:CanBuyDoor(doorOwners, doorBuyable)
 	return true
 end
 
-concommand.Add("impulse_doorsethidden", function(ply, cmd, args)
-	if not ply:IsSuperAdmin() then return false end
 
-	local trace = {}
-	trace.start = ply:EyePos()
-	trace.endpos = trace.start + ply:GetAimVector() * 200
-	trace.filter = ply
+if SERVER then
+	concommand.Add("impulse_doorsethidden", function(ply, cmd, args)
+		if not ply:IsSuperAdmin() then return false end
 
-	local traceEnt = util.TraceLine(trace).Entity
+		local trace = {}
+		trace.start = ply:EyePos()
+		trace.endpos = trace.start + ply:GetAimVector() * 200
+		trace.filter = ply
 
-	if IsValid(traceEnt) and traceEnt:IsDoor() then
-		if args[1] == "1" then
-			traceEnt:SetSyncVar(SYNC_DOOR_BUYABLE, false, true)
-		else
-			traceEnt:SetSyncVar(SYNC_DOOR_BUYABLE, nil, true)
+		local traceEnt = util.TraceLine(trace).Entity
+
+		if IsValid(traceEnt) and traceEnt:IsDoor() then
+			if args[1] == "1" then
+				traceEnt:SetSyncVar(SYNC_DOOR_BUYABLE, false, true)
+			else
+				traceEnt:SetSyncVar(SYNC_DOOR_BUYABLE, nil, true)
+			end
+			traceEnt:SetSyncVar(SYNC_DOOR_GROUP, nil, true)
+			traceEnt:SetSyncVar(SYNC_DOOR_NAME, nil, true)
+			traceEnt:SetSyncVar(SYNC_DOOR_OWNERS, nil, true)
+
+			ply:Notify("Door "..traceEnt:EntIndex().." show = "..args[1])
+
+			impulse.Doors.Save()
 		end
-		traceEnt:SetSyncVar(SYNC_DOOR_GROUP, nil, true)
-		traceEnt:SetSyncVar(SYNC_DOOR_NAME, nil, true)
-		traceEnt:SetSyncVar(SYNC_DOOR_OWNERS, nil, true)
+	end)
 
-		ply:Notify("Door "..traceEnt:EntIndex().." show = "..args[1])
+	concommand.Add("impulse_doorsetgroup", function(ply, cmd, args)
+		if not ply:IsSuperAdmin() then return false end
 
-		impulse.Doors.Save()
-	end
-end)
+		local trace = {}
+		trace.start = ply:EyePos()
+		trace.endpos = trace.start + ply:GetAimVector() * 200
+		trace.filter = ply
 
-concommand.Add("impulse_doorsetgroup", function(ply, cmd, args)
-	if not ply:IsSuperAdmin() then return false end
+		local traceEnt = util.TraceLine(trace).Entity
 
-	local trace = {}
-	trace.start = ply:EyePos()
-	trace.endpos = trace.start + ply:GetAimVector() * 200
-	trace.filter = ply
+		if IsValid(traceEnt) and traceEnt:IsDoor() then
+			traceEnt:SetSyncVar(SYNC_DOOR_BUYABLE, false, true)
+			traceEnt:SetSyncVar(SYNC_DOOR_GROUP, tonumber(args[1]), true)
+			traceEnt:SetSyncVar(SYNC_DOOR_NAME, nil, true)
+			traceEnt:SetSyncVar(SYNC_DOOR_OWNERS, nil, true)
 
-	local traceEnt = util.TraceLine(trace).Entity
+			ply:Notify("Door "..traceEnt:EntIndex().." group = "..args[1])
 
-	if IsValid(traceEnt) and traceEnt:IsDoor() then
-		traceEnt:SetSyncVar(SYNC_DOOR_BUYABLE, false, true)
-		traceEnt:SetSyncVar(SYNC_DOOR_GROUP, tonumber(args[1]), true)
-		traceEnt:SetSyncVar(SYNC_DOOR_NAME, nil, true)
-		traceEnt:SetSyncVar(SYNC_DOOR_OWNERS, nil, true)
+			impulse.Doors.Save()
+		end
+	end)
 
-		ply:Notify("Door "..traceEnt:EntIndex().." group = "..args[1])
+	concommand.Add("impulse_doorremovegroup", function(ply, cmd, args)
+		if not ply:IsSuperAdmin() then return false end
 
-		impulse.Doors.Save()
-	end
-end)
+		local trace = {}
+		trace.start = ply:EyePos()
+		trace.endpos = trace.start + ply:GetAimVector() * 200
+		trace.filter = ply
 
-concommand.Add("impulse_doorremovegroup", function(ply, cmd, args)
-	if not ply:IsSuperAdmin() then return false end
+		local traceEnt = util.TraceLine(trace).Entity
 
-	local trace = {}
-	trace.start = ply:EyePos()
-	trace.endpos = trace.start + ply:GetAimVector() * 200
-	trace.filter = ply
+		if IsValid(traceEnt) and traceEnt:IsDoor() then
+			traceEnt:SetSyncVar(SYNC_DOOR_BUYABLE, nil, true)
+			traceEnt:SetSyncVar(SYNC_DOOR_GROUP, nil, true)
+			traceEnt:SetSyncVar(SYNC_DOOR_NAME, nil, true)
+			traceEnt:SetSyncVar(SYNC_DOOR_OWNERS, nil, true)
 
-	local traceEnt = util.TraceLine(trace).Entity
+			ply:Notify("Door "..traceEnt:EntIndex().." group = nil")
 
-	if IsValid(traceEnt) and traceEnt:IsDoor() then
-		traceEnt:SetSyncVar(SYNC_DOOR_BUYABLE, nil, true)
-		traceEnt:SetSyncVar(SYNC_DOOR_GROUP, nil, true)
-		traceEnt:SetSyncVar(SYNC_DOOR_NAME, nil, true)
-		traceEnt:SetSyncVar(SYNC_DOOR_OWNERS, nil, true)
-
-		ply:Notify("Door "..traceEnt:EntIndex().." group = nil")
-
-		impulse.Doors.Save()
-	end
-end)
+			impulse.Doors.Save()
+		end
+	end)
+end
