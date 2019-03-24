@@ -79,6 +79,9 @@ if SERVER then
 
 				traceEnt:SetSyncVar(SYNC_DOOR_OWNERS, owners, true)
 
+				ply.OwnedDoors = ply.OwnedDoors or {}
+				ply.OwnedDoors[traceEnt] = true
+
 				ply:TakeMoney(impulse.Config.DoorPrice)
 				ply:Notify("You have bought a door for "..impulse.Config.CurrencyPrefix..impulse.Config.DoorPrice..".")
 			else
@@ -101,6 +104,9 @@ if SERVER then
 		if IsValid(traceEnt) and ply:IsDoorOwner(traceEnt:GetSyncVar(SYNC_DOOR_OWNERS, nil)) then
 			traceEnt:SetSyncVar(SYNC_DOOR_OWNERS, nil, true)
 			traceEnt:DoorUnlock()
+
+			ply.OwnedDoors = ply.OwnedDoors or {}
+			ply.OwnedDoors[traceEnt] = nil
 
 			ply:GiveMoney(impulse.Config.DoorPrice - 2)
 			ply:Notify("You have sold a door for "..impulse.Config.CurrencyPrefix..(impulse.Config.DoorPrice - 2)..".")

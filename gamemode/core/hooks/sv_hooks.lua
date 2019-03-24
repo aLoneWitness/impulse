@@ -124,6 +124,15 @@ function IMPULSE:PlayerDisconnected(ply)
 			k.CanHear[ply] = nil
 		end
 	end
+
+	if ply.OwnedDoors then
+		for door,k in pairs(ply.OwnedDoors) do
+			if IsValid(door) then
+				door:SetSyncVar(SYNC_DOOR_OWNERS, nil, true)
+				door:DoorUnlock()
+			end
+		end
+	end
 end
 
 function IMPULSE:PlayerLoadout(ply)
