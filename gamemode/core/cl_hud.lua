@@ -118,7 +118,7 @@ local function DrawDoorInfo(target)
 		draw.DrawText(impulse.Config.DoorGroups[doorGroup], "Impulse-Elements18-Shadow", scrW * .5, scrH * .6, impulse.Config.MainColour, 1)
 	elseif doorOwners then
 		for ownerID,v in pairs(doorOwners) do
-			local owner = Player(ownerID)
+			local owner = Entity(ownerID)
 
 			if IsValid(owner) and owner:IsPlayer() then
 				ownedBy = ownedBy.."\n"..owner:Name()

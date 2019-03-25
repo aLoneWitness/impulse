@@ -19,7 +19,7 @@ if SERVER then
 		net.WriteUInt(id, 8)
 		net.WriteString(message)
 		if target then
-			net.WriteUInt(target:UserID(), 8)
+			net.WriteUInt(target:EntIndex(), 8)
 		end
 		net.Send(self)
 	end

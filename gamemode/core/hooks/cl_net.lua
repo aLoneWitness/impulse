@@ -36,7 +36,7 @@ net.Receive("impulseChatNetMessage", function(len)
 	local message = net.ReadString()
 	local target = net.ReadUInt(8)
 	local chatClass = impulse.chatClasses[id]
-	local plyTarget = Player(target)
+	local plyTarget = Entity(target)
 
 	if target == 0 then
 		chatClass(message)

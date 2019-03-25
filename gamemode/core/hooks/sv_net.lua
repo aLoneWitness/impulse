@@ -229,7 +229,7 @@ net.Receive("impulseDoorBuy", function(len, ply)
 	if IsValid(traceEnt) and ply:CanBuyDoor(traceEnt:GetSyncVar(SYNC_DOOR_OWNERS, nil), traceEnt:GetSyncVar(SYNC_DOOR_BUYABLE, true)) then
 		if ply:CanAfford(impulse.Config.DoorPrice) then
 			local owners = {}
-			owners[ply:UserID()] = true
+			owners[ply:EntIndex()] = true
 
 			traceEnt:SetSyncVar(SYNC_DOOR_OWNERS, owners, true)
 
