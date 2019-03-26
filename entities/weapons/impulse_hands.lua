@@ -398,22 +398,27 @@ function SWEP:SecondaryAttack()
 	trace.endpos = trace.start + ply:GetAimVector() * PLAYER_PICKUP_RANGE
 	trace.filter = {ply, self}
 
-	local traceEnt = util.TraceLine(trace).Entity
+	local trace = util.TraceLine(trace)
+	local traceEnt = trace.Entity
 
 	if SERVER and IsValid(traceEnt) then
-		if traceEnt:IsDoor() then
-			local doorOwners, doorGroup = traceEnt:GetSyncVar(SYNC_DOOR_OWNERS, nil), traceEnt:GetSyncVar(SYNC_DOOR_GROUP, nil)
+		if trace.StartPos:DistToSqr(trace.HitPos) < 86 ^ 2 then
+			if traceEnt:IsDoor() then
+				local doorOwners, doorGroup = traceEnt:GetSyncVar(SYNC_DOOR_OWNERS, nil), traceEnt:GetSyncVar(SYNC_DOOR_GROUP, nil)
 
-			if ply:CanLockUnlockDoor(doorOwners, doorGroup) then
-				traceEnt:DoorUnlock()
-				traceEnt:EmitSound("doors/latchunlocked1.wav")
-			else
-				ply:EmitSound("physics/wood/wood_crate_impact_hard3.wav", 100, math.random(90, 110))
+				if ply:CanLockUnlockDoor(doorOwners, doorGroup) then
+					traceEnt:DoorUnlock()
+					traceEnt:EmitSound("doors/latchunlocked1.wav")
+				else
+					ply:EmitSound("physics/wood/wood_crate_impact_hard3.wav", 100, math.random(90, 110))
+				end
+
+				self:SetNextSecondaryFire(CurTime() + 0.5)
+				return
 			end
+		end
 
-			self:SetNextSecondaryFire(CurTime() + 0.5)
-			return
-		elseif not traceEnt:IsPlayer() and not traceEnt:IsNPC() then
+		if not traceEnt:IsPlayer() and not traceEnt:IsNPC() then
 			self:DoPickup()
 		elseif IsValid(self.HeldEntity) and not self.HeldEntity:IsPlayerHolding() then
 			self.HeldEntity = nil
