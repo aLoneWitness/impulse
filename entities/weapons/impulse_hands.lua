@@ -244,6 +244,7 @@ function SWEP:Drop(throw)
 		end
 
 		ent:SetPhysicsAttacker(self:GetOwner())
+		if ent.OnHandsDropped then ent.OnHandsDropped(ent, self.Owner) end
 	end
 
 	self:Reset()
@@ -495,6 +496,7 @@ function SWEP:DoPickup(throw)
 			if (ply:EyePos() - trace.HitPos):Length() < self:GetRange(ent) then
 				if self:AllowPickup(ent) then
 					self:Pickup()
+					if ent.OnHandsPickup then ent.OnHandsPickup(ent, ply) end
 
 					local delay = (ent:GetClass() == "prop_ragdoll") and 0.8 or 0.1
 
