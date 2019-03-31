@@ -272,7 +272,7 @@ function IMPULSE:HUDPaint()
 	if className != "Default" then
 		surface.SetFont("Impulse-Elements16")
 		surface.SetTextPos(30, y+49)
-		surface.DrawText(LocalPlayer():GetTeamClassName())
+		surface.DrawText(className)
 		yAdd = 10
 	end
 
