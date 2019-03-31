@@ -172,6 +172,7 @@ if SERVER then
 		if pos then
 			self:SetPos(impulse.FindEmptyPos(pos, {self}, 150, 30, Vector(16, 16, 64)))
 			self:SetEyeAngles(impulse.Config.PrisonAngle)
+			self:SetSyncVar(SYNC_PRISON_SENTENCE, time, true)
 			self:Notify("You have been imprisoned for "..(time / 60).." minutes.")
 			self:SendJailInfo(time, jailData)
 			self.InJail = cellID
@@ -185,7 +186,8 @@ if SERVER then
 	end
 	
 	function meta:UnJail()
-		impulse.Arrest.Prison[self.InJail][self:UserID()] = nil
+		impulse.Arrest.Prison[self.InJail] = nil
+		--impulse.Arrest.Prison[self.InJail][self:UserID()] = nil
 		self.InJail = nil
 
 		self:Spawn()

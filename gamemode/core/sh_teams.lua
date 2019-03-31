@@ -383,7 +383,7 @@ function meta:GetTeamRankName()
 	local plyRank = self:GetSyncVar(SYNC_RANK, nil)
 
 	if rankData and plyRank then
-		return rankData.name
+		return rankData[plyRank].name
 	end
 
 	return "Default"

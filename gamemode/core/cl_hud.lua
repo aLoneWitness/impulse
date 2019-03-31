@@ -266,32 +266,42 @@ function IMPULSE:HUDPaint()
 	surface.SetTextPos(30, y+30)
 	surface.DrawText(team.GetName(lpTeam))
 
+	local className = LocalPlayer():GetTeamClassName()
+	local yAdd = 0
+
+	if className != "Default" then
+		surface.SetFont("Impulse-Elements16")
+		surface.SetTextPos(30, y+49)
+		surface.DrawText(LocalPlayer():GetTeamClassName())
+		yAdd = 10
+	end
+
 	surface.SetTextColor(color_white)
 	surface.SetFont("Impulse-Elements19")
 
-	surface.SetTextPos(136, y+53)
+	surface.SetTextPos(136, y+57+yAdd)
 	surface.DrawText("Health: "..LocalPlayer():Health())
 	if seeColIcons == true then surface.SetDrawColor(healthCol) end
 	surface.SetMaterial(healthIcon)
-	surface.DrawTexturedRect(110, y+55, 18, 16)
+	surface.DrawTexturedRect(110, y+59+yAdd, 18, 16)
 
-	surface.SetTextPos(136, y+75)
+	surface.SetTextPos(136, y+77+yAdd)
 	surface.DrawText("Armour: "..LocalPlayer():Armor())
 	if seeColIcons == true then surface.SetDrawColor(armourCol) end
 	surface.SetMaterial(armourIcon)
-	surface.DrawTexturedRect(110, y+75, 18, 18)
+	surface.DrawTexturedRect(110, y+77+yAdd, 18, 18)
 
-	surface.SetTextPos(136, y+95)
+	surface.SetTextPos(136, y+97+yAdd)
 	surface.DrawText("Hunger: "..LocalPlayer():GetSyncVar(SYNC_HUNGER, 100))
 	if seeColIcons == true then surface.SetDrawColor(hungerCol) end
 	surface.SetMaterial(hungerIcon)
-	surface.DrawTexturedRect(110, y+95, 18, 18)
+	surface.DrawTexturedRect(110, y+97+yAdd, 18, 18)
 
-	surface.SetTextPos(136, y+115)
+	surface.SetTextPos(136, y+117+yAdd)
 	surface.DrawText("Money: "..impulse.Config.CurrencyPrefix..LocalPlayer():GetSyncVar(SYNC_MONEY, 0))
 	if seeColIcons == true then surface.SetDrawColor(moneyCol) end
 	surface.SetMaterial(moneyIcon)
-	surface.DrawTexturedRect(110, y+115, 18, 18)
+	surface.DrawTexturedRect(110, y+117+yAdd, 18, 18)
 
 	surface.SetDrawColor(color_white)
 
@@ -304,9 +314,9 @@ function IMPULSE:HUDPaint()
 		aboveHUDUsed = true
 	end
 
-	draw.DrawText(lp:GetSyncVar(SYNC_XP, 0).."XP", "Impulse-Elements19", 55, y+150, color_white, TEXT_ALIGN_LEFT)
+	draw.DrawText(lp:GetSyncVar(SYNC_XP, 0).."XP", "Impulse-Elements19", 55, y+155, color_white, TEXT_ALIGN_LEFT)
 	surface.SetMaterial(xpIcon)
-	surface.DrawTexturedRect(30, y+150, 18, 18)
+	surface.DrawTexturedRect(30, y+155, 18, 18)
 
 
 	local weapon = LocalPlayer():GetActiveWeapon()
@@ -342,7 +352,7 @@ function IMPULSE:HUDPaint()
 
 	if not IsValid(PlayerIcon) and impulse.hudEnabled == true then
 		PlayerIcon = vgui.Create("impulseSpawnIcon")
-		PlayerIcon:SetPos(30, y+60)
+		PlayerIcon:SetPos(30, y+70)
 		PlayerIcon:SetSize(64, 64)
 		PlayerIcon:SetModel(LocalPlayer():GetModel(), LocalPlayer():GetSkin())
 

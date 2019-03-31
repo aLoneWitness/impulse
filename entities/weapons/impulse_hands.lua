@@ -495,6 +495,7 @@ function SWEP:DoPickup(throw)
 		if SERVER then
 			if (ply:EyePos() - trace.HitPos):Length() < self:GetRange(ent) then
 				if self:AllowPickup(ent) then
+					if ent.CanHandsPickup and not ent.CanHandsPickup(ent, ply) then return end
 					self:Pickup()
 					if ent.OnHandsPickup then ent.OnHandsPickup(ent, ply) end
 

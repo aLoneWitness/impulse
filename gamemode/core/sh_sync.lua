@@ -386,6 +386,5 @@ SYNC_DOOR_BUYABLE = impulse.Sync.RegisterVar(SYNC_BOOL)
 SYNC_DOOR_OWNERS = impulse.Sync.RegisterVar(SYNC_MINITABLE)
 
 -- conditional networking test 1
-SYNC_PRISON_SENTENCE = impulse.Sync.RegisterVar(SYNC_INT, function(ply)
-	return ply:IsCP()
-end)
+SYNC_PRISON_SENTENCE = impulse.Sync.RegisterVar(SYNC_BIGINT, function(ply) return ply:IsCP() end)
+SYNC_PRISON_CHARGES = impulse.Sync.RegisterVar(SYNC_INTSTACK, function(ply) return ply:IsCP() end)
