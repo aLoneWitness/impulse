@@ -430,9 +430,9 @@ function IMPULSE:HUDPaint()
 	-- watermark
 	surface.SetDrawColor(watermarkCol)
 	surface.SetMaterial(watermark)
-	surface.DrawTexturedRect(10, 230, 112, 30)
+	surface.DrawTexturedRect(330, y, 112, 30)
 
-	surface.SetTextPos(10, 260)
+	surface.SetTextPos(330, y + 30)
 	surface.SetTextColor(watermarkCol)
 	surface.SetFont("Impulse-Elements18-Shadow")
 	surface.DrawText("TEST BUILD - "..IMPULSE.Version.." - "..LocalPlayer():SteamID64().. " - ".. os.date("%H:%M:%S - %d/%m/%Y", os.time()))

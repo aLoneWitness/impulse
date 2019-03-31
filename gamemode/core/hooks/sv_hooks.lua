@@ -78,6 +78,7 @@ function IMPULSE:PlayerSpawn(ply)
 	ply:GodEnable()
 	ply:SetRenderMode(RENDERMODE_TRANSALPHA)
 	ply:SetColor(Color(200, 200, 200, 100))
+	ply:SetJumpPower(160)
 
 	timer.Simple(10, function()
 		if IsValid(ply) then
