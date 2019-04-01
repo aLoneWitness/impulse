@@ -158,7 +158,7 @@ local function DrawCrosshair(x, y)
 end
 
 function IMPULSE:HUDPaint()
-	if impulse.hudEnabled == false or impulse.CinematicIntro or (IsValid(impulse.MainMenu) and impulse.MainMenu:IsVisible()) then
+	if impulse.hudEnabled == false or (impulse.CinematicIntro and LocalPlayer():Alive()) or (IsValid(impulse.MainMenu) and impulse.MainMenu:IsVisible()) then
 		if IsValid(PlayerIcon) then
 			PlayerIcon:Remove()
 		end
@@ -503,7 +503,7 @@ function IMPULSE:HUDPaintBackground()
 		end
 	end
 	
-	if impulse.CinematicIntro then
+	if impulse.CinematicIntro and lp:Alive() then
 		local ft = FrameTime()
 		local maxTall =  ScrH() * .12
 
