@@ -24,7 +24,11 @@ function PANEL:SetupNews(newsData)
 		if postData.type == "post" and postData.status == "publish" then
 			local image
 			if postData.better_featured_image and postData.better_featured_image.media_type == "image" then
-				image = postData.better_featured_image.media_details.sizes.medium_large.source_url
+				if postData.better_featured_image.media_details.sizes.medium_large then
+					image = postData.better_featured_image.media_details.sizes.medium_large.source_url
+				elseif postData.better_featured_image.media_details.sizes.medium then
+					image = postData.better_featured_image.media_details.sizes.medium.source_url
+				end
 			end
 
 			table.insert(self.news, {postData.id, postData.title.rendered, postData.link, image or impulse.Config.DefaultWordPressImage})
