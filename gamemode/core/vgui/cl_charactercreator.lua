@@ -20,10 +20,8 @@ function PANEL:Init()
 
 		local msg = Derma_Message
 
-		if characterName == "" or characterName:Trim() == "" then return msg("Please fill in the character name.", "impulse", "OK") end
-		--if #characterName:Explode(" ") > 3 then return msg("Too many spaces in character name.", "impulse", "OK") end
-		if characterName:len() >= 24 then return msg("Character name too long. (max 24 characters)", "impulse", "OK") end
-		if characterName:len() <= 6  then return msg("Character name too short. (min 6 characters)", "impulse", "OK") end
+		local name, rejectReason = impulse.CanUseName(characterName)
+		if name == false then return msg(rejectReason, "impulse", "OK") end
 
 		Derma_Query("Are you sure you are finished? You can edit your character later, but it will cost a fee.", "impulse", "Yes", function()
 			print("[impulse] Sending character data to server")

@@ -433,14 +433,6 @@ function PANEL:Info()
 	credits:SetPos(5,5)
 
 	self.infoSheet:AddSheet("Credits", credits)
-
-	local gdpr = vgui.Create("DLabel")
-	gdpr:SetText([[removed]])
-	gdpr:SetContentAlignment(7)
-	gdpr:SetFont("Impulse-Elements18")
-	gdpr:SetPos(5,5)
-
-	self.infoSheet:AddSheet("Privacy", gdpr)
 end
 
 function PANEL:AddSheet(name, icon, pnl, loadFunc)

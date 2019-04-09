@@ -21,10 +21,11 @@ netstream.Hook("impulseCharacterCreate", function(player, charName, charModel, c
 	local playerGroup = player:GetUserGroup()
 	local timestamp = math.floor(os.time())
 
-	if charName:len() >= 24 or charName:len() <= 6 then return end -- min/max name sizes
-	charName = charName:Trim()
-	if charName == "" then return end
-	charName = impulse.SafeString(charName) -- dont allow for stings made to break stuff
+	local canUseName, filteredName =  impulse.CanUseName(charName)
+
+	if canUseName then
+		charName = filteredName
+	end
 
 	local query = mysql:Select("impulse_players")
 	query:Where("steamid", playerID)

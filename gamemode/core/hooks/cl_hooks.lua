@@ -232,6 +232,16 @@ function IMPULSE:FinishChat()
 	net.SendToServer()
 end
 
+function IMPULSE:OnContextMenuOpen()
+	impulse_inventory = vgui.Create("impulseInventory")
+end
+
+function IMPULSE:OnContextMenuClose()
+	if IsValid(impulse_inventory) then
+		impulse_inventory:Remove()
+	end
+end
+
 concommand.Add("impulse_togglethirdperson", function() -- ease of use command for binds
 	impulse.SetSetting("view_thirdperson", (!impulse.GetSetting("view_thirdperson")))
 end)

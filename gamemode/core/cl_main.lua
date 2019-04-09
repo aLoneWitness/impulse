@@ -42,10 +42,6 @@ function impulse.blur(panel, layers, density, alpha)
 	end
 end
 
-function IMPULSE:ContextMenuOpen()
-	return false
-end
-
 local myscrw, myscrh = 1920, 1080
 
 function SizeW(width)

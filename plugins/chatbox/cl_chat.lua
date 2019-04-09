@@ -53,7 +53,7 @@ function impulse.chatBox.buildBox()
 	end
 
 	impulse.chatBox.entry.OnKeyCodeTyped = function( self, code )
-		local types = {"", "teamchat", "console"}
+		local types = {"", "radio"}
 
 		if code == KEY_ESCAPE then
 
@@ -64,8 +64,8 @@ function impulse.chatBox.buildBox()
 			
 			impulse.chatBox.TypeSelector = (impulse.chatBox.TypeSelector and impulse.chatBox.TypeSelector + 1) or 1
 			
-			if impulse.chatBox.TypeSelector > 3 then impulse.chatBox.TypeSelector = 1 end
-			if impulse.chatBox.TypeSelector < 1 then impulse.chatBox.TypeSelector = 3 end
+			if impulse.chatBox.TypeSelector > 2 then impulse.chatBox.TypeSelector = 1 end
+			if impulse.chatBox.TypeSelector < 1 then impulse.chatBox.TypeSelector = 2 end
 			
 			impulse.chatBox.ChatType = types[impulse.chatBox.TypeSelector]
 
@@ -74,11 +74,9 @@ function impulse.chatBox.buildBox()
 		elseif code == KEY_ENTER then
 			-- Replicate the client pressing enter
 			
-			if string.Trim( self:GetText() ) != "" then
+			if string.Trim(self:GetText()) != "" then
 				if impulse.chatBox.ChatType == types[2] then
-					LocalPlayer():ConCommand("say_team \"" .. (self:GetText() or "") .. "\"")
-				elseif impulse.chatBox.ChatType == types[3] then
-					LocalPlayer():ConCommand(self:GetText() or "")
+					LocalPlayer():ConCommand("say /r \"" .. (self:GetText() or "") .. "\"")
 				else
 					net.Start("impulseChatMessage")
 					net.WriteString(self:GetText())
@@ -151,13 +149,11 @@ function impulse.chatBox.buildBox()
 	end
 
 	say.Think = function( self )
-		local types = {"", "teamchat", "console"}
+		local types = {"", "radio", "console"}
 		local s = {}
 
 		if impulse.chatBox.ChatType == types[2] then 
-			text = "Say (TEAM):"	
-		elseif impulse.chatBox.ChatType == types[3] then
-			text = "Console:"
+			text = "Radio:"	
 		else
 			text = "Say:"
 			s.pw = 45
@@ -264,7 +260,7 @@ hook.Remove("PlayerBindPress", "impulse.chatBox_hijackbind")
 hook.Add("PlayerBindPress", "impulse.chatBox_hijackbind", function(ply, bind, pressed)
 	if string.sub( bind, 1, 11 ) == "messagemode" then
 		if bind == "messagemode2" then 
-			impulse.chatBox.ChatType = "teamchat"
+			impulse.chatBox.ChatType = "radio"
 		else
 			impulse.chatBox.ChatType = ""
 		end

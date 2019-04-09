@@ -314,9 +314,9 @@ function IMPULSE:HUDPaint()
 		aboveHUDUsed = true
 	end
 
-	draw.DrawText(lp:GetSyncVar(SYNC_XP, 0).."XP", "Impulse-Elements19", 55, y+155, color_white, TEXT_ALIGN_LEFT)
+	draw.DrawText(lp:GetSyncVar(SYNC_XP, 0).."XP", "Impulse-Elements19", 55, y+150+(yAdd-8), color_white, TEXT_ALIGN_LEFT)
 	surface.SetMaterial(xpIcon)
-	surface.DrawTexturedRect(30, y+155, 18, 18)
+	surface.DrawTexturedRect(30, y+150+(yAdd-8), 18, 18)
 
 
 	local weapon = LocalPlayer():GetActiveWeapon()
@@ -338,7 +338,7 @@ function IMPULSE:HUDPaint()
 		local ft = FrameTime()
 		zoneFde = math.Clamp(zoneFde + ft * .3, 0, 1)
 
-		draw.DrawText(lp:GetZoneName(), "Impulse-Elements23-Italic", 10, y - 25, ColorAlpha(color_white, (255 * zoneFde)), TEXT_ALIGN_LEFT)
+		draw.DrawText(lp:GetZoneName(), "Impulse-Elements23-Italic", 30, y - 25, ColorAlpha(color_white, (255 * zoneFde)), TEXT_ALIGN_LEFT)
 
 		if zoneFde == 1 then
 			zoneHoldTime = zoneHoldTime or CurTime()
