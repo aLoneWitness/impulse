@@ -34,9 +34,10 @@ function PANEL:Paint( w, h )
 
 	if ( !IsValid( self.ply ) ) then return end
 	local vol = self.ply:VoiceVolume()
+	local col =  team.GetColor(self.ply:Team())
 
 	draw.RoundedBox( 4, 0, 0, w, h, Color(0, 0, 0, 235))
-	draw.RoundedBox( 4, 0, 0, w, h, Color(vol * impulse.Config.MainColour.r, vol * impulse.Config.MainColour.g, vol * impulse.Config.MainColour.b, 150) )
+	draw.RoundedBox( 4, 0, 0, w, h, Color(vol * col.r, vol * col.g, vol * col.b, 170) )
 
 end
 

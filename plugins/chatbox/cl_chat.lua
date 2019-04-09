@@ -76,7 +76,7 @@ function impulse.chatBox.buildBox()
 			
 			if string.Trim(self:GetText()) != "" then
 				if impulse.chatBox.ChatType == types[2] then
-					LocalPlayer():ConCommand("say /r \"" .. (self:GetText() or "") .. "\"")
+					LocalPlayer():ConCommand("say /r " ..(self:GetText() or ""))
 				else
 					net.Start("impulseChatMessage")
 					net.WriteString(self:GetText())
