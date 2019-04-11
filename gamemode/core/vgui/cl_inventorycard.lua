@@ -1,15 +1,27 @@
 local PANEL = {}
 
+function PANEL:OnDrop(panels, dropped, command, x, y)
+	self.Unusable = true
+end
+
 local gradient = Material("vgui/gradient-l")
-local outlineCol = Color(190,190,190,240)
-local darkCol = Color(30,30,30,200)
+local outlineCol = Color(10, 10, 10, 255)
+local darkCol = Color(30, 30, 30, 190)
+local fullCol = Color(139, 0, 0, 15)
 
 function PANEL:Paint(w,h)
+	--surface.SetMaterial(gradient)
+	surface.SetDrawColor(darkCol)
+	surface.DrawRect(0, 0, w, h)
+	--surface.DrawTexturedRect(1, 1, w - 1, h - 1)
+
+	if self.Unusable then
+		surface.SetDrawColor(fullCol)
+		surface.DrawRect(0, 0, w, h)
+	end
+
 	surface.SetDrawColor(outlineCol)
 	surface.DrawOutlinedRect(0, 0, w, h)
-	surface.SetMaterial(gradient)
-	surface.SetDrawColor(outlineCol)
-	surface.DrawTexturedRect(1, 1, w - 1, h - 1)
 end
 
 function PANEL:OnMousePressed()

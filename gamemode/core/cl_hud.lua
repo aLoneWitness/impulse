@@ -132,7 +132,7 @@ local function DrawDoorInfo(target)
 	end
 end
 
-local defaultEntCol = Color(251, 197, 49)
+local defaultEntCol = impulse.Config.InteractColour
 local function DrawEntInfo(target)
 	local pos = (target:GetPos() + target:OBBCenter()):ToScreen()
 	local scrW = ScrW()

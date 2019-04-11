@@ -234,11 +234,13 @@ end
 
 function IMPULSE:OnContextMenuOpen()
 	impulse_inventory = vgui.Create("impulseInventory")
+	gui.EnableScreenClicker(true)
 end
 
 function IMPULSE:OnContextMenuClose()
 	if IsValid(impulse_inventory) then
 		impulse_inventory:Remove()
+		gui.EnableScreenClicker(false)
 	end
 end
 
