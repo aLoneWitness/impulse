@@ -49,6 +49,8 @@ if SERVER then
 				end
 			end
 		end
+
+		hook.Run("DoorsSetup")
 	end
 
 	function eMeta:DoorLock()
