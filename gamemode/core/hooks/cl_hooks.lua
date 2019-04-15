@@ -17,9 +17,9 @@ function IMPULSE:Think()
 		mainMenu:SetAlpha(0)
 		mainMenu:AlphaTo(255, .3)
 		mainMenu.popup = true
-	elseif input.IsKeyDown(KEY_F4) and not IsValid(impulse.playerMenu) then
+	elseif input.IsKeyDown(KEY_F4) and not IsValid(impulse.playerMenu) and LocalPlayer():Alive() then
 		impulse.playerMenu = vgui.Create("impulsePlayerMenu")
-	elseif input.IsKeyDown(KEY_LALT) then
+	elseif input.IsKeyDown(KEY_LALT) and LocalPlayer():Alive() then
 		local trace = {}
 		trace.start = LocalPlayer():EyePos()
 		trace.endpos = trace.start + LocalPlayer():GetAimVector() * 85
@@ -233,6 +233,8 @@ function IMPULSE:FinishChat()
 end
 
 function IMPULSE:OnContextMenuOpen()
+	if LocalPlayer():Team() == 0 or not LocalPlayer():Alive() then return end
+
 	impulse_inventory = vgui.Create("impulseInventory")
 	gui.EnableScreenClicker(true)
 end

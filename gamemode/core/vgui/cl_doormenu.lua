@@ -39,7 +39,9 @@ function PANEL:SetDoor(door)
 	local doorOwners = door:GetSyncVar(SYNC_DOOR_OWNERS, nil) 
 	local doorGroup =  door:GetSyncVar(SYNC_DOOR_GROUP, nil)
 	local doorBuyable = door:GetSyncVar(SYNC_DOOR_BUYABLE, true)
-	local customCanEditDoor = hook.Run("CanEditDoor", LocalPlayer(), door) or true
+	local customCanEditDoor = hook.Run("CanEditDoor", LocalPlayer(), door)
+
+	print(customCanEditDoor)
 
 	if LocalPlayer():CanLockUnlockDoor(doorOwners, doorGroup) then
 		self:AddAction("impulse/icons/padlock-2-256.png", "Unlock", function()
@@ -56,7 +58,7 @@ function PANEL:SetDoor(door)
 		end)
 	end
 
-	if LocalPlayer():CanBuyDoor(doorOwners, doorBuyable) and customCanEditDoor then
+	if LocalPlayer():CanBuyDoor(doorOwners, doorBuyable) and customCanEditDoor or customCanEditDoor == nil then
 		self:AddAction("impulse/icons/banknotes-256.png", "Buy", function()
 			net.Start("impulseDoorBuy")
 			net.SendToServer()
@@ -65,7 +67,7 @@ function PANEL:SetDoor(door)
 		end)
 	end
 
-	if LocalPlayer():IsDoorOwner(doorOwners) and customCanEditDoor then
+	if LocalPlayer():IsDoorOwner(doorOwners) and customCanEditDoor or customCanEditDoor == nil  then
 		self:AddAction("impulse/icons/group-256.png", "Permissions", function()
 			chat.AddText("Permissions are coming to doors near you soon.")
 		end)

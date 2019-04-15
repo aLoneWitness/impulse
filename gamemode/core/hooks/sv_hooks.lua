@@ -349,7 +349,6 @@ function IMPULSE:InitPostEntity()
 	LoadSaveEnts()
 
 	for v,k in pairs(impulse.Config.Zones) do
-		PrintTable(k)
 		local zone = ents.Create("impulse_zone")
 		zone:SetBounds(k.pos1, k.pos2)
 		zone.Zone = v

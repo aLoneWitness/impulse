@@ -227,7 +227,7 @@ net.Receive("impulseDoorBuy", function(len, ply)
 
 	local traceEnt = util.TraceLine(trace).Entity
 
-	if IsValid(traceEnt) and hook.Run("CanEditDoor", ply, traceEnt) or true and ply:CanBuyDoor(traceEnt:GetSyncVar(SYNC_DOOR_OWNERS, nil), traceEnt:GetSyncVar(SYNC_DOOR_BUYABLE, true)) then
+	if IsValid(traceEnt) and hook.Run("CanEditDoor", ply, traceEnt) == true and ply:CanBuyDoor(traceEnt:GetSyncVar(SYNC_DOOR_OWNERS, nil), traceEnt:GetSyncVar(SYNC_DOOR_BUYABLE, true)) then
 		if ply:CanAfford(impulse.Config.DoorPrice) then
 			local owners = {}
 			owners[ply:EntIndex()] = true
@@ -256,7 +256,7 @@ net.Receive("impulseDoorSell", function(len, ply)
 
 	local traceEnt = util.TraceLine(trace).Entity
 
-	if IsValid(traceEnt) and hook.Run("CanEditDoor", ply, traceEnt) or true and ply:IsDoorOwner(traceEnt:GetSyncVar(SYNC_DOOR_OWNERS, nil)) then
+	if IsValid(traceEnt) and hook.Run("CanEditDoor", ply, traceEnt) == true or true and ply:IsDoorOwner(traceEnt:GetSyncVar(SYNC_DOOR_OWNERS, nil)) then
 		traceEnt:SetSyncVar(SYNC_DOOR_OWNERS, nil, true)
 		traceEnt:DoorUnlock()
 
