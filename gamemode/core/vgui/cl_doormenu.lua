@@ -41,8 +41,6 @@ function PANEL:SetDoor(door)
 	local doorBuyable = door:GetSyncVar(SYNC_DOOR_BUYABLE, true)
 	local customCanEditDoor = hook.Run("CanEditDoor", LocalPlayer(), door)
 
-	print(customCanEditDoor)
-
 	if LocalPlayer():CanLockUnlockDoor(doorOwners, doorGroup) then
 		self:AddAction("impulse/icons/padlock-2-256.png", "Unlock", function()
 			net.Start("impulseDoorUnlock")
