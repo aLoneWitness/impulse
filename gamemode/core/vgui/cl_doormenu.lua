@@ -56,7 +56,7 @@ function PANEL:SetDoor(door)
 		end)
 	end
 
-	if LocalPlayer():CanBuyDoor(doorOwners, doorBuyable) and customCanEditDoor or customCanEditDoor == nil then
+	if LocalPlayer():CanBuyDoor(doorOwners, doorBuyable) and (customCanEditDoor or customCanEditDoor == nil) then
 		self:AddAction("impulse/icons/banknotes-256.png", "Buy", function()
 			net.Start("impulseDoorBuy")
 			net.SendToServer()
@@ -65,7 +65,7 @@ function PANEL:SetDoor(door)
 		end)
 	end
 
-	if LocalPlayer():IsDoorOwner(doorOwners) and customCanEditDoor or customCanEditDoor == nil  then
+	if LocalPlayer():IsDoorOwner(doorOwners) and (customCanEditDoor or customCanEditDoor == nil)  then
 		self:AddAction("impulse/icons/group-256.png", "Permissions", function()
 			chat.AddText("Permissions are coming to doors near you soon.")
 		end)
