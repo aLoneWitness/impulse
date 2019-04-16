@@ -10,11 +10,11 @@ end
 local blur = Material("pp/blurscreen")
 
 local superTesters = {
-	"STEAM_0:1:19935486" -- engima
+	["STEAM_0:1:19935486"] = true -- engima
 }
 
 local mappers = {
-	"STEAM_0:0:24607430" -- stranger
+	["STEAM_0:0:24607430"] = true -- stranger
 }
 
 impulse.Badges = {

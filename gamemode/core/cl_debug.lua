@@ -15,3 +15,7 @@ concommand.Add("impulse_debug_ang", function(ply)
 
 	SetClipboardText(output)
 end)
+
+concommand.Add("impulse_debug_hudtoggle", function(ply)
+	impulse_DevHud = !impulse_DevHud
+end)

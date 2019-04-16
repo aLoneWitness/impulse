@@ -437,6 +437,55 @@ function IMPULSE:HUDPaint()
 	surface.SetFont("Impulse-Elements18-Shadow")
 	surface.DrawText("TEST BUILD - "..IMPULSE.Version.." - "..LocalPlayer():SteamID64().. " - ".. os.date("%H:%M:%S - %d/%m/%Y", os.time()))
 
+	-- dev hud
+
+	if impulse_DevHud and lp:IsSuperAdmin() then
+		local trace = {}
+		trace.start = lp:EyePos()
+		trace.endpos = trace.start + lp:GetAimVector() * 3000
+		trace.filter = lp
+
+		local traceData = util.TraceLine(trace)
+		local traceEnt = traceData.Entity
+
+		if traceEnt and traceEnt != NULL then
+			surface.SetTextPos((scrW / 2) + 30, (scrH / 2) - 100)
+			surface.DrawText(tostring(traceEnt))
+
+			surface.SetTextPos((scrW / 2) + 30, (scrH / 2) - 80)
+			surface.DrawText(traceEnt:GetModel().."     "..traceData.HitTexture or "")
+
+			local syncData = impulse.Sync.Data[traceEnt:EntIndex()]
+			local netData
+			local y = (scrH / 2) - 40
+
+			if syncData then
+				for v,k in pairs(syncData) do
+					surface.SetTextPos((scrW / 2) + 30, y)
+					surface.DrawText("syncvalue: "..v.." ; "..tostring(k))
+					y = y + 20
+				end
+			end
+
+			if IsValid(traceEnt) and traceEnt.GetNetworkVars then
+				netData = traceEnt:GetNetworkVars()
+			end
+
+			if netData then
+				for v,k in pairs(netData) do
+					surface.SetTextPos((scrW / 2) + 30, y)
+					surface.DrawText("netvalue: "..v.." ; "..tostring(k))
+					y = y + 20
+				end
+			end
+		end
+
+		surface.SetTextPos(400, scrH / 1.5)
+		surface.DrawText(tostring(lp:GetPos()))
+		surface.SetTextPos(400, (scrH / 1.5) + 20)
+		surface.DrawText(tostring(lp:GetAngles()))
+	end
+
 	lasthealth = health
 end
 
