@@ -439,7 +439,7 @@ function IMPULSE:HUDPaint()
 
 	-- dev hud
 
-	if impulse_DevHud and lp:IsSuperAdmin() then
+	if impulse_DevHud and (lp:IsSuperAdmin() or lp:IsDeveloper()) then
 		local trace = {}
 		trace.start = lp:EyePos()
 		trace.endpos = trace.start + lp:GetAimVector() * 3000
