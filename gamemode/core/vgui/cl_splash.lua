@@ -7,20 +7,7 @@ function PANEL:Init()
 	self:SetSize(ScrW(), ScrH())
 	self:MakePopup()
 	self:SetPopupStayAtBack(true)
-	self.welcomeLang = {
-		"Welcome",
-		"Bienvenue",
-		"Willkommen",
-		"Benvenuto",
-		"Welkom",
-		"Bienvenido",
-		"Välkommen",
-		"Velkommen",
-		"Witamy",
-		"Üdvözöljük"
-	}
 	self.welcomeMessage = "Welcome"
-	self.nextWelcome = CurTime() + 1
 end
 
 function PANEL:OnKeyCodeReleased()
@@ -45,16 +32,37 @@ function PANEL:OnKeyCodeReleased()
 		end
 
 		impulse.Scenes.Play(1, impulse.Config.IntroScenes[counter], playIntroScenes)
-		surface.PlaySound("music/HL2_intro.mp3")
+		surface.PlaySound(impulse.Config.IntroMusic)
 	else
 		vgui.Create("impulseMainMenu")
 	end
 end
 
-function PANEL:Think()
-	if CurTime() > self.nextWelcome then
-		self.welcomeMessage = self.welcomeLang[math.random(1, #self.welcomeLang)]
-		self.nextWelcome = CurTime() + .5
+function PANEL:OnMousePressed()
+	if self.used then return end
+	
+	impulse.hudEnabled = true
+	self.used = true
+	self:AlphaTo(0, 2, 0, function()
+		self:Remove()
+	end)
+	if impulse_isNewPlayer == true then
+		local counter = 1
+		local function playIntroScenes()
+			if impulse.Config.IntroScenes[counter + 1] then
+				counter = counter + 1
+				impulse.Scenes.Play(counter, impulse.Config.IntroScenes[counter], playIntroScenes)
+			else
+				local mainMenu = vgui.Create("impulseMainMenu")
+				mainMenu:SetAlpha(0)
+				mainMenu:AlphaTo(255, 1)
+			end
+		end
+
+		impulse.Scenes.Play(1, impulse.Config.IntroScenes[counter], playIntroScenes)
+		surface.PlaySound(impulse.Config.IntroMusic)
+	else
+		vgui.Create("impulseMainMenu")
 	end
 end
 
