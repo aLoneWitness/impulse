@@ -39,13 +39,37 @@ function IMPULSE:Think()
 		end
 	end
 
-	for v,k in pairs(player.GetAll()) do
-		local isArrested = k:GetSyncVar(SYNC_ARRESTED, false)
+	if (nextLoopThink or 0) < CurTime() then
+		for v,k in pairs(player.GetAll()) do
+			local isArrested = k:GetSyncVar(SYNC_ARRESTED, false)
+			local isBleeding = k:GetSyncVar(SYNC_BLEEDING, false)
 
-		if isArrested != (k.BoneArrested or false) then
-			k:SetHandsBehindBack(isArrested)
-			k.BoneArrested = isArrested
+			if isArrested != (k.BoneArrested or false) then
+				k:SetHandsBehindBack(isArrested)
+				k.BoneArrested = isArrested
+			end
+
+			local bleedingRange = (impulse.GetSetting("perf_bleedingrange") or 800) ^ 2
+			local dist = k:GetPos():DistToSqr(LocalPlayer():GetPos())
+
+			if isBleeding and dist < bleedingRange and (k.nextBleed or 0) < CurTime() and k:GetMoveType() != MOVETYPE_NOCLIP then
+				local pos = k:GetPos()
+
+				if dist < 300 then
+					local effectdata = EffectData()
+					effectdata:SetOrigin((pos + k:OBBCenter()))
+
+					util.Effect("BloodImpact", effectdata)
+				end
+
+				util.Decal("Blood", pos, Vector(pos.x, pos.y, -100000), k)
+
+				k.nextBleed = CurTime() + math.random(5, 10)
+			end
+
 		end
+
+		nextLoopThink = CurTime() + 0.5
 	end
 end
 
@@ -72,6 +96,7 @@ function IMPULSE:DefineSettings()
 		end
 	end})
 	impulse.DefineSetting("perf_blur", {name="Blur enabled", category="Performance", type="tickbox", default=true})
+	impulse.DefineSetting("perf_bleedingrange", {name="Bleeding render range", category="Performance", type="slider", default=1000, minValue=200, maxValue=3000})
 end
 
 local loweredAngles = Angle(30, -30, -25)
