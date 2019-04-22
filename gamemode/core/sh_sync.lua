@@ -378,6 +378,7 @@ SYNC_ARRESTED = impulse.Sync.RegisterVar(SYNC_BOOL)
 SYNC_HAT = impulse.Sync.RegisterVar(SYNC_INT)
 SYNC_HUNGER = impulse.Sync.RegisterVar(SYNC_INT)
 SYNC_TYPING = impulse.Sync.RegisterVar(SYNC_BOOL)
+SYNC_BLEEDING = impulse.Sync.RegisterVar(SYNC_BOOL)
 
 -- ent sync vars
 SYNC_DOOR_NAME = impulse.Sync.RegisterVar(SYNC_STRING)
