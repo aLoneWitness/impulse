@@ -72,13 +72,13 @@ local crosshairGap = 5
 local crosshairLength = crosshairGap + 5
 
 local healthIcon = Material("impulse/icons/heart-128.png")
-local healthCol = Color(254, 0, 0, 255)
+local healthCol = Color(210, 0, 0, 255)
 local armourIcon = Material("impulse/icons/shield-128.png")
-local armourCol = Color(255, 255, 0, 255)
+local armourCol = Color(205, 190, 0, 255)
 local hungerIcon = Material("impulse/icons/bread-128.png")
 local hungerCol = Color(205, 133, 63, 255)
 local moneyIcon = Material("impulse/icons/banknotes-128.png")
-local moneyCol = Color(133, 187, 101, 255)
+local moneyCol = Color(133, 227, 91, 255)
 local timeIcon = Material("impulse/icons/clock-128.png")
 local xpIcon = Material("impulse/icons/star-128.png")
 local warningIcon = Material("impulse/icons/warning-128.png")
