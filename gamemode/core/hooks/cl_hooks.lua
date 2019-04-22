@@ -62,7 +62,10 @@ function IMPULSE:Think()
 					util.Effect("BloodImpact", effectdata)
 				end
 
-				util.Decal("Blood", pos, Vector(pos.x, pos.y, -100000), k)
+				if not k.lastBleedPos or (k.lastBleedPos:DistToSqr(k:GetPos()) > (40 ^ 2)) then
+					util.Decal("Blood", pos, Vector(pos.x, pos.y, -100000), k)
+					k.lastBleedPos = pos
+				end
 
 				k.nextBleed = CurTime() + math.random(5, 10)
 			end

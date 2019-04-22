@@ -344,6 +344,8 @@ function IMPULSE:HUDPaint()
 		surface.DrawTexturedRect(iconsX, y + 10, 30, 30)
 	end
 
+	surface.SetDrawColor(color_white)
+
 
 	local weapon = LocalPlayer():GetActiveWeapon()
 	if IsValid(weapon) then

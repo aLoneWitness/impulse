@@ -10,13 +10,15 @@ end
 local blur = Material("pp/blurscreen")
 
 local superTesters = {
-	["STEAM_0:1:19935486"] = true -- engima
+	["STEAM_0:1:9592dsdsd"] = true 
 }
 
 local mappers = {
 	["STEAM_0:0:24607430"] = true -- stranger
 }
 
+
+-- Please don't ever remove credit or users/badges from this section. People worked hard on this. Thanks!
 impulse.Badges = {
 	staff = {Material("icon16/shield.png"), "This player is a staff member.", function(ply) return ply:IsAdmin() end},
 	donator = {Material("icon16/coins.png"), "This player is a donator.", function(ply) return ply:IsDonator() end},
