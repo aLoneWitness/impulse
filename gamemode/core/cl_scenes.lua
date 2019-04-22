@@ -1,16 +1,3 @@
-netstream.Hook("impulseSceneFOV", function(ply, fov, time) -- for some reason setfov is broken on client
-	if fov == 0 then fov = 70 end
-	ply:SetFOV(fov, time)
-end)
-
-netstream.Hook("impulseScenePVS", function(ply, stage)
-	if impulse.Config.IntroScenes[stage] then
-		ply.extraPVS = impulse.Config.IntroScenes[stage].pos
-	end
-end)
-
-if SERVER then return end
-
 impulse.Scenes = impulse.Scenes or {}
 
 function impulse.Scenes.Play(stage, sceneData, onDone)
@@ -18,7 +5,9 @@ function impulse.Scenes.Play(stage, sceneData, onDone)
 	impulse.Scenes.ang = nil
 	sceneData.speed = sceneData.speed or 1
 
-	netstream.Start("impulseScenePVS", stage)
+	net.Start("impulseScenePVS")
+	net.WriteUInt(stage, 8)
+	net.SendToServer()
 
 	for k,v in pairs(ents.FindByClass("prop_physics")) do
 		v:SetNoDraw(true)
@@ -76,8 +65,15 @@ function impulse.Scenes.Play(stage, sceneData, onDone)
 	end
 
 	if sceneData.fovFrom then
-		netstream.Start("impulseSceneFOV", sceneData.fovFrom, 0)
-		netstream.Start("impulseSceneFOV", 0, sceneData.fovTime)
+		net.Start("impulseSceneFOV")
+		net.WriteUInt(sceneData.fovFrom, 8)
+		net.WriteUInt(0, 8)
+		net.SendToServer()
+
+		net.Start("impulseSceneFOV")
+		net.WriteUInt(0, 8)
+		net.WriteUInt(0, sceneData.fovTime)
+		net.SendToServer()
 	end
 
 	if sceneData.time then

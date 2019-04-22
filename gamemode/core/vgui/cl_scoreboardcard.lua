@@ -92,8 +92,12 @@ function PANEL:Paint(w,h)
 	end 
 end
 function PANEL:OnMousePressed()
-	local infoCard = vgui.Create("impulsePlayerInfoCard")
-	infoCard:SetPlayer(self.Player, self.Badges)
+	if impulse_infoCard and IsValid(impulse_infoCard) then 
+		impulse_infoCard:Remove() 
+	end
+	
+	impulse_infoCard = vgui.Create("impulsePlayerInfoCard")
+	impulse_infoCard:SetPlayer(self.Player, self.Badges)
 end
 
 vgui.Register("impulseScoreboardCard", PANEL, "DPanel")

@@ -1,5 +1,6 @@
 local red = Color(255, 0, 0, 255)
 local green = Color(0, 240, 0, 255)
+
 hook.Add("HUDPaint", "impulseOpsHUD", function()
 	if not impulse.hudEnabled then return end
 
@@ -43,6 +44,8 @@ hook.Add("HUDPaint", "impulseOpsHUD", function()
 			end
 
 			for v,k in pairs(player.GetAll()) do
+				if k ==  LocalPlayer() then continue end
+				
 				local pos = (k:GetPos() + k:OBBCenter()):ToScreen()
 				local col = team.GetColor(k:Team())
 

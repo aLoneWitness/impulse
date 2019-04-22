@@ -13,6 +13,8 @@ util.AddNetworkString("impulseDoorBuy")
 util.AddNetworkString("impulseDoorSell")
 util.AddNetworkString("impulseDoorLock")
 util.AddNetworkString("impulseDoorUnlock")
+util.AddNetworkString("impulseSceneFOV")
+util.AddNetworkString("impulseScenePVS")
 
 netstream.Hook("impulseCharacterCreate", function(player, charName, charModel, charSkin)
 	if (player.NextCreate or 0) > CurTime() then return end
@@ -65,6 +67,26 @@ netstream.Hook("impulseCharacterCreate", function(player, charName, charModel, c
 	end)
 	query:Execute()
 	player.NextCreate = CurTime() + 10
+end)
+
+net.Receive("impulseSceneFOV", function(len, ply)
+	if ply:Team() != 0 then return end
+
+	local fov = net.ReadUInt(8)
+	local time = net.ReadUInt(8)
+
+	if fov == 0 then fov = 70 end
+	ply:SetFOV(fov, time)
+end)
+
+net.Receive("impulseScenePVS", function(len, ply)
+	if ply:Team() != 0 then return end
+
+	local stage = net.ReadUInt(8)
+
+	if impulse.Config.IntroScenes[stage] then
+		ply.extraPVS = impulse.Config.IntroScenes[stage].pos
+	end
 end)
 
 net.Receive("impulseChatMessage", function(len, ply) -- should implement a check on len here instead of string.len
