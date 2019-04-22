@@ -300,6 +300,7 @@ if CLIENT then
 	local radioCol = Color(55, 146, 21)
 	local pmCol = Color(45, 154, 6)
 	local advertCol = Color(255, 174, 66)
+	local acCol = Color(0, 235, 0, 255)
 	local fallbackRankCol = Color(211, 211, 211)
 	local rankCols = {}
 	rankCols["superadmin"] = Color(245, 140, 0)
@@ -362,5 +363,9 @@ if CLIENT then
 
 	impulse.RegisterChatClass(12, function(message, speaker)
 		chat.AddText(advertCol, "[ADVERT] ", speaker:Name(), ": ", message)
+	end)
+
+	impulse.RegisterChatClass(13, function(message, speaker)
+		chat.AddText(acCol, "[Admin Chat] ", speaker:SteamName(), ": ", acCol, message)
 	end)
 end

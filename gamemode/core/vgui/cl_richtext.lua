@@ -74,6 +74,7 @@ function PANEL:AddText(...)
 	for k, v in ipairs({...}) do
 		if (type(v) == "table" and v.r and v.g and v.b) then
 			text = text.."<color="..v.r..","..v.g..","..v.b..">"
+			
 			table.insert(luaMsg, Color(v.r, v.g, v.b, 255))
 		elseif (type(v) == "Player") then
 			local color = team.GetColor(v:Team())
@@ -81,11 +82,14 @@ function PANEL:AddText(...)
 
 			text = text.."<color="..color.r..","..color.g..","..color.b..">"..str
 			painText = plainText..v:Name()
+
+			table.insert(luaMsg, color)
 			table.insert(luaMsg, str)
 		else
 			local str = tostring(v):gsub("<", "&lt;"):gsub(">", "&gt;")
 			text = text..str
 			plainText = plainText..str
+
 			table.insert(luaMsg, str)
 		end
 	end

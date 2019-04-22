@@ -13,13 +13,13 @@ end)
 
 local adminChatCol = Color(34, 88, 216)
 local adminChatCommand = {
-    description = "Respawns the player specified.",
+    description = "A super-secret chatroom for staff members.",
     requiresArg = true,
     adminOnly = true,
     onRun = function(ply, arg, rawText)
         for v,k in pairs(player.GetAll()) do
         	if k:IsAdmin() then
-        		k:AddChatText("[ADMIN CHAT] ", adminChatCol, ply:SteamName()..": "..rawText)
+        		k:SendChatClassMessage(13, rawText, ply)
         	end
         end
     end
