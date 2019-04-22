@@ -14,6 +14,8 @@ function PANEL:Init()
 	--settingsPages:InvalidateParent(true) -- this is called to sync the new positions and sizes with the dock
 
 	for v,k in pairs(impulse.Settings) do
+		if k.category == "ops" and not LocalPlayer():IsAdmin() then continue end -- ops settings can only be viewed by admins
+
 		if not addedCategories[k.category] then -- If category does not exist, create it
 			local settingSheetScroll = vgui.Create("DScrollPanel", settingsPages)
 			settingsPages:AddSheet(k.category, settingSheetScroll)

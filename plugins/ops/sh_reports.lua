@@ -7,6 +7,12 @@ local claimedReportCol = Color(147, 112, 219)
 if SERVER then
     file.CreateDir("impulse/ops")
     file.CreateDir("impulse/ops/reports")
+
+    util.AddNetworkString("opsNewReport")
+    util.AddNetworkString("opsReportMessage")
+    util.AddNetworkString("opsReportUpdate")
+    util.AddNetworkString("opsReportClaimed")
+    util.AddNetworkString("opsReportClosed")
 end
 
 local reportCommand = {
@@ -35,13 +41,18 @@ local reportCommand = {
                 if k:IsAdmin() then
                     reportId = reportId or table.insert(impulse.Ops.Reports, {ply, rawText, nil, os.time()})
 
-                    k:AddChatText(newReportCol, "[NEW REPORT] [#"..reportId.."] ", ply:SteamName(), " (", ply:Name(), "): ", rawText)
-                    k:SurfacePlaySound("buttons/blip1.wav")
+                    net.Start("opsNewReport")
+                    net.WriteEntity(ply)
+                    net.WriteUInt(reportId, 16)
+                    net.WriteString(rawText)
+                    net.Send(k)
                 end
             end
             if reportId then
-                ply:Notify("Report submitted for review. Thank you for doing your part in keeping the community clean. Report ID: #"..reportId..".")
-                ply:Notify("If you have any further requests or info for us, just send another report.")
+                net.Start("opsReportMessage")
+                net.WriteUInt(reportId, 16)
+                net.WriteUInt(1, 4)
+                net.Send(ply)
 
                 opsDiscordLog(":warning: **[NEW REPORT]** [#"..reportId.."] ".. ply:SteamName().. " (".. ply:Name().. ") ("..ply:SteamID().."): ```"..rawText.."```")
                 return
@@ -52,13 +63,19 @@ local reportCommand = {
             local reportClaimant = impulse.Ops.Reports[reportId][3]
 
             if reportClaimant and IsValid(reportClaimant) then
-                reportClaimant:AddChatText(claimedReportCol, "[REPORT UPDATE] [#"..reportId.."] ", ply:SteamName(), " (", ply:Name(), "): ", rawText)
-                reportClaimant:SurfacePlaySound("buttons/blip1.wav")
+                net.Start("opsReportUpdate")
+                net.WriteEntity(ply)
+                net.WriteUInt(reportId, 16)
+                net.WriteString(rawText)
+                net.Send(reportClaimant)
             else
                 for v,k in pairs(player.GetAll()) do
                     if k:IsAdmin() then
-                        k:AddChatText(newReportCol, "[REPORT UPDATE] [#"..reportId.."] ", ply:SteamName(), " (", ply:Name(), "): ", rawText)
-                        k:SurfacePlaySound("buttons/blip1.wav")
+                        net.Start("opsReportUpdate")
+                        net.WriteEntity(ply)
+                        net.WriteUInt(reportId, 16)
+                        net.WriteString(rawText)
+                        net.Send(k)
                     end
                 end
             end
@@ -66,7 +83,10 @@ local reportCommand = {
             impulse.Ops.Reports[reportId][2] = impulse.Ops.Reports[reportId][2].." + "..rawText
             opsDiscordLog(":speech_left: **[REPORT UPDATE]** [#"..reportId.."] ".. ply:SteamName().. " (".. ply:Name().. ") ("..ply:SteamID().."): ```".. rawText.."```")
 
-            ply:Notify("Your report has been updated. Thank you for keeping us informed. Report ID: #"..reportId..".")
+            net.Start("opsReportMessage")
+            net.WriteUInt(reportId, 16)
+            net.WriteUInt(2, 4)
+            net.Send(ply)
         end
         ply.nextReport = CurTime() + 2
     end
@@ -113,15 +133,20 @@ local claimReportCommand = {
             impulse.Ops.Reports[reportId] = {reporter, reportMessage, ply, reportStartTime, os.time()}
 
             for v,k in pairs(player.GetAll()) do
-                if k:IsAdmin() and k == ply then
-                    k:AddChatText(claimedReportCol, "[REPORT] [#"..reportId.."] claimed by "..ply:SteamName())
-                elseif k:IsAdmin() then
-                    k:AddChatText(newReportCol, "[REPORT] [#"..reportId.."] claimed by "..ply:SteamName())
+                if k:IsAdmin() then
+                    net.Start("opsReportClaimed")
+                    net.WriteEntity(ply)
+                    net.WriteUInt(reportId, 16)
+                    net.Send(k)
                 end
             end
             opsDiscordLog(":passport_control: **[REPORT CLAIMED]** [#"..reportId.."] claimed by "..ply:SteamName().." ("..ply:SteamID()..")")
 
-            reporter:Notify("Your report has been claimed for review by a game moderator ("..ply:SteamName()..").")
+            net.Start("opsReportMessage")
+            net.WriteUInt(reportId, 16)
+            net.WriteUInt(3, 4)
+            net.WriteEntity(ply)
+            net.Send(reporter)
         else
             ply:AddChatText(claimedReportCol, "Report #"..arg[1].." does not exist.")
         end
@@ -169,9 +194,19 @@ local closeReportCommand = {
             end
 
             impulse.Ops.Reports[reportId] = nil
-            ply:AddChatText(claimedReportCol, "[REPORT] [#"..reportId.."] closed by "..ply:SteamName())
+
+            net.Start("opsReportClosed")
+            net.WriteEntity(ply)
+            net.WriteUInt(reportId, 16)
+            net.Send(ply)
+
             opsDiscordLog(":closed_book: **[REPORT CLOSED]** [#"..reportId.."] closed by "..ply:SteamName().." ("..ply:SteamID()..")")
-            reporter:Notify("Your report has been closed by a game moderator ("..ply:SteamName().."). We hope we have managed to resolve your issue.")
+
+            net.Start("opsReportMessage")
+            net.WriteUInt(reportId, 16)
+            net.WriteUInt(4, 4)
+            net.WriteEntity(ply)
+            net.Send(reporter)
         else
             ply:AddChatText(claimedReportCol, "Report #"..reportId.." does not exist.")
         end
