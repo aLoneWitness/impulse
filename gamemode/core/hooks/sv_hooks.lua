@@ -549,3 +549,7 @@ function IMPULSE:PlayerSetHandsModel(ply, hands)
 		hands:SetBodyGroups(info.body)
 	end
 end
+
+function IMPULSE:PlayerSpray()
+	return false
+end
