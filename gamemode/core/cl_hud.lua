@@ -63,6 +63,8 @@ local hudBlackGrad = Color(40,40,40,180)
 local hudBlack = Color(20,20,20,140)
 local darkCol = Color(30, 30, 30, 190)
 local whiteCol = Color(255, 255, 255, 255)
+local iconsWhiteCol = Color(255, 255, 255, 220)
+local bleedFlashCol = Color(230, 0, 0, 220)
 local zoneFde = 0
 local zoneHoldTime
 
@@ -83,6 +85,7 @@ local warningIcon = Material("impulse/icons/warning-128.png")
 local infoIcon = Material("impulse/icons/info-128.png")
 local announcementIcon = Material("impulse/icons/megaphone-128.png")
 local exitIcon = Material("impulse/icons/exit-128.png")
+local bleedingIcon = Material("impulse/icons/droplet-256.png")
 
 
 local lastModel = ""
@@ -90,6 +93,8 @@ local lastSkin = ""
 local lastTeam = 99
 local lastBodygroups = {}
 local iconLoaded = false
+
+local bleedFlash = false
 
 local function DrawOverheadInfo(target, alpha)
 	local pos = target:EyePos()
@@ -319,6 +324,26 @@ function IMPULSE:HUDPaint()
 	surface.SetMaterial(xpIcon)
 	surface.DrawTexturedRect(30, y+150+(yAdd-8), 18, 18)
 
+	local iconsX = 315
+	local bleedIconCol
+
+	if lp:GetSyncVar(SYNC_BLEEDING, false) then
+		if (nextBleedFlash or 0) < CurTime() then
+			bleedFlash = !bleedFlash
+			nextBleedFlash = CurTime() + 1
+		end
+
+		if bleedFlash then
+			bleedIconCol = bleedFlashCol
+		else
+			bleedIconCol = iconsWhiteCol
+		end
+
+		surface.SetDrawColor(bleedIconCol)
+		surface.SetMaterial(bleedingIcon)
+		surface.DrawTexturedRect(iconsX, y + 10, 30, 30)
+	end
+
 
 	local weapon = LocalPlayer():GetActiveWeapon()
 	if IsValid(weapon) then
@@ -431,9 +456,9 @@ function IMPULSE:HUDPaint()
 	-- watermark
 	surface.SetDrawColor(watermarkCol)
 	surface.SetMaterial(watermark)
-	surface.DrawTexturedRect(330, y, 112, 30)
+	surface.DrawTexturedRect(390, y, 112, 30)
 
-	surface.SetTextPos(330, y + 30)
+	surface.SetTextPos(390, y + 30)
 	surface.SetTextColor(watermarkCol)
 	surface.SetFont("Impulse-Elements18-Shadow")
 	surface.DrawText("TEST BUILD - "..IMPULSE.Version.." - "..LocalPlayer():SteamID64().. " - ".. os.date("%H:%M:%S - %d/%m/%Y", os.time()))
