@@ -26,3 +26,7 @@ include("shared.lua")
 
 MsgC( Color( 0, 255, 0 ), "[impulse] Completed server load...\n" )
 
+-- security overrides, people should have these set anyway, but this is just in case
+RunConsoleCommand("sv_allowupload", "0")
+RunConsoleCommand("sv_allowdownload", "0")
+RunConsoleCommand("sv_allowcslua", "0")
