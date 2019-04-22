@@ -31,7 +31,7 @@ hook.Add("HUDPaint", "impulseOpsHUD", function()
 
 		draw.SimpleText("CLAIMED REPORTS: " ..totalClaimed, "Impulse-Elements16-Shadow", 20, 50, impulse.Config.MainColour)
 
-		if impulse.GetSetting("admin_esp") then
+		if impulse.GetSetting("admin_esp") and LocalPlayer():IsSuperAdmin() then
 			draw.SimpleText("ENTCOUNT: "..#ents.GetAll(), "Impulse-Elements16-Shadow", 20, 100, impulse.Config.MainColour)
 			draw.SimpleText("PLAYERCOUNT: "..#player.GetAll(), "Impulse-Elements16-Shadow", 20, 120, impulse.Config.MainColour)
 
