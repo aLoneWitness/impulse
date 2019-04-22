@@ -210,10 +210,11 @@ net.Receive("impulseChatState", function(len, ply)
 	if (ply.nextChatState or 0) < CurTime() then
 		local isTyping = net.ReadBool()
 
-		ply:SetSyncVar(SYNC_TYPING, isTyping, true)
+		if state != isTyping then
+			ply:SetSyncVar(SYNC_TYPING, isTyping, true)
+		end
+
 		ply.nextChatState = CurTime() + .1
-	--elseif state then
-	--	ply:SetSyncVar(SYNC_TYPING, false, true)
 	end
 end)
 

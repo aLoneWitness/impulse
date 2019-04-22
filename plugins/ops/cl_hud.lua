@@ -30,5 +30,29 @@ hook.Add("HUDPaint", "impulseOpsHUD", function()
 		end
 
 		draw.SimpleText("CLAIMED REPORTS: " ..totalClaimed, "Impulse-Elements16-Shadow", 20, 50, impulse.Config.MainColour)
+
+		if impulse.GetSetting("admin_esp") then
+			draw.SimpleText("ENTCOUNT: "..#ents.GetAll(), "Impulse-Elements16-Shadow", 20, 100, impulse.Config.MainColour)
+			draw.SimpleText("PLAYERCOUNT: "..#player.GetAll(), "Impulse-Elements16-Shadow", 20, 120, impulse.Config.MainColour)
+
+			local y = 140
+
+			for v,k in pairs(team.GetAllTeams()) do
+				draw.SimpleText(team.GetName(v)..": "..#team.GetPlayers(v), "Impulse-Elements16-Shadow", 20, y, impulse.Config.MainColour)
+				y = y + 20
+			end
+
+			for v,k in pairs(player.GetAll()) do
+				local pos = (k:GetPos() + k:OBBCenter()):ToScreen()
+				local col = team.GetColor(k:Team())
+
+				draw.SimpleText(k:Name(), "Impulse-Elements18-Shadow", pos.x, pos.y, col, TEXT_ALIGN_CENTER)
+				draw.SimpleText(k:SteamName(), "Impulse-Elements16-Shadow", pos.x, pos.y + 15, impulse.Config.InteractColour, TEXT_ALIGN_CENTER)
+
+				if k:GetTeamClass() != 0 then
+					draw.SimpleText(k:GetTeamClassName().." - "..k:GetTeamRankName(), "Impulse-Elements14-Shadow", pos.x + 20, pos.y, col, TEXT_ALIGN_CENTER)
+				end
+			end
+		end
 	end
 end)
