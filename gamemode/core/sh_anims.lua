@@ -349,6 +349,11 @@ do
 		hook.Run("OnPlayerEnterSequence", self, sequence, callback, time, noFreeze)
 
 		if not sequence then
+			net.Start("impulseSeqSet")
+			net.WriteEntity(self)
+			net.WriteBool(true)
+			net.WriteUInt(0, 16)
+			net.Broadcast()
 			return netstream.Start(nil, "seqSet", self)
 		end
 
@@ -372,7 +377,11 @@ do
 				end)
 			end
 
-			netstream.Start(nil, "seqSet", self, sequence)
+			net.Start("impulseSeqSet")
+			net.WriteEntity(self)
+			net.WriteBool(false)
+			net.WriteUInt(sequence, 16)
+			net.Broadcast()
 
 			return time
 		end
@@ -383,7 +392,11 @@ do
 	function meta:leaveSequence()
 		hook.Run("OnPlayerLeaveSequence", self)
 
-		netstream.Start(nil, "seqSet", self)
+		net.Start("impulseSeqSet")
+		net.WriteEntity(self)
+		net.WriteBool(true)
+		net.WriteUInt(0, 16)
+		net.Broadcast()
 
 		self:SetMoveType(MOVETYPE_WALK)
 		self.impulseForceSeq = nil
@@ -408,6 +421,8 @@ do
 	end
 
 	if SERVER then
+		util.AddNetworkString("impulseSeqSet")
+		
 		function meta:SetWeaponRaised(state)
 			self:SetSyncVar(SYNC_WEPRAISED, state, true)
 
@@ -425,17 +440,20 @@ do
 	end
 
 	if CLIENT then
-		netstream.Hook("seqSet", function(entity, sequence)
-			if IsValid(entity) then
-				if not sequence then
-					entity.impulseForceSeq = nil
+		net.Receive("impulseSeqSet", function()
+			local ent = net.ReadEntity()
+			local reset = net.ReadBool()
+			local sequence = net.ReadUInt(16)
 
+			if IsValid(ent) then
+				if reset then
+					ent.impulseForceSeq = nil
 					return
 				end
 
-				entity:SetCycle(0)
-				entity:SetPlaybackRate(1)
-				entity.impulseForceSeq = sequence
+				ent:SetCycle(0)
+				ent:SetPlaybackRate(1)
+				ent.impulseForceSeq = sequence
 			end
 		end)
 	end

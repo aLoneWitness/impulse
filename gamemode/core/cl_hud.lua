@@ -138,14 +138,13 @@ local function DrawDoorInfo(target)
 	end
 end
 
-local defaultEntCol = impulse.Config.InteractColour
 local function DrawEntInfo(target)
 	local pos = (target:GetPos() + target:OBBCenter()):ToScreen()
 	local scrW = ScrW()
 	local scrH = ScrH()
 	local hudName = target.HUDName
 	local hudDesc = target.HUDDesc
-	local hudCol = target.HUDColour or defaultEntCol
+	local hudCol = target.HUDColour or impulse.Config.InteractColour
 
 	draw.DrawText(hudName, "Impulse-Elements19-Shadow", pos.x, pos.y, hudCol, 1)
 
