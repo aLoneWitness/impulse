@@ -72,7 +72,7 @@ function impulse.Scenes.Play(stage, sceneData, onDone)
 
 		net.Start("impulseSceneFOV")
 		net.WriteUInt(0, 8)
-		net.WriteUInt(0, sceneData.fovTime)
+		net.WriteUInt(sceneData.fovTime, 8)
 		net.SendToServer()
 	end
 

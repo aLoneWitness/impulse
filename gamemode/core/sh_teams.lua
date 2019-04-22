@@ -143,6 +143,8 @@ function meta:CanBecomeTeamRank(rankID, notify)
 end
 
 function meta:GetTeamClassName()
+	if not impulse.Teams.Data[self:Team()] then return "" end
+
 	local classRef = impulse.Teams.Data[self:Team()].ClassRef
 	local plyClass = self:GetSyncVar(SYNC_CLASS, nil)
 
