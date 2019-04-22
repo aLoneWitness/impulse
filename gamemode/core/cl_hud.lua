@@ -24,27 +24,29 @@ function IMPULSE:HUDShouldDraw(element)
 end
 
 local blur = Material("pp/blurscreen")
+local cheapBlur = Color(0,0,0,205)
 local function BlurRect(x, y, w, h)
-	local X, Y = 0,0
+	if not impulse.GetSetting("perf_blur") then
+		draw.RoundedBox(0,x,y,w,h, cheapBlur)
+		surface.SetDrawColor(0,0,0)
+		surface.DrawOutlinedRect(x,y,w,h)
+	else
+		local X, Y = 0,0
 
-	surface.SetDrawColor(color_white)
-	surface.SetMaterial(blur)
+		surface.SetDrawColor(color_white)
+		surface.SetMaterial(blur)
 
-	for i = 1, 2 do
-		blur:SetFloat("$blur", (i / 10) * 20)
-		blur:Recompute()
+		for i = 1, 2 do
+			blur:SetFloat("$blur", (i / 10) * 20)
+			blur:Recompute()
 
-		render.UpdateScreenEffectTexture()
+			render.UpdateScreenEffectTexture()
 
-		render.SetScissorRect(x, y, x+w, y+h, true)
-		surface.DrawTexturedRect(X * -1, Y * -1, ScrW(), ScrH())
-		render.SetScissorRect(0, 0, 0, 0, false)
+			render.SetScissorRect(x, y, x+w, y+h, true)
+			surface.DrawTexturedRect(X * -1, Y * -1, ScrW(), ScrH())
+			render.SetScissorRect(0, 0, 0, 0, false)
+		end
 	end
-   
-   --draw.RoundedBox(0,x,y,w,h,Color(0,0,0,205))
-   --surface.SetDrawColor(0,0,0)
-   --surface.DrawOutlinedRect(x,y,w,h)
-   
 end
 
 
@@ -103,7 +105,6 @@ local function DrawOverheadInfo(target, alpha)
 end
 
 local function DrawDoorInfo(target)
-	local pos = target:GetPos():ToScreen()
 	local scrW = ScrW()
 	local scrH = ScrH()
 	local doorOwners = target:GetSyncVar(SYNC_DOOR_OWNERS, nil) 

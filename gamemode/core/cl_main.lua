@@ -27,18 +27,25 @@ impulse.Badges = {
 	mapper = {Material("icon16/map.png"), "This player is a mapper that has collaborated with impulse.", function(ply) return mappers[ply:SteamID()] end}
 }
 
+local cheapBlur = Color(0, 0, 0, 205)
 function impulse.blur(panel, layers, density, alpha)
 	local x, y = panel:LocalToScreen(0, 0)
 
-	surface.SetDrawColor(255, 255, 255, alpha)
-	surface.SetMaterial(blur)
+	if not impulse.GetSetting("perf_blur") then
+		draw.RoundedBox(0, -x, -y, ScrW(), ScrH(), cheapBlur)
+		surface.SetDrawColor(0, 0, 0)
+		surface.DrawOutlinedRect(-x, -y, ScrW(), ScrH())
+	else
+		surface.SetDrawColor(255, 255, 255, alpha)
+		surface.SetMaterial(blur)
 
-	for i = 1, 3 do
-		blur:SetFloat("$blur", (i / layers) * density)
-		blur:Recompute()
+		for i = 1, 3 do
+			blur:SetFloat("$blur", (i / layers) * density)
+			blur:Recompute()
 
-		render.UpdateScreenEffectTexture()
-		surface.DrawTexturedRect(-x, -y, ScrW(), ScrH())
+			render.UpdateScreenEffectTexture()
+			surface.DrawTexturedRect(-x, -y, ScrW(), ScrH())
+		end
 	end
 end
 

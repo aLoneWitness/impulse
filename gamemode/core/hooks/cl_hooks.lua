@@ -71,6 +71,7 @@ function IMPULSE:DefineSettings()
 			RunConsoleCommand("gmod_mcore_test", tostring(tonumber(newValue)))
 		end
 	end})
+	impulse.DefineSetting("perf_blur", {name="Blur enabled", category="Performance", type="tickbox", default=true})
 end
 
 local loweredAngles = Angle(30, -30, -25)
