@@ -49,6 +49,7 @@ netstream.Hook("impulseCharacterCreate", function(player, charName, charModel, c
 		insertQuery:Callback(function(result, status, lastID)
 			if IsValid(player) then
 				local setupData = {
+					id = lastID,
 					rpname = charName,
 					steamid = playerID,
 					group = "vip", -- testing value normal: playerGroup
@@ -61,6 +62,8 @@ netstream.Hook("impulseCharacterCreate", function(player, charName, charModel, c
 
 				print("[impulse] "..playerID.." has been submitted to the database. RP Name: ".. charName)
 				hook.Run("SetupPlayer", player, setupData)
+
+				player.extraPVS = nil
 			end
 		end)
 		insertQuery:Execute()

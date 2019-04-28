@@ -11,6 +11,7 @@ function IMPULSE:PlayerInitialSpawn(ply)
 	end
 
 	local query = mysql:Select("impulse_players")
+	query:Select("id")
 	query:Select("rpname")
 	query:Select("group")
 	query:Select("xp")
@@ -152,6 +153,7 @@ function IMPULSE:SetupPlayer(ply, dbData)
 
 	ply.impulseData = util.JSONToTable(dbData.data or "[]")
 	ply.impulseRanks = util.JSONToTable(dbData.ranks or "[]")
+	ply.impulseID = dbData.id
 
 	if dbData.group and dbData.group != "user" then
 		ply:SetUserGroup(dbData.group)
