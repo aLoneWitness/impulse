@@ -1,5 +1,5 @@
 local timeoutCommand = {
-    description = "Gives the specified player an LOOC/OOC/Report ban for the amount of time provided, in minutes. Reason is optional.",
+    description = "Gives the specified player an OOC/Report ban for the amount of time provided, in minutes. Reason is optional.",
     requiresArg = true,
     adminOnly = true,
     onRun = function(ply, arg, rawText)
