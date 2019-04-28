@@ -42,6 +42,10 @@ function meta:CanBecomeTeam(teamID, notify)
 		return false
 	end
 
+	if teamID == self:Team() then
+		return false
+	end
+
 	if teamData.xp and teamData.xp > self:GetXP() then
 		if notify then self:Notify("You don't have the XP required to play as this team.") end
 		return false
@@ -72,6 +76,8 @@ function meta:CanBecomeTeamClass(classID, notify)
 	local classPlayers = 0
 
 	if not self:Alive() then return false end
+
+	if self:GetTeamClass() == classID then return false end
 
 	if classData.xp and classData.xp > self:GetXP() then
 		if notify then self:Notify("You don't have the XP required to play as this class.") end
