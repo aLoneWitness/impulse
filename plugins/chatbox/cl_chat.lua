@@ -115,7 +115,7 @@ function impulse.chatBox.buildBox()
  						if v.adminOnly == true and LocalPlayer():IsAdmin() == false then 
  							continue 
  						elseif v.adminOnly == true then
- 							c = Color(255, 0, 0, 255)
+ 							c = impulse.Config.InteractColour
  						end
  						
  						if v.superAdminOnly == true and LocalPlayer():IsSuperAdmin() == false then 

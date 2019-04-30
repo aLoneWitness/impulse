@@ -42,6 +42,14 @@ local oocCommand = {
 	description = "Talk out of character globally.",
 	requiresArg = true,
 	onRun = function(ply, arg, rawText)
+		if impulse.OOCClosed then
+			return ply:Notify("OOC chat has been suspsended by the game moderators and will return shortly.")	
+		end
+
+		if ply.hasOOCTimeout then
+			return ply:Notify("You have an active OOC timeout that will remain for "..string.NiceTime(ply.hasOOCTimeout - CurTime())..".")
+		end
+
 		for v,k in pairs(player.GetAll()) do
 			k:SendChatClassMessage(2, rawText, ply)
 		end
@@ -55,6 +63,10 @@ local loocCommand = {
 	description = "Talk out of character locally.",
 	requiresArg = true,
 	onRun = function(ply, arg, rawText)
+		if ply.hasOOCTimeout then
+			return ply:Notify("You have an active OOC timeout that will remain for "..string.NiceTime(ply.hasOOCTimeout - CurTime())..".")
+		end
+
 		for v,k in pairs(player.GetAll()) do
 			if (ply:GetPos() - k:GetPos()):LengthSqr() <= (impulse.Config.TalkDistance ^ 2) then 
 				k:SendChatClassMessage(3, rawText, ply)

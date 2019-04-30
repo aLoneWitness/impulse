@@ -97,6 +97,8 @@ function meta:Notify(message)
                 end)
             end
         end)
+
+        MsgN(message)
     else
         net.Start("impulseNotify")
         net.WriteString(message)
