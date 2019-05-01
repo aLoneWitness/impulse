@@ -183,7 +183,7 @@ local itCommand = {
 	onRun = function(ply, arg, rawText)
 		for v,k in pairs(player.GetAll()) do
 			if (ply:GetPos() - k:GetPos()):LengthSqr() <= (impulse.Config.TalkDistance ^ 2) then 
-				k:SendChatClassMessage(10, rawText)
+				k:SendChatClassMessage(10, rawText, ply)
 			end
 		end
 	end

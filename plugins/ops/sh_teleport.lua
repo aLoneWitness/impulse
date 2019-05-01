@@ -38,12 +38,6 @@ local gotoCommand = {
 		local plyTarget = impulse.FindPlayer(name)
 
 		if plyTarget and ply != plyTarget then
-			if not plyTarget:Alive() then
-				plyTarget:Spawn()
-				plyTarget:Notify("You have been respawned by a game moderator.")
-				ply:Notify("Target was dead, automatically respawned.")
-			end
-
 			opsGoto(ply, plyTarget:GetPos())
 			ply:Notify("You have teleported to "..plyTarget:Name().."'s position.")
 		else
@@ -54,6 +48,31 @@ local gotoCommand = {
 
 impulse.RegisterChatCommand("/goto", gotoCommand)
 
+local zoneGotoCommand = {
+	description = "Teleports yourself to the zone specified.",
+	requiresArg = true,
+	adminOnly = true,
+	onRun = function(ply, arg, rawText)
+        local name = string.lower(arg[1])
+		local zoneTarget
+
+		for v,k in pairs(impulse.Config.Zones) do
+			if string.find(string.lower(k.name), name, 1, true) ~= nil then
+            	zoneTarget = k
+        	end
+		end
+
+		if zoneTarget then
+			opsGoto(ply, LerpVector(0.5, zoneTarget.pos1, zoneTarget.pos2))
+			ply:Notify("You have teleported to "..zoneTarget.name..".")
+		else
+			return ply:Notify("Could not find zone: "..tostring(name))
+		end
+    end
+}
+
+impulse.RegisterChatCommand("/zgoto", zoneGotoCommand)
+
 local bringCommand = {
     description = "Teleports the player specified to your location.",
     requiresArg = true,
@@ -63,6 +82,12 @@ local bringCommand = {
 		local plyTarget = impulse.FindPlayer(name)
 
 		if plyTarget and ply != plyTarget then
+			if not plyTarget:Alive() then
+				plyTarget:Spawn()
+				plyTarget:Notify("You have been respawned by a game moderator.")
+				ply:Notify("Target was dead, automatically respawned.")
+			end
+
 			opsBring(ply, plyTarget)
 			ply:Notify(plyTarget:Name().." has been brought to your position.")
 		else
