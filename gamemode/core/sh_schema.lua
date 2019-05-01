@@ -10,6 +10,7 @@ function impulse.schema.boot(name)
     MsgC( Color( 83, 143, 239 ), "[impulse] Loading '"..SCHEMA.."' schema...\n" )
     
     impulse.lib.includeDir(SCHEMA.."/schema/teams")
+    impulse.lib.includeDir(SCHEMA.."/schema/items")
     impulse.lib.includeDir(SCHEMA.."/schema/buyables")
     impulse.lib.includeDir(SCHEMA.."/schema/npcs")
     impulse.lib.includeDir(SCHEMA.."/schema/config")
@@ -20,16 +21,6 @@ function impulse.schema.boot(name)
     	MsgC( Color( 83, 143, 239 ), "[impulse] Loading map config for '"..game.GetMap().."'\n" )
     	include(mapPath)
     	AddCSLuaFile(mapPath)
-
-        if impulse.Config.BlacklistEnts then
-            hook.Add("InitPostEntity", "impulseBlaclistents", function()
-                for v,k in pairs(ents.GetAll()) do
-                    if impulse.Config.BlacklistEnts[k:GetClass()] then
-                        k:Remove()
-                    end
-                end
-            end)
-        end
     else
         include(mapPath)
         AddCSLuaFile(mapPath)
