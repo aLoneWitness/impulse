@@ -143,7 +143,7 @@ else
 	end;
 
 	net.Receive("NetStreamDS", function(length)
-		print(length)
+		print("netstream2 len: "..length)
 		local NS_DS_NAME = net.ReadString();
 		local NS_DS_LENGTH = net.ReadUInt(32);
 		local NS_DS_DATA = net.ReadData(NS_DS_LENGTH);

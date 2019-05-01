@@ -209,7 +209,7 @@ function IMPULSE:PlayerSay(ply, text, teamChat)
 			table.remove(args, 1)
 			command.onRun(ply, args, text)
 		else
-			ply:AddChatText(infoCol, "The command "..args[1].." does not exist.")
+			ply:Notify("The command "..args[1].." does not exist.")
 		end
 	elseif ply:Alive() then
 		text = hook.Run("ProcessICChatMessage", ply, text) or text
