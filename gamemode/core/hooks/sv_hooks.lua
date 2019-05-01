@@ -355,6 +355,14 @@ function IMPULSE:InitPostEntity()
 		zone:SetBounds(k.pos1, k.pos2)
 		zone.Zone = v
 	end
+
+	if impulse.Config.BlacklistEnts then
+		for v,k in pairs(ents.GetAll()) do
+			if impulse.Config.BlacklistEnts[k:GetClass()] then
+	            k:Remove()
+	        end
+	    end
+	end
 end
 
 function IMPULSE:PostCleanupMap()
