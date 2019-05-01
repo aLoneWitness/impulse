@@ -1,7 +1,112 @@
 local PANEL = {}
 
 local quickTools = {
-	{name="Goto", command="test", icon="icon16/shield.png"}
+	{
+		name = "Goto",
+		icon = "icon16/arrow_right.png",
+		onRun = function(ply, sid)
+			LocalPlayer():ConCommand("say /goto "..sid)
+		end
+	},
+	{
+		name = "Bring",
+		icon = "icon16/arrow_inout.png",
+		onRun = function(ply, sid)
+			LocalPlayer():ConCommand("say /bring "..sid)
+		end
+	},
+	{
+		name = "Respawn",
+		icon = "icon16/arrow_refresh.png",
+		onRun = function(ply, sid)
+			LocalPlayer():ConCommand("say /respawn "..sid)
+		end
+	},
+	{
+		name = "Unarrest",
+		icon = "icon16/lock_open.png",
+		onRun = function(ply, sid)
+			LocalPlayer():ConCommand("say /unarrest "..sid)
+		end
+	},
+	{
+		name = "Name change",
+		icon = "icon16/textfield_rename.png",
+		onRun = function(ply, sid)
+			LocalPlayer():ConCommand("say /forcenamechange "..sid)
+		end
+	},
+	{
+		name = "Set team",
+		icon = "icon16/group_edit.png",
+		onRun = function(ply, sid)
+			local teams = DermaMenu()
+			for v,k in pairs(impulse.Teams.Data) do
+				teams:AddOption(k.name, function()
+					LocalPlayer():ConCommand("say /setteam "..sid.." "..v)
+				end)
+			end
+
+			teams:Open()
+		end
+	},
+	{
+		name = "View inventory",
+		icon = "icon16/magnifier.png",
+		onRun = function(ply, sid)
+			LocalPlayer():ConCommand("say /viewinv "..sid)
+		end
+	},
+	{
+		name = "View record",
+		icon = "icon16/folder_magnify.png",
+		onRun = function(ply, sid)
+			LocalPlayer():ConCommand("say /viewrecord "..sid)
+		end
+	},
+	{
+		name = "OOC timeout",
+		icon = "icon16/sound_add.png",
+		onRun = function(ply, sid)
+			Derma_StringRequest("impulse", "Enter the timeout length (in minutes):", "10", function(length)
+				LocalPlayer():ConCommand("say /ooctimeout "..sid.." "..length)
+			end)
+		end
+	},
+	{
+		name = "Un-OOC timeout",
+		icon = "icon16/sound_delete.png",
+		onRun = function(ply, sid)
+			LocalPlayer():ConCommand("say /unooctimeout "..sid)
+		end
+	},
+	{
+		name = "Warn",
+		icon = "icon16/error_add.png",
+		onRun = function(ply, sid)
+			Derma_StringRequest("impulse", "Enter the reason:", "", function(reason)
+				LocalPlayer():ConCommand("say /warn "..sid.." "..reason)
+			end)
+		end
+	},
+	{
+		name = "Kick",
+		icon = "icon16/user_go.png",
+		onRun = function(ply, sid)
+			Derma_StringRequest("impulse", "Enter the reason:", "Violation of community guidelines", function(reason)
+				LocalPlayer():ConCommand("say /kick "..sid.." "..reason)
+			end)
+		end
+	},
+	{
+		name = "Ban",
+		icon = "icon16/user_delete.png",
+		onRun = function(ply, sid)
+			Derma_StringRequest("impulse", "Enter the length (in minutes):", "", function(length)
+				LocalPlayer():ConCommand("say /ban "..sid.." "..reason)
+			end)
+		end
+	}
 }
 
 
@@ -125,9 +230,9 @@ function PANEL:Init()
 		if LocalPlayer():IsAdmin() then
 			self.adminTools = vgui.Create("DCollapsibleCategory", self)
 			self.adminTools:SetPos(10,180)
-			self.adminTools:SetSize(400, 150)
+			self.adminTools:SetSize(400, 250)
 			self.adminTools:SetExpanded(0)
-			self.adminTools:SetLabel("Admin tools (Click to expand)")
+			self.adminTools:SetLabel("Admin tools (click to expand)")
 
 			local colInv = Color(0, 0, 0, 0)
 			function self.adminTools:Paint()
@@ -141,12 +246,16 @@ function PANEL:Init()
 		 
 		 	for v,k in pairs(quickTools) do
 		 		local action = self.adminList:Add("DButton")
-			 	action:SetSize(100,30)
+			 	action:SetSize(125,30)
 			 	action:SetText(k.name)
-			 	action.DoClick = function()
-			 		LocalPlayer():ConCommand(k.command)
+			 	action:SetIcon(k.icon)
+
+			 	action.runFunc = k.onRun
+				local target = self.Player
+			 	function action:DoClick()
+			 		if not IsValid(target) then return LocalPlayer():Notify("This player has disconnected.") end
+			 		self.runFunc(target, target:SteamID())
 			 	end
-				action:SetIcon(k.icon)
 			end
 		end
 	end)
