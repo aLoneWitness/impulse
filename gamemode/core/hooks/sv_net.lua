@@ -169,7 +169,7 @@ net.Receive("impulseTeamChange", function(len, ply)
 				local data = ply:GetData()
 
 				if not data.quiz or not data.quiz[teamID] then
-					if ply.nextQuiz and ply.nextQuiz < CurTime() then
+					if ply.nextQuiz and ply.nextQuiz > CurTime() then
 						ply:Notify("Wait"..string.NiceTime(math.ceil(CurTime() - ply.nextQuiz)).." before attempting to retry the quiz.")
 						return
 					end
