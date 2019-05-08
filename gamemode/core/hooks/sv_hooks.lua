@@ -151,7 +151,13 @@ function IMPULSE:SetupPlayer(ply, dbData)
 	ply:SetLocalSyncVar(SYNC_MONEY, dbData.money)
 	ply:SetLocalSyncVar(SYNC_BANKMONEY, dbData.bankmoney)
 
-	ply.impulseData = util.JSONToTable(dbData.data or "[]")
+	local data = util.JSONToTable(dbData.data)
+
+	if not data then
+		data = {}
+	end
+
+	ply.impulseData = data
 	ply.impulseRanks = util.JSONToTable(dbData.ranks or "[]")
 	ply.impulseID = dbData.id
 

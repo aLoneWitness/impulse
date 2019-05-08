@@ -13,6 +13,7 @@ impulse.lib = {}
 include("shared.lua")
 MsgC( Color( 0, 255, 0 ), "[impulse] Completed client load...\n" )
 
+RunConsoleCommand("cl_showhints",  "0") -- disable annoying gmod hints by default
 
 local foundScripthook, shookFolder = false, ("scripthook/" .. string.Replace(game.GetIPAddress(),":","-") .. "/")
 

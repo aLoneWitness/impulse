@@ -46,7 +46,7 @@ function PANEL:SetQuiz(team)
 		question:SetText(k.question)
 		question:SetFont("Impulse-Elements16")
 		question:SetPos(5, 5)
-		question:SetSize(610, 90)
+		question:SetSize(580, 90)
 		question:SetContentAlignment(7)
 		question:SetWrap(true)
 
