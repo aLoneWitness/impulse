@@ -17,6 +17,7 @@ util.AddNetworkString("impulseSceneFOV")
 util.AddNetworkString("impulseScenePVS")
 util.AddNetworkString("impulseQuizSubmit")
 util.AddNetworkString("impulseQuizForce")
+util.AddNetworkString("impulseSellAllDoors")
 
 netstream.Hook("impulseCharacterCreate", function(player, charName, charModel, charSkin)
 	if (player.NextCreate or 0) > CurTime() then return end
@@ -387,4 +388,25 @@ net.Receive("impulseQuizSubmit", function(len, ply)
 	else
 		ply:Notify(team.GetName(teamID).." cannot be joined right now. However, you have still passed the quiz. Rejoin the team when it is available to play again.")
 	end
+end)
+
+net.Receive("impulseSellAllDoors", function(len, ply)
+	if (ply.nextSellAllDoors or 0) > CurTime() then return end
+	ply.nextSellAllDoors = CurTime() + 5
+	if not ply.OwnedDoors or table.Count(ply.OwnedDoors) == 0 then return end
+
+	local sold = 0
+	for v,k in pairs(ply.OwnedDoors) do
+		if IsValid(v) then
+			v:SetSyncVar(SYNC_DOOR_OWNERS, nil, true)
+			v:DoorUnlock()
+			sold = sold + 1
+		end
+	end
+
+	ply.OwnedDoors = {}
+
+	local amount = sold * (impulse.Config.DoorPrice - 2)
+	ply:GiveMoney(amount)
+	ply:Notify("You have sold all your doors for "..impulse.Config.CurrencyPrefix..amount..".")
 end)

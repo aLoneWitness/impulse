@@ -158,6 +158,10 @@ function PANEL:QuickActions()
 	local btn = self.list:Add("DButton")
 	btn:Dock(TOP)
 	btn:SetText("Sell all doors")
+	function btn:DoClick()
+		net.Start("impulseSellAllDoors")
+		net.SendToServer()
+	end
 
 	self.collapsableOptions = vgui.Create("DCollapsibleCategory", self.quickActionsInner)
 	self.collapsableOptions:SetLabel(team.GetName(LocalPlayer():Team()).." options")
