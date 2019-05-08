@@ -10,6 +10,7 @@ function PANEL:Init()
 	self.darkOverlay = Color(40, 40, 40, 160)
 
 	self.info = vgui.Create("DLabel", self)
+	self.info:SetFont("Impulse-Elements14")
 	self.info:SetText("Before you can become this team, you must complete a basic competency quiz.\nPlease complete the questions below, if you fail you will have to wait "..impulse.Config.QuizWaitTime.." minutes to take the quiz again.\nDo NOT ask other players for the answers.")
 	self.info:SizeToContents()
 	self.info:Dock(TOP)

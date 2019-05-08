@@ -9,32 +9,32 @@ function IMPULSE:OnSchemaLoaded()
 end
 
 function IMPULSE:Think()
-	if LocalPlayer():Team() == 0 then return end -- players who have not been loaded yet
-	
-	if input.IsKeyDown(KEY_F1) and (not IsValid(impulse.MainMenu) or not impulse.MainMenu:IsVisible()) then
-		local mainMenu = impulse.MainMenu or vgui.Create("impulseMainMenu")
-		mainMenu:SetVisible(true)
-		mainMenu:SetAlpha(0)
-		mainMenu:AlphaTo(255, .3)
-		mainMenu.popup = true
-	elseif input.IsKeyDown(KEY_F4) and not IsValid(impulse.playerMenu) and LocalPlayer():Alive() then
-		impulse.playerMenu = vgui.Create("impulsePlayerMenu")
-	elseif input.IsKeyDown(KEY_LALT) and LocalPlayer():Alive() then
-		local trace = {}
-		trace.start = LocalPlayer():EyePos()
-		trace.endpos = trace.start + LocalPlayer():GetAimVector() * 85
-		trace.filter = LocalPlayer()
+	if LocalPlayer():Team() != 0 and not vgui.CursorVisible() then
+		if input.IsKeyDown(KEY_F1) and (not IsValid(impulse.MainMenu) or not impulse.MainMenu:IsVisible()) then
+			local mainMenu = impulse.MainMenu or vgui.Create("impulseMainMenu")
+			mainMenu:SetVisible(true)
+			mainMenu:SetAlpha(0)
+			mainMenu:AlphaTo(255, .3)
+			mainMenu.popup = true
+		elseif input.IsKeyDown(KEY_F4) and not IsValid(impulse.playerMenu) and LocalPlayer():Alive() then
+			impulse.playerMenu = vgui.Create("impulsePlayerMenu")
+		elseif input.IsKeyDown(KEY_LALT) and LocalPlayer():Alive() then
+			local trace = {}
+			trace.start = LocalPlayer():EyePos()
+			trace.endpos = trace.start + LocalPlayer():GetAimVector() * 85
+			trace.filter = LocalPlayer()
 
-		local traceEnt = util.TraceLine(trace).Entity
+			local traceEnt = util.TraceLine(trace).Entity
 
-		if (not impulse.doorMenu or not IsValid(impulse.doorMenu)) and IsValid(traceEnt) and traceEnt:IsDoor() then
-			local doorOwners = traceEnt:GetSyncVar(SYNC_DOOR_OWNERS, nil) 
-			local doorGroup =  traceEnt:GetSyncVar(SYNC_DOOR_GROUP, nil)
-			local doorBuyable = traceEnt:GetSyncVar(SYNC_DOOR_BUYABLE, true)
+			if (not impulse.doorMenu or not IsValid(impulse.doorMenu)) and IsValid(traceEnt) and traceEnt:IsDoor() then
+				local doorOwners = traceEnt:GetSyncVar(SYNC_DOOR_OWNERS, nil) 
+				local doorGroup =  traceEnt:GetSyncVar(SYNC_DOOR_GROUP, nil)
+				local doorBuyable = traceEnt:GetSyncVar(SYNC_DOOR_BUYABLE, true)
 
-			if LocalPlayer():CanBuyDoor(doorOwners, doorBuyable) or LocalPlayer():CanLockUnlockDoor(doorOwners, doorGroup) then
-				impulse.doorMenu = vgui.Create("impulseDoorMenu")
-				impulse.doorMenu:SetDoor(traceEnt)
+				if LocalPlayer():CanBuyDoor(doorOwners, doorBuyable) or LocalPlayer():CanLockUnlockDoor(doorOwners, doorGroup) then
+					impulse.doorMenu = vgui.Create("impulseDoorMenu")
+					impulse.doorMenu:SetDoor(traceEnt)
+				end
 			end
 		end
 	end
