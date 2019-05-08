@@ -102,3 +102,9 @@ net.Receive("impulseZoneUpdate", function()
 	impulse.ShowZone = true
 	LocalPlayer().impulseZone = zone
 end)
+
+net.Receive("impulseQuizForce", function()
+	local team = net.ReadUInt(8)
+	local quiz = vgui.Create("impulseQuiz")
+	quiz:SetQuiz(team)
+end)

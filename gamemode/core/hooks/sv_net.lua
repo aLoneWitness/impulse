@@ -15,6 +15,8 @@ util.AddNetworkString("impulseDoorLock")
 util.AddNetworkString("impulseDoorUnlock")
 util.AddNetworkString("impulseSceneFOV")
 util.AddNetworkString("impulseScenePVS")
+util.AddNetworkString("impulseQuizSubmit")
+util.AddNetworkString("impulseQuizForce")
 
 netstream.Hook("impulseCharacterCreate", function(player, charName, charModel, charSkin)
 	if (player.NextCreate or 0) > CurTime() then return end
@@ -162,6 +164,24 @@ net.Receive("impulseTeamChange", function(len, ply)
 
 	if teamID and isnumber(teamID) and impulse.Teams.Data[teamID] then
 		if ply:CanBecomeTeam(teamID, true) then
+
+			if impulse.Teams.Data[teamID].quiz then
+				local data = ply:GetData()
+
+				if not data.quiz or not data.quiz[teamID] then
+					if ply.nextQuiz and ply.nextQuiz < CurTime() then
+						ply:Notify("Wait"..string.NiceTime(math.ceil(CurTime() - ply.nextQuiz)).." before attempting to retry the quiz.")
+						return
+					end
+
+					ply.quizzing = true
+					net.Start("impulseQuizForce")
+					net.WriteUInt(teamID, 8)
+					net.Send(ply)
+					return
+				end
+			end
+
 			ply:SetTeam(teamID)
 			ply.lastTeamChange = CurTime()
 			ply:Notify("You have changed your team to "..team.GetName(teamID)..".")
@@ -339,4 +359,32 @@ net.Receive("impulseDoorUnlock", function(len, ply)
 	end
 
 	ply.nextDoorUnlock = CurTime() + 1
+end)
+
+net.Receive("impulseQuizSubmit", function(len, ply)
+	if not ply.quizzing then return end
+	ply.quizzing = false
+
+	local teamID = net.ReadUInt(8)
+	if not impulse.Teams.Data[teamID] or not impulse.Teams.Data[teamID].quiz then return end
+
+	local quizPassed = net.ReadBool()
+
+	if not quizPassed then
+		ply.nextQuiz = CurTime() + (impulse.Config.QuizWaitTime * 60)
+		return ply:Notify("Quiz failed. You may retry the quiz in "..impulse.Config.QuizWaitTime.." minutes.")
+	end
+
+	ply.impulseData.quiz = ply.impulseData.quiz or {}
+	ply.impulseData.quiz[teamID] = true
+	ply:SaveData()
+
+	ply:Notify("You have passed the quiz. You will not need to retake it again.")
+
+	if ply:CanBecomeTeam(teamID, true) then
+		ply:SetTeam(teamID)
+		ply:Notify("You have changed your team to "..team.GetName(teamID)..".")
+	else
+		ply:Notify(team.GetName(teamID).." cannot be joined right now. However, you have still passed the quiz. Rejoin the team when it is available to play again.")
+	end
 end)

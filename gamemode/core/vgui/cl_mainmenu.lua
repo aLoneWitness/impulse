@@ -59,7 +59,6 @@ function PANEL:Init()
 	button:SizeToContents()
 
 	local normalCol = button:GetColor()
-	local highlightCol = Color(impulse.Config.MainColour.r, impulse.Config.MainColour.g, impulse.Config.MainColour.b)
 	function button:Paint()
 		if self:IsHovered() then
 			self:SetColor(highlightCol)
@@ -97,6 +96,11 @@ function PANEL:Init()
 		surface.PlaySound("ui/buttonrollover.wav")
 	end
 
+	function button:DoClick()
+		surface.PlaySound("ui/buttonclick.wav")
+		gui.OpenURL(impulse.Config.CommunityURL or "www.google.com")
+	end
+
 	local button = vgui.Create("DButton", self)
 	button:SetPos(100,310)
 	button:SetFont("Impulse-Elements32")
@@ -104,7 +108,6 @@ function PANEL:Init()
 	button:SizeToContents()
 
 	local normalCol = button:GetColor()
-	local highlightCol = Color(impulse.Config.MainColour.r, impulse.Config.MainColour.g, impulse.Config.MainColour.b)
 	local goldCol = Color(218, 165, 32)
 	function button:Paint()
 		if self:IsHovered() then
@@ -116,6 +119,45 @@ function PANEL:Init()
 
 	function button:OnCursorEntered()
 		surface.PlaySound("ui/buttonrollover.wav")
+	end
+
+	function button:DoClick()
+		surface.PlaySound("ui/buttonclick.wav")
+		gui.OpenURL(impulse.Config.DonateURL or "www.google.com")
+	end
+
+	local button = vgui.Create("DButton", self)
+	button:SetPos(100,ScrH()-230)
+	button:SetFont("Impulse-Elements32")
+	button:SetText("Credits")
+	button:SizeToContents()
+
+	local normalCol = button:GetColor()
+	local highlightCol = Color(impulse.Config.MainColour.r, impulse.Config.MainColour.g, impulse.Config.MainColour.b)
+	function button:Paint()
+		if self:IsHovered() then
+			self:SetColor(highlightCol)
+		else
+			self:SetColor(color_white)
+		end
+	end
+
+	local mainmenu = self
+	function button:DoClick()
+		if self.popup then return end
+		if impulseCredits and IsValid(impulseCredits) then return end
+		
+		impulseCredits = vgui.Create("impulseCredits")
+		impulseCredits:AlphaTo(255, 2, 1.5)
+		mainmenu:AlphaTo(0, 2, 0)
+	end
+
+	function button:Think()
+		if impulse.MainMenu.popup then
+			self:Hide()
+		else
+			self:Show()
+		end
 	end
 
 	local button = vgui.Create("DButton", self)
@@ -191,7 +233,9 @@ function PANEL:Init()
 	end
 
 	timer.Simple(0, function()
-		if not impulse.MainMenu.popup and impulse.GetSetting("perf_mcore") == false then
+		if impulse.MainMenu.popup then return end
+		
+		if impulse.GetSetting("perf_mcore") == false then
 			Derma_Query("Would you like to enable Multi-core rendering?\nThis will often greatly improve your FPS, however if your computer has a low core count and/or\na small amount of RAM, it can cause crashes and performance problems.",
 				"impulse",
 				"Enable Multi-core rendering",
