@@ -108,3 +108,16 @@ net.Receive("impulseQuizForce", function()
 	local quiz = vgui.Create("impulseQuiz")
 	quiz:SetQuiz(team)
 end)
+
+net.Receive("impulseInvGiveSilent", function()
+	local netid = net.ReadUInt(16)
+	local strid = net.ReadUInt(4)
+
+	if not impulse.Inventory.Data[0][strid] then
+		impulse.Inventory.Data[0][strid] = {}
+	end
+
+	impulse.Inventory.Data[0][strid] = {
+		id = netid,
+	}
+end)

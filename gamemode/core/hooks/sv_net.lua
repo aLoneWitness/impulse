@@ -18,6 +18,11 @@ util.AddNetworkString("impulseScenePVS")
 util.AddNetworkString("impulseQuizSubmit")
 util.AddNetworkString("impulseQuizForce")
 util.AddNetworkString("impulseSellAllDoors")
+util.AddNetworkString("impulseInvGive")
+util.AddNetworkString("impulseInvGiveSilent")
+util.AddNetworkString("impulseInvTake")
+util.AddNetworkString("impulseInvUpdateStorage")
+util.AddNetworkString("impulseInvUpdateData")
 
 netstream.Hook("impulseCharacterCreate", function(player, charName, charModel, charSkin)
 	if (player.NextCreate or 0) > CurTime() then return end

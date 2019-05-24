@@ -127,6 +127,8 @@ function IMPULSE:PlayerDisconnected(ply)
 		end
 	end
 
+	impulse.Inventory.Players[ply:UserID()] = nil
+
 	if ply.OwnedDoors then
 		for door,k in pairs(ply.OwnedDoors) do
 			if IsValid(door) then
@@ -171,6 +173,48 @@ function IMPULSE:SetupPlayer(ply, dbData)
 	ply:SetFOV(90, 0)
 	ply:SetTeam(impulse.Config.DefaultTeam)
 	ply:AllowFlashlight(true)
+
+	impulse.Inventory.Data[ply:UserID()] = {}
+	impulse.Inventory.Data[ply:UserID()][1] = {}
+	impulse.Inventory.Data[ply:UserID()][2] = {}
+
+	local query = mysql:Select("impulse_inventory")
+	query:Select("id")
+	query:Select("uniqueid")
+	query:Select("ownerid")
+	query:Select("storagetype")
+	query:Select("data")
+	query:Where("ownerid", dbData.id)
+	query:Callback(function(result)
+		if IsValid(ply) and type(result) == "table" and #result > 0 then
+			local userid = ply:UserID()
+			local userInv = impulse.Inventory.Data[userid]
+
+			for v,k in pairs(result) do
+				local netid = impulse.Inventory.ClassToNetID(k.uniqueid)
+				if not netid then continue end
+
+				local storetype = k.storagetype
+
+				if not userInv[storetype] then
+					userInv[storetype] = {}
+				end
+				
+				userInv[storetype][k.id] = {
+					id = netid,
+					class = k.uniqueid,
+					restricted = false,
+					data = k.data or nil
+				}
+			end
+			
+			ply:SetupInventory()
+			ply.beenInvSetup = true
+		end
+	end)
+
+	query:Execute()
+
 	ply.beenSetup = true
 
 	hook.Run("PostSetupPlayer", ply)

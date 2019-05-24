@@ -10,6 +10,8 @@ function PANEL:Init()
 	--self:MakePopup()
  	self:MoveToFront()
 
+ 	input.SetCursorPos(ScrW() / 2, ScrH() - 280)
+
  	self.weight = vgui.Create("DLabel", self)
  	self.weight:SetPos(self:GetWide() - 50, 5)
  	self.weight:SetText("0kg/20kg")
@@ -26,25 +28,12 @@ function PANEL:Init()
  	for i = 1, 14 do
  		local box = self.grid:Add("impulseInventoryCard")
  		box:SetSize(74, 74)
- 		box:SetMouseInputEnabled(true)
 
- 		function box:Think()
- 			if not self:IsHovered() then
- 				self.hoverStart = nil	
- 			end
-
- 			if self.hoverStart and self.hoverStart < CurTime() then
- 				if self:IsHovered() then
- 					panel.hover = vgui.Create("impulseInventoryHover")
- 					panel.hover:SetItem(self)
- 					self.hoverStart = nil
- 				end
- 			end
-
- 			if self:IsHovered() and not self.hoverStart and (not panel.hover or not IsValid(panel.hover)) then
- 				self.hoverStart = CurTime() + 0.7
- 			end
- 		end
+ 		if impulse.Inventory.Items[i] then
+	 		local item = vgui.Create("impulseInventoryItem", box)
+	 		item:Dock(FILL)
+	 		item:SetItem(impulse.Inventory.Items[i])
+	 	end
  	end
 end
 
