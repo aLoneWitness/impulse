@@ -40,6 +40,37 @@ function PANEL:Init()
  	self.infoTeam:SetColor(team.GetColor(lpTeam))
  	self.infoTeam:SizeToContents()
 
+ 	local model = LocalPlayer():GetModel()
+ 	local skin = LocalPlayer():GetSkin()
+
+ 	self.modelPreview = vgui.Create("impulseModelPanel", self)
+	self.modelPreview:SetPos(0, 50)
+	self.modelPreview:SetSize(270, h * .73)
+	self.modelPreview:SetModel(model, skin)
+	self.modelPreview:MoveToBack()
+	self.modelPreview:SetCursor("arrow")
+	self.modelPreview:SetFOV(self.modelPreview:GetFOV() - 20)
+
+	function self.modelPreview:LayoutEntity(ent)
+		ent:SetAngles(Angle(-1, 45, 0))
+		ent:SetPos(Vector(20, 15, 6))
+		self:RunAnimation()
+	end
+
+ 	timer.Simple(0, function()
+		if not IsValid(self.modelPreview) then
+			return
+		end
+
+		local ent = self.modelPreview.Entity
+
+		if IsValid(ent) then
+			for v,k in pairs(LocalPlayer():GetBodyGroups()) do
+				ent:SetBodygroup(k.id, LocalPlayer():GetBodygroup(k.id))
+			end
+		end
+	end)
+
  	self.invScroll = vgui.Create("DScrollPanel", self)
  	self.invScroll:SetPos(270, 25)
  	self.invScroll:SetSize(w - 270, h - 25)
