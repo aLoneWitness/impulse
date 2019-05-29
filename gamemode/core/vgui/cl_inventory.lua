@@ -44,16 +44,16 @@ function PANEL:Init()
  	local skin = LocalPlayer():GetSkin()
 
  	self.modelPreview = vgui.Create("impulseModelPanel", self)
-	self.modelPreview:SetPos(0, 50)
-	self.modelPreview:SetSize(270, h * .73)
+	self.modelPreview:SetPos(0, 70)
+	self.modelPreview:SetSize(270, h * .75)
 	self.modelPreview:SetModel(model, skin)
 	self.modelPreview:MoveToBack()
 	self.modelPreview:SetCursor("arrow")
-	self.modelPreview:SetFOV(self.modelPreview:GetFOV() - 20)
+	self.modelPreview:SetFOV((324 / ScrH()) * 100) -- a incredible equation that makes the model fit onto the ui, patent by professor vin
 
 	function self.modelPreview:LayoutEntity(ent)
 		ent:SetAngles(Angle(-1, 45, 0))
-		ent:SetPos(Vector(20, 15, 6))
+		ent:SetPos(Vector(0, 0, 2.5))
 		self:RunAnimation()
 	end
 
@@ -71,15 +71,27 @@ function PANEL:Init()
 		end
 	end)
 
+ 	self.invName = vgui.Create("DLabel", self)
+ 	self.invName:SetPos(270, 40)
+ 	self.invName:SetText("Inventory")
+ 	self.invName:SetFont("Impulse-Elements24-Shadow")
+ 	self.invName:SizeToContents()
+
+ 	self.invWeight = vgui.Create("DLabel", self)
+ 	self.invWeight:SetPos(w - 270, 40)
+ 	self.invWeight:SetText("0kg/"..impulse.Config.InventoryMaxWeight.."kg")
+ 	self.invWeight:SetFont("Impulse-Elements18-Shadow")
+ 	self.invWeight:SizeToContents()
+
  	self.invScroll = vgui.Create("DScrollPanel", self)
- 	self.invScroll:SetPos(270, 25)
+ 	self.invScroll:SetPos(270, 65)
  	self.invScroll:SetSize(w - 270, h - 25)
 
- 	for i=0, 100 do
-	local DButton = self.invScroll:Add( "DButton" )
-		DButton:SetText( "Button #" .. i )
+ 	for v,k in pairs(impulse.Inventory.Items) do
+		local DButton = self.invScroll:Add( "impulseInventoryItem" )
+		DButton:SetItem(k)
 		DButton:Dock( TOP )
-		DButton:DockMargin( 0, 0, 0, 5 )
+		DButton:DockMargin( 0, 0, 15, 5 )
 	end
 end
 

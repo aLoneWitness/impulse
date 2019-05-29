@@ -4,8 +4,7 @@ function PANEL:Init()
 	self.model = vgui.Create("DModelPanel", self)
 	self.model:SetPaintBackground(false)
 	self:SetMouseInputEnabled(true)
-
-	self:Droppable("impulseInv")
+	self:SetTall(64)
 end
 
 function PANEL:Paint()
@@ -36,7 +35,8 @@ function PANEL:Think()
 function PANEL:SetItem(item)
 	self.Item = item
 
-	self.model:Dock(FILL)
+	self.model:SetPos(0, 0)
+	self.model:SetSize(64, 64)
 	self.model:SetMouseInputEnabled(true)
 	self.model:SetModel(item.Model)
 	self.model:SetFOV(item.FOV or 35)
@@ -77,6 +77,25 @@ function PANEL:SetItem(item)
 		end
 
 		popup:Open()
+	end
+end
+
+local bodyCol = Color(50, 50, 50, 210)
+function PANEL:Paint(w, h)
+	surface.SetDrawColor(bodyCol)
+	surface.DrawRect(0, 0, w, h)
+
+	local item =  self.Item
+	if item then
+		surface.SetTextColor(item.Colour or color_white)
+		surface.SetFont("Impulse-Elements19-Shadow")
+		surface.SetTextPos(65, 10)
+		surface.DrawText(item.Name)
+
+		surface.SetTextColor(color_white)
+		surface.SetTextPos(65, 30)
+		surface.SetFont("Impulse-Elements16")
+		surface.DrawText(item.Desc or "")
 	end
 end
 
