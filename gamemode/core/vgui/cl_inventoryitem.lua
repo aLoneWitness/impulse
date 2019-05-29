@@ -51,36 +51,39 @@ function PANEL:SetItem(item)
 	local min, max = self.model.Entity:GetRenderBounds()
 	self.model:SetCamPos(camPos -  Vector(10, 0, 16))
 	self.model:SetLookAt((max + min) / 2)
+end
 
-	local panel = self
+function PANEL:OnMousePressed(keycode)
+	if keycode != MOUSE_RIGHT then return end
 
-	function self.model:OnMousePressed(keycode)
-		if keycode != MOUSE_RIGHT then return end
+	local popup = DermaMenu(self)
+	popup.Inv = self
 
-		local popup = DermaMenu(self)
-		popup.Inv = panel
-
-		if panel.Item.OnUse then
-			popup:AddOption(panel.Item.UseName or "Use")
-		end
-
-		if panel.Item.OnEquip then
-			popup:AddOption(panel.Item.EqupName or "Equip")
-		end
-
-		popup:AddOption("Drop")
-
-		function popup:Think()
-			if not IsValid(self.Inv) then
-				return self:Remove()
-			end
-		end
-
-		popup:Open()
+	if self.Item.OnUse then
+		popup:AddOption(self.Item.UseName or "Use")
 	end
+
+	if self.Item.OnEquip then
+		popup:AddOption(self.Item.EqupName or "Equip")
+	end
+
+	popup:AddOption("Drop")
+
+	function popup:Think()
+		if not IsValid(self.Inv) then
+			return self:Remove()
+		end
+	end
+
+	popup:Open()
 end
 
 local bodyCol = Color(50, 50, 50, 210)
+local restrictedCol = Color(255, 223, 0, 255)
+local illegalCol = Color(255, 0, 0, 255)
+local equippedCol =  Color(0, 220, 0, 140)
+local restrictedMat =  Material("icon16/error.png")
+local illegalMat = Material("icon16/exclamation.png")
 function PANEL:Paint(w, h)
 	surface.SetDrawColor(bodyCol)
 	surface.DrawRect(0, 0, w, h)
@@ -96,6 +99,27 @@ function PANEL:Paint(w, h)
 		surface.SetTextPos(65, 30)
 		surface.SetFont("Impulse-Elements16")
 		surface.DrawText(item.Desc or "")
+
+		draw.SimpleText((item.Weight or 0).."kg", "Impulse-Elements16", w - 10, 10, color_white, TEXT_ALIGN_RIGHT)
+
+		if false then -- if restrict check here
+			draw.SimpleText("Restricted", "Impulse-Elements16", w - 34, 30, restrictedCol, TEXT_ALIGN_RIGHT)
+
+			surface.SetDrawColor(color_white)
+			surface.SetMaterial(restrictedMat)
+			surface.DrawTexturedRect(w - 30, 30, 16, 16)
+		elseif item.Illegal then
+			draw.SimpleText("Contraband", "Impulse-Elements16", w - 34, 30, illegalCol, TEXT_ALIGN_RIGHT)
+
+			surface.SetDrawColor(color_white)
+			surface.SetMaterial(illegalMat)
+			surface.DrawTexturedRect(w - 30, 30, 16, 16)
+		end
+
+		if true then -- if equipped
+			surface.SetDrawColor(equippedCol)
+			surface.DrawRect(0, 0, 5, h)
+		end
 	end
 end
 

@@ -40,6 +40,18 @@ function PANEL:Init()
  	self.infoTeam:SetColor(team.GetColor(lpTeam))
  	self.infoTeam:SizeToContents()
 
+ 	local className = LocalPlayer():GetTeamClassName()
+ 	local rankName = LocalPlayer():GetTeamRankName()
+
+ 	if className != "Default" then
+	 	self.infoClassRank = vgui.Create("DLabel", self)
+	 	self.infoClassRank:SetPos(15, 80)
+	 	self.infoClassRank:SetFont("Impulse-Elements19-Shadow")
+	 	self.infoClassRank:SetText(className)
+	 	self.infoClassRank:SetColor(team.GetColor(lpTeam))
+	 	self.infoClassRank:SizeToContents()
+	end
+
  	local model = LocalPlayer():GetModel()
  	local skin = LocalPlayer():GetSkin()
 
@@ -72,13 +84,13 @@ function PANEL:Init()
 	end)
 
  	self.invName = vgui.Create("DLabel", self)
- 	self.invName:SetPos(270, 40)
+ 	self.invName:SetPos(270, 35)
  	self.invName:SetText("Inventory")
  	self.invName:SetFont("Impulse-Elements24-Shadow")
  	self.invName:SizeToContents()
 
  	self.invWeight = vgui.Create("DLabel", self)
- 	self.invWeight:SetPos(w - 270, 40)
+ 	self.invWeight:SetPos(w - 80, 40)
  	self.invWeight:SetText("0kg/"..impulse.Config.InventoryMaxWeight.."kg")
  	self.invWeight:SetFont("Impulse-Elements18-Shadow")
  	self.invWeight:SizeToContents()
@@ -89,9 +101,9 @@ function PANEL:Init()
 
  	for v,k in pairs(impulse.Inventory.Items) do
 		local DButton = self.invScroll:Add( "impulseInventoryItem" )
-		DButton:SetItem(k)
 		DButton:Dock( TOP )
 		DButton:DockMargin( 0, 0, 15, 5 )
+		DButton:SetItem(k)
 	end
 end
 

@@ -271,15 +271,7 @@ function IMPULSE:HUDPaint()
 	surface.SetTextPos(30, y+30)
 	surface.DrawText(team.GetName(lpTeam))
 
-	local className = LocalPlayer():GetTeamClassName()
 	local yAdd = 0
-
-	if className != "Default" then
-		surface.SetFont("Impulse-Elements16")
-		surface.SetTextPos(30, y+49)
-		surface.DrawText(className)
-		yAdd = 10
-	end
 
 	surface.SetTextColor(color_white)
 	surface.SetFont("Impulse-Elements19")
@@ -379,7 +371,7 @@ function IMPULSE:HUDPaint()
 
 	if not IsValid(PlayerIcon) and impulse.hudEnabled == true then
 		PlayerIcon = vgui.Create("impulseSpawnIcon")
-		PlayerIcon:SetPos(30, y+70)
+		PlayerIcon:SetPos(30, y+60)
 		PlayerIcon:SetSize(64, 64)
 		PlayerIcon:SetModel(LocalPlayer():GetModel(), LocalPlayer():GetSkin())
 
