@@ -17,6 +17,8 @@ function PANEL:SetItem(netitem, wide)
 	self.Item = item
 	self.IsEquipped = netitem.equipped or false
 	self.IsRestricted = netitem.restricted or false
+	self.Weight = item.Weight or 0
+	self.Count = 1
 
 	self.model:SetPos(0, 0)
 	self.model:SetSize(64, 64)
@@ -61,6 +63,7 @@ function PANEL:SetItem(netitem, wide)
 		if panel.Count > 1 and panel.Count != self.lastCount then
 			self:SetText("x"..panel.Count)
 			self.lastCount = panel.Count
+			panel.Weight = panel.Count * panel.Item.Weight
 		end
 	end
 end
@@ -105,7 +108,7 @@ function PANEL:Paint(w, h)
 		surface.SetTextPos(65, 10)
 		surface.DrawText(item.Name)
 
-		draw.SimpleText((item.Weight or 0).."kg", "Impulse-Elements16", w - 10, 10, color_white, TEXT_ALIGN_RIGHT)
+		draw.SimpleText(self.Weight.."kg", "Impulse-Elements16", w - 10, 10, color_white, TEXT_ALIGN_RIGHT)
 
 		if self.IsRestricted then -- if restrict check here
 			draw.SimpleText("Restricted", "Impulse-Elements16", w - 34, 30, restrictedCol, TEXT_ALIGN_RIGHT)

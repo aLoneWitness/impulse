@@ -91,9 +91,10 @@ function PANEL:Init()
 
  	self.invWeight = vgui.Create("DLabel", self)
  	self.invWeight:SetPos(w - 80, 40)
- 	self.invWeight:SetText("0kg/"..impulse.Config.InventoryMaxWeight.."kg")
+ 	self.invWeight:SetContentAlignment(7)
+ 	self.invWeight:SetText("")
  	self.invWeight:SetFont("Impulse-Elements18-Shadow")
- 	self.invWeight:SizeToContents()
+ 	self.invWeight:SetSize(80, 20)
 
  	self.invScroll = vgui.Create("DScrollPanel", self)
  	self.invScroll:SetPos(270, 65)
