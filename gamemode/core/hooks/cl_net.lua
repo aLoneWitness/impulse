@@ -117,7 +117,9 @@ net.Receive("impulseInvGiveSilent", function()
 		impulse.Inventory.Data[0][strid] = {}
 	end
 
-	impulse.Inventory.Data[0][strid] = {
-		id = netid,
-	}
+	table.insert(impulse.Inventory.Data[0][strid], {
+		equipped = false,
+		restricted = false,
+		id = netid
+	})
 end)

@@ -97,14 +97,30 @@ function PANEL:Init()
 
  	self.invScroll = vgui.Create("DScrollPanel", self)
  	self.invScroll:SetPos(270, 65)
- 	self.invScroll:SetSize(w - 270, h - 25)
+ 	self.invScroll:SetSize(w - 270, h - 65)
 
- 	for v,k in pairs(impulse.Inventory.Items) do
-		local DButton = self.invScroll:Add( "impulseInventoryItem" )
-		DButton:Dock( TOP )
-		DButton:DockMargin( 0, 0, 15, 5 )
-		DButton:SetItem(k)
+ 	self.items = {}
+
+ 	local weight = 0
+
+ 	for v,k in pairs(impulse.Inventory.Data[0][1]) do -- 01 is player 0 (localplayer) and storage 1 (local inv)
+ 		local otherItem = self.items[k.id]
+ 		local itemX = impulse.Inventory.Items[k.id]
+
+ 		if itemX.CanStack and otherItem then
+ 			otherItem.Count = (otherItem.Count or 1) + 1
+ 		else
+			local item = self.invScroll:Add("impulseInventoryItem")
+			item:Dock(TOP)
+			item:DockMargin(0, 0, 15, 5)
+			item:SetItem(k, w)
+			self.items[k.id] = item
+		end
+
+		weight =  weight + (itemX.Weight or 0)
 	end
+
+	self.invWeight:SetText(weight.."kg/"..impulse.Config.InventoryMaxWeight.."kg")
 end
 
 vgui.Register("impulseInventory", PANEL, "DFrame")

@@ -5,35 +5,18 @@ function PANEL:Init()
 	self.model:SetPaintBackground(false)
 	self:SetMouseInputEnabled(true)
 	self:SetTall(64)
+
+	self:SetCursor("hand")
 end
 
 function PANEL:Paint()
 end
 
-function PANEL:Think()
-	if not self.Item then return end
-
- 	local panel = self:GetParent()
-
- 	if not self.model:IsHovered() then
- 		self.hoverStart = nil	
- 	end
-
- 	if self.hoverStart and self.hoverStart < CurTime() then
- 		if self.model:IsHovered() then
- 			panel.hover = vgui.Create("impulseInventoryHover")
- 			panel.hover:SetItem(self)
- 			self.hoverStart = nil
- 		end
- 	end
-
- 	if self.model:IsHovered() and not self.hoverStart and (not panel.hover or not IsValid(panel.hover)) then
- 		self.hoverStart = CurTime() + 0.7
- 	end
- end
-
-function PANEL:SetItem(item)
+function PANEL:SetItem(netitem, wide)
+	local item = impulse.Inventory.Items[netitem.id]
 	self.Item = item
+	self.IsEquipped = netitem.equipped or false
+	self.IsRestricted = netitem.restricted or false
 
 	self.model:SetPos(0, 0)
 	self.model:SetSize(64, 64)
@@ -51,11 +34,38 @@ function PANEL:SetItem(item)
 	local min, max = self.model.Entity:GetRenderBounds()
 	self.model:SetCamPos(camPos -  Vector(10, 0, 16))
 	self.model:SetLookAt((max + min) / 2)
+
+	self.desc =  vgui.Create("DLabel", self)
+	self.desc:SetPos(65, 30)
+	self.desc:SetSize(wide - 530, 30)
+
+	if wide < 800 then -- small resolutions have trouble with 16
+		self.desc:SetFont("Impulse-Elements14")
+	else
+		self.desc:SetFont("Impulse-Elements16")
+	end
+
+	self.desc:SetText(item.Desc or "")
+	self.desc:SetContentAlignment(7)
+	self.desc:SetWrap(true)
+
+	self.count = vgui.Create("DLabel", self)
+	self.count:SetPos(38, 38)
+	self.count:SetText("")
+	self.count:SetTextColor(impulse.Config.MainColour)
+	self.count:SetFont("Impulse-Elements19-Shadow")
+	self.count:SetSize(30, 20)
+
+	local panel = self
+	function self.count:Think()
+		if panel.Count > 1 and panel.Count != self.lastCount then
+			self:SetText("x"..panel.Count)
+			self.lastCount = panel.Count
+		end
+	end
 end
 
 function PANEL:OnMousePressed(keycode)
-	if keycode != MOUSE_RIGHT then return end
-
 	local popup = DermaMenu(self)
 	popup.Inv = self
 
@@ -95,14 +105,9 @@ function PANEL:Paint(w, h)
 		surface.SetTextPos(65, 10)
 		surface.DrawText(item.Name)
 
-		surface.SetTextColor(color_white)
-		surface.SetTextPos(65, 30)
-		surface.SetFont("Impulse-Elements16")
-		surface.DrawText(item.Desc or "")
-
 		draw.SimpleText((item.Weight or 0).."kg", "Impulse-Elements16", w - 10, 10, color_white, TEXT_ALIGN_RIGHT)
 
-		if false then -- if restrict check here
+		if self.IsRestricted then -- if restrict check here
 			draw.SimpleText("Restricted", "Impulse-Elements16", w - 34, 30, restrictedCol, TEXT_ALIGN_RIGHT)
 
 			surface.SetDrawColor(color_white)
@@ -116,7 +121,7 @@ function PANEL:Paint(w, h)
 			surface.DrawTexturedRect(w - 30, 30, 16, 16)
 		end
 
-		if true then -- if equipped
+		if self.IsEquipped then -- if equipped
 			surface.SetDrawColor(equippedCol)
 			surface.DrawRect(0, 0, 5, h)
 		end
