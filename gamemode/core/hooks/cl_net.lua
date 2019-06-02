@@ -109,17 +109,29 @@ net.Receive("impulseQuizForce", function()
 	quiz:SetQuiz(team)
 end)
 
-net.Receive("impulseInvGiveSilent", function()
+net.Receive("impulseInvGive", function()
 	local netid = net.ReadUInt(16)
+	local invid = net.ReadUInt(10)
 	local strid = net.ReadUInt(4)
+	local restricted = net.ReadBool()
 
 	if not impulse.Inventory.Data[0][strid] then
 		impulse.Inventory.Data[0][strid] = {}
 	end
 
-	table.insert(impulse.Inventory.Data[0][strid], {
+	impulse.Inventory.Data[0][strid][invid] = {
 		equipped = false,
-		restricted = false,
+		restricted = restricted,
 		id = netid
-	})
+	}
+end)
+
+net.Receive("impulseInvRemove", function()
+	local invid = net.ReadUInt(10)
+	local strid = net.ReadUInt(4)
+	local item = impulse.Inventory.Data[0][strid][invid]
+
+	if item then
+		impulse.Inventory.Data[0][strid][invid] = nil
+	end
 end)

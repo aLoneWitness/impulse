@@ -174,25 +174,31 @@ function IMPULSE:SetupPlayer(ply, dbData)
 	ply:SetTeam(impulse.Config.DefaultTeam)
 	ply:AllowFlashlight(true)
 
-	impulse.Inventory.Data[ply:UserID()] = {}
-	impulse.Inventory.Data[ply:UserID()][1] = {}
-	impulse.Inventory.Data[ply:UserID()][2] = {}
+	local id = ply.impulseID
+	impulse.Inventory.Data[id] = {}
+	impulse.Inventory.Data[id][1] = {} -- inv
+	impulse.Inventory.Data[id][2] = {} -- storage
+
+	ply.InventoryWeight = 0
+	ply.InventoryWeightStorage = 0
+	ply.InventoryRegister = {}
+
+	hook.Run("PreEarlyInventorySetup", ply)
 
 	local query = mysql:Select("impulse_inventory")
 	query:Select("id")
 	query:Select("uniqueid")
 	query:Select("ownerid")
 	query:Select("storagetype")
-	query:Select("data")
 	query:Where("ownerid", dbData.id)
 	query:Callback(function(result)
 		if IsValid(ply) and type(result) == "table" and #result > 0 then
-			local userid = ply:UserID()
+			local userid = ply.impulseID
 			local userInv = impulse.Inventory.Data[userid]
 
 			for v,k in pairs(result) do
 				local netid = impulse.Inventory.ClassToNetID(k.uniqueid)
-				if not netid then continue end
+				if not netid then continue end -- when items are removed from a live server we will remove them manually in the db, if an item is broken auto doing this would break peoples items
 
 				local storetype = k.storagetype
 
@@ -200,23 +206,19 @@ function IMPULSE:SetupPlayer(ply, dbData)
 					userInv[storetype] = {}
 				end
 				
-				userInv[storetype][k.id] = {
-					id = netid,
-					class = k.uniqueid,
-					restricted = false,
-					data = k.data or nil
-				}
+				ply:GiveInventoryItem(k.uniqueid, k.storagetype, false, true)
 			end
-			
-			ply:SetupInventory()
+		end
+
+		if IsValid(ply) then
 			ply.beenInvSetup = true
+			hook.Run("PostInventorySetup", ply)
 		end
 	end)
 
 	query:Execute()
 
 	ply.beenSetup = true
-
 	hook.Run("PostSetupPlayer", ply)
 end
 
@@ -228,7 +230,7 @@ local talkCol = Color(255, 255, 100)
 local infoCol = Color(135, 206, 250)
 
 function IMPULSE:PlayerSay(ply, text, teamChat)
-	if not ply.beenSetup or ply.beenSetup == false then return "" end -- keep out players who are not setup yet
+	if not ply.beenSetup then return "" end -- keep out players who are not setup yet
 	if teamChat == true then return "" end -- disabled team chat
 
 	if string.StartWith(text, "/") then

@@ -15,7 +15,7 @@ function IMPULSE:DatabaseConnected()
         sqlQuery:Create("xp", "int(11) unsigned DEFAULT NULL") -- xp
         sqlQuery:Create("money", "int(11) unsigned DEFAULT NULL") -- money
         sqlQuery:Create("bankmoney", "int(11) unsigned DEFAULT NULL") -- banked money
-        sqlQuery:Create("inventory", "longtext") -- player inventory (also stores player storage)
+        sqlQuery:Create("skills", "longtext") -- json skill data seperated from data to avoid corrruption
         sqlQuery:Create("ranks", "longtext") -- ranks data
         sqlQuery:Create("model", "varchar(160) NOT NULL") -- model
         sqlQuery:Create("skin", "tinyint") -- skin
@@ -30,7 +30,6 @@ function IMPULSE:DatabaseConnected()
         sqlQuery:Create("uniqueid", "varchar(25) NOT NULL") -- string unique itemid
         sqlQuery:Create("ownerid", "int(11) unsigned DEFAULT NULL") -- owner db id
         sqlQuery:Create("storagetype", "tinyint NOT NULL") -- where item is stored
-        sqlQuery:Create("data", "longtext") -- misc item data
         sqlQuery:PrimaryKey("id")
     sqlQuery:Execute()
 end

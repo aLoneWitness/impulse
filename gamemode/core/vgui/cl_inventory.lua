@@ -104,21 +104,29 @@ function PANEL:Init()
 
  	local weight = 0
 
- 	for v,k in pairs(impulse.Inventory.Data[0][1]) do -- 01 is player 0 (localplayer) and storage 1 (local inv)
- 		local otherItem = self.items[k.id]
- 		local itemX = impulse.Inventory.Items[k.id]
+ 	if #impulse.Inventory.Data[0][1] > 0 then
+	 	for v,k in pairs(impulse.Inventory.Data[0][1]) do -- 01 is player 0 (localplayer) and storage 1 (local inv)
+	 		local otherItem = self.items[k.id]
+	 		local itemX = impulse.Inventory.Items[k.id]
 
- 		if itemX.CanStack and otherItem then
- 			otherItem.Count = (otherItem.Count or 1) + 1
- 		else
-			local item = self.invScroll:Add("impulseInventoryItem")
-			item:Dock(TOP)
-			item:DockMargin(0, 0, 15, 5)
-			item:SetItem(k, w)
-			self.items[k.id] = item
+	 		if itemX.CanStack and otherItem then
+	 			otherItem.Count = (otherItem.Count or 1) + 1
+	 		else
+				local item = self.invScroll:Add("impulseInventoryItem")
+				item:Dock(TOP)
+				item:DockMargin(0, 0, 15, 5)
+				item:SetItem(k, w)
+				self.items[k.id] = item
+			end
+
+			weight =  weight + (itemX.Weight or 0)
 		end
-
-		weight =  weight + (itemX.Weight or 0)
+	else
+		self.empty = self.invScroll:Add("DLabel", self)
+		self.empty:SetContentAlignment(5)
+		self.empty:Dock(TOP)
+		self.empty:SetText("Empty")
+		self.empty:SetFont("Impulse-Elements19-Shadow")
 	end
 
 	self.invWeight:SetText(weight.."kg/"..impulse.Config.InventoryMaxWeight.."kg")

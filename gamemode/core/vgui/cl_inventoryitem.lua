@@ -20,6 +20,8 @@ function PANEL:SetItem(netitem, wide)
 	self.Weight = item.Weight or 0
 	self.Count = 1
 
+	local panel = self
+
 	self.model:SetPos(0, 0)
 	self.model:SetSize(64, 64)
 	self.model:SetMouseInputEnabled(true)
@@ -30,6 +32,10 @@ function PANEL:SetItem(netitem, wide)
 		ent:SetAngles(Angle(0, 90, 0))
 	end
 
+	function self.model:DoClick()
+		panel:OnMousePressed()
+	end
+
 	local camPos = self.model.Entity:GetPos()
 	camPos:Add(Vector(0, 25, 25))
 
@@ -37,7 +43,7 @@ function PANEL:SetItem(netitem, wide)
 	self.model:SetCamPos(camPos -  Vector(10, 0, 16))
 	self.model:SetLookAt((max + min) / 2)
 
-	self.desc =  vgui.Create("DLabel", self)
+	self.desc = vgui.Create("DLabel", self)
 	self.desc:SetPos(65, 30)
 	self.desc:SetSize(wide - 530, 30)
 
@@ -58,7 +64,6 @@ function PANEL:SetItem(netitem, wide)
 	self.count:SetFont("Impulse-Elements19-Shadow")
 	self.count:SetSize(30, 20)
 
-	local panel = self
 	function self.count:Think()
 		if panel.Count > 1 and panel.Count != self.lastCount then
 			self:SetText("x"..panel.Count)
