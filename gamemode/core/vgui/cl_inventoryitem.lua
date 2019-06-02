@@ -30,6 +30,10 @@ function PANEL:SetItem(netitem, wide)
 
 	function self.model:LayoutEntity(ent)
 		ent:SetAngles(Angle(0, 90, 0))
+
+		if not item.NoCenter then
+			self:SetLookAt(ent:OBBCenter())
+		end
 	end
 
 	function self.model:DoClick()

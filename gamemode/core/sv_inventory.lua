@@ -108,7 +108,7 @@ function meta:GiveInventoryItem(itemclass, storetype, restricted, isLoaded) -- n
 		equipped = false
 	})
 
-	if not restricted or not isLoaded then
+	if not restricted and not isLoaded then
 		impulse.Inventory.DBAddItem(impulseid, itemclass, storetype)
 	end
 	

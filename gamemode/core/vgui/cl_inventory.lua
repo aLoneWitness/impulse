@@ -104,7 +104,7 @@ function PANEL:Init()
 
  	local weight = 0
 
- 	if #impulse.Inventory.Data[0][1] > 0 then
+ 	if impulse.Inventory.Data[0][1] and #impulse.Inventory.Data[0][1] > 0 then
 	 	for v,k in pairs(impulse.Inventory.Data[0][1]) do -- 01 is player 0 (localplayer) and storage 1 (local inv)
 	 		local otherItem = self.items[k.id]
 	 		local itemX = impulse.Inventory.Items[k.id]
