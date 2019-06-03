@@ -89,13 +89,6 @@ function PANEL:Init()
  	self.invName:SetFont("Impulse-Elements24-Shadow")
  	self.invName:SizeToContents()
 
- 	self.invWeight = vgui.Create("DLabel", self)
- 	self.invWeight:SetPos(w - 80, 40)
- 	self.invWeight:SetContentAlignment(7)
- 	self.invWeight:SetText("")
- 	self.invWeight:SetFont("Impulse-Elements18-Shadow")
- 	self.invWeight:SetSize(80, 20)
-
  	self.invScroll = vgui.Create("DScrollPanel", self)
  	self.invScroll:SetPos(270, 65)
  	self.invScroll:SetSize(w - 270, h - 65)
@@ -129,7 +122,12 @@ function PANEL:Init()
 		self.empty:SetFont("Impulse-Elements19-Shadow")
 	end
 
-	self.invWeight:SetText(weight.."kg/"..impulse.Config.InventoryMaxWeight.."kg")
+	self.invWeight = weight
+end
+
+local grey = Color(209, 209, 209)
+function PANEL:PaintOver(w, h)
+	draw.SimpleText(self.invWeight.."kg/"..impulse.Config.InventoryMaxWeight.."kg", "Impulse-Elements18-Shadow", w - 18, 40, grey, TEXT_ALIGN_RIGHT, TEXT_ALIGN_TOP)
 end
 
 vgui.Register("impulseInventory", PANEL, "DFrame")
