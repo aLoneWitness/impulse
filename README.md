@@ -12,4 +12,4 @@ chatbox_v2, ops
 
 ## License
 Read the full license in the 'LICENSE' file.
-tl;dr this gamemode is private, do not download it. If you want permission you must ask vin
+tl;dr **this gamemode is private, do not download it, fork it or redistribute it in any way**. If you want permission you must ask vin.
