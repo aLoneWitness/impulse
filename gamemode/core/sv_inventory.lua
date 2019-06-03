@@ -91,6 +91,30 @@ function meta:HasInventoryItem(itemclass, amount)
 	return false
 end
 
+function meta:HasInventoryItemSpecific(id, storetype)
+	if not self.beenInvSetup then return false end
+	local storetype = storetype or 1
+	local has = impulse.Inventory.Data[self.impulseID][storetype][id]
+
+	if has then
+		return true, has
+	end
+
+	return false
+end
+
+function meta:IsInventoryItemRestricted(id, storetype)
+	if not self.beenInvSetup then return false end
+	local storetype = storetype or 1
+	local has = impulse.Inventory.Data[self.impulseID][storetype][id]
+
+	if has then
+		return has.restricted
+	end
+
+	return false
+end
+
 function meta:GiveInventoryItem(itemclass, storetype, restricted, isLoaded) -- no sv is a internal arg used for first time item setup, when they are already half loaded
 	if not self.beenInvSetup and not isLoaded then return end
 
@@ -204,4 +228,25 @@ function meta:TakeInventoryItemClass(itemclass, storetype, amount)
 	
 	net.Start("impulseInvRemove")
 	net.WriteUInt(itemid)
+end
+
+function meta:SetInventoryItemEquipped(itemid, state)
+	local item = impulse.Inventory.Data[self.impulseID][1][itemid]
+	local id = impulse.Inventory.ClassToNetID(item.class)
+	local onEquip = impulse.Inventory.Items[id].OnEquip
+	local unEquip = impulse.Inventory.Items[id].UnEquip
+	if not onEquip then return end
+
+	if state then
+		onEquip(item, self)
+	elseif unEquip then
+		unEquip(item, self)
+	end
+
+	item.equipped = state
+
+	net.Start("impulseInvUpdateEquip")
+	net.WriteUInt(itemid, 10)
+	net.WriteBool(state or false)
+	net.Send(self)
 end

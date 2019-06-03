@@ -24,6 +24,9 @@ util.AddNetworkString("impulseInvRemove")
 util.AddNetworkString("impulseInvUpdateStorage")
 util.AddNetworkString("impulseInvUpdateEquip")
 util.AddNetworkString("impulseInvUpdateData")
+util.AddNetworkString("impulseInvDoEquip")
+util.AddNetworkString("impulseInvDoDrop")
+util.AddNetworkString("impulseInvDoUse")
 
 netstream.Hook("impulseCharacterCreate", function(player, charName, charModel, charSkin)
 	if (player.NextCreate or 0) > CurTime() then return end
@@ -415,4 +418,18 @@ net.Receive("impulseSellAllDoors", function(len, ply)
 	local amount = sold * (impulse.Config.DoorPrice - 2)
 	ply:GiveMoney(amount)
 	ply:Notify("You have sold all your doors for "..impulse.Config.CurrencyPrefix..amount..".")
+end)
+
+net.Receive("impulseInvDoEquip", function(len, ply)
+	if not ply.beenInvSetup or (ply.nextInvEquip or 0) > CurTime() then return end
+	ply.nextInvEquip = CurTime() + 1
+
+	local invid = net.ReadUInt(10)
+	local equipState = net.ReadBool()
+
+	local hasItem, item = ply:HasInventoryItemSpecific(invid)
+
+	if hasItem then
+		ply:SetInventoryItemEquipped(invid, equipstate or false)
+	end
 end)

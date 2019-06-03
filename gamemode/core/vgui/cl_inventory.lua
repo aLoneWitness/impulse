@@ -105,10 +105,12 @@ function PANEL:Init()
 	 		if itemX.CanStack and otherItem then
 	 			otherItem.Count = (otherItem.Count or 1) + 1
 	 		else
-				local item = self.invScroll:Add("impulseInventoryItem")
+				self.items[v] = self.invScroll:Add("impulseInventoryItem")
+				local item = self.items[v]
 				item:Dock(TOP)
 				item:DockMargin(0, 0, 15, 5)
 				item:SetItem(k, w)
+				item.InvID = v
 				self.items[k.id] = item
 			end
 
@@ -123,6 +125,10 @@ function PANEL:Init()
 	end
 
 	self.invWeight = weight
+end
+
+function PANEL:FindItemPanelByID(id)
+	return self.items[id]
 end
 
 local grey = Color(209, 209, 209)

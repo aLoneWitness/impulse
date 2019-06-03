@@ -135,3 +135,15 @@ net.Receive("impulseInvRemove", function()
 		impulse.Inventory.Data[0][strid][invid] = nil
 	end
 end)
+
+net.Receive("impulseInvUpdateEquip", function()
+	local invid = net.ReadUInt(10)
+	local state = net.ReadBool()
+	local item = impulse.Inventory.Data[0][1][invid]
+
+	item.equipped = state or false
+
+	if impulse_inventory and IsValid(impulse_inventory) then
+		impulse_inventory:FindItemPanelByID(invid).IsEquipped = state or false
+	end
+end)

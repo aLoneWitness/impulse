@@ -199,7 +199,6 @@ function IMPULSE:SetupPlayer(ply, dbData)
 			local userInv = impulse.Inventory.Data[userid]
 
 			for v,k in pairs(result) do
-				PrintTable(k)
 				local netid = impulse.Inventory.ClassToNetID(k.uniqueid)
 				if not netid then continue end -- when items are removed from a live server we will remove them manually in the db, if an item is broken auto doing this would break peoples items
 
