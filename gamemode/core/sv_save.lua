@@ -10,6 +10,11 @@ function LoadSaveEnts()
 				x:SetModel(k.model)
 			end
 			x.impulseSaveEnt = true
+
+			if k.keyvalue then
+				x.impulseSaveKeyValue = k.keyvalue
+			end
+
 			x:Spawn()
 			x:Activate()
 
@@ -22,14 +27,14 @@ function LoadSaveEnts()
 	end
 end
 
-concommand.Add("impulse_saveents", function(ply, cmd, args)
+concommand.Add("impulse_save_saveall", function(ply, cmd, args)
 	if not ply:IsSuperAdmin() then return end
 
 	local savedEnts = {}
 
 	for v,k in pairs(ents.GetAll()) do
 		if k.impulseSaveEnt then
-			table.insert(savedEnts, {pos =  k:GetPos(), angle = k:GetAngles(), class = k:GetClass(), model = k:GetModel()})
+			table.insert(savedEnts, {pos =  k:GetPos(), angle = k:GetAngles(), class = k:GetClass(), model = k:GetModel(), keyvalue = (k.impulseSaveKeyValue or nil)})
 		end
 	end
 
@@ -38,7 +43,7 @@ concommand.Add("impulse_saveents", function(ply, cmd, args)
 	ply:AddChatText("All marked ents have been saved, all un-marked ents have been omitted from the save.")
 end)
 
-concommand.Add("impulse_reloadents", function(ply)
+concommand.Add("impulse_save_reload", function(ply)
 	if not ply:IsSuperAdmin() then return end
 	for v,k in pairs(ents.GetAll()) do
 		if k.impulseSaveEnt then
@@ -51,7 +56,7 @@ concommand.Add("impulse_reloadents", function(ply)
 	ply:AddChatText("All saved ents have been reloaded.")
 end)
 
-concommand.Add("impulse_marksaveent", function(ply)
+concommand.Add("impulse_save_mark", function(ply)
 	if not ply:IsSuperAdmin() then return end
 	local ent = ply:GetEyeTrace().Entity
 
@@ -61,7 +66,7 @@ concommand.Add("impulse_marksaveent", function(ply)
 	end
 end)
 
-concommand.Add("impulse_removesaveent", function(ply)
+concommand.Add("impulse_save_unmark", function(ply)
 	if not ply:IsSuperAdmin() then return end
 	local ent = ply:GetEyeTrace().Entity
 
@@ -70,4 +75,34 @@ concommand.Add("impulse_removesaveent", function(ply)
 		ent:Remove()
 		ply:AddChatText("Removed "..ent:GetClass().." for saving.")
 	end
+end)
+
+concommand.Add("impulse_save_keyvalue", function(ply, cmd, args)
+	if not ply:IsSuperAdmin() then return end
+	local ent = ply:GetEyeTrace().Entity
+	local key = args[1]
+	local value = args[2]
+
+	if not key or not value then
+		return ply:AddChatText("Missing key/value.")
+	end
+
+	if IsValid(ent) then
+		if ent.impulseSaveEnt then
+			if tonumber(value) then
+				value = tonumber(value)
+			end
+
+			ent.impulseSaveKeyValue[key] = value
+			ply:AddChatText("Key/Value ("..key.."="..value..") pair set on "..ent:GetClass()..".")
+		else
+			ply:AddChatText("Mark this entity for saving first.")
+		end
+	end
+end)
+
+concommand.Add("impulse_save_help", function(ply)
+	if not ply:IsSuperAdmin() then return end
+	
+	ply:AddChatText("Mark entities you want to save with save_mark and save_unmark. Ensure all entities are in correct state/position before using save_saveall to save them. Then use save_reload to cleanup.")
 end)
