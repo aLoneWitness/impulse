@@ -231,12 +231,18 @@ function meta:TakeInventoryItemClass(itemclass, storetype, amount)
 end
 
 function meta:SetInventoryItemEquipped(itemid, state)
+	if not self:Alive() then return end
+	
 	local item = impulse.Inventory.Data[self.impulseID][1][itemid]
 	local id = impulse.Inventory.ClassToNetID(item.class)
 	local onEquip = impulse.Inventory.Items[id].OnEquip
 	local unEquip = impulse.Inventory.Items[id].UnEquip
 	if not onEquip then return end
 	local itemclass = impulse.Inventory.Items[id]
+
+	if itemclass.CanEquip and not itemclass.CanEquip(item, self) then
+		return
+	end
 
 	if itemclass.EquipGroup then
 		local equippedItem = self.InventoryEquipGroups[itemclass.EquipGroup]

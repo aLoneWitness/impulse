@@ -258,8 +258,9 @@ if SERVER then
 
 		impulse.Sync.Data[targetID][varID] = nil
 
-		net.Start("iSyncR")
+		net.Start("iSyncRvar")
 			net.WriteUInt(targetID, 16)
+			net.WriteUInt(varID, SYNC_ID_BITS)
 		net.Broadcast()	
 	end
 

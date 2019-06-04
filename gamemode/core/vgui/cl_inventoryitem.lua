@@ -86,20 +86,22 @@ function PANEL:OnMousePressed(keycode)
 	end
 
 	if self.Item.OnEquip then
-		if not self.IsEquipped then
-			popup:AddOption(self.Item.EquipName or "Equip", function()
-				net.Start("impulseInvDoEquip")
-				net.WriteUInt(self.InvID, 10)
-				net.WriteBool(true)
-				net.SendToServer()
-			end)
-		else
-			popup:AddOption(self.Item.UnEquipName or "Un-Equip", function()
-				net.Start("impulseInvDoEquip")
-				net.WriteUInt(self.InvID, 10)
-				net.WriteBool(false)
-				net.SendToServer()
-			end)
+		if not self.Item.CanEquip or self.Item.CanEquip(self.Item, LocalPlayer()) then
+			if not self.IsEquipped then
+				popup:AddOption(self.Item.EquipName or "Equip", function()
+					net.Start("impulseInvDoEquip")
+					net.WriteUInt(self.InvID, 10)
+					net.WriteBool(true)
+					net.SendToServer()
+				end)
+			else
+				popup:AddOption(self.Item.UnEquipName or "Un-Equip", function()
+					net.Start("impulseInvDoEquip")
+					net.WriteUInt(self.InvID, 10)
+					net.WriteBool(false)
+					net.SendToServer()
+				end)
+			end
 		end
 	end
 
