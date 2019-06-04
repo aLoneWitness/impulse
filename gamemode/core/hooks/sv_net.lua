@@ -430,6 +430,6 @@ net.Receive("impulseInvDoEquip", function(len, ply)
 	local hasItem, item = ply:HasInventoryItemSpecific(invid)
 
 	if hasItem then
-		ply:SetInventoryItemEquipped(invid, equipstate or false)
+		ply:SetInventoryItemEquipped(invid, equipState or false)
 	end
 end)

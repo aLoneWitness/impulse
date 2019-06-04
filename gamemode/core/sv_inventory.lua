@@ -236,10 +236,24 @@ function meta:SetInventoryItemEquipped(itemid, state)
 	local onEquip = impulse.Inventory.Items[id].OnEquip
 	local unEquip = impulse.Inventory.Items[id].UnEquip
 	if not onEquip then return end
+	local itemclass = impulse.Inventory.Items[id]
+
+	if itemclass.EquipGroup then
+		local equippedItem = self.InventoryEquipGroups[itemclass.EquipGroup]
+		if equippedItem and equippedItem != itemid then
+			self:SetInventoryItemEquipped(equippedItem, false)
+		end 
+	end
 
 	if state then
+		if itemclass.EquipGroup then
+			self.InventoryEquipGroups[itemclass.EquipGroup] = itemid
+		end
 		onEquip(item, self)
 	elseif unEquip then
+		if itemclass.EquipGroup then
+			self.InventoryEquipGroups[itemclass.EquipGroup] = nil
+		end
 		unEquip(item, self)
 	end
 

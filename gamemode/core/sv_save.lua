@@ -93,10 +93,28 @@ concommand.Add("impulse_save_keyvalue", function(ply, cmd, args)
 				value = tonumber(value)
 			end
 
+			ent.impulseSaveKeyValue = ent.impulseSaveKeyValue or {}
 			ent.impulseSaveKeyValue[key] = value
 			ply:AddChatText("Key/Value ("..key.."="..value..") pair set on "..ent:GetClass()..".")
 		else
 			ply:AddChatText("Mark this entity for saving first.")
+		end
+	end
+end)
+
+concommand.Add("impulse_save_printkeyvalues", function(ply, cmd, args)
+	if not ply:IsSuperAdmin() then return end
+	local ent = ply:GetEyeTrace().Entity
+
+	if IsValid(ent) then
+		if ent.impulseSaveEnt then
+			if not ent.impulseSaveKeyValue then
+				return ply:AddChatText("Entity has no keyvalue table.")
+			end
+
+			ply:AddChatText(table.ToString(ent.impulseSaveKeyValue))
+		else
+			ply:AddChatText("Entity not saving marked.")
 		end
 	end
 end)
