@@ -139,6 +139,12 @@ function IMPULSE:PlayerDisconnected(ply)
 			end
 		end
 	end
+
+	for v,k in pairs(ents.FindByClass("impulse_item")) do
+		if k.ItemOwner and k.ItemOwner == ply then
+			k.RemoveIn = CurTime() + impulse.Config.InventoryItemDeSpawnTime
+		end
+	end
 end
 
 function IMPULSE:PlayerLoadout(ply)

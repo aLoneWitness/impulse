@@ -51,6 +51,16 @@ function impulse.Inventory.ClassToNetID(class)
 	return impulse.Inventory.ItemsRef[class]
 end
 
+function impulse.Inventory.SpawnItem(class, pos)
+	local itemid = impulse.Inventory.ClassToNetID(class)
+	if not itemid then return print("[impulse] Attempting to spawn nil item!") end
+	
+	local item = ents.Create("impulse_item")
+	item:SetItem(itemid)
+	item:SetPos(pos)
+	item:Spawn()
+end
+
 function meta:GetInventory(storage)
 	return impulse.Inventory.Data[self.impulseID][storage or 1]
 end
@@ -181,7 +191,6 @@ function meta:TakeInventoryItem(invid, storetype)
 
 	hook.Run("OnInventoryItemRemoved", self, storetype, item.class, item.id, item.equipped, item.restricted, invid)
 	impulse.Inventory.Data[impulseid][storetype][invid] = nil
-	print(itemid)
 	
 	net.Start("impulseInvRemove")
 	net.WriteUInt(invid, 10)
@@ -269,4 +278,17 @@ function meta:SetInventoryItemEquipped(itemid, state)
 	net.WriteUInt(itemid, 10)
 	net.WriteBool(state or false)
 	net.Send(self)
+end
+
+function meta:DropInventoryItem(itemid)
+	local trace = {}
+	trace.start = self:EyePos()
+	trace.endpos = trace.start + self:GetAimVector() * 45
+	trace.filter = self
+
+	local itemclass = impulse.Inventory.Data[self.impulseID][1][itemid].class
+	local tr = util.TraceLine(trace)
+
+	self:TakeInventoryItem(itemid)
+	impulse.Inventory.SpawnItem(itemclass, tr.HitPos)
 end

@@ -105,9 +105,13 @@ function PANEL:OnMousePressed(keycode)
 		end
 	end
 
-	popup:AddOption("Drop", function()
-
-	end)
+	if not self.IsRestricted then
+		popup:AddOption("Drop", function()
+			net.Start("impulseInvDoDrop")
+			net.WriteUInt(self.InvID, 10)
+			net.SendToServer()
+		end)
+	end
 
 	function popup:Think()
 		if not IsValid(self.Inv) then

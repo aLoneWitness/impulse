@@ -422,7 +422,7 @@ end)
 
 net.Receive("impulseInvDoEquip", function(len, ply)
 	if not ply.beenInvSetup or (ply.nextInvEquip or 0) > CurTime() then return end
-	ply.nextInvEquip = CurTime() + 1
+	ply.nextInvEquip = CurTime() + 0.5
 
 	local invid = net.ReadUInt(10)
 	local equipState = net.ReadBool()
@@ -431,5 +431,18 @@ net.Receive("impulseInvDoEquip", function(len, ply)
 
 	if hasItem then
 		ply:SetInventoryItemEquipped(invid, equipState or false)
+	end
+end)
+
+net.Receive("impulseInvDoDrop", function(len, ply)
+	if not ply.beenInvSetup or (ply.nextInvDrop or 0) > CurTime() then return end
+	ply.nextInvDrop = CurTime() + 0.5
+
+	local invid = net.ReadUInt(10)
+
+	local hasItem, item = ply:HasInventoryItemSpecific(invid)
+
+	if hasItem then
+		ply:DropInventoryItem(invid)
 	end
 end)
