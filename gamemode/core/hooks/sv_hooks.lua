@@ -155,7 +155,9 @@ function IMPULSE:SetupPlayer(ply, dbData)
 	ply:SetLocalSyncVar(SYNC_MONEY, dbData.money)
 	ply:SetLocalSyncVar(SYNC_BANKMONEY, dbData.bankmoney)
 
-	local data = util.JSONToTable(dbData.data)
+	if dbData.data then
+		local data = util.JSONToTable(dbData.data)
+	end
 
 	if not data then
 		data = {}
