@@ -125,7 +125,7 @@ function meta:IsInventoryItemRestricted(id, storetype)
 	return false
 end
 
-function meta:GiveInventoryItem(itemclass, storetype, restricted, isLoaded) -- no sv is a internal arg used for first time item setup, when they are already half loaded
+function meta:GiveInventoryItem(itemclass, storetype, restricted, isLoaded) -- isLoaded is a internal arg used for first time item setup, when they are already half loaded
 	if not self.beenInvSetup and not isLoaded then return end
 
 	local storetype = storetype or 1
@@ -136,7 +136,7 @@ function meta:GiveInventoryItem(itemclass, storetype, restricted, isLoaded) -- n
 
 
 	local invid = table.insert(impulse.Inventory.Data[impulseid][storetype], {
-		id = netid,
+		id = itemid,
 		class = itemclass,
 		restricted = restricted,
 		equipped = false
@@ -187,6 +187,10 @@ function meta:TakeInventoryItem(invid, storetype)
 
 	if regvalue < 1 then -- any negative values to be removed
 		self.InventoryRegister[item.class] =  nil
+	end
+
+	if item.equipped then
+		self:SetInventoryItemEquipped(itemid, false)
 	end
 
 	hook.Run("OnInventoryItemRemoved", self, storetype, item.class, item.id, item.equipped, item.restricted, invid)
@@ -286,9 +290,41 @@ function meta:DropInventoryItem(itemid)
 	trace.endpos = trace.start + self:GetAimVector() * 45
 	trace.filter = self
 
-	local itemclass = impulse.Inventory.Data[self.impulseID][1][itemid].class
+	local item = impulse.Inventory.Data[self.impulseID][1][itemid]
 	local tr = util.TraceLine(trace)
 
+	if item.restricted then
+		local itemnetid = impulse.Inventory.ClassToNetID(item.class)
+		local itemclass = impulse.Inventory.Items[itemnetid]
+
+		if not itemclass.DropIfRestricted then
+			return
+		end
+	end
+
 	self:TakeInventoryItem(itemid)
-	impulse.Inventory.SpawnItem(itemclass, tr.HitPos)
+	impulse.Inventory.SpawnItem(item.class, tr.HitPos)
+end
+
+function meta:UseInventoryItem(itemid)
+	local itemclass = impulse.Inventory.Data[self.impulseID][1][itemid].class
+	local itemnetid = impulse.Inventory.ClassToNetID(itemclass)
+	local item = impulse.Inventory.Items[itemnetid]
+
+	if item.OnUse then
+		local tr = nil
+		if item.UseAutoTrace then
+			local trace = {}
+			trace.start = self:EyePos()
+			trace.endpos = trace.start + self:GetAimVector() * 85
+			trace.filter = self
+
+			tr = util.TraceLine(trace)
+		end
+		local shouldRemove = item.OnUse(item, self, tr)
+
+		if shouldRemove then
+			self:TakeInventoryItem(itemid)
+		end
+	end
 end

@@ -83,7 +83,11 @@ function PANEL:OnMousePressed(keycode)
 	popup.Inv = self
 
 	if self.Item.OnUse then
-		popup:AddOption(self.Item.UseName or "Use")
+		popup:AddOption(self.Item.UseName or "Use", function()
+			net.Start("impulseInvDoUse")
+			net.WriteUInt(self.InvID, 10)
+			net.SendToServer()
+		end)
 	end
 
 	if self.Item.OnEquip then
@@ -106,7 +110,7 @@ function PANEL:OnMousePressed(keycode)
 		end
 	end
 
-	if not self.IsRestricted then
+	if (not self.IsRestricted and not self.Item.DropIfRestricted) then
 		popup:AddOption("Drop", function()
 			net.Start("impulseInvDoDrop")
 			net.WriteUInt(self.InvID, 10)

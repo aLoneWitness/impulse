@@ -446,3 +446,16 @@ net.Receive("impulseInvDoDrop", function(len, ply)
 		ply:DropInventoryItem(invid)
 	end
 end)
+
+net.Receive("impulseInvDoUse", function(len, ply)
+	if not ply.beenInvSetup or (ply.nextInvUse or 0) > CurTime() then return end
+	ply.nextInvUse = CurTime() + 0.5
+
+	local invid = net.ReadUInt(10)
+
+	local hasItem, item = ply:HasInventoryItemSpecific(invid)
+
+	if hasItem then
+		ply:UseInventoryItem(invid)
+	end
+end)
