@@ -93,12 +93,29 @@ function PANEL:Init()
  	self.invScroll:SetPos(270, 65)
  	self.invScroll:SetSize(w - 270, h - 65)
 
- 	self.items = {}
+ 	self:SetupItems(w)
+end
 
+function PANEL:SetupItems(w)
+	self.items = {}
  	local weight = 0
+ 	local localInv = impulse.Inventory.Data[0][1]
 
- 	if impulse.Inventory.Data[0][1] and #impulse.Inventory.Data[0][1] > 0 then
-	 	for v,k in pairs(impulse.Inventory.Data[0][1]) do -- 01 is player 0 (localplayer) and storage 1 (local inv)
+ 	if impulse.GetSetting("inv_sortbyweight") then
+ 		table.sort(localInv, function(a, b)
+ 			if not b then
+ 				return true
+ 			end
+
+ 			local aWeight = (impulse.Inventory.Items[a.id].Weight or 0)
+ 			local bWeight = (impulse.Inventory.Items[b.id].Weight or 0)
+
+ 			return aWeight > bWeight
+ 		end)
+ 	end
+
+ 	if localInv and #localInv > 0 then
+	 	for v,k in pairs(localInv) do -- 01 is player 0 (localplayer) and storage 1 (local inv)
 	 		local otherItem = self.items[k.id]
 	 		local itemX = impulse.Inventory.Items[k.id]
 

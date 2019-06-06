@@ -28,6 +28,7 @@ if SERVER then
 		local item = impulse.Inventory.Items[itemclass]
 		self:SetItemID(itemclass)
 		self:SetModel(item.DropModel or item.Model)
+		self:SetSkin(item.Skin or 0)
 		self.Item = item
 
 		if owner and IsValid(owner) then

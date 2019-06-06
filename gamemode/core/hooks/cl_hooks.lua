@@ -100,6 +100,7 @@ function IMPULSE:DefineSettings()
 	end})
 	impulse.DefineSetting("perf_blur", {name="Blur enabled", category="Performance", type="tickbox", default=true})
 	impulse.DefineSetting("perf_bleedingrange", {name="Bleeding render range", category="Performance", type="slider", default=1000, minValue=200, maxValue=3000})
+	impulse.DefineSetting("inv_sortbyweight", {name="Sort by weight", category="Inventory", type="tickbox", default=false})
 end
 
 local loweredAngles = Angle(30, -30, -25)

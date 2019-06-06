@@ -26,6 +26,7 @@ function PANEL:SetItem(netitem, wide)
 	self.model:SetSize(64, 64)
 	self.model:SetMouseInputEnabled(true)
 	self.model:SetModel(item.Model)
+	self.model:SetSkin(item.Skin or 0)
 	self.model:SetFOV(item.FOV or 35)
 
 	function self.model:LayoutEntity(ent)
