@@ -32,6 +32,8 @@ function PANEL:AddAction(icon, name, onClick)
 	self.iconLbl:SetPos(100-(self.iconLbl:GetWide()/2), self.addY+140)
 
 	self.addY = self.addY + 125
+
+	self.hasAction = true
 end
 
 function PANEL:SetRangeEnt(ent)
@@ -86,21 +88,23 @@ end
 
 function PANEL:SetPlayer(ply)
 	if LocalPlayer():IsCP() and LocalPlayer():CanArrest(ply) then
-		self:AddAction("impulse/icons/military-backpack-radio-128.png", "Search Inventory", function()
+		self:AddAction("impulse/icons/search-3-256.png", "Search Inventory", function()
 			LocalPlayer():ConCommand("say /invsearch")
 
-			panel:Remove()
+			self:Remove()
 		end)
 	end
 
 	hook.Add("PlayerMenuAddOptions", self, ply)
+
+	if not self.hasAction then return self:Remove() end
 end
 
 function PANEL:Think()
 	if self.rangeEnt and IsValid(self.rangeEnt) then
 		local dist = self.rangeEnt:GetPos():DistToSqr(LocalPlayer():GetPos())
 
-		if dist > (500 ^ 2) then
+		if dist > (200 ^ 2) then
 			LocalPlayer():Notify("The target moved too far away.")
 			self:Remove()
 		end

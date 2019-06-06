@@ -300,6 +300,36 @@ local writeCommand = {
 
 impulse.RegisterChatCommand("/write", writeCommand)
 
+local searchCommand = {
+	description = "Searches a players inventory.",
+	requiresArg = false,
+	requiresAlive = true,
+	onRun = function(ply, args, text)
+		if not ply:IsCP() then return end
+
+		local trace = {}
+		trace.start = ply:EyePos()
+		trace.endpos = trace.start + ply:GetAimVector() * 50
+		trace.filter = ply
+
+		local tr = util.TraceLine(trace)
+		local targ = tr.Entity
+
+		if targ and IsValid(targ) and targ:IsPlayer() then
+			if not targ.beenInvSetup then return end
+			targ:Notify("You are currently being searched. Stay still to cooperate.")
+			ply:Notify("You have started searching "..targ:Nick()..".")
+			hook.Run("DoInventorySearch", ply, targ)
+		else
+			ply:Notify("No player in search range.")
+		end
+	end
+}
+
+impulse.RegisterChatCommand("/invsearch", searchCommand)
+
+
+
 if CLIENT then
 	local talkCol = Color(255, 255, 100)
 	local infoCol = Color(135, 206, 250)
