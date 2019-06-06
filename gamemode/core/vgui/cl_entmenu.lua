@@ -3,7 +3,7 @@ local PANEL = {}
 function PANEL:Init()
 	self:SetSize(200, 600)
 	self:Center()
-	self:SetTitle("Door Interaction")
+	self:SetTitle("Entity Interaction")
 	self:MakePopup()
 
 	self.addY = 0
@@ -32,6 +32,10 @@ function PANEL:AddAction(icon, name, onClick)
 	self.iconLbl:SetPos(100-(self.iconLbl:GetWide()/2), self.addY+140)
 
 	self.addY = self.addY + 125
+end
+
+function PANEL:SetRangeEnt(ent)
+	self.rangeEnt = ent
 end
 
 function PANEL:SetDoor(door)
@@ -80,5 +84,28 @@ function PANEL:SetDoor(door)
 	hook.Run("DoorMenuAddOptions", self, door, doorOwners, doorGroup, doorBuyable)
 end
 
+function PANEL:SetPlayer(ply)
+	if LocalPlayer():IsCP() and LocalPlayer():CanArrest(ply) then
+		self:AddAction("impulse/icons/military-backpack-radio-128.png", "Search Inventory", function()
+			LocalPlayer():ConCommand("say /invsearch")
 
-vgui.Register("impulseDoorMenu", PANEL, "DFrame")
+			panel:Remove()
+		end)
+	end
+
+	hook.Add("PlayerMenuAddOptions", self, ply)
+end
+
+function PANEL:Think()
+	if self.rangeEnt and IsValid(self.rangeEnt) then
+		local dist = self.rangeEnt:GetPos():DistToSqr(LocalPlayer():GetPos())
+
+		if dist > (500 ^ 2) then
+			LocalPlayer():Notify("The target moved too far away.")
+			self:Remove()
+		end
+	end
+end
+
+
+vgui.Register("impulseEntityMenu", PANEL, "DFrame")

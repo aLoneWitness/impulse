@@ -26,14 +26,20 @@ function IMPULSE:Think()
 
 			local traceEnt = util.TraceLine(trace).Entity
 
-			if (not impulse.doorMenu or not IsValid(impulse.doorMenu)) and IsValid(traceEnt) and traceEnt:IsDoor() then
-				local doorOwners = traceEnt:GetSyncVar(SYNC_DOOR_OWNERS, nil) 
-				local doorGroup =  traceEnt:GetSyncVar(SYNC_DOOR_GROUP, nil)
-				local doorBuyable = traceEnt:GetSyncVar(SYNC_DOOR_BUYABLE, true)
+			if (not impulse.entityMenu or not IsValid(impulse.entityMenu)) and IsValid(traceEnt) then
+				if traceEnt:IsDoor() then
+					local doorOwners = traceEnt:GetSyncVar(SYNC_DOOR_OWNERS, nil) 
+					local doorGroup =  traceEnt:GetSyncVar(SYNC_DOOR_GROUP, nil)
+					local doorBuyable = traceEnt:GetSyncVar(SYNC_DOOR_BUYABLE, true)
 
-				if LocalPlayer():CanBuyDoor(doorOwners, doorBuyable) or LocalPlayer():CanLockUnlockDoor(doorOwners, doorGroup) then
-					impulse.doorMenu = vgui.Create("impulseDoorMenu")
-					impulse.doorMenu:SetDoor(traceEnt)
+					if LocalPlayer():CanBuyDoor(doorOwners, doorBuyable) or LocalPlayer():CanLockUnlockDoor(doorOwners, doorGroup) then
+						impulse.entityMenu = vgui.Create("impulseEntityMenu")
+						impulse.entityMenu:SetDoor(traceEnt)
+					end
+				elseif traceEnt:IsPlayer() then
+					impulse.entityMenu = vgui.Create("impulseEntityMenu")
+					impulse.entityMenu:SetRangeEnt(traceEnt)
+					impulse.entityMenu:SetPlayer(traceEnt)
 				end
 			end
 		end

@@ -35,8 +35,6 @@ function meta:SetHandsBehindBack(state)
 end
 
 function meta:CanArrest(arrested)
-	if not arrested then return true end -- server can arrest anyone
-
 	if not self:IsCP() then
 		return false
 	end
