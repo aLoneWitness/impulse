@@ -126,8 +126,7 @@ net.Receive("impulseInvGive", function()
 	}
 
 	if impulse_inventory and IsValid(impulse_inventory) then
-		local w = impulse_inventory:GetWide()
-		impulse_inventory:SetupItems(w)
+		impulse_inventory:SetupItems()
 	end
 end)
 
@@ -140,8 +139,7 @@ net.Receive("impulseInvRemove", function()
 		impulse.Inventory.Data[0][strid][invid] = nil
 
 		if impulse_inventory and IsValid(impulse_inventory) then
-			local w = impulse_inventory:GetWide()
-			impulse_inventory:SetupItems(w)
+			impulse_inventory:SetupItems()
 		end
 	end
 end)

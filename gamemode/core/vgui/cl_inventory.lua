@@ -89,14 +89,19 @@ function PANEL:Init()
  	self.invName:SetFont("Impulse-Elements24-Shadow")
  	self.invName:SizeToContents()
 
- 	self.invScroll = vgui.Create("DScrollPanel", self)
- 	self.invScroll:SetPos(270, 65)
- 	self.invScroll:SetSize(w - 270, h - 65)
-
- 	self:SetupItems(w)
+ 	self:SetupItems(w, h)
 end
 
-function PANEL:SetupItems(w)
+function PANEL:SetupItems()
+	local w, h = self:GetSize()
+	
+	if self.invScroll and IsValid(self.invScroll) then
+		self.invScroll:Remove()
+	end
+
+	self.invScroll = vgui.Create("DScrollPanel", self)
+ 	self.invScroll:SetPos(270, 65)
+ 	self.invScroll:SetSize(w - 270, h - 65)
 	self.items = {}
  	local weight = 0
  	local localInv = impulse.Inventory.Data[0][1]
