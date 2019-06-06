@@ -3,9 +3,9 @@
 ** This file is private and may not be shared, downloaded, used or sold.
 */
 
-impulse.schema = impulse.schema or {}
+impulse.Schema = impulse.Schema or {}
 
-function impulse.schema.boot(name)
+function impulse.Schema.Boot(name)
     SCHEMA = name
     MsgC(Color( 83, 143, 239 ), "[impulse] Loading '"..SCHEMA.."' schema...\n")
     
@@ -21,9 +21,11 @@ function impulse.schema.boot(name)
     	MsgC(Color( 83, 143, 239 ), "[impulse] Loading map config for '"..game.GetMap().."'\n")
     	include(mapPath)
     	AddCSLuaFile(mapPath)
-    else
+    elseif CLIENT then
         include(mapPath)
-        AddCSLuaFile(mapPath)
+        AddCSLuaFile(mapPath) 
+    else
+        MsgC(Color(255, 0, 0), "[impulse] No map config found!'\n")
 	end
 
     impulse.lib.includeDir(SCHEMA.."/schema/scripts")
@@ -41,4 +43,8 @@ function impulse.schema.boot(name)
     GM.Name = "impulse: "..impulse.Config.SchemaName
 
     hook.Call("OnSchemaLoaded", IMPULSE)
+end
+
+function impulse.Schema.LoadPlugin()
+    -- maybe do a object plugin thing to make hook.add neat
 end
