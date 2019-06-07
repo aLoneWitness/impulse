@@ -185,6 +185,30 @@ function PANEL:Init()
 		LocalPlayer():ConCommand("disconnect")
 	end
 
+	local button = vgui.Create("DImageButton", self)
+	button:SetPos(self:GetWide() - 30 - 53, 385)
+	button:SetImage("impulse/icons/social/discord.png")
+	button:SetSize(62, 55)
+
+	local normalCol = button:GetColor()
+	local highlightCol = Color(impulse.Config.MainColour.r, impulse.Config.MainColour.g, impulse.Config.MainColour.b)
+	function button:Paint()
+		if self:IsHovered() then
+			self:SetColor(highlightCol)
+		else
+			self:SetColor(normalCol)
+		end
+	end
+
+	function button:OnCursorEntered()
+		surface.PlaySound("ui/buttonrollover.wav")
+	end
+
+	function button:DoClick()
+		surface.PlaySound("ui/buttonclick.wav")
+		gui.OpenURL(impulse.Config.DiscordURL or "www.viniscool.com")
+	end
+
 	local year = os.date("%Y", os.time())
 	local copyrightLabel = vgui.Create("DLabel", self)
 	copyrightLabel:SetFont("Impulse-Elements14")
