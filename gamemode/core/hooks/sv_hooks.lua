@@ -576,8 +576,6 @@ local dupeBannedTools = {
 }
 
 function IMPULSE:CanTool(ply, tr, tool)
-	if not self.Sandbox.CanTool(self, ply, tr, tool) then return false end
-
 	if not ply:IsAdmin() and tool == "spawner" then
 		return false
 	end
@@ -586,7 +584,7 @@ function IMPULSE:CanTool(ply, tr, tool)
 		return false
 	end
 
-    local ent = trace.Entity
+    local ent = tr.Entity
 
     if IsValid(ent) then
         if ent.onlyremover then
