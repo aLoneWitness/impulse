@@ -18,8 +18,6 @@ function PANEL:Init()
 	self.scroll = vgui.Create("DScrollPanel", self)
 	self.scroll:DockMargin(5, 20, 5, 20)
 	self.scroll:Dock(FILL)
-
-
 end
 
 function PANEL:SetQuiz(team)

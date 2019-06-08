@@ -27,6 +27,7 @@ util.AddNetworkString("impulseInvUpdateData")
 util.AddNetworkString("impulseInvDoEquip")
 util.AddNetworkString("impulseInvDoDrop")
 util.AddNetworkString("impulseInvDoUse")
+util.AddNetworkString("impulseInvDoSearch")
 
 netstream.Hook("impulseCharacterCreate", function(player, charName, charModel, charSkin)
 	if (player.NextCreate or 0) > CurTime() then return end
@@ -69,6 +70,7 @@ netstream.Hook("impulseCharacterCreate", function(player, charName, charModel, c
 					money = impulse.Config.StartingMoney,
 					bankmoney = impulse.Config.StartingBankMoney,
 					model = charModel,
+					data = "[]",
 					skin = charSkin
 				}
 

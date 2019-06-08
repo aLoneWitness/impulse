@@ -140,6 +140,10 @@ function IMPULSE:PlayerDisconnected(ply)
 		end
 	end
 
+	if ply.InvSearching and IsValid(ply.InvSearching) then
+		ply.InvSearching:Freeze(false)
+	end
+
 	for v,k in pairs(ents.FindByClass("impulse_item")) do
 		if k.ItemOwner and k.ItemOwner == ply then
 			k.RemoveIn = CurTime() + impulse.Config.InventoryItemDeSpawnTime
@@ -161,13 +165,7 @@ function IMPULSE:SetupPlayer(ply, dbData)
 	ply:SetLocalSyncVar(SYNC_MONEY, dbData.money)
 	ply:SetLocalSyncVar(SYNC_BANKMONEY, dbData.bankmoney)
 
-	if dbData.data then
-		local data = util.JSONToTable(dbData.data)
-	end
-
-	if not data then
-		data = {}
-	end
+	local data = util.JSONToTable(dbData.data)
 
 	ply.impulseData = data
 	ply.impulseRanks = util.JSONToTable(dbData.ranks or "[]")
