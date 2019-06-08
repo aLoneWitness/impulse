@@ -567,10 +567,42 @@ local bannedTools = {
 	["paint"] = true,
 }
 
+local dupeBannedTools = {
+	["weld"] = true,
+	["weld_ez"] = true,
+	["spawner"] = true,
+	["duplicator"] = true,
+	["adv_duplicator"] = true
+}
+
 function IMPULSE:CanTool(ply, tr, tool)
+	if not self.Sandbox.CanTool(self, ply, tr, tool) then return false end
+
+	if not ply:IsAdmin() and tool == "spawner" then
+		return false
+	end
+
 	if bannedTools[tool] then
 		return false
 	end
+
+    local ent = trace.Entity
+
+    if IsValid(ent) then
+        if ent.onlyremover then
+            if tool == "remover" then
+                return ply:IsAdmin() or ply:IsSuperAdmin()
+            else
+                return false
+            end
+        end
+
+        if ent.nodupe and dupeBannedTools[tool] then
+            return false
+        end
+	end
+
+	return true
 end
 
 local isValid = IsValid

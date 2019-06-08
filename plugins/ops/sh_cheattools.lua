@@ -362,7 +362,7 @@ if CLIENT then
 		
 		main = vgui.Create( "DFrame" )
 		main:SetSize( 635, 300 )
-		main:SetTitle( "ops Screengrabber WARNING: Abuse of this will lead to a ban" )
+		main:SetTitle( "ops screengrabber" )
 		main:MakePopup()
 		main:Center()
 		
