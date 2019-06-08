@@ -547,6 +547,32 @@ function IMPULSE:PlayerSpawnedProp(ply, model, ent)
 	end
 end
 
+function IMPULSE:CanDrive()
+	return false
+end
+
+function IMPULSE:CanProperty()
+	return false
+end
+
+local bannedTools = {
+	["duplicator"] = true,
+	["physprop"] = true,
+	["dynamite"] = true,
+	["eyeposer"] = true,
+	["faceposer"] = true,
+	["fingerposer"] = true,
+	["inflator"] = true,
+	["trails"] = true,
+	["paint"] = true,
+}
+
+function IMPULSE:CanTool(ply, tr, tool)
+	if bannedTools[tool] then
+		return false
+	end
+end
+
 local isValid = IsValid
 local mathAbs = math.abs
 function IMPULSE:Move(ply, mvData)
