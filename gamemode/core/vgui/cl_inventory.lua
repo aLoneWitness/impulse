@@ -28,7 +28,7 @@ function PANEL:Init()
  	self.infoName:SetFont("Impulse-Elements24-Shadow")
  	self.infoName:SizeToContents()
 
- 	if self.infoName:GetWide() > 250 then
+ 	if self.infoName:GetWide() > 245 then
  		self.infoName:SetFont("Impulse-Elements19-Shadow")
  	end
 

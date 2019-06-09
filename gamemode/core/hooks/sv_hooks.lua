@@ -71,6 +71,7 @@ function IMPULSE:PlayerSpawn(ply)
 
 	if ply.beenSetup then
 		ply:SetTeam(impulse.Config.DefaultTeam)
+		ply:SetLocalSyncVar(SYNC_HUNGER, 100, true)
 	end
 
 	ply:SetHunger(100)

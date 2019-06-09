@@ -34,6 +34,7 @@ function meta:SetTeam(teamID, forced)
 	hook.Run("OnPlayerChangedTeam", self, self:Team(), teamID)
 
 	self:SetLocalSyncVar(SYNC_CLASS, nil, true)
+	self:SetLocalSyncVar(SYNC_RANK, nil, true)
 	self:OldSetTeam(teamID)
 	self:SetupHands()
 
