@@ -16,10 +16,15 @@ end
 
 local bodyCol = Color(50, 50, 50, 210)
 local red = Color(255, 0, 0)
+local green = Color(0, 255, 0)
+local restrictedCol = Color(255, 223, 0, 255)
 function PANEL:SetInv(invdata)
 	local panel = self
 
 	for v,k in pairs(invdata) do
+		local r = k[2]
+		local e = k[3]
+		k = k[1]
 		local bg = self.scroll:Add("DPanel")
 		bg:SetTall(38)
 		bg:DockMargin(5, 3, 5, 3)
@@ -27,15 +32,24 @@ function PANEL:SetInv(invdata)
 		bg.ItemName = k.Name
 		bg.ItemIllegal = k.Illegal or false
 		bg.ItemClass = k.UniqueID
+		bg.ItemRestrict = r
+		bg.ItemEquipped = e
 
 		function bg:Paint(w, h)
 			surface.SetDrawColor(bodyCol)
 			surface.DrawRect(0, 0, w, h)
 
 			draw.SimpleText(self.ItemName, "Impulse-Elements18-Shadow", 10, 5, color_white)
+			draw.SimpleText(self.ItemClass, "Impulse-Elements16-Shadow", 10, 20, color_white)
 
-			if self.ItemIllegal then
-				draw.SimpleText("Contraband", "Impulse-Elements16-Shadow", 10, 22, red)	
+			if self.ItemEquipped then
+				draw.SimpleText("equipped", "Impulse-Elements16-Shadow", 180, 7, green)
+			end
+
+			if self.ItemRestrict then
+				draw.SimpleText("restricted", "Impulse-Elements16-Shadow", 180, 22, restrictedCol)
+			elseif self.ItemIllegal then
+				draw.SimpleText("illegal", "Impulse-Elements16-Shadow", 180, 22, red)	
 			end
 
 			return true
@@ -56,7 +70,7 @@ function PANEL:SetInv(invdata)
 		end
 			
 		local takeLbl = vgui.Create("DLabel", bg)
-		takeLbl:SetPos(250, 10)
+		takeLbl:SetPos(258, 10)
 		takeLbl:SetText("Remove")
 		takeLbl:SizeToContents()
 	end

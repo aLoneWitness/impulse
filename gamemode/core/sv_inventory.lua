@@ -190,7 +190,7 @@ function meta:TakeInventoryItem(invid, storetype)
 	end
 
 	if item.equipped then
-		self:SetInventoryItemEquipped(itemid, false)
+		self:SetInventoryItemEquipped(invid, false)
 	end
 
 	hook.Run("OnInventoryItemRemoved", self, storetype, item.class, item.id, item.equipped, item.restricted, invid)

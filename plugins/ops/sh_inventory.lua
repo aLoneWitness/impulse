@@ -10,9 +10,11 @@ else
 
 		for i=1,invSize do
 			local itemnetid = net.ReadUInt(10)
+			local itemrestricted = net.ReadBool()
+			local itemequipped = net.ReadBool()
 			local item = impulse.Inventory.Items[itemnetid]
 			
-			table.insert(invCompiled, item)
+			table.insert(invCompiled, {item, itemrestricted, itemequipped})
 		end
 
 		local searchMenu = vgui.Create("impulseSearchMenuAdmin")
@@ -40,6 +42,8 @@ local viewInvCommand = {
 			for v,k in pairs(inv) do
 				local netid = impulse.Inventory.ClassToNetID(k.class)
 				net.WriteUInt(netid, 10)
+				net.WriteBool(k.restricted or false)
+				net.WriteBool(k.equipped or false)
 			end
 
 			net.Send(ply)
