@@ -51,7 +51,7 @@ function impulse.blur(panel, layers, density, alpha)
 	end
 end
 
-function impulse.MakeWorkbar(time, text, onDone)
+function impulse.MakeWorkbar(time, text, onDone, popup)
 	local bar = vgui.Create("impulseWorkbar")
 	bar:SetEndTime(CurTime() + time)
 
@@ -61,6 +61,10 @@ function impulse.MakeWorkbar(time, text, onDone)
 	
 	if onDone then
 		bar.OnEnd = onDone
+	end
+
+	if popup then
+		bar:MakePopup()
 	end
 end
 

@@ -307,6 +307,7 @@ local searchCommand = {
 	requiresAlive = true,
 	onRun = function(ply, args, text)
 		if not ply:IsCP() then return end
+		if ply.InvSearching and IsValid(ply.InvSearching) then return end
 
 		local trace = {}
 		trace.start = ply:EyePos()
