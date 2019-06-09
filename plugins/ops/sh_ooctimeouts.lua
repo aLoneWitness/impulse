@@ -1,3 +1,7 @@
+local infoCol = Color(135, 206, 250)
+
+impulse.OOCTimeouts = impulse.OOCTimeouts or {}
+
 local timeoutCommand = {
     description = "Gives the player an OOC ban for the time provided, in minutes. Reason is optional.",
     requiresArg = true,
@@ -16,18 +20,24 @@ local timeoutCommand = {
 		time = time * 60
 
 		if plyTarget then
-			plyTarget.hasOOCTimeout = CurTime() + time
+			impulse.OOCTimeouts[ply:SteamID()] = CurTime() + time
 			plyTarget:Notify("Reason: "..(reason or "Behaviour that violates the community guidelines")..".")
 			plyTarget:Notify("You have been issued an OOC communication timeout by a game moderator that will last "..(time / 60).." minutes.")
 
 			timer.Create("impulseOOCTimeout"..plyTarget:SteamID(), time, 1, function()
-				if IsValid(plyTarget) and plyTarget.hasOOCTimeout then
-					plyTarget.hasOOCTimeout = nil
+				if IsValid(plyTarget) and impulse.OOCTimeouts[ply:SteamID()] then
+					impulse.OOCTimeouts[ply:SteamID()] = nil
 					plyTarget:Notify("You OOC communication timeout has expired. You may now use OOC again. Please review the community guidelines before sending messages again.")
 				end
 			end)
 
-			ply:Notify("You have issued "..plyTarget:Name().." an OOC timeout for "..(time / 60).." minutes.")
+			local t = (time / 60)
+
+			ply:Notify("You have issued "..plyTarget:Name().." an OOC timeout for "..t.." minutes.")
+
+			for v,k in pairs(player.GetAll()) do
+				k:AddChatText(infoCol, plyTarget:Name().." has been given an OOC timeout for "..t.." minutes by a game moderator.")
+			end
 		else
 			return ply:Notify("Could not find player: "..tostring(name))
 		end

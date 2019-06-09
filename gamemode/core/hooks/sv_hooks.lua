@@ -564,7 +564,7 @@ local bannedTools = {
 	["fingerposer"] = true,
 	["inflator"] = true,
 	["trails"] = true,
-	["paint"] = true,
+	["paint"] = true
 }
 
 local dupeBannedTools = {

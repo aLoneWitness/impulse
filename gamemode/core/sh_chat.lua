@@ -46,8 +46,9 @@ local oocCommand = {
 			return ply:Notify("OOC chat has been suspsended by the game moderators and will return shortly.")	
 		end
 
-		if ply.hasOOCTimeout then
-			return ply:Notify("You have an active OOC timeout that will remain for "..string.NiceTime(ply.hasOOCTimeout - CurTime())..".")
+		local timeout = impulse.OOCTimeouts[ply:SteamID()]
+		if timeout then
+			return ply:Notify("You have an active OOC timeout that will remain for "..string.NiceTime(timeout - CurTime())..".")
 		end
 
 		for v,k in pairs(player.GetAll()) do
@@ -315,11 +316,23 @@ local searchCommand = {
 		local tr = util.TraceLine(trace)
 		local targ = tr.Entity
 
-		if targ and IsValid(targ) and targ:IsPlayer() then
-			if not targ.beenInvSetup then return end
-			targ:Notify("You are currently being searched. Stay still to cooperate.")
+		if targ and IsValid(targ) and targ:IsPlayer() and targ:OnGround() then
+			--if not targ.beenInvSetup then return end
+			targ:Freeze(true)
+			targ:Notify("You are currently being searched.")
 			ply:Notify("You have started searching "..targ:Nick()..".")
+			ply.InvSearching = targ
 			hook.Run("DoInventorySearch", ply, targ)
+
+			local inv = targ:GetInventory(1)
+			net.Start("impulseDoInvSearch")
+			net.WriteUInt(targ:EntIndex(), 8)
+			net.WriteUInt(#inv, 16)
+			for v,k in pairs(inv) do
+				local netid = impulse.Inventory.ClassToNetID(k.class)
+				net.WriteUInt(netid, 10)
+			end
+			net.Send(ply)
 		else
 			ply:Notify("No player in search range.")
 		end
