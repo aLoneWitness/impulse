@@ -155,3 +155,27 @@ net.Receive("impulseInvUpdateEquip", function()
 		impulse_inventory:FindItemPanelByID(invid).IsEquipped = state or false
 	end
 end)
+
+net.Receive("impulseInvDoSearch", function()
+	local searchee = Entity(net.ReadUInt(8))
+	local invSize = net.ReadUInt(16)
+	local invCompiled = {}
+
+	if not IsValid(searchee) then return end
+
+	for i=1,invSize do
+		local itemnetid = net.ReadUInt(10)
+		local item = impulse.Inventory.Items[itemnetid]
+		
+		table.insert(invCompiled, item)
+	end
+
+
+	impulse.MakeWorkbar(5, "Searching...", function()
+		if not IsValid(searchee) then return end
+
+		local searchMenu = vgui.Create("impulseSearchMenu")
+		searchMenu:SetInv(invCompiled)
+		searchMenu:SetPlayer(searchee)
+	end)
+end)

@@ -317,7 +317,16 @@ local searchCommand = {
 		local targ = tr.Entity
 
 		if targ and IsValid(targ) and targ:IsPlayer() and targ:OnGround() then
-			--if not targ.beenInvSetup then return end
+			if not targ.beenInvSetup then return end
+
+			if not ply:CanArrest(targ) then
+				return ply:Notify("You cannot search this player.")
+			end
+
+			if not targ:GetSyncVar(SYNC_ARRESTED, false) then
+				return ply:Notify("You must detain a player before searching them.")
+			end
+
 			targ:Freeze(true)
 			targ:Notify("You are currently being searched.")
 			ply:Notify("You have started searching "..targ:Nick()..".")
@@ -325,7 +334,7 @@ local searchCommand = {
 			hook.Run("DoInventorySearch", ply, targ)
 
 			local inv = targ:GetInventory(1)
-			net.Start("impulseDoInvSearch")
+			net.Start("impulseInvDoSearch")
 			net.WriteUInt(targ:EntIndex(), 8)
 			net.WriteUInt(#inv, 16)
 			for v,k in pairs(inv) do
