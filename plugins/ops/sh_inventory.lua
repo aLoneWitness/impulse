@@ -1,0 +1,52 @@
+if SERVER then
+	util.AddNetworkString("impulseOpsViewInv")
+else
+	net.Receive("impulseOpsViewInv", function()
+		local searchee = Entity(net.ReadUInt(8))
+		local invSize = net.ReadUInt(16)
+		local invCompiled = {}
+
+		if not IsValid(searchee) then return end
+
+		for i=1,invSize do
+			local itemnetid = net.ReadUInt(10)
+			local item = impulse.Inventory.Items[itemnetid]
+			
+			table.insert(invCompiled, item)
+		end
+
+		local searchMenu = vgui.Create("impulseSearchMenuAdmin")
+		searchMenu:SetInv(invCompiled)
+		searchMenu:SetPlayer(searchee)
+	end)
+end
+
+local viewInvCommand = {
+    description = "Allows you to view and delete items from the player specified.",
+    requiresArg = true,
+    adminOnly = true,
+    onRun = function(ply, arg, rawText)
+        local name = arg[1]
+		local plyTarget = impulse.FindPlayer(name)
+
+		if plyTarget then
+			if not plyTarget.beenInvSetup then return ply:Notify("Target is loading still...") end
+
+			local inv = plyTarget:GetInventory(1)
+			net.Start("impulseOpsViewInv")
+			net.WriteUInt(plyTarget:EntIndex(), 8)
+			net.WriteUInt(#inv, 16)
+
+			for v,k in pairs(inv) do
+				local netid = impulse.Inventory.ClassToNetID(k.class)
+				net.WriteUInt(netid, 10)
+			end
+
+			net.Send(ply)
+		else
+			return ply:Notify("Could not find player: "..tostring(name))
+		end
+    end
+}
+
+impulse.RegisterChatCommand("/viewinv", viewInvCommand)
