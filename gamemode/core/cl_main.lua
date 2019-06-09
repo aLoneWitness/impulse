@@ -51,6 +51,19 @@ function impulse.blur(panel, layers, density, alpha)
 	end
 end
 
+function impulse.MakeWorkbar(time, text, onDone)
+	local bar = vgui.Create("impulseWorkbar")
+	bar:SetEndTime(CurTime() + text)
+
+	if text then
+		bar:SetText(text)
+	end
+	
+	if onDone then
+		bar.OnEnd = onDone
+	end
+end
+
 local myscrw, myscrh = 1920, 1080
 
 function SizeW(width)
