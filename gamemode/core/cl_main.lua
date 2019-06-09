@@ -53,7 +53,7 @@ end
 
 function impulse.MakeWorkbar(time, text, onDone)
 	local bar = vgui.Create("impulseWorkbar")
-	bar:SetEndTime(CurTime() + text)
+	bar:SetEndTime(CurTime() + time)
 
 	if text then
 		bar:SetText(text)

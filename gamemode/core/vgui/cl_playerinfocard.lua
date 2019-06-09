@@ -1,5 +1,6 @@
 local PANEL = {}
 
+local nextSG = 0
 local quickTools = {
 	{
 		name = "Goto",
@@ -84,6 +85,13 @@ local quickTools = {
 		name = "Screengrab",
 		icon = "icon16/camera.png",
 		onRun = function(ply, id)
+			if nextSG > CurTime() then
+				ply:Notify("Slow down!")
+				return
+			end
+
+			nextSG = CurTime() + 10
+
 			OpenSGMenu()
 
 			LocalPlayer().parts = nil

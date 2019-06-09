@@ -678,5 +678,5 @@ function IMPULSE:PlayerSetHandsModel(ply, hands)
 end
 
 function IMPULSE:PlayerSpray()
-	return false
+	return true
 end

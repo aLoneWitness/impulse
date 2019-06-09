@@ -20,20 +20,24 @@ local timeoutCommand = {
 		time = time * 60
 
 		if plyTarget then
-			impulse.OOCTimeouts[plyTarget:SteamID()] = CurTime() + time
+			local sid = plyTarget:SteamID()
+			impulse.OOCTimeouts[sid] = CurTime() + time
 			plyTarget:Notify("Reason: "..(reason or "Behaviour that violates the community guidelines")..".")
 			plyTarget:Notify("You have been issued an OOC communication timeout by a game moderator that will last "..(time / 60).." minutes.")
 
-			timer.Create("impulseOOCTimeout"..plyTarget:SteamID(), time, 1, function()
-				if IsValid(plyTarget) and impulse.OOCTimeouts[plyTarget:SteamID()] then
-					impulse.OOCTimeouts[plyTarget:SteamID()] = nil
+			timer.Create("impulseOOCTimeout"..sid, time, 1, function()
+				if not impulse.OOCTimeouts[sid] then return end
+
+				impulse.OOCTimeouts[sid] = nil
+
+				if IsValid(plyTarget) then
 					plyTarget:Notify("You OOC communication timeout has expired. You may now use OOC again. Please review the community guidelines before sending messages again.")
 				end
 			end)
 
 			local t = (time / 60)
 
-			ply:Notify("You have issued "..plyTarget:Name().." an OOC timeout for "..t.." minutes.")
+			ply:Notify("You have issued "..plyTarget:SteamName().." an OOC timeout for "..t.." minutes.")
 
 			for v,k in pairs(player.GetAll()) do
 				k:AddChatText(infoCol, plyTarget:Name().." has been given an OOC timeout for "..t.." minutes by a game moderator.")
