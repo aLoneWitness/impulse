@@ -11,3 +11,7 @@ function impulse.RegisterItem(item)
 	impulse.Inventory.ItemsRef[item.UniqueID] = count
 	count = count + 1
 end
+
+function impulse.Inventory.ClassToNetID(class)
+	return impulse.Inventory.ItemsRef[class]
+end

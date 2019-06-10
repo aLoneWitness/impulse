@@ -28,6 +28,7 @@ util.AddNetworkString("impulseInvDoEquip")
 util.AddNetworkString("impulseInvDoDrop")
 util.AddNetworkString("impulseInvDoUse")
 util.AddNetworkString("impulseInvDoSearch")
+util.AddNetworkString("impulseInvDoSearchConfiscate")
 
 netstream.Hook("impulseCharacterCreate", function(player, charName, charModel, charSkin)
 	if (player.NextCreate or 0) > CurTime() then return end
@@ -460,4 +461,36 @@ net.Receive("impulseInvDoUse", function(len, ply)
 	if hasItem then
 		ply:UseInventoryItem(invid)
 	end
+end)
+
+net.Receive("impulseInvDoSearchConfiscate", function(len, ply)
+	if not ply:IsCP() then return end
+	if (ply.nextInvConf or 0) > CurTime() then return end
+	ply.nextInfConf = CurTime() + 2
+
+	local targ = ply.InvSearching
+	if not IsValid(targ) or not ply:CanArrest(targ) then return end
+
+	local count = net.ReadUInt(8) or 0
+
+	if count > 0 then
+		for i=1,count do
+			local netid = net.ReadUInt(10)
+			local item = impulse.Inventory.Items[netid]
+
+			if not item then continue end
+
+			if item.Illegal and targ:HasInventoryItem(item.UniqueID) then
+				targ:TakeInventoryItemClass(item.UniqueID, 1)
+			end
+		end
+
+		ply:Notify("You have confiscated "..count.." items.")
+		targ:Notify("The search has been completed and "..count.." items have been confiscated.")
+	else
+		targ:Notify("The search has been completed.")
+	end
+
+	ply.InvSearching = nil
+	targ:Freeze(false)
 end)

@@ -47,10 +47,6 @@ function impulse.Inventory.DBUpdateStoreType(ownerid, class, limit, newStorageTy
 	query:Execute()
 end
 
-function impulse.Inventory.ClassToNetID(class)
-	return impulse.Inventory.ItemsRef[class]
-end
-
 function impulse.Inventory.SpawnItem(class, pos)
 	local itemid = impulse.Inventory.ClassToNetID(class)
 	if not itemid then return print("[impulse] Attempting to spawn nil item!") end
@@ -207,40 +203,19 @@ function meta:TakeInventoryItemClass(itemclass, storetype, amount)
 
 	local storetype = storetype or 1
 	local amount = amount or 1
-	local itemid = impulse.Inventory.ClassToNetID(itemclass)
-	local weight = (impulse.Inventory.Items[itemid].Weight or 0) * amount
 	local impulseid = self.impulseID
 
-	impulse.Inventory.DBRemoveItem(self.impulseID, itemclass, storetype, amount)
-
-	local loop = 0
+	local count = 0
 	for v,k in pairs(impulse.Inventory.Data[impulseid][storetype]) do
 		if k.class == itemclass then
-			hook.Run("OnInventoryItemRemoved", self, storetype, k.class, k.id, k.equipped, k.restricted)
-			k = nil
-			loop = loop + 1
+			count = count + 1
+			self:TakeInventoryItem(v, storetype)
 
-			if loop == amount then
-				break
+			if count == amount then
+				return
 			end
 		end
 	end
-
-	if storetype == 1 then
-		self.InventoryWeight = math.Clamp(self.InventoryWeight - weight, 0, 1000)
-	elseif storetype == 2 then
-		self.InventoryWeightStorage = math.Clamp(self.InventoryWeightStorage - weight, 0, 1000)
-	end
-
-	local regvalue = self.InventoryRegister[itemclass]
-	regvalue =  regvalue - (1 * amount) -- decrease amount by one
-
-	if regvalue < 1 then -- any negative values to be removed
-		regvalue =  nil
-	end
-	
-	net.Start("impulseInvRemove")
-	net.WriteUInt(itemid)
 end
 
 function meta:SetInventoryItemEquipped(itemid, state)

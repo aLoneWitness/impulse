@@ -4,6 +4,7 @@ function PANEL:Init()
 	self:SetSize(350, 500)
 	self:Center()
 	self:SetTitle("")
+	self:ShowCloseButton(false)
 	self:MakePopup()
 
 	self.darkOverlay = Color(40, 40, 40, 160)
@@ -67,6 +68,18 @@ function PANEL:SetInv(invdata)
 	self.finish:SetPos(0, 470)
 	self.finish:SetSize(350, 30)
 	self.finish:SetText("Finish search")
+
+	function self.finish:DoClick()
+		net.Start("impulseInvDoSearchConfiscate")
+		net.WriteUInt(#panel.taking, 8)
+		for v,k in pairs(panel.taking) do
+			local netid = impulse.Inventory.ClassToNetID(k)
+			net.WriteUInt(netid, 10)
+		end
+		net.SendToServer()
+
+		panel:Remove()
+	end
 
 	function self.finish:Think()
 		local count = table.Count(panel.taking)
