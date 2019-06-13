@@ -119,7 +119,7 @@ function PANEL:SetupItems()
  		end)
  	end
 
- 	if localInv and #localInv > 0 then
+ 	if localInv and table.Count(localInv) > 0 then
 	 	for v,k in pairs(localInv) do -- 01 is player 0 (localplayer) and storage 1 (local inv)
 	 		local otherItem = self.items[k.id]
 	 		local itemX = impulse.Inventory.Items[k.id]

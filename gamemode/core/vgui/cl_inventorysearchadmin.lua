@@ -24,6 +24,7 @@ function PANEL:SetInv(invdata)
 	for v,k in pairs(invdata) do
 		local r = k[2]
 		local e = k[3]
+		local itemid = k[4]
 		k = k[1]
 		local bg = self.scroll:Add("DPanel")
 		bg:SetTall(38)
@@ -34,13 +35,14 @@ function PANEL:SetInv(invdata)
 		bg.ItemClass = k.UniqueID
 		bg.ItemRestrict = r
 		bg.ItemEquipped = e
+		bg.ItemID = itemid
 
 		function bg:Paint(w, h)
 			surface.SetDrawColor(bodyCol)
 			surface.DrawRect(0, 0, w, h)
 
 			draw.SimpleText(self.ItemName, "Impulse-Elements18-Shadow", 10, 5, color_white)
-			draw.SimpleText(self.ItemClass, "Impulse-Elements16-Shadow", 10, 20, color_white)
+			draw.SimpleText(self.ItemClass.."  #"..self.ItemID, "Impulse-Elements16-Shadow", 10, 20, color_white)
 
 			if self.ItemEquipped then
 				draw.SimpleText("equipped", "Impulse-Elements16-Shadow", 180, 7, green)
@@ -63,9 +65,9 @@ function PANEL:SetInv(invdata)
 
 		function takeBtn:OnChange(val)
 			if val then
-				table.insert(panel.taking, self.ItemClass)
+				table.insert(panel.taking, bg.ItemID)
 			else
-				table.RemoveByValue(panel.taking, self.ItemClass)
+				table.RemoveByValue(panel.taking, bg.ItemID)
 			end
 		end
 			
@@ -92,11 +94,28 @@ function PANEL:SetInv(invdata)
 
 	function self.finish:DoClick()
 		panel:Remove()
+
+		if not IsValid(panel.ply) then
+			LocalPlayer():Notify("Player left the server.")
+		end
+
+		local count = table.Count(panel.taking)
+
+		if count > 0 then
+			net.Start("impulseOpsRemoveInv")
+			net.WriteUInt(panel.ply:EntIndex(), 8)
+			net.WriteUInt(count, 16)
+			for v,k in pairs(panel.taking) do
+				net.WriteUInt(k, 10)
+			end
+			net.SendToServer()
+		end
 	end
 end
 
 function PANEL:SetPlayer(ent)
 	self:SetTitle(ent:Nick().."'s Inventory")
+	self.ply = ent
 end
 
 vgui.Register("impulseSearchMenuAdmin", PANEL, "DFrame")

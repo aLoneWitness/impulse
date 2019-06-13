@@ -1,5 +1,27 @@
 if SERVER then
 	util.AddNetworkString("impulseOpsViewInv")
+	util.AddNetworkString("impulseOpsRemoveInv")
+
+	net.Receive("impulseOpsRemoveInv", function(len, ply)
+		if not ply:IsAdmin() then return end
+
+		local targ = net.ReadUInt(8)
+		local invSize = net.ReadUInt(16)
+
+		targ = Entity(targ)
+		if not IsValid(targ) then return end
+
+		for i=1,invSize do
+			local itemid = net.ReadUInt(10)
+			local hasItem = targ:HasInventoryItemSpecific(itemid)
+
+			if hasItem then
+				targ:TakeInventoryItem(itemid)
+			end
+		end
+
+		ply:Notify("Removed "..invSize.." items from "..targ:Nick().."'s inventory.")
+	end)
 else
 	net.Receive("impulseOpsViewInv", function()
 		local searchee = Entity(net.ReadUInt(8))
@@ -12,9 +34,10 @@ else
 			local itemnetid = net.ReadUInt(10)
 			local itemrestricted = net.ReadBool()
 			local itemequipped = net.ReadBool()
+			local itemid = net.ReadUInt(10)
 			local item = impulse.Inventory.Items[itemnetid]
 			
-			table.insert(invCompiled, {item, itemrestricted, itemequipped})
+			table.insert(invCompiled, {item, itemrestricted, itemequipped, itemid})
 		end
 
 		local searchMenu = vgui.Create("impulseSearchMenuAdmin")
@@ -37,13 +60,14 @@ local viewInvCommand = {
 			local inv = plyTarget:GetInventory(1)
 			net.Start("impulseOpsViewInv")
 			net.WriteUInt(plyTarget:EntIndex(), 8)
-			net.WriteUInt(#inv, 16)
+			net.WriteUInt(table.Count(inv), 16)
 
 			for v,k in pairs(inv) do
 				local netid = impulse.Inventory.ClassToNetID(k.class)
 				net.WriteUInt(netid, 10)
 				net.WriteBool(k.restricted or false)
 				net.WriteBool(k.equipped or false)
+				net.WriteUInt(v, 10)
 			end
 
 			net.Send(ply)

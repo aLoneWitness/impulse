@@ -337,7 +337,7 @@ local searchCommand = {
 			local inv = targ:GetInventory(1)
 			net.Start("impulseInvDoSearch")
 			net.WriteUInt(targ:EntIndex(), 8)
-			net.WriteUInt(#inv, 16)
+			net.WriteUInt(table.Count(inv), 16)
 			for v,k in pairs(inv) do
 				local netid = impulse.Inventory.ClassToNetID(k.class)
 				net.WriteUInt(netid, 10)

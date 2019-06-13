@@ -103,6 +103,11 @@ function PANEL:Think()
 
 		if dist > (200 ^ 2) then
 			LocalPlayer():Notify("The target moved too far away.")
+
+			net.Start("impulseInvDoSearchConfiscate")
+			net.WriteUInt(0, 8)
+			net.SendToServer()
+
 			self:Remove()
 		end
 	end
