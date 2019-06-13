@@ -287,16 +287,19 @@ function meta:UseInventoryItem(itemid)
 	local item = impulse.Inventory.Items[itemnetid]
 
 	if item.OnUse then
-		local tr = nil
-		if item.UseAutoTrace then
+		if item.ShouldTraceUse then
 			local trace = {}
 			trace.start = self:EyePos()
 			trace.endpos = trace.start + self:GetAimVector() * 85
 			trace.filter = self
 
-			tr = util.TraceLine(trace)
+			local trEnt = util.TraceLine(trace).Entity
+
+			if not trEnt or not IsValid(trEnt) or not item.ShouldTraceUse(item, self, trEnt) then
+				return
+			end
 		end
-		local shouldRemove = item.OnUse(item, self, tr)
+		local shouldRemove = item.OnUse(item, self)
 
 		if shouldRemove then
 			self:TakeInventoryItem(itemid)

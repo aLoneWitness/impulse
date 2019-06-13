@@ -5,6 +5,8 @@ function PANEL:Init()
 	self:Center()
 	self.Progress = 0
 	self.Text = ""
+
+	impulse_ActiveWorkbar = true
 end
 
 function PANEL:SetEndTime(endtime)
@@ -22,11 +24,13 @@ function PANEL:Think()
 	self.Progress = math.Clamp(((self.StartTime - CurTime()) / (self.StartTime - self.EndTime)), 0, 1)
 
 	if self.Progress == 1 then
-		if self.OnEnd then
-			self.OnEnd()
-		end
-
+		impulse_ActiveWorkbar = false
 		self:Remove()
+
+		local endFunc = self.OnEnd
+		if endFunc then
+			endFunc()
+		end
 	end
 end
 

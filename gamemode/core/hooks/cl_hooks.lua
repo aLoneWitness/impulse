@@ -9,7 +9,7 @@ function IMPULSE:OnSchemaLoaded()
 end
 
 function IMPULSE:Think()
-	if LocalPlayer():Team() != 0 and not vgui.CursorVisible() then
+	if LocalPlayer():Team() != 0 and not vgui.CursorVisible() and not impulse_ActiveWorkbar then
 		if input.IsKeyDown(KEY_F1) and (not IsValid(impulse.MainMenu) or not impulse.MainMenu:IsVisible()) then
 			local mainMenu = impulse.MainMenu or vgui.Create("impulseMainMenu")
 			mainMenu:SetVisible(true)
@@ -269,7 +269,7 @@ function IMPULSE:FinishChat()
 end
 
 function IMPULSE:OnContextMenuOpen()
-	if LocalPlayer():Team() == 0 or not LocalPlayer():Alive() then return end
+	if LocalPlayer():Team() == 0 or not LocalPlayer():Alive() or impulse_ActiveWorkbar then return end
 
 	impulse_inventory = vgui.Create("impulseInventory")
 	gui.EnableScreenClicker(true)

@@ -133,6 +133,7 @@ function PANEL:SetupItems()
 				item:DockMargin(0, 0, 15, 5)
 				item:SetItem(k, w)
 				item.InvID = v
+				item.InvPanel = self
 				self.items[k.id] = item
 			end
 

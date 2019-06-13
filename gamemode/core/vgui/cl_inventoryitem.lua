@@ -83,11 +83,58 @@ function PANEL:OnMousePressed(keycode)
 	popup.Inv = self
 
 	if self.Item.OnUse then
-		popup:AddOption(self.Item.UseName or "Use", function()
-			net.Start("impulseInvDoUse")
-			net.WriteUInt(self.InvID, 10)
-			net.SendToServer()
-		end)
+		local shouldUse = true
+
+		if self.Item.ShouldTraceUse then
+			local trace = {}
+			trace.start = LocalPlayer():EyePos()
+			trace.endpos = trace.start + LocalPlayer():GetAimVector() * 85
+			trace.filter = LocalPlayer()
+
+			local trEnt = util.TraceLine(trace).Entity
+			shouldUse = false
+
+			if trEnt and IsValid(trEnt) and self.Item.ShouldTraceUse(self.Item, LocalPlayer(), trEnt) then
+				shouldUse = true
+			end
+		end
+		
+		if shouldUse then
+			popup:AddOption(self.Item.UseName or "Use", function()
+				if self.Item.ShouldTraceUse then
+					local trace = {}
+					trace.start = LocalPlayer():EyePos()
+					trace.endpos = trace.start + LocalPlayer():GetAimVector() * 85
+					trace.filter = LocalPlayer()
+
+					local trEnt = util.TraceLine(trace).Entity
+
+					if not trEnt or not IsValid(trEnt) or not self.Item.ShouldTraceUse(self.Item, LocalPlayer(), trEnt) then
+						return
+					end
+				end
+				if self.Item.UseWorkBarTime then
+					local invid = self.InvID
+					gui.EnableScreenClicker(false)
+
+					if self.Item.UseWorkBarSound then
+						surface.PlaySound(self.Item.UseWorkBarSound)
+					end
+
+					impulse.MakeWorkbar(self.Item.UseWorkBarTime, self.Item.UseWorkBarName or "Using...", function()
+						net.Start("impulseInvDoUse")
+						net.WriteUInt(invid, 10)
+						net.SendToServer()
+					end, self.Item.UseWorkBarFreeze or false)
+
+					self.InvPanel:Remove()
+				else
+					net.Start("impulseInvDoUse")
+					net.WriteUInt(self.InvID, 10)
+					net.SendToServer()
+				end
+			end)
+		end
 	end
 
 	if self.Item.OnEquip then
