@@ -19,6 +19,19 @@ if SERVER then
 	end
 end
 
+local blaclistNames = {
+	["ooc"] = true,
+	["shared"] = true,
+	["world"] = true,
+	["world prop"] = true,
+	["admin"] = true,
+	["server admin"] = true,
+	["mod"] = true,
+	["game moderator"] = true,
+	["adolf hitler"] = true,
+	["tyrone jenson"] = true
+}
+
 function impulse.CanUseName(name)
 	if name:len() >= 24 then
 		return false, "Name too long. (max. 24)" 
@@ -40,6 +53,10 @@ function impulse.CanUseName(name)
 
 	if numFound then
 		return false, "Name contains numbers."
+	end
+	
+	if blacklistNames[name:lower()] then
+		return false, "Blacklisted/reserved name."	
 	end
 
 	return true, name
