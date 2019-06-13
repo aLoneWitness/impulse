@@ -19,7 +19,7 @@ if SERVER then
 	end
 end
 
-local blaclistNames = {
+local blacklistNames = {
 	["ooc"] = true,
 	["shared"] = true,
 	["world"] = true,
