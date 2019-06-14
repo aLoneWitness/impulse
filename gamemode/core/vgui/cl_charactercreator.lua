@@ -20,12 +20,24 @@ function PANEL:Init()
 
 		local msg = Derma_Message
 
+		local skinBlacklist = impulse.Config.DefaultSkinBlacklist[characterModel]
+
+		if skinBlacklist and table.HasValue(skinBlacklist, characterSkin) then
+			return msg("The skin you selected was on the blacklist.\nPlease select another skin or change the model.", "impulse", "OK")
+		end
+		
 		local name, rejectReason = impulse.CanUseName(characterName)
 		if name == false then return msg(rejectReason, "impulse", "OK") end
 
-		Derma_Query("Are you sure you are finished? You can edit your character later, but it will cost a fee.", "impulse", "Yes", function()
-			print("[impulse] Sending character data to server")
-			netstream.Start("impulseCharacterCreate", characterName, characterModel, characterSkin) -- send the completed character to server for checks and creation
+		Derma_Query("Are you sure you are finished?\nYou can edit your character later, but it will cost a fee.", "impulse", "Yes", function()
+			print("[impulse] Sending character data to server...")
+
+			net.Start("impulseCharacterCreate")
+			net.WriteString(characterName)
+			net.WriteString(characterModel)
+			net.WriteUInt(characterSkin, 8)
+			net.SendToServer()
+
 			LocalPlayer().defaultModel = characterModel
 			LocalPlayer().defaultSkin = characterSkin
     		LocalPlayer():ScreenFade(SCREENFADE.IN, color_black, 4, 0)
@@ -108,6 +120,8 @@ function PANEL:Init()
 	self.skinSlider:SetSize(395,20)
 	self.skinSlider:SetPos(230, 280)
 	self.skinSlider:SetValue(0)
+	self.skinSlider.TextArea:SetTextColor(color_white)
+
 	function self.skinSlider:OnValueChanged(newSkin)
 		characterPreview.Entity:SetSkin(newSkin)
 	end

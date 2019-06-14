@@ -188,5 +188,22 @@ function SKIN:PaintTab(panel, w, h)
 	surface.DrawRect(0, 0, w, h)
 end
 
+local function PaintNotches(x, y, w, h, num)
+	if !num then return end
+
+	local space = w / num
+
+	for i=0, num do
+		surface.DrawRect(x + i * space, y + 4, 1, 5)
+	end
+end
+
+function SKIN:PaintNumSlider(panel, w, h)
+	surface.SetDrawColor(color_white)
+	surface.DrawRect(8, h / 2 - 1, w - 15, 1)
+
+	PaintNotches(8, h / 2 - 1, w - 16, 1, panel.m_iNotches)
+end
+
 derma.DefineSkin("impulse", "Skin made by TheVingard. A nice new lick of paint for BMRP's interfaces.", SKIN)
 derma.RefreshSkins()

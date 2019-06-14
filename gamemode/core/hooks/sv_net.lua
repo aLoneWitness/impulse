@@ -29,12 +29,18 @@ util.AddNetworkString("impulseInvDoDrop")
 util.AddNetworkString("impulseInvDoUse")
 util.AddNetworkString("impulseInvDoSearch")
 util.AddNetworkString("impulseInvDoSearchConfiscate")
+util.AddNetworkString("impulseCharacterCreate")
 
-netstream.Hook("impulseCharacterCreate", function(player, charName, charModel, charSkin)
-	if (player.NextCreate or 0) > CurTime() then return end
+net.Receive("impulseCharacterCreate", function(len, ply)
+	if (ply.NextCreate or 0) > CurTime() then return end
+	ply.NextCreate = CurTime() + 10
 
-	local playerID = player:SteamID()
-	local playerGroup = player:GetUserGroup()
+	local charName = net.ReadString()
+	local charModel = net.ReadString()
+	local charSkin = net.ReadUInt(8)
+
+	local plyID = ply:SteamID()
+	local plyGroup = ply:GetUserGroup()
 	local timestamp = math.floor(os.time())
 
 	local canUseName, filteredName =  impulse.CanUseName(charName)
@@ -43,15 +49,21 @@ netstream.Hook("impulseCharacterCreate", function(player, charName, charModel, c
 		charName = filteredName
 	end
 
+	local skinBlacklist = impulse.Config.DefaultSkinBlacklist[charModel]
+
+	if skinBlacklist and table.HasValue(skinBlacklist, charSkin) then
+		return
+	end
+
 	local query = mysql:Select("impulse_players")
-	query:Where("steamid", playerID)
+	query:Where("steamid", plyID)
 	query:Callback(function(result)
-		if (type(result) == "table" and #result > 0) then return end -- if player already exists; halt
+		if (type(result) == "table" and #result > 0) then return end -- if ply already exists; halt
 		
 		local insertQuery = mysql:Insert("impulse_players")
 		insertQuery:Insert("rpname", charName)
-		insertQuery:Insert("steamid", playerID)
-		insertQuery:Insert("group", "vip") -- testing value normal: playerGroup
+		insertQuery:Insert("steamid", plyID)
+		insertQuery:Insert("group", "vip") -- testing value normal: plyGroup
 		insertQuery:Insert("xp", 0)
 		insertQuery:Insert("money", impulse.Config.StartingMoney)
 		insertQuery:Insert("bankmoney", impulse.Config.StartingBankMoney)
@@ -61,12 +73,12 @@ netstream.Hook("impulseCharacterCreate", function(player, charName, charModel, c
 		insertQuery:Insert("data", "[]")
 		insertQuery:Insert("ranks", "[]")
 		insertQuery:Callback(function(result, status, lastID)
-			if IsValid(player) then
+			if IsValid(ply) then
 				local setupData = {
 					id = lastID,
 					rpname = charName,
-					steamid = playerID,
-					group = "vip", -- testing value normal: playerGroup
+					steamid = plyID,
+					group = "vip", -- testing value normal: plyGroup
 					xp = 0,
 					money = impulse.Config.StartingMoney,
 					bankmoney = impulse.Config.StartingBankMoney,
@@ -75,16 +87,15 @@ netstream.Hook("impulseCharacterCreate", function(player, charName, charModel, c
 					skin = charSkin
 				}
 
-				print("[impulse] "..playerID.." has been submitted to the database. RP Name: ".. charName)
-				hook.Run("SetupPlayer", player, setupData)
+				print("[impulse] "..plyID.." has been submitted to the database. RP Name: ".. charName)
+				hook.Run("SetupPlayer", ply, setupData)
 
-				player.extraPVS = nil
+				ply.extraPVS = nil
 			end
 		end)
 		insertQuery:Execute()
 	end)
 	query:Execute()
-	player.NextCreate = CurTime() + 10
 end)
 
 net.Receive("impulseSceneFOV", function(len, ply)
