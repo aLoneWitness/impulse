@@ -130,13 +130,21 @@ function meta:GiveInventoryItem(itemclass, storetype, restricted, isLoaded) -- i
 	local weight = impulse.Inventory.Items[itemid].Weight or 0
 	local impulseid = self.impulseID
 
+	local inv = impulse.Inventory.Data[impulseid][storetype]
+	local invid 
 
-	local invid = table.insert(impulse.Inventory.Data[impulseid][storetype], {
-		id = itemid,
-		class = itemclass,
-		restricted = restricted,
-		equipped = false
-	})
+	for i=1, (table.Count(inv) + 1) do -- intellegent table insert looks for left over ids to reuse to stop massive id's that cant be networked
+		if inv[i] == nil then
+			invid = i
+			impulse.Inventory.Data[impulseid][storetype][i] = {
+				id = itemid,
+				class = itemclass,
+				restricted = restricted,
+				equipped = false
+			}
+			break
+		end
+	end
 
 	if not restricted and not isLoaded then
 		impulse.Inventory.DBAddItem(impulseid, itemclass, storetype)
@@ -244,11 +252,13 @@ function meta:SetInventoryItemEquipped(itemid, state)
 			self.InventoryEquipGroups[itemclass.EquipGroup] = itemid
 		end
 		onEquip(item, self)
+		self:EmitBudgetSound("impulse/equip.wav", 900)
 	elseif unEquip then
 		if itemclass.EquipGroup then
 			self.InventoryEquipGroups[itemclass.EquipGroup] = nil
 		end
 		unEquip(item, self)
+		self:EmitBudgetSound("impulse/unequip.wav", 900)
 	end
 
 	item.equipped = state
