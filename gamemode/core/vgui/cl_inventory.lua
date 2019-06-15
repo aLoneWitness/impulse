@@ -103,17 +103,40 @@ function PANEL:SetupItems()
  	self.invScroll:SetPos(270, 65)
  	self.invScroll:SetSize(w - 270, h - 65)
 	self.items = {}
+	self.itemsPanels = {}
  	local weight = 0
  	local realInv = impulse.Inventory.Data[0][1]
  	local localInv = table.Copy(impulse.Inventory.Data[0][1])
+ 	local reccurTemp = {}
+ 	local equipTemp = {}
 
  	for v,k in pairs(localInv) do -- fix for fucking table.sort desyncing client/server itemids!!!!!!!
  		k.realKey = v
- 		k.weight = impulse.Inventory.Items[k.id].Weight or 0
+
+ 		reccurTemp[k.id] = (reccurTemp[k.id] or 0) + (impulse.Inventory.Items[k.id].Weight or 0)
+ 		k.sortWeight = reccurTemp[k.id]
  	end
 
- 	if impulse.GetSetting("inv_sortbyweight") then
- 		table.SortByMember(localInv, "weight")
+ 	if impulse.GetSetting("inv_sortbyweight") then -- super messy sorting systems for the tables below
+ 		table.SortByMember(localInv, "sortWeight")
+ 	end
+
+ 	if impulse.GetSetting("inv_sortequippablesattop") then
+ 		local ridTemp = {}
+
+ 		for v,k in pairs(localInv) do
+ 			if impulse.Inventory.Items[k.id].OnEquip then
+ 				table.insert(ridTemp, v)
+ 				table.insert(equipTemp, k)
+ 			end
+ 		end
+
+ 		for v,k in pairs(ridTemp) do -- im doing this because i cant table.remove on the go because it destroys the loop
+ 			table.remove(localInv, k)
+ 		end
+
+ 		table.Add(equipTemp, localInv)
+ 		localInv =  equipTemp
  	end
 
  	if localInv and table.Count(localInv) > 0 then
@@ -124,14 +147,14 @@ function PANEL:SetupItems()
 	 		if itemX.CanStack and otherItem then
 	 			otherItem.Count = (otherItem.Count or 1) + 1
 	 		else
-				self.items[k.realKey] = self.invScroll:Add("impulseInventoryItem")
-				local item = self.items[k.realKey]
+	 			local item = self.invScroll:Add("impulseInventoryItem")
 				item:Dock(TOP)
 				item:DockMargin(0, 0, 15, 5)
 				item:SetItem(k, w)
 				item.InvID = k.realKey
 				item.InvPanel = self
 				self.items[k.id] = item
+				self.itemsPanels[k.realKey] = item
 			end
 
 			weight =  weight + (itemX.Weight or 0)
@@ -143,12 +166,12 @@ function PANEL:SetupItems()
 		self.empty:SetText("Empty")
 		self.empty:SetFont("Impulse-Elements19-Shadow")
 	end
-
+	
 	self.invWeight = weight
 end
 
 function PANEL:FindItemPanelByID(id)
-	return self.items[id]
+	return self.itemsPanels[id]
 end
 
 local grey = Color(209, 209, 209)
