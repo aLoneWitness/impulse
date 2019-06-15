@@ -274,7 +274,7 @@ function PANEL:Init()
 	end)
 end
 
-PANEL.FullRemove = PANEL.Remove 
+local fullRemove = PANEL.Remove 
 function PANEL:Remove()
 	self:SetVisible(false)
 end
@@ -294,6 +294,8 @@ function PANEL:Paint(w,h)
 	surface.DrawRect(70,0,400,h) -- left body
 	surface.DrawRect(w-540,0,520,380)-- news body
 	impulse.render.glowgo(100,50,337,91)
+
+	draw.SimpleText("beta", "Impulse-SpecialFont", 370, 120, Color(170, 170, 170))
 end
 
 vgui.Register("impulseMainMenu", PANEL, "DPanel")

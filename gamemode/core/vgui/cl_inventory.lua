@@ -104,19 +104,16 @@ function PANEL:SetupItems()
  	self.invScroll:SetSize(w - 270, h - 65)
 	self.items = {}
  	local weight = 0
- 	local localInv = impulse.Inventory.Data[0][1]
+ 	local realInv = impulse.Inventory.Data[0][1]
+ 	local localInv = table.Copy(impulse.Inventory.Data[0][1])
+
+ 	for v,k in pairs(localInv) do -- fix for fucking table.sort desyncing client/server itemids!!!!!!!
+ 		k.realKey = v
+ 		k.weight = impulse.Inventory.Items[v].Weight or 0
+ 	end
 
  	if impulse.GetSetting("inv_sortbyweight") then
- 		table.sort(localInv, function(a, b)
- 			if not b then
- 				return true
- 			end
-
- 			local aWeight = (impulse.Inventory.Items[a.id].Weight or 0)
- 			local bWeight = (impulse.Inventory.Items[b.id].Weight or 0)
-
- 			return aWeight > bWeight
- 		end)
+ 		table.SortByMember(localInv, "weight")
  	end
 
  	if localInv and table.Count(localInv) > 0 then
@@ -127,12 +124,12 @@ function PANEL:SetupItems()
 	 		if itemX.CanStack and otherItem then
 	 			otherItem.Count = (otherItem.Count or 1) + 1
 	 		else
-				self.items[v] = self.invScroll:Add("impulseInventoryItem")
-				local item = self.items[v]
+				self.items[k.realKey] = self.invScroll:Add("impulseInventoryItem")
+				local item = self.items[k.realKey]
 				item:Dock(TOP)
 				item:DockMargin(0, 0, 15, 5)
 				item:SetItem(k, w)
-				item.InvID = v
+				item.InvID = k.realKey
 				item.InvPanel = self
 				self.items[k.id] = item
 			end

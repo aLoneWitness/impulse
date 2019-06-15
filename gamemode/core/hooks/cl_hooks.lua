@@ -285,3 +285,11 @@ end
 concommand.Add("impulse_togglethirdperson", function() -- ease of use command for binds
 	impulse.SetSetting("view_thirdperson", (!impulse.GetSetting("view_thirdperson")))
 end)
+
+concommand.Add("impulse_reloadmenu", function()
+	if IsValid(impulse.MainMenu) then
+		impulse.MainMenu:Remove()
+	end
+
+	impulse.MainMenu = vgui.Create("impulseMainMenu")
+end)

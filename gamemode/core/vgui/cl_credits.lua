@@ -22,6 +22,11 @@ function PANEL:Init()
 		Kyle Smith - UTF-8 module
 		rebel1234 and Chessnut - animations base</font>
 
+		Powered by
+		<font=Impulse-Elements23>Discord - Discord API
+		Osyris - RbxDiscordProxy
+		Wordpress - Wordpress API</font>
+
 		Inspired by
 		<font=Impulse-Elements23>Aerolite, Apex-Rolplay and Cookie-Network</font>
 

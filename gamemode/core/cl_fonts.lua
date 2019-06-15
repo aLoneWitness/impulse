@@ -193,3 +193,11 @@ surface.CreateFont("Impulse-UI-SmallFont", {
 	extended = true,
 	weight = 500
 })
+
+surface.CreateFont("Impulse-SpecialFont", {
+	font = "Arial",
+	size = 33,
+	weight = 3700,
+	antialias = true,
+	shadow = true
+})
