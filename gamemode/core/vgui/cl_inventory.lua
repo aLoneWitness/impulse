@@ -118,25 +118,27 @@ function PANEL:SetupItems()
  	end
 
  	if impulse.GetSetting("inv_sortbyweight") then -- super messy sorting systems for the tables below
- 		table.SortByMember(localInv, "sortWeight")
+ 		table.SortByMember(localInv, "sortWeight") -- worst sorting system ever gives fucking errors for no reason what the fuck
  	end
 
  	if impulse.GetSetting("inv_sortequippablesattop") then
- 		local ridTemp = {}
+ 		local ridTemp = {} -- temp table 
 
- 		for v,k in pairs(localInv) do
+ 		for v,k in pairs(localInv) do 
  			if impulse.Inventory.Items[k.id].OnEquip then
- 				table.insert(ridTemp, v)
- 				table.insert(equipTemp, k)
+ 				table.insert(ridTemp, v) -- add to destroy tbl
+ 				table.insert(equipTemp, k) -- add to table to merge with localInv copy
  			end
  		end
 
+ 		local take = 0
  		for v,k in pairs(ridTemp) do -- im doing this because i cant table.remove on the go because it destroys the loop
- 			table.remove(localInv, k)
+ 			table.remove(localInv, k - take) --looks shit and hacky but it needs to be
+ 			take = take + 1
  		end
 
- 		table.Add(equipTemp, localInv)
- 		localInv =  equipTemp
+ 		table.Add(equipTemp, localInv) -- put localinv on the end of eqiuptemp
+ 		localInv = equipTemp -- filp them around lol
  	end
 
  	if localInv and table.Count(localInv) > 0 then
@@ -166,7 +168,7 @@ function PANEL:SetupItems()
 		self.empty:SetText("Empty")
 		self.empty:SetFont("Impulse-Elements19-Shadow")
 	end
-	
+
 	self.invWeight = weight
 end
 

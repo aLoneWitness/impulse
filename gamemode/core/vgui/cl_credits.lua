@@ -20,7 +20,8 @@ function PANEL:Init()
 		FredyH - mysqloo
 		thelastpenguin - pon
 		Kyle Smith - UTF-8 module
-		rebel1234 and Chessnut - animations base</font>
+		rebel1234 and Chessnut - animations base
+		Marcus Irven - quicksort for Lua</font>
 
 		Powered by
 		<font=Impulse-Elements23>Discord - Discord API
