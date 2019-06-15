@@ -109,7 +109,7 @@ function PANEL:SetupItems()
 
  	for v,k in pairs(localInv) do -- fix for fucking table.sort desyncing client/server itemids!!!!!!!
  		k.realKey = v
- 		k.weight = impulse.Inventory.Items[v].Weight or 0
+ 		k.weight = impulse.Inventory.Items[k.id].Weight or 0
  	end
 
  	if impulse.GetSetting("inv_sortbyweight") then
