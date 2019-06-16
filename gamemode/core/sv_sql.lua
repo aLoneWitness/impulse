@@ -32,6 +32,17 @@ function IMPULSE:DatabaseConnected()
         sqlQuery:Create("storagetype", "tinyint NOT NULL") -- where item is stored
         sqlQuery:PrimaryKey("id")
     sqlQuery:Execute()
+
+    local sqlQuery = mysql:Create("impulse_reports")
+        sqlQuery:Create("id", "int unsigned NOT NULL AUTO_INCREMENT")
+        sqlQuery:Create("reporter", "varchar(25) NOT NULL")
+        sqlQuery:Create("mod", "varchar(25) NOT NULL")
+        sqlQuery:Create("message", "text")
+        sqlQuery:Create("start", "datetime")
+        sqlQuery:Create("claimwait", "int(11) unsigned NOT NULL")
+        sqlQuery:Create("closewait", "int(11) unsigned NOT NULL")
+        sqlQuery:PrimaryKey("id")
+    sqlQuery:Execute()
 end
 
 timer.Create("impulsedb.Think", 1, 0, function()

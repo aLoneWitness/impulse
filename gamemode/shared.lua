@@ -83,6 +83,8 @@ function impulse.reload()
     for v, plugin in ipairs(folders) do
         MsgC( Color( 83, 143, 239 ), "[impulse] Loading plugin '"..plugin.."'\n" )
 	    impulse.lib.includeDir("impulse/plugins/"..plugin)
+	    impulse.lib.includeDir("impulse/plugins/"..plugin.."/vgui")
+	    impulse.lib.includeDir("impulse/plugins/"..plugin.."/hooks")
     end
 end
 

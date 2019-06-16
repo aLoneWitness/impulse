@@ -29,16 +29,6 @@ local closeReportCommand = {
 
 impulse.RegisterChatCommand("/rcl", closeReportCommand)
 
-local viewReportsCommand = {
-    description = "Displays the statuses of all reports in the system.",
-    adminOnly = true,
-    onRun = function(ply, arg, rawText)
-        impulse.Ops.ReportView(ply, arg, rawText)
-    end
-}
-
-impulse.RegisterChatCommand("/rv", viewReportsCommand)
-
 local gotoReportCommand = {
     description = "Teleports yourself to the reportee of your claimed report.",
     adminOnly = true,
