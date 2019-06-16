@@ -85,6 +85,8 @@ net.Receive("opsReportClosed", function()
 	if not IsValid(closer) then return end
 	if impulse.GetSetting("admin_onduty") == false then return end
 
-	chat.AddText(claimedReportCol, "[REPORT] [#"..reportId.."] closed by "..closer:SteamName())
+	if LocalPlayer() ==  claimer then
+		chat.AddText(claimedReportCol, "[REPORT] [#"..reportId.."] closed by "..closer:SteamName())
+	end
 	impulse.Ops.Reports[reportId] = nil
 end)

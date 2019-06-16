@@ -40,7 +40,7 @@ local timeoutCommand = {
 			ply:Notify("You have issued "..plyTarget:SteamName().." an OOC timeout for "..t.." minutes.")
 
 			for v,k in pairs(player.GetAll()) do
-				k:AddChatText(infoCol, plyTarget:Name().." has been given an OOC timeout for "..t.." minutes by a game moderator.")
+				k:AddChatText(infoCol, plyTarget:SteamName().." has been given an OOC timeout for "..t.." minutes by a game moderator.")
 			end
 		else
 			return ply:Notify("Could not find player: "..tostring(name))

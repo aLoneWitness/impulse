@@ -119,15 +119,17 @@ net.Receive("impulseScenePVS", function(len, ply)
 end)
 
 net.Receive("impulseChatMessage", function(len, ply) -- should implement a check on len here instead of string.len
-	if len > 80000 then return end
-
 	if (ply.nextChat or 0) < CurTime() then
-		local text = net.ReadString()
-		
-		if string.len(text) < 1000 then
-			hook.Run("PlayerSay", ply, text, false)
+		if len > 15000 then
+			ply.nextChat = CurTime() + 1 
+			return
 		end
-		ply.nextChat = CurTime() + 0.2 + math.max(#text / 1000, 1)
+
+		local text = net.ReadString()
+		ply.nextChat = CurTime() + 0.3 + math.Clamp(#text / 300, 0, 4)
+		
+		text = string.sub(text, 1, 1024)
+		hook.Run("PlayerSay", ply, text, false)
 	end
 end)
 

@@ -118,7 +118,13 @@ function PANEL:SetupItems()
  	end
 
  	if impulse.GetSetting("inv_sortbyweight") then -- super messy sorting systems for the tables below
- 		table.SortByMember(localInv, "sortWeight") -- worst sorting system ever gives fucking errors for no reason what the fuck
+ 		table.sort(localInv, function(a, b)
+ 			if not a or not b then -- worst sorting system ever gives fucking errors for no reason what the fuck so i added this
+ 				return	
+ 			end
+
+ 			return a.sortWeight > b.sortWeight
+ 		end)
  	end
 
  	if impulse.GetSetting("inv_sortequippablesattop") then

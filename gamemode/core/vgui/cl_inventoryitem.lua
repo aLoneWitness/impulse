@@ -63,7 +63,7 @@ function PANEL:SetItem(netitem, wide)
 	self.desc:SetWrap(true)
 
 	self.count = vgui.Create("DLabel", self)
-	self.count:SetPos(38, 38)
+	self.count:SetPos(34, 38)
 	self.count:SetText("")
 	self.count:SetTextColor(impulse.Config.MainColour)
 	self.count:SetFont("Impulse-Elements19-Shadow")
