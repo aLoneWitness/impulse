@@ -23,6 +23,34 @@ function PANEL:Init()
 		return true
 	end
 
+	function self.status:Think()
+		local reports = impulse.Ops.Reports
+		local cCount = 0
+		local ucCount = 0
+
+		for v,k in pairs(reports) do
+			if k[3] and IsValid(k[3]) then
+				cCount = cCount + 1
+
+				if k[3] == LocalPlayer() then
+					panel.Status = "Processing report #"..v.."..."
+					panel.StatusCol = claimedReportCol
+					return
+				end
+			else
+				ucCount = ucCount + 1
+			end
+		end
+
+		if ucCount > 0 then
+			panel.Status = ucCount.." report(s) awaiting claim and "..cCount.." in processing..."
+			panel.StatusCol = Color(255, 255, 0)
+		else
+			panel.Status = "No reports waiting! :)"
+			panel.StatusCol = Color(0, 255, 0)
+		end
+	end
+
 	self:ReloadReports()
 end
 
@@ -99,7 +127,7 @@ function PANEL:ReloadReports()
 			if ownsReport then
 				LocalPlayer():ConCommand("say /rcl")
 			else
-				Derma_Query("You are closing a report you has not claimed!\nDo not close reports that others are working on.","impulse"..id, "I'm sure", function()
+				Derma_Query("You are closing a report you have not claimed!\nDo not close reports that others are working on.","impulse"..id, "I'm sure", function()
 					LocalPlayer():ConCommand("say /rcl "..id)
 				end, "Take me back!")
 			end
@@ -134,7 +162,6 @@ function PANEL:ReloadReports()
 			end 
 
 			draw.SimpleText("Submitted by: "..reporteeName, "Impulse-Elements16", 25, 19, color_white)
-
 			draw.SimpleText("Message: "..self.data[2], "Impulse-Elements16", 3, 36, color_white)
 
 			return true
@@ -142,7 +169,11 @@ function PANEL:ReloadReports()
 	end
 end
 
+
+local wait = 0
 hook.Add("Think", "impulseReportMenuFastOpen", function()
+	if (wait > CurTime()) then return end
+
 	if input.IsKeyDown(KEY_F3) then
 		if impulse_reportMenu and IsValid(impulse_reportMenu) then
 			local alpha = impulse.GetSetting("admin_reportalpha", 130)
@@ -168,6 +199,7 @@ hook.Add("Think", "impulseReportMenuFastOpen", function()
 			end
 		elseif LocalPlayer():IsAdmin() then
 			impulse_reportMenu = vgui.Create("impulseReportMenu")
+			wait = CurTime() + 1
 		end
 	end
 end)

@@ -58,21 +58,13 @@ function impulse.Ops.ReportNew(ply, arg, rawText)
     else
         local reportClaimant = impulse.Ops.Reports[reportId][3]
 
-        if reportClaimant and IsValid(reportClaimant) then
-            net.Start("opsReportUpdate")
-            net.WriteEntity(ply)
-            net.WriteUInt(reportId, 16)
-            net.WriteString(rawText)
-            net.Send(reportClaimant)
-        else
-            for v,k in pairs(player.GetAll()) do
-                if k:IsAdmin() then
-                    net.Start("opsReportUpdate")
-                    net.WriteEntity(ply)
-                    net.WriteUInt(reportId, 16)
-                    net.WriteString(rawText)
-                    net.Send(k)
-                end
+        for v,k in pairs(player.GetAll()) do
+            if k:IsAdmin() then
+                net.Start("opsReportUpdate")
+                net.WriteEntity(ply)
+                net.WriteUInt(reportId, 16)
+                net.WriteString(rawText)
+                net.Send(k)
             end
         end
 
