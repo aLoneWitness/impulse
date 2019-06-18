@@ -103,11 +103,6 @@ if SERVER then
 
 	function entityMeta:DropToFloorAlt()
 		local startpos = self:GetPos()
-		local down = self:GetPos() - Vector(0,0,8000)
-
-		local trace = util.TraceLine({start = startpos, endpos = down, filter = self })
-		if trace.HitWorld then 
-			self:SetPos(Vector(startpos.x, startpos.y, trace.HitPos.z + .25))
-		end
+		self:SetPos(Vector(startpos.x, startpos.y, startpos.z - 10))
 	end
 end
