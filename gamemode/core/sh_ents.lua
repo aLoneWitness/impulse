@@ -98,11 +98,4 @@ if SERVER then
 
 		net.Send(recipFilter)
 	end
-
-	local meta = FindMetaTable("Entity")
-
-	function entityMeta:DropToFloorAlt()
-		local startpos = self:GetPos()
-		self:SetPos(Vector(startpos.x, startpos.y, startpos.z - 10))
-	end
 end
