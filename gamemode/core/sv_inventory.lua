@@ -91,7 +91,7 @@ function meta:HasInventoryItem(itemclass, amount)
 	end
 
 	if has then
-		return true
+		return true, has
 	end
 
 	return false
