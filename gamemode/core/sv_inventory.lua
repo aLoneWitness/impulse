@@ -190,7 +190,7 @@ function meta:TakeInventoryItem(invid, storetype)
 	self.InventoryRegister[item.class] = regvalue - 1
 
 	if self.InventoryRegister[item.class] < 1 then -- any negative values to be removed
-		self.InventoryRegister[item.class] =  nil
+		self.InventoryRegister[item.class] = nil
 	end
 
 	if item.equipped then
