@@ -34,7 +34,7 @@ function PANEL:Init()
 
  	local lpTeam = LocalPlayer():Team()
   	self.infoTeam = vgui.Create("DLabel", self)
- 	self.infoTeam:SetPos(15, 60)
+ 	self.infoTeam:SetPos(15, 64)
  	self.infoTeam:SetText(team.GetName(lpTeam))
  	self.infoTeam:SetFont("Impulse-Elements19-Shadow")
  	self.infoTeam:SetColor(team.GetColor(lpTeam))

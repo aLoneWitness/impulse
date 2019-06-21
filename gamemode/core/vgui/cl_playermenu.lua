@@ -87,18 +87,6 @@ function PANEL:QuickActions()
 		end
 	end)
 
- 	self.classLbl = vgui.Create("DLabel", self.quickActions)
- 	self.classLbl:SetText("Class: "..LocalPlayer():GetTeamClassName())
- 	self.classLbl:SetFont("Impulse-Elements18")
- 	self.classLbl:SizeToContents()
- 	self.classLbl:SetPos(420, 380)
-
-  	self.rankLbl = vgui.Create("DLabel", self.quickActions)
- 	self.rankLbl:SetText("Rank: ".."error")
- 	self.rankLbl:SetFont("Impulse-Elements18")
- 	self.rankLbl:SizeToContents()
- 	self.rankLbl:SetPos(420, 400)
-
 	self.quickActionsInner = vgui.Create("DPanel", self.quickActions)
 	self.quickActionsInner:SetSize(400, 580)
 
@@ -117,6 +105,10 @@ function PANEL:QuickActions()
 		self:SetBGColor(colInv)
 	end
 
+	function self.collapsableOptions:Toggle() -- allowing them to accordion causes bugs
+		return
+	end
+
 	self.collapsableOptionsScroll = vgui.Create("DScrollPanel", self.collapsableOptions)
 	self.collapsableOptionsScroll:Dock(FILL)
 	self.collapsableOptions:SetContents(self.collapsableOptionsScroll)
@@ -133,13 +125,6 @@ function PANEL:QuickActions()
 		Derma_StringRequest("impulse", "Enter amount of money to drop:", nil, function(amount)
 			LocalPlayer():ConCommand("say /dropmoney "..amount)
 		end)
-	end
-
-	local btn = self.list:Add("DButton")
-	btn:Dock(TOP)
-	btn:SetText("Drop weapon")
-	function btn:DoClick()
-		LocalPlayer():ConCommand("say /dropweapon")
 	end
 
 	local btn = self.list:Add("DButton")
@@ -167,8 +152,14 @@ function PANEL:QuickActions()
 	self.collapsableOptions:SetLabel(team.GetName(LocalPlayer():Team()).." options")
 	self.collapsableOptions:Dock(TOP)
 	local colTeam = team.GetColor(LocalPlayer():Team())
-	function self.collapsableOptions:Paint()
-		self:SetBGColor(colTeam)
+	function self.collapsableOptions:Paint(w, h)
+		surface.SetDrawColor(colTeam)
+		surface.DrawRect(0, 0, w, 20)
+		self:SetBGColor(colInv)
+	end
+
+	function self.collapsableOptions:Toggle() -- allowing them to accordion causes bugs
+		return
 	end
 
 	self.collapsableOptionsScroll = vgui.Create("DScrollPanel", self.collapsableOptions)
@@ -182,12 +173,6 @@ function PANEL:QuickActions()
 
 	local classes = impulse.Teams.Data[LocalPlayer():Team()].classes
 	if classes and LocalPlayer():InSpawn() then
-		if LocalPlayer():GetTeamClass() != 0 then
-			local btn = self.list:Add("DButton")
-			btn:Dock(TOP)
-			btn:SetText("Become normal "..team.GetName(LocalPlayer():Team()))
-		end
-
 		for v,classData in pairs(classes) do
 			if not classData.noMenu and LocalPlayer():GetTeamClass() != v then
 				local btn = self.list:Add("DButton")
@@ -205,12 +190,6 @@ function PANEL:QuickActions()
 					net.Start("impulseClassChange")
 					net.WriteUInt(btn.classID, 8)
 					net.SendToServer()
-
-					timer.Simple(0.5, function()
-						if IsValid(btn) then
-							panel.classLbl:SetText("Class: "..LocalPlayer():GetTeamClassName())
-						end
-					end)
 				end
 			end
 		end

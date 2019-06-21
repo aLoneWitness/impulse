@@ -239,9 +239,11 @@ end
 local talkCol = Color(255, 255, 100)
 local infoCol = Color(135, 206, 250)
 
-function IMPULSE:PlayerSay(ply, text, teamChat)
+function IMPULSE:PlayerSay(ply, text, teamChat, newChat)
 	if not ply.beenSetup then return "" end -- keep out players who are not setup yet
-	if teamChat == true then return "" end -- disabled team chat
+	if teamChat == true or not newChat then return "" end -- disabled team chat
+
+	hook.Run("iPostPlayerSay", ply, text)
 
 	if string.StartWith(text, "/") then
 		local args = string.Explode(" ", text)

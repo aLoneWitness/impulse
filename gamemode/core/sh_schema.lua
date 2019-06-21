@@ -35,6 +35,7 @@ function impulse.Schema.Boot(name)
 
     for v, dir in ipairs(plugins) do
         MsgC(Color( 83, 143, 239 ), "[impulse] ["..SCHEMA.."] Loading plugin '"..dir.."'\n")
+        impulse.lib.includeDir(SCHEMA.."/plugins/"..dir.."/setup")
 	    impulse.lib.includeDir(SCHEMA.."/plugins/"..dir)
         impulse.lib.includeDir(SCHEMA.."/plugins/"..dir.."/vgui")
         impulse.lib.includeDir(SCHEMA.."/plugins/"..dir.."/hooks")

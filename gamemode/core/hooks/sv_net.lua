@@ -129,7 +129,7 @@ net.Receive("impulseChatMessage", function(len, ply) -- should implement a check
 		ply.nextChat = CurTime() + 0.3 + math.Clamp(#text / 300, 0, 4)
 		
 		text = string.sub(text, 1, 1024)
-		hook.Run("PlayerSay", ply, text, false)
+		hook.Run("PlayerSay", ply, text, false, true)
 	end
 end)
 

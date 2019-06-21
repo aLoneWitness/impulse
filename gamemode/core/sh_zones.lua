@@ -17,4 +17,6 @@ function meta:SetZone(id)
 	net.Start("impulseZoneUpdate")
 	net.WriteUInt(id, 8)
 	net.Send(self)
+
+	hook.Run("PlayerZoneChanged", self, id)
 end

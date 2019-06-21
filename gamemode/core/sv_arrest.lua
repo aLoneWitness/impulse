@@ -144,4 +144,6 @@ function meta:UnJail()
 	self:UnArrest()
 
 	self:Notify("You have been released from prison as your setence has ended.")
+
+	hook.Run("PlayerUnJailed", self)
 end

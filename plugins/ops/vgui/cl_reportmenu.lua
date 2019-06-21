@@ -127,7 +127,7 @@ function PANEL:ReloadReports()
 			if ownsReport then
 				LocalPlayer():ConCommand("say /rcl")
 			else
-				Derma_Query("You are closing a report you have not claimed!\nDo not close reports that others are working on.","impulse"..id, "I'm sure", function()
+				Derma_Query("You are closing a report you have not claimed!\nDo not close reports that others are working on.","impulse", "I'm sure", function()
 					LocalPlayer():ConCommand("say /rcl "..id)
 				end, "Take me back!")
 			end

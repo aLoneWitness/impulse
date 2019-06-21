@@ -104,6 +104,8 @@ function meta:SetTeamClass(classID, skipLoadout)
 
 	self:SetLocalSyncVar(SYNC_CLASS, classID, true)
 
+	hook.Run("PlayerChangeClass", self, classID, classData.name)
+
 	return true
 end
 
