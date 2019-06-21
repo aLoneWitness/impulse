@@ -518,8 +518,8 @@ net.Receive("impulseInvDoMove", function(len, ply)
 	ply.nextInvMove = CurTime() + 0.5
 
 	if not ply.currentStorage or not IsValid(ply.currentStorage) then return end
-	if ply.currentStorage:GetPos():DistToSqr(ply:GetPos()) > (200 ^ 2) then return end
-	if ply:GetSyncVar(SYNC_ARRESTED, false) then return end
+	if ply.currentStorage:GetPos():DistToSqr(ply:GetPos()) > (100 ^ 2) then return end
+	if ply:GetSyncVar(SYNC_ARRESTED, false) or not ply:Alive() then return end
 
 	local itemid = net.ReadUInt(10)
 	local from = net.ReadUInt(4)

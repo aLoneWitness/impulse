@@ -82,7 +82,7 @@ function PANEL:Init()
  	end
 
  	if impulse.GetSetting("inv_sortbyweight") then
- 		table.sort(localInv, function(a, b)
+ 		table.sort(localInvStorage, function(a, b)
  			if not a or not b then
  				return	
  			end
