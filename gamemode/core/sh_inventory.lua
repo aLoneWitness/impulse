@@ -15,3 +15,11 @@ end
 function impulse.Inventory.ClassToNetID(class)
 	return impulse.Inventory.ItemsRef[class]
 end
+
+function meta:GetMaxInventoryStorage()
+	if self:IsDonator() then
+		return impulse.Config.InventoryStorageMaxWeightVIP
+	end
+
+	return impulse.Config.InventoryStorageMaxWeight
+end

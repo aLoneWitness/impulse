@@ -9,6 +9,7 @@ function ENT:Initialize()
 	self:SetMoveType(SOLID_VPHYSICS)
 	self:SetSolid(SOLID_VPHYSICS)
 	self:SetUseType(SIMPLE_USE)
+	self:DrawShadow(false)
 
     local phys = self:GetPhysicsObject()
 	if (phys:IsValid()) then
@@ -23,6 +24,10 @@ end
 
 function ENT:Use(activator, caller)
 	if activator:IsPlayer() and activator:Alive() then
+		if activator:GetSyncVar(SYNC_ARRESTED, false) then 
+			return activator:Notify("You cannot access your storage when detained.") 
+		end
+
 		net.Start("impulseInvStorageOpen")
 		net.Send(activator)
 

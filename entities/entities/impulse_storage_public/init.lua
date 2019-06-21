@@ -9,6 +9,7 @@ function ENT:Initialize()
 	self:SetMoveType(SOLID_VPHYSICS)
 	self:SetSolid(SOLID_VPHYSICS)
 	self:SetUseType(SIMPLE_USE)
+	self:DrawShadow(false)
 
     local phys = self:GetPhysicsObject()
 	if (phys:IsValid()) then
@@ -25,6 +26,8 @@ function ENT:Use(activator, caller)
 	if activator:IsPlayer() and activator:Alive() then
 		net.Start("impulseInvStorageOpen")
 		net.Send(activator)
+
+		hook.Run("PlayerOpenStorage", activator)
 
 		activator.currentStorage = self
 	end

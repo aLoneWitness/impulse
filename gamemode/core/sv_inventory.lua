@@ -36,11 +36,12 @@ function impulse.Inventory.DBClearInventory(ownerid, storageType)
 	query:Execute()
 end
 
-function impulse.Inventory.DBUpdateStoreType(ownerid, class, limit, newStorageType)
+function impulse.Inventory.DBUpdateStoreType(ownerid, class, limit, oldStorageType, newStorageType)
 	local query = mysql:Update("impulse_inventory")
 	query:Update("storagetype", newStorageType)
 	query:Where("ownerid", ownerid)
 	query:Where("uniqueid", class)
+	query:Where("storagetype", oldStorageType)
 	if not limit or isnumber(limit) then
 		query:Limit(limit or 1)
 	end
@@ -121,7 +122,7 @@ function meta:IsInventoryItemRestricted(id, storetype)
 	return false
 end
 
-function meta:GiveInventoryItem(itemclass, storetype, restricted, isLoaded) -- isLoaded is a internal arg used for first time item setup, when they are already half loaded
+function meta:GiveInventoryItem(itemclass, storetype, restricted, isLoaded, moving) -- isLoaded is a internal arg used for first time item setup, when they are already half loaded
 	if not self.beenInvSetup and not isLoaded then return end
 
 	local storetype = storetype or 1
@@ -146,29 +147,30 @@ function meta:GiveInventoryItem(itemclass, storetype, restricted, isLoaded) -- i
 		end
 	end
 
-	if not restricted and not isLoaded then
+	if not restricted and not isLoaded and not moving then
 		impulse.Inventory.DBAddItem(impulseid, itemclass, storetype)
 	end
 	
 	if storetype == 1 then
 		self.InventoryWeight = self.InventoryWeight + weight
+		self.InventoryRegister[itemclass] = (self.InventoryRegister[itemclass] or 0) + 1 -- use a register that copies the actions of the real inv for search efficiency
 	elseif storetype == 2 then
 		self.InventoryWeightStorage = self.InventoryWeightStorage + weight
 	end
 
-	self.InventoryRegister[itemclass] = (self.InventoryRegister[itemclass] or 0) + 1 -- use a register that copies the actions of the real inv for search efficiency
-
-	net.Start("impulseInvGive")
-	net.WriteUInt(itemid, 16)
-	net.WriteUInt(invid, 10)
-	net.WriteUInt(storetype, 4)
-	net.WriteBool(restricted or false)
-	net.Send(self)
+	if not moving then
+		net.Start("impulseInvGive")
+		net.WriteUInt(itemid, 16)
+		net.WriteUInt(invid, 10)
+		net.WriteUInt(storetype, 4)
+		net.WriteBool(restricted or false)
+		net.Send(self)
+	end
 
 	return invid
 end
 
-function meta:TakeInventoryItem(invid, storetype)
+function meta:TakeInventoryItem(invid, storetype, moving)
 	if not self.beenInvSetup then return end
 
 	local storetype = storetype or 1
@@ -178,7 +180,9 @@ function meta:TakeInventoryItem(invid, storetype)
 	local itemid = impulse.Inventory.ClassToNetID(item.class)
 	local weight = (impulse.Inventory.Items[itemid].Weight or 0) * amount
 
-	impulse.Inventory.DBRemoveItem(self.impulseID, item.class, storetype, 1)
+	if not moving then
+		impulse.Inventory.DBRemoveItem(self.impulseID, item.class, storetype, 1)
+	end
 
 	if storetype == 1 then
 		self.InventoryWeight = math.Clamp(self.InventoryWeight - weight, 0, 1000)
@@ -186,11 +190,13 @@ function meta:TakeInventoryItem(invid, storetype)
 		self.InventoryWeightStorage = math.Clamp(self.InventoryWeightStorage - weight, 0, 1000)
 	end
 
-	local regvalue = self.InventoryRegister[item.class]
-	self.InventoryRegister[item.class] = regvalue - 1
+	if storetype == 1 then
+		local regvalue = self.InventoryRegister[item.class]
+		self.InventoryRegister[item.class] = regvalue - 1
 
-	if self.InventoryRegister[item.class] < 1 then -- any negative values to be removed
-		self.InventoryRegister[item.class] = nil
+		if self.InventoryRegister[item.class] < 1 then -- any negative values to be removed
+			self.InventoryRegister[item.class] = nil
+		end
 	end
 
 	if item.equipped then
@@ -200,10 +206,12 @@ function meta:TakeInventoryItem(invid, storetype)
 	hook.Run("OnInventoryItemRemoved", self, storetype, item.class, item.id, item.equipped, item.restricted, invid)
 	impulse.Inventory.Data[impulseid][storetype][invid] = nil
 	
-	net.Start("impulseInvRemove")
-	net.WriteUInt(invid, 10)
-	net.WriteUInt(storetype, 4)
-	net.Send(self)
+	if not moving then
+		net.Start("impulseInvRemove")
+		net.WriteUInt(invid, 10)
+		net.WriteUInt(storetype, 4)
+		net.Send(self)
+	end
 end
 
 function meta:TakeInventoryItemClass(itemclass, storetype, amount)
@@ -316,4 +324,20 @@ function meta:UseInventoryItem(itemid)
 			self:TakeInventoryItem(itemid)
 		end
 	end
+end
+
+function meta:MoveInventoryItem(itemid, from, to)
+	if self:IsInventoryItemRestricted(itemid, from) then return end
+	local itemclass = impulse.Inventory.Data[self.impulseID][from][itemid].class
+
+	self:TakeInventoryItem(itemid, from, true)
+	impulse.Inventory.DBUpdateStoreType(self.impulseID, itemclass, 1, from, to)
+	local newinvid = self:GiveInventoryItem(itemclass, to, false, nil, true)
+
+	net.Start("impulseInvMove")
+	net.WriteUInt(itemid, 10)
+	net.WriteUInt(newinvid, 10)
+	net.WriteUInt(from, 4)
+	net.WriteUInt(to, 4)
+	net.Send(self)
 end

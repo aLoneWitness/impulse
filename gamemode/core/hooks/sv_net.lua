@@ -30,6 +30,9 @@ util.AddNetworkString("impulseInvDoUse")
 util.AddNetworkString("impulseInvDoSearch")
 util.AddNetworkString("impulseInvDoSearchConfiscate")
 util.AddNetworkString("impulseCharacterCreate")
+util.AddNetworkString("impulseInvStorageOpen")
+util.AddNetworkString("impulseInvMove")
+util.AddNetworkString("impulseInvDoMove")
 
 net.Receive("impulseCharacterCreate", function(len, ply)
 	if (ply.NextCreate or 0) > CurTime() then return end
@@ -508,4 +511,45 @@ net.Receive("impulseInvDoSearchConfiscate", function(len, ply)
 
 	ply.InvSearching = nil
 	targ:Freeze(false)
+end)
+
+net.Receive("impulseInvDoMove", function(len, ply)
+	if (ply.nextInvMove or 0) > CurTime() then return end
+	ply.nextInvMove = CurTime() + 0.5
+
+	if not ply.currentStorage or not IsValid(ply.currentStorage) then return end
+	if ply.currentStorage:GetPos():DistToSqr(ply:GetPos()) > (200 ^ 2) then return end
+	if ply:GetSyncVar(SYNC_ARRESTED, false) then return end
+
+	local itemid = net.ReadUInt(10)
+	local from = net.ReadUInt(4)
+	local to = 1
+
+	if from != 1 and from != 2 then
+		return
+	end
+
+	if from == 1 then
+		to = 2
+	end
+
+	local hasItem, item = ply:HasInventoryItemSpecific(itemid, from)
+
+	if not hasItem then
+		return
+	end
+
+	if item.restricted then
+		return ply:Notify("You cannot store a restricted item.")
+	end
+
+	if from == 2 and not ply:CanHoldItem(item.class) then
+		return ply:Notify("Item is too heavy to hold.")
+	end
+
+	if from == 1 and not ply:CanHoldItemStorage(item.class) then
+		return ply:Notify("Item is too heavy to store.")
+	end
+
+	ply:MoveInventoryItem(itemid, from, to)
 end)

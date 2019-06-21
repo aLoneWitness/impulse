@@ -130,6 +130,31 @@ net.Receive("impulseInvGive", function()
 	end
 end)
 
+net.Receive("impulseInvMove", function()
+	local invid = net.ReadUInt(10)
+	local newinvid = net.ReadUInt(10)
+	local from = net.ReadUInt(4)
+	local to = net.ReadUInt(4)
+	local netid
+
+	local take = impulse.Inventory.Data[0][from][invid]
+
+	netid = take.id
+
+	impulse.Inventory.Data[0][from][invid] = nil
+	impulse.Inventory.Data[0][to][newinvid] = {
+		id = netid
+	}
+
+	if impulse_storage and IsValid(impulse_storage) then
+		local invScroll = impulse_storage.invScroll:GetVBar():GetScroll()
+		local invStorageScroll = impulse_storage.invStorageScroll:GetVBar():GetScroll()
+
+		impulse_storage:SetupItems(invScroll, invStorageScroll)
+		surface.PlaySound("physics/wood/wood_crate_impact_hard2.wav")
+	end
+end)
+
 net.Receive("impulseInvRemove", function()
 	local invid = net.ReadUInt(10)
 	local strid = net.ReadUInt(4)
@@ -178,4 +203,8 @@ net.Receive("impulseInvDoSearch", function()
 		searchMenu:SetInv(invCompiled)
 		searchMenu:SetPlayer(searchee)
 	end, true)
+end)
+
+net.Receive("impulseInvStorageOpen", function(len, ply)
+	impulse_storage = vgui.Create("impulseInventoryStorage")
 end)

@@ -50,7 +50,12 @@ function PANEL:SetItem(netitem, wide)
 
 	self.desc = vgui.Create("DLabel", self)
 	self.desc:SetPos(65, 30)
-	self.desc:SetSize(wide - 530, 30)
+
+	if self.Basic then
+		self.desc:SetSize(270, 30)
+	else
+		self.desc:SetSize(wide - 530, 30)
+	end
 
 	if wide < 800 then -- small resolutions have trouble with 16
 		self.desc:SetFont("Impulse-Elements14")
@@ -79,6 +84,17 @@ function PANEL:SetItem(netitem, wide)
 end
 
 function PANEL:OnMousePressed(keycode)
+	if self.Basic then
+		local invid = self.InvID
+
+		net.Start("impulseInvDoMove")
+		net.WriteUInt(invid, 10)
+		net.WriteUInt(self.Type, 4)
+		net.SendToServer()
+
+		return
+	end
+
 	local popup = DermaMenu(self)
 	popup.Inv = self
 
@@ -193,6 +209,7 @@ function PANEL:Paint(w, h)
 
 		draw.SimpleText(self.Weight.."kg", "Impulse-Elements16", w - 10, 10, color_white, TEXT_ALIGN_RIGHT)
 
+		if self.Basic then return end
 		if self.IsRestricted then -- if restrict check here
 			draw.SimpleText("Restricted", "Impulse-Elements16", w - 34, 30, restrictedCol, TEXT_ALIGN_RIGHT)
 
