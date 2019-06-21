@@ -495,6 +495,8 @@ net.Receive("impulseInvDoSearchConfiscate", function(len, ply)
 
 			if item.Illegal and targ:HasInventoryItem(item.UniqueID) then
 				targ:TakeInventoryItemClass(item.UniqueID, 1)
+
+				hook.Run("PlayerConfiscateItem", ply, targ, item.UniqueID)
 			end
 		end
 
