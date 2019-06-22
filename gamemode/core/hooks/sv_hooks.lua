@@ -394,7 +394,25 @@ function IMPULSE:KeyPress(ply, key)
 end
 
 function IMPULSE:PlayerUse(ply, entity)
+	if (ply.useNext or 0) > CurTime() then return end
+	ply.useNext = CurTime() + 0.3
 
+	local btnData = entity.ButtonCheck
+
+	if btnData then
+		if btnData.customCheck and not btnData.customCheck(ply, entity) then
+			return false
+		end
+
+		if btnData.doorgroup then
+			local teamDoorGroups = impulse.Teams.Data[self:Team()].doorGroup
+
+			if not teamDoorGroups or not table.HasValue(teamDoorGroups, doorGroup) then
+				ply:Notify("You don't have access to use this button.")
+				return false
+			end
+		end
+	end
 end
 
 function IMPULSE:KeyRelease(ply, key)
@@ -426,6 +444,14 @@ function IMPULSE:InitPostEntity()
 	            k:Remove()
 	        end
 	    end
+	end
+
+	for a,button in pairs(ents.FindByClass("func_button") do
+		for v,k in pairs(impulse.Config.Buttons) do
+			if k.pos == button:GetPos() then
+				button.ButtonCheck = v
+			end
+		end
 	end
 end
 

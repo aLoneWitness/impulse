@@ -9,6 +9,7 @@ function ENT:Initialize()
 	self:SetMoveType(SOLID_VPHYSICS)
 	self:SetSolid(SOLID_VPHYSICS)
 	self:SetUseType(SIMPLE_USE)
+	self:DrawShadow(false)
 
     local phys = self:GetPhysicsObject()
 	if (phys:IsValid()) then

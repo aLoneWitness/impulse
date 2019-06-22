@@ -28,6 +28,10 @@ function ENT:Use(activator, caller)
 			return activator:Notify("You cannot access your storage when detained.") 
 		end
 
+		if activator:IsCP() then
+			return activator:Notify("You cannot access your storage as this team.")
+		end
+
 		net.Start("impulseInvStorageOpen")
 		net.Send(activator)
 
