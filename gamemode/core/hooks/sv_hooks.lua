@@ -394,7 +394,7 @@ function IMPULSE:KeyPress(ply, key)
 end
 
 function IMPULSE:PlayerUse(ply, entity)
-	if (ply.useNext or 0) > CurTime() then return end
+	if (ply.useNext or 0) > CurTime() then return false end
 	ply.useNext = CurTime() + 0.3
 
 	local btnData = entity.ButtonCheck
@@ -670,7 +670,8 @@ local whitelistDupeEnts = {
 	["gmod_cameraprop"] = true,
 	["prop_dynamic"] = true,
 	["prop_physics"] = true,
-	["gmod_light"] = true
+	["gmod_light"] = true,
+	["prop_door_rotating"] = true -- door tool
 }
 
 function IMPULSE:ADVDupeIsAllowed(ply, class, entclass) -- adv dupe 2 can be easily exploited, you must have the impulse version of AD2 for this to work

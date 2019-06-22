@@ -47,6 +47,7 @@ function PANEL:SetPlayer(player)
 end
 
 local gradient = Material("vgui/gradient-l")
+local gradientr = Material("vgui/gradient-r")
 local outlineCol = Color(190,190,190,240)
 local darkCol = Color(30,30,30,200)
 
@@ -55,9 +56,19 @@ function PANEL:Paint(w,h)
 	-- Frame
 	surface.SetDrawColor(outlineCol)
 	surface.DrawOutlinedRect(0,0,w, h)
+
+
 	surface.SetDrawColor(self.Colour)
  	surface.SetMaterial(gradient)
  	surface.DrawTexturedRect(1,1,w-1,h-2)
+
+ 	if self.Player == LocalPlayer() or self.Player:GetFriendStatus() == "friend" then
+		surface.SetDrawColor(255, 255, 255, (50 + math.sin(RealTime() * 2) * 50) * .4)
+		surface.SetMaterial(gradientr)
+		surface.DrawTexturedRect(w - 210, 1, 210-1, h-1)
+	end
+
+	surface.SetMaterial(gradient)
 	surface.SetDrawColor(darkCol)
  	surface.DrawTexturedRect(1,1,w-1,h-2)
 
