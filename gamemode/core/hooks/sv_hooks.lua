@@ -397,10 +397,13 @@ function IMPULSE:PlayerUse(ply, entity)
 	if (ply.useNext or 0) > CurTime() then return false end
 	ply.useNext = CurTime() + 0.3
 
-	local btnData = entity.ButtonCheck
+	local btnKey = entity.ButtonCheck
 
-	if btnData then
+	if btnKey and impulse.Config.Buttons[btnKey] then
+		local btnData = impulse.Config.Buttons[btnKey]
+
 		if btnData.customCheck and not btnData.customCheck(ply, entity) then
+			ply.useNext = CurTime() + 1
 			return false
 		end
 
@@ -408,6 +411,7 @@ function IMPULSE:PlayerUse(ply, entity)
 			local teamDoorGroups = impulse.Teams.Data[ply:Team()].doorGroup
 
 			if not teamDoorGroups or not table.HasValue(teamDoorGroups, doorGroup) then
+				ply.useNext = CurTime() + 1
 				ply:Notify("You don't have access to use this button.")
 				return false
 			end
@@ -418,6 +422,16 @@ end
 function IMPULSE:KeyRelease(ply, key)
 	if key == IN_RELOAD then
 		timer.Remove("impulseRaiseWait"..ply:SteamID())
+	end
+end
+
+local function LoadButtons()
+	for a,button in pairs(ents.FindByClass("func_button")) do
+		for v,k in pairs(impulse.Config.Buttons) do
+			if k.pos:DistToSqr(button:GetPos()) < (9 ^ 2) then -- getpos client/server innaccuracy
+				button.ButtonCheck = v
+			end
+		end
 	end
 end
 
@@ -446,14 +460,10 @@ function IMPULSE:InitPostEntity()
 	    end
 	end
 
-	for a,button in pairs(ents.FindByClass("func_button")) do
-		for v,k in pairs(impulse.Config.Buttons) do
-			if k.pos == button:GetPos() then
-				button.ButtonCheck = v
-			end
-		end
-	end
+	LoadButtons()
 end
+
+LoadButtons()
 
 function IMPULSE:PostCleanupMap()
 	IMPULSE:InitPostEntity()

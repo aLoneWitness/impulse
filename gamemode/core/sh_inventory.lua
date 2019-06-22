@@ -4,6 +4,11 @@ impulse.Inventory.Data[0] = impulse.Inventory.Data[0] or {}
 impulse.Inventory.Items = impulse.Inventory.Items or {}
 impulse.Inventory.ItemsRef = impulse.Inventory.ItemsRef or {}
 
+if CLIENT then
+	impulse.Inventory.Data[0][1] = impulse.Inventory.Data[0][1] or {}
+	impulse.Inventory.Data[0][2] = impulse.Inventory.Data[0][2] or {}
+end
+
 local count = 1
 
 function impulse.RegisterItem(item)

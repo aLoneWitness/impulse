@@ -82,6 +82,16 @@ function IMPULSE:Think()
 	end
 end
 
+function IMPULSE:InitPostEntity()
+	for a,button in pairs(ents.FindByClass("func_button")) do
+		for v,k in pairs(impulse.Config.Buttons) do
+			if k.pos:DistToSqr(button:GetPos()) < (9 ^ 2) then -- getpos client/server innaccuracy
+				button.ButtonCheck = v
+			end
+		end
+	end
+end
+
 function IMPULSE:ScoreboardShow()
 	if LocalPlayer():Team() == 0 then return end -- players who have not been loaded yet
 
@@ -280,6 +290,47 @@ function IMPULSE:OnContextMenuClose()
 	if IsValid(impulse_inventory) then
 		impulse_inventory:Remove()
 		gui.EnableScreenClicker(false)
+	end
+end
+
+local blockedTabs = {
+	["#spawnmenu.category.saves"] = true,
+	["#spawnmenu.category.dupes"] = true,
+	["#spawnmenu.category.postprocess"] = true
+}
+
+local blockNormalTabs = {
+	["#spawnmenu.category.entities"] = true,
+	["#spawnmenu.category.weapons"] = true,
+	["#spawnmenu.category.npcs"] = true
+}
+
+function IMPULSE:PostReloadToolsMenu()
+	local spawnMenu = g_SpawnMenu
+
+	if spawnMenu then
+		local tabs = spawnMenu.CreateMenu
+		local closeMe = {}
+
+		for v,k in pairs(tabs:GetItems()) do
+			if blockedTabs[k.Name] then
+				table.insert(closeMe, k.Tab)
+			end
+
+			if LocalPlayer() and LocalPlayer().IsAdmin and LocalPlayer().IsDonator then -- when u first load lp doesnt exist
+				if blockNormalTabs[k.Name] and not LocalPlayer():IsAdmin() then
+					table.insert(closeMe, k.Tab)
+				end
+
+				if k.Name == "#spawnmenu.category.vehicles" and not LocalPlayer():IsDonator() then
+					table.insert(closeMe, k.Tab)
+				end
+			end
+		end
+
+		for v,k in pairs(closeMe) do
+			tabs:CloseTab(k, true)
+		end
 	end
 end
 

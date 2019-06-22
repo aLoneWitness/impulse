@@ -5,9 +5,7 @@ end)
 net.Receive("impulseNotify", function(len)
 	local message = net.ReadString()
 
-	if LocalPlayer() and IsValid(LocalPlayer()) then
-		LocalPlayer():Notify(message)
-	end
+	LocalPlayer():Notify(message)
 end)
 
 net.Receive("impulseATMOpen", function()
