@@ -405,7 +405,7 @@ function IMPULSE:PlayerUse(ply, entity)
 		end
 
 		if btnData.doorgroup then
-			local teamDoorGroups = impulse.Teams.Data[self:Team()].doorGroup
+			local teamDoorGroups = impulse.Teams.Data[ply:Team()].doorGroup
 
 			if not teamDoorGroups or not table.HasValue(teamDoorGroups, doorGroup) then
 				ply:Notify("You don't have access to use this button.")
@@ -446,7 +446,7 @@ function IMPULSE:InitPostEntity()
 	    end
 	end
 
-	for a,button in pairs(ents.FindByClass("func_button") do
+	for a,button in pairs(ents.FindByClass("func_button")) do
 		for v,k in pairs(impulse.Config.Buttons) do
 			if k.pos == button:GetPos() then
 				button.ButtonCheck = v
@@ -593,7 +593,11 @@ local bannedTools = {
 	["fingerposer"] = true,
 	["inflator"] = true,
 	["trails"] = true,
-	["paint"] = true
+	["paint"] = true,
+	["wire_explosive"] = true,
+	["wire_simple_explosive"] = true,
+	["wire_turret"] = true,
+	["wire_user"] = true
 }
 
 local dupeBannedTools = {
@@ -604,12 +608,23 @@ local dupeBannedTools = {
 	["adv_duplicator"] = true
 }
 
+local donatorTools = {
+	["wire_expression2"] = true,
+	["wire_spu"] = true,
+	["wire_egp"] = true
+}
+
 function IMPULSE:CanTool(ply, tr, tool)
 	if not ply:IsAdmin() and tool == "spawner" then
 		return false
 	end
 
 	if bannedTools[tool] then
+		return false
+	end
+
+	if donatorTools[tool] and not ply:IsDonator() then
+		ply:Notify("This tool is restricted to donators only.")
 		return false
 	end
 
@@ -630,6 +645,53 @@ function IMPULSE:CanTool(ply, tr, tool)
 	end
 
 	return true
+end
+
+local bannedDupeEnts = {
+	["gmod_wire_explosive"] = true,
+	["gmod_wire_simple_explosive"] = true,
+	["gmod_wire_turret"] = true,
+	["gmod_wire_user"] = true
+}
+
+local donatorDupeEnts = {
+	["gmod_wire_expression2"] = true,
+	["gmod_wire_spu"] = true,
+	["prop_vehicle_prisoner_pod"] = true,
+	["gmod_wire_epg"] = true
+}
+
+local whitelistDupeEnts = {
+	["gmod_wheel"] = true,
+	["gmod_lamp"] = true,
+	["gmod_thruster"] = true,
+	["gmod_emitter"] = true,
+	["gmod_button"] = true,
+	["gmod_cameraprop"] = true,
+	["prop_dynamic"] = true,
+	["prop_physics"] = true,
+	["gmod_light"] = true
+}
+
+function IMPULSE:ADVDupeIsAllowed(ply, class, entclass) -- adv dupe 2 can be easily exploited, you must have the impulse version of AD2 for this to work
+	if bannedDupeEnts[class] then
+		return false
+	end
+
+	if donatorDupeEnts[class] then
+		if ply:IsDonator() then
+			return true
+		else
+			ply:Notify("This entity is restricted to donators only.")
+			return false
+		end
+	end
+
+	if whitelistDupeEnts[class] or string.sub(class, 1, 9) == "gmod_wire" then
+		return true
+	end
+
+	return false
 end
 
 local isValid = IsValid
