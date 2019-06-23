@@ -1,3 +1,6 @@
+local isValid = IsValid
+local mathAbs = math.abs
+
 function IMPULSE:PlayerInitialSpawn(ply)
 	local isNew = true
 
@@ -367,6 +370,8 @@ function IMPULSE:SetupPlayerVisibility(ply)
 end
 
 function IMPULSE:KeyPress(ply, key)
+	ply.AFKTimer = CurTime() + impulse.Config.AFKTime
+
 	if key == IN_RELOAD then
 		timer.Create("impulseRaiseWait"..ply:SteamID(), 1, 1, function()
 			if IsValid(ply) then
@@ -473,6 +478,7 @@ function IMPULSE:GetFallDamage(ply, speed)
 	return (speed / 8)
 end
 
+local lastAFKScan
 function IMPULSE:Think()
 	for v,k in pairs(player.GetAll()) do
 		if not k.nextHungerUpdate then k.nextHungerUpdate = CurTime() + impulse.Config.HungerTime end
@@ -507,6 +513,14 @@ function IMPULSE:Think()
 			end
 		else
 			v:StopDrag()
+		end
+	end
+
+	if (lastAFKScan or 0) > CurTime() then
+		for v,k in pairs(player.GetAll()) do
+			if k.AFKTimer < CurTime() then
+				k:MakeAFK()
+			end
 		end
 	end
 end
@@ -674,7 +688,6 @@ local donatorDupeEnts = {
 local whitelistDupeEnts = {
 	["gmod_wheel"] = true,
 	["gmod_lamp"] = true,
-	["gmod_thruster"] = true,
 	["gmod_emitter"] = true,
 	["gmod_button"] = true,
 	["gmod_cameraprop"] = true,
@@ -703,38 +716,6 @@ function IMPULSE:ADVDupeIsAllowed(ply, class, entclass) -- adv dupe 2 can be eas
 	end
 
 	return false
-end
-
-local isValid = IsValid
-local mathAbs = math.abs
-function IMPULSE:Move(ply, mvData)
-	local draggedPlayer = ply.ArrestedDragging
-
-	if isValid(draggedPlayer) and ply == draggedPlayer.ArrestedDragger then
-		local draggerPos = ply:GetPos()
-		local draggedPos = draggedPlayer:GetPos()
-		local dist = (draggerPos - draggedPos):LengthSqr()
-
-		local dragPosNormal = draggerPos:GetNormal()
-		local dX = mathAbs(dragPosNormal.x)
-		local dY = mathAbs(dragPosNormal.y)
-
-		local speed = (dX + dY) * math.Clamp(dist / (100 ^ 2), 0, 30)
-
-		local ang = mvData:GetMoveAngles()
-		local pos = mvData:GetOrigin()
-		local vel = mvData:GetVelocity()
-
-		vel.x = vel.x * speed
-		vel.y = vel.y * speed
-		vel.z =  15
-
-		pos = pos + vel + ang:Right() + ang:Forward() + ang:Up()
-
-		if dist > (55 ^ 2) then
-			draggedPlayer:SetVelocity(vel)
-		end
-	end
 end
 
 function IMPULSE:SetupMove(ply, mvData)

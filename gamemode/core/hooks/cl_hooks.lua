@@ -18,7 +18,7 @@ function IMPULSE:Think()
 			mainMenu.popup = true
 		elseif input.IsKeyDown(KEY_F4) and not IsValid(impulse.playerMenu) and LocalPlayer():Alive() then
 			impulse.playerMenu = vgui.Create("impulsePlayerMenu")
-		elseif input.IsKeyDown(KEY_LALT) and LocalPlayer():Alive() then
+		elseif input.IsKeyDown(KEY_F2) and LocalPlayer():Alive() then
 			local trace = {}
 			trace.start = LocalPlayer():EyePos()
 			trace.endpos = trace.start + LocalPlayer():GetAimVector() * 85

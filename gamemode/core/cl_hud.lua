@@ -134,7 +134,7 @@ local function DrawDoorInfo(target)
 	end
 
 	if LocalPlayer():CanBuyDoor(doorOwners, doorBuyable) then
-		draw.DrawText("Ownable door (LALT)", "Impulse-Elements18-Shadow", scrW * .5, scrH * .6, impulse.Config.MainColour, 1)
+		draw.DrawText("Ownable door (F2)", "Impulse-Elements18-Shadow", scrW * .5, scrH * .6, impulse.Config.MainColour, 1)
 	end
 end
 
