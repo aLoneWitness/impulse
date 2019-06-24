@@ -10,11 +10,17 @@ end
 local blur = Material("pp/blurscreen")
 
 local superTesters = {
-	["STEAM_0:1:9592dsdsd"] = true 
+	["STEAM_0:1:53542485"] = true, -- mats
+	["STEAM_0:1:75156459"] = true, -- jamsu
+	["STEAM_0:1:83204982"] = true -- oscar
 }
 
 local mappers = {
 	["STEAM_0:0:24607430"] = true -- stranger
+}
+
+local winners = {
+
 }
 
 
@@ -25,7 +31,7 @@ impulse.Badges = {
 	dev = {Material("icon16/cog.png"), "This player is a impulse developer.", function(ply) return ply:IsDeveloper() end},
 	vin = {Material("impulse/vin.png"), "Hi, it's me vin! The creator of impulse.", function(ply) return (ply:SteamID() == "STEAM_0:1:95921723") end},
 	supertester = {Material("icon16/bug.png"), "This player made large contributions to the testing of impulse.", function(ply) return (superTesters[ply:SteamID()] or false) end},
-	competition = {Material("icon16/rosette.png"), "This player has won a competition.", function(ply) return false end},
+	competition = {Material("icon16/rosette.png"), "This player has won a competition.", function(ply) return winners[ply:SteamID()] end},
 	mapper = {Material("icon16/map.png"), "This player is a mapper that has collaborated with impulse.", function(ply) return mappers[ply:SteamID()] end}
 }
 

@@ -56,6 +56,8 @@ function impulse.Inventory.SpawnItem(class, pos)
 	item:SetItem(itemid)
 	item:SetPos(pos)
 	item:Spawn()
+
+	return item
 end
 
 function meta:GetInventory(storage)

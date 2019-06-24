@@ -1,0 +1,184 @@
+-- taken from Cinema gamemode
+
+local function HandleRollercoasterAnimation( vehicle, player )
+	return player:SelectWeightedSequence( ACT_GMOD_SIT_ROLLERCOASTER ) 
+end
+
+function CreateSeatAtpos(pos, angle)
+	local ent = ents.Create("prop_vehicle_prisoner_pod")
+	ent:SetModel("models/nova/airboat_seat.mdl")
+	ent:SetKeyValue("vehiclescript","scripts/vehicles/prisoner_pod.txt")
+	ent:Setpos(pos)
+	ent:SetAngles(angle)
+	ent:SetNotSolid(true)
+	ent:SetNoDraw(true)
+
+	ent.HandleAnimation = HandleRollercoasterAnimation
+
+	ent:Spawn()
+	ent:Activate()
+
+	local phys = ent:GetPhysicsObject()
+	if IsValid(phys) then
+		phys:EnableMotion(false)
+	end
+
+	ent:SetCollisionGroup(COLLISION_GROUP_DEBRIS_TRIGGER)
+	
+	ent.IsImpulseSeat = true
+
+	return ent
+end
+
+hook.Add("KeyRelease", "EnterSeat", function(ply, key)
+	if key != IN_USE || ply:InVehicle() || (ply.ExitTime && CurTime() < ply.ExitTime + 1) then return end
+
+	local eye = ply:EyePos()
+	local trace = util.TraceLine({start=eye, endpos=eye+ply:GetAimVector()*100, filter=ply})
+
+	if !IsValid(trace.Entity) then return end
+
+	local seat = trace.Entity
+	local model = seat:GetModel()
+
+	local offsets = impulse.Config.Chairs[model]
+	if !offsets then return end
+
+	local usetable = seat.UseTable or {}
+	local pos = -1
+
+	if #offsets > 1 then
+		local localpos = seat:WorldToLocal(trace.Hitpos)
+		local bestpos, bestdist = -1
+
+		for k,v in pairs(offsets) do
+			local dist = localpos:DistToSqr(v.pos)
+			if !usetable[k] && (bestpos == -1 || dist < bestdist) then
+				bestpos, bestdist = k, dist
+			end
+		end
+
+		if bestpos == -1 then return end
+		pos = bestpos
+	elseif !usetable[1] then
+		pos = 1
+	else
+		return
+	end
+
+	usetable[pos] = true
+	seat.UseTable = usetable
+
+	local ang = seat:GetAngles()
+	if offsets[pos].ang then
+		ang:RotateAroundAxis(seat:GetForward(), offsets[pos].ang.p)
+		ang:RotateAroundAxis(seat:GetUp(), offsets[pos].ang.y)
+		ang:RotateAroundAxis(seat:GetRight(), offsets[pos].ang.r)
+	else
+		ang:RotateAroundAxis(seat:GetUp(), -90)
+	end
+
+	local s = CreateSeatAtpos(trace.Entity:LocalToWorld(offsets[pos].pos), ang)
+	s:SetParent(trace.Entity)
+	s:SetOwner(ply)
+
+	s.SeatData = {
+		Ent = seat,
+		pos = pos,
+		EntryPoint = ply:GetPos(),
+		EntryAngles = ply:GetAngles()
+	}
+
+	ply:EnterVehicle(s)
+end)
+
+hook.Add("CanPlayerEnterVehicle", "impulseEnterSeat", function(ply, vehicle)
+	if vehicle.Removing then return false end
+	return (vehicle:GetOwner() == ply)
+end)
+
+local airdist = Vector(0,0,48)
+
+function TryPlayerExit(ply, ent)
+	local pos = ent:GetPos()
+	local trydist = 8
+	local yawval = 0
+	local yaw = Angle(0, ent:Getangles().y, 0)
+
+	while trydist <= 64 do
+		local telepos = pos + yaw:Forward() * trydist
+		local trace = util.TraceEntity({start=telepos, endpos=telepos - airdist}, ply)
+
+		if !trace.StartSolid && trace.Fraction > 0 && trace.Hit then
+			ply:SetPos(telepos)
+			return
+		end
+
+		yaw:RotateAroundAxis(yaw:Up(), 15)
+		yawval = yawval + 15
+		if yawval > 360 then
+			yawval = 0
+			trydist = trydist + 8
+		end
+	end
+
+	print("player", ply, "couldn't get out")
+end
+
+local function PlayerLeaveVehicle( vehicle, ply )
+	if vehicle.Removing == true then return end
+
+	local seat = vehicle.SeatData
+
+	if not (istable(seat) and IsValid(seat.Ent)) then
+		return true
+	end
+
+	if seat.Ent && seat.Ent.UseTable then
+		seat.Ent.UseTable[seat.pos] = false
+	end
+
+	if IsValid(ply) and ply:InVehicle() and (CurTime() - (ply.ExitTime or 0)) > 0.001 then
+		ply.ExitTime = CurTime()
+		ply:ExitVehicle()
+
+		ply:SetEyeangles(seat.Entryangles)
+
+		local trace = util.TraceEntity({
+			start = seat.EntryPoint,
+			endpos = seat.EntryPoint
+		}, ply)
+
+		if vehicle:GetPos():DistToSqr(seat.EntryPoint) < (128 ^ 2) && !trace.StartSolid && trace.Fraction > 0 then
+			ply:Setpos(seat.EntryPoint)
+		else
+			TryPlayerExit(ply, vehicle)
+		end
+
+		ply:SetCollisionGroup(COLLISION_GROUP_DEBRIS_TRIGGER)
+	end
+
+	if !vehicle.bSlots then
+		vehicle.Removing = true
+		vehicle:Remove()
+	end
+
+	return false
+end
+
+hook.Add("CanExitVehicle", "impulseLeaveSeat", PlayerLeaveVehicle)
+
+function PlayerExitLeft( ply )
+	if ply:IsPlayer() then
+		local Vehicle = ply:GetVehicle()
+		
+		if IsValid( Vehicle ) and Vehicle.IsImpulseSeat then
+			PlayerLeaveVehicle( Vehicle, ply )
+		end
+	end
+end
+
+hook.Add("PlayerLeaveVehicle", "VehicleLeft", PlayerExitLeft)
+hook.Add("PlayerDeath", "VehicleKilled", PlayerExitLeft)
+hook.Add("PlayerSilentDeath", "VehicleKilled", PlayerExitLeft)
+hook.Add("EntityRemoved", "VehicleCleanup", PlayerExitLeft)

@@ -259,6 +259,18 @@ end
 hook.Remove("PlayerBindPress", "impulse.chatBox_hijackbind")
 hook.Add("PlayerBindPress", "impulse.chatBox_hijackbind", function(ply, bind, pressed)
 	if string.sub( bind, 1, 11 ) == "messagemode" then
+		if ply:InVehicle() then -- piano compatablity kill me
+			local p1 = ply:GetVehicle():GetParent()
+
+			if p1 and IsValid(p1) then
+				local p2 = p1:GetParent()
+
+				if p2 and IsValid(p2) and p2:GetClass() == "gmt_instrument_piano" then
+					return true
+				end	
+			end
+		end
+
 		if bind == "messagemode2" then 
 			impulse.chatBox.ChatType = "radio"
 		else

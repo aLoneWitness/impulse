@@ -32,6 +32,10 @@ function PANEL:SetItem(netitem, wide)
 	function self.model:LayoutEntity(ent)
 		ent:SetAngles(Angle(0, 90, 0))
 
+		if panel.Item.Material then
+			ent:SetMaterial(panel.Item.Material)
+		end
+
 		if not item.NoCenter then
 			self:SetLookAt(ent:OBBCenter())
 		end

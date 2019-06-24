@@ -31,6 +31,10 @@ if SERVER then
 		self:SetSkin(item.Skin or 0)
 		self.Item = item
 
+		if item.Material then
+			self:SetMaterial(item.Material)
+		end
+
 		if owner and IsValid(owner) then
 			self.ItemOwner = owner
 		end
