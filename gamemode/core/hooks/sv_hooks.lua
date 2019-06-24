@@ -327,6 +327,42 @@ function IMPULSE:UpdatePlayerSync(ply)
 	end
 end
 
+function IMPULSE:DoPlayerDeath(ply)
+	local vel = ply:GetVelocity()
+
+	local ragdoll = ents.Create("prop_ragdoll")
+	ragdoll:SetModel(ply:GetModel())
+	ragdoll:SetPos(ply:GetPos())
+	ragdoll:SetSkin(ply:GetSkin())
+	ragdoll.DeadPlayer = ply
+	ragdoll.CanConstrain = false
+
+	for v,k in pairs(ply:GetBodyGroups()) do
+		ragdoll:SetBodygroup(k.id, ply:GetBodygroup(k.id))
+	end
+
+	ragdoll:Spawn()
+	ragdoll:SetCollisionGroup(COLLISION_GROUP_WEAPON)
+
+	for x=0, ragdoll:GetPhysicsObjectCount() - 1 do
+		local bone = ragdoll:GetPhysicsObject(x)
+
+		if bone and bone:IsValid() then
+			local pos, ang = ply:GetBonePosition(ragdoll:TranslatePhysBoneToBone(x))
+			bone:SetPos(pos)
+			bone:SetAngles(ang)
+			bone:AddVelocity(vel)
+		end
+	end
+
+	net.Start("impulseRagdollLink")
+	net.WriteUInt(ragdoll:EntIndex(), 16)
+	net.WriteEntity(ply)
+	net.Broadcast()
+
+	return true
+end
+
 function IMPULSE:PlayerDeath(ply)
 	local wait = impulse.Config.RespawnTime
 
@@ -370,6 +406,10 @@ function IMPULSE:SetupPlayerVisibility(ply)
 end
 
 function IMPULSE:KeyPress(ply, key)
+	if ply:IsAFK() then
+		ply:UnMakeAFK()	
+	end
+
 	ply.AFKTimer = CurTime() + impulse.Config.AFKTime
 
 	if key == IN_RELOAD then
@@ -516,9 +556,11 @@ function IMPULSE:Think()
 		end
 	end
 
-	if (lastAFKScan or 0) > CurTime() then
+	if (lastAFKScan or 0) < CurTime() then
+		lastAFKScan = CurTime() + 2
+
 		for v,k in pairs(player.GetAll()) do
-			if k.AFKTimer < CurTime() then
+			if k.AFKTimer and k.AFKTimer < CurTime() and not k:IsAFK() then
 				k:MakeAFK()
 			end
 		end
