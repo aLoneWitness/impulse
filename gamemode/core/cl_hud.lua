@@ -163,7 +163,7 @@ local function DrawCrosshair(x, y)
 end
 
 function IMPULSE:HUDPaint()
-	if impulse.hudEnabled == false or (impulse.CinematicIntro and LocalPlayer():Alive()) or (IsValid(impulse.MainMenu) and impulse.MainMenu:IsVisible()) then
+	if impulse.hudEnabled == false or (impulse.CinematicIntro and LocalPlayer():Alive()) or (IsValid(impulse.MainMenu) and impulse.MainMenu:IsVisible()) or hook.Run("ShouldDrawHUDBox") == false then
 		if IsValid(PlayerIcon) then
 			PlayerIcon:Remove()
 		end

@@ -33,6 +33,7 @@ util.AddNetworkString("impulseCharacterCreate")
 util.AddNetworkString("impulseInvStorageOpen")
 util.AddNetworkString("impulseInvMove")
 util.AddNetworkString("impulseInvDoMove")
+util.AddNetworkString("impulseRagdollLink")
 
 net.Receive("impulseCharacterCreate", function(len, ply)
 	if (ply.NextCreate or 0) > CurTime() then return end

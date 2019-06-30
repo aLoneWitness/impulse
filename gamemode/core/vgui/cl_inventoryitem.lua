@@ -85,6 +85,22 @@ function PANEL:SetItem(netitem, wide)
 			panel.Weight = panel.Count * panel.Item.Weight
 		end
 	end
+
+	if self.Basic then return end
+	local restrictedMat = "icon16/error.png"
+	local illegalMat = "icon16/exclamation.png"
+
+	if self.IsRestricted then
+		self.tip = vgui.Create("DImageButton", self)
+		self.tip:SetPos(43, 5)
+		self.tip:SetSize(16, 16)
+		self.tip:SetImage(restrictedMat)
+	elseif self.Item.Illegal then
+		self.tip = vgui.Create("DImageButton", self)
+		self.tip:SetPos(43, 5)
+		self.tip:SetSize(16, 16)
+		self.tip:SetImage(illegalMat)
+	end
 end
 
 function PANEL:OnMousePressed(keycode)
@@ -214,19 +230,6 @@ function PANEL:Paint(w, h)
 		draw.SimpleText(self.Weight.."kg", "Impulse-Elements16", w - 10, 10, color_white, TEXT_ALIGN_RIGHT)
 
 		if self.Basic then return end
-		if self.IsRestricted then -- if restrict check here
-			draw.SimpleText("Restricted", "Impulse-Elements16", w - 34, 30, restrictedCol, TEXT_ALIGN_RIGHT)
-
-			surface.SetDrawColor(color_white)
-			surface.SetMaterial(restrictedMat)
-			surface.DrawTexturedRect(w - 30, 30, 16, 16)
-		elseif item.Illegal then
-			draw.SimpleText("Contraband", "Impulse-Elements16", w - 34, 30, illegalCol, TEXT_ALIGN_RIGHT)
-
-			surface.SetDrawColor(color_white)
-			surface.SetMaterial(illegalMat)
-			surface.DrawTexturedRect(w - 30, 30, 16, 16)
-		end
 
 		if self.IsEquipped then -- if equipped
 			surface.SetDrawColor(equippedCol)
