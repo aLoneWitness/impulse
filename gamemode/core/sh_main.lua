@@ -40,13 +40,6 @@ else
     end)
 end
 
-meta.SteamName = meta.SteamName or meta.Name
-function meta:Name()
-    return self:GetSyncVar(SYNC_RPNAME, self:SteamName())
-end
-meta.GetName = meta.Name
-meta.Nick = meta.Name
-
 function meta:IsDeveloper()
     return (self:SteamID() == "STEAM_0:1:95921723" or self:SteamID() == "STEAM_0:1:102639297")
 end

@@ -97,14 +97,32 @@ function impulse.chatBox.buildBox()
 		local entry = impulse.chatBox.entry
 
 		if (impulse.chatBox.frame:IsActive() and IsValid(entry)) then
-			local text = entry:GetValue()
+			local text = string.Explode(" ", entry:GetValue())
+			text = text[1] or ""
+
 			if (text:sub(1, 1) == "/") then
 				local command = string.PatternSafe(string.lower(text))
 
-				impulse.blur( self, 10, 20, 255 )
+				impulse.blur(self, 10, 20, 255)
 
 				surface.SetDrawColor(0, 0, 0, 200)
 				surface.DrawRect(0, 0, w, h)
+
+				if text == "//" or text == "/ooc" then
+					local limit = LocalPlayer().OOCLimit
+
+					if not limit then
+						if LocalPlayer():IsDonator() then
+							LocalPlayer().OOCLimit = impulse.Config.OOCLimitVIP
+						else
+							LocalPlayer().OOCLimit = impulse.Config.OOCLimit
+						end
+					end
+
+
+
+					draw.DrawText("(you have "..LocalPlayer().OOCLimit.." OOC messages left)", "Impulse-Elements18-Shadow", 5, h - 24)
+				end
 
 				local i = 0
 

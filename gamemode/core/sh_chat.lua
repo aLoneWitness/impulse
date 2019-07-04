@@ -51,9 +51,22 @@ local oocCommand = {
 			return ply:Notify("You have an active OOC timeout that will remain for "..string.NiceTime(timeout - CurTime())..".")
 		end
 
+		local limit = ply.OOCLimit or ((ply:IsDonator() and impulse.Config.OOCLimitVIP) or impulse.Config.OOCLimit)
+		local timeLeft = timer.TimeLeft(ply:UserID().."impulseOOCLimit")
+
+		if limit < 1 and not ply:IsAdmin() then
+			return ply:Notify("You have ran out of OOC messages. Wait "..string.NiceTime(timeLeft).." for more.")
+		end
+
 		for v,k in pairs(player.GetAll()) do
 			k:SendChatClassMessage(2, rawText, ply)
 		end
+
+		ply.OOCLimit = ply.OOCLimit - 1
+
+		net.Start("impulseUpdateOOCLimit")
+		net.WriteUInt(timeLeft, 16)
+		net.Send(ply)
 	end
 }
 

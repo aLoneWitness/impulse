@@ -19,6 +19,22 @@ if SERVER then
 	end
 end
 
+local blacklistNames = {
+	["ooc"] = true,
+	["shared"] = true,
+	["world"] = true,
+	["world prop"] = true,
+	["admin"] = true,
+	["server admin"] = true,
+	["mod"] = true,
+	["game moderator"] = true,
+	["adolf hitler"] = true,
+	["masked person"] = true,
+	["masked player"] = true,
+	["unknown"] = true,
+	["tyrone jenson"] = true
+}
+
 function impulse.CanUseName(name)
 	if name:len() >= 24 then
 		return false, "Name too long. (max. 24)" 
@@ -41,6 +57,23 @@ function impulse.CanUseName(name)
 	if numFound then
 		return false, "Name contains numbers."
 	end
+	
+	if blacklistNames[name:lower()] then
+		return false, "Blacklisted/reserved name."	
+	end
 
 	return true, name
 end
+
+meta.SteamName = meta.SteamName or meta.Name
+function meta:Name()
+    return self:GetSyncVar(SYNC_RPNAME, self:SteamName())
+end
+
+function meta:KnownName()
+	local custom = hook.Run("PlayerGetKnownName", self)
+	return custom or self:GetSyncVar(SYNC_RPNAME, self:SteamName())
+end
+
+meta.GetName = meta.Name
+meta.Nick = meta.Name

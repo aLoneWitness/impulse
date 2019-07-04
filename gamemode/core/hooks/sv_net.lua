@@ -13,6 +13,8 @@ util.AddNetworkString("impulseDoorBuy")
 util.AddNetworkString("impulseDoorSell")
 util.AddNetworkString("impulseDoorLock")
 util.AddNetworkString("impulseDoorUnlock")
+util.AddNetworkString("impulseDoorAdd")
+util.AddNetworkString("impulseDoorRemove")
 util.AddNetworkString("impulseSceneFOV")
 util.AddNetworkString("impulseScenePVS")
 util.AddNetworkString("impulseQuizSubmit")
@@ -34,6 +36,7 @@ util.AddNetworkString("impulseInvStorageOpen")
 util.AddNetworkString("impulseInvMove")
 util.AddNetworkString("impulseInvDoMove")
 util.AddNetworkString("impulseRagdollLink")
+util.AddNetworkString("impulseUpdateOOCLimit")
 
 net.Receive("impulseCharacterCreate", function(len, ply)
 	if (ply.NextCreate or 0) > CurTime() then return end
@@ -388,6 +391,31 @@ net.Receive("impulseDoorUnlock", function(len, ply)
 	end
 
 	ply.nextDoorUnlock = CurTime() + 1
+end)
+
+net.Receive("impulseDoorAdd", function(len, ply)
+	if (ply.nextDoorChange or 0) > CurTime() then return end
+	ply.nextDoorChange = CurTime() + 0.5
+
+	local target = net.ReadEntity()
+
+	if not IsValid(target) or not target:IsPlayer() or not ply.beenSetup then
+		return
+	end
+
+	local trace = {}
+	trace.start = ply:EyePos()
+	trace.endpos = trace.start + ply:GetAimVector() * 85
+	trace.filter = ply
+
+	local traceEnt = util.TraceLine(trace).Entity
+
+	if IsValid(traceEnt) and ply:IsDoorOwner(traceEnt:GetSyncVar(SYNC_DOOR_OWNERS, nil)) then
+		local owners = traceEnt:GetSyncVar(SYNC_DOOR_OWNERS)
+		table.insert(owners, target)
+
+		traceEnt:SetSyncVar(SYNC_DOOR_OWNERS, owners, true)
+	end
 end)
 
 net.Receive("impulseQuizSubmit", function(len, ply)

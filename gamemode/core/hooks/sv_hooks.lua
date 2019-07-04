@@ -39,6 +39,20 @@ function IMPULSE:PlayerInitialSpawn(ply)
 		ply:AddTeamTime(impulse.Config.XPTime)
 	end)
 
+	if ply:IsDonator() then
+		ply.OOCLimit = impulse.Config.OOCLimitVIP
+	else
+		ply.OOCLimit = impulse.Config.OOCLimit
+	end
+
+	timer.Create(ply:UserID().."impulseOOCLimit", 1800, 0, function()
+		if ply:IsDonator() then
+			ply.OOCLimit = impulse.Config.OOCLimitVIP
+		else
+			ply.OOCLimit = impulse.Config.OOCLimit
+		end
+	end)
+
 	timer.Create(ply:UserID().."impulseFullLoad", 0.5, 0, function()
 		if IsValid(ply) and ply:GetModel() != "player/default.mdl" then
 			hook.Run("PlayerInitialSpawnLoaded", ply)
@@ -108,6 +122,7 @@ function IMPULSE:PlayerDisconnected(ply)
 	end
 
 	timer.Remove(userID.."impulseXP")
+	timer.Remove(userID.."impulseOOCLimit")
 	if timer.Exists(userID.."impulseFullLoad") then
 		timer.Remove(userID.."impulseFullLoad")
 	end

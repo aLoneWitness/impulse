@@ -103,7 +103,7 @@ local function DrawOverheadInfo(target, alpha)
 	pos = pos:ToScreen()
 	pos.y = pos.y - 50
 
-	draw.DrawText(target:Name(), "Impulse-Elements18-Shadow", pos.x, pos.y, ColorAlpha(team.GetColor(target:Team()), alpha), 1)
+	draw.DrawText(target:KnownName(), "Impulse-Elements18-Shadow", pos.x, pos.y, ColorAlpha(team.GetColor(target:Team()), alpha), 1)
 	if target:GetSyncVar(SYNC_TYPING, false) then
 		draw.DrawText("Typing...", "Impulse-Elements16-Shadow", pos.x, pos.y + 15, ColorAlpha(color_white, alpha), 1)
 	end
