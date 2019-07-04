@@ -32,10 +32,8 @@ function IMPULSE:Think()
 					local doorGroup =  traceEnt:GetSyncVar(SYNC_DOOR_GROUP, nil)
 					local doorBuyable = traceEnt:GetSyncVar(SYNC_DOOR_BUYABLE, true)
 
-					if LocalPlayer():CanBuyDoor(doorOwners, doorBuyable) or LocalPlayer():CanLockUnlockDoor(doorOwners, doorGroup) then
-						impulse.entityMenu = vgui.Create("impulseEntityMenu")
-						impulse.entityMenu:SetDoor(traceEnt)
-					end
+					impulse.entityMenu = vgui.Create("impulseEntityMenu")
+					impulse.entityMenu:SetDoor(traceEnt)
 				elseif traceEnt:IsPlayer() then
 					impulse.entityMenu = vgui.Create("impulseEntityMenu")
 					impulse.entityMenu:SetRangeEnt(traceEnt)

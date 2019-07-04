@@ -60,7 +60,7 @@ function impulse.Sync.DoType(type, value)
 		elseif type == SYNC_MINITABLE then
 			return net.WriteData(pon.encode(value), 32)
 		elseif type == SYNC_INTSTACK then
-			local count = net.WriteUInt(#value, 4)
+			local count = net.WriteUInt(#value, 8)
 
 			for v,k in pairs(value) do
 				net.WriteUInt(k, 8)
@@ -82,10 +82,10 @@ function impulse.Sync.DoType(type, value)
 		elseif type == SYNC_MINITABLE then
 			return pon.decode(net.ReadData(32))
 		elseif type == SYNC_INTSTACK then
-			local count = net.ReadUInt(#value, 4)
+			local count = net.ReadUInt(8)
 			local compiled =  {}
 
-			for k in range(1, count) do
+			for k = 1, count do
 				table.insert(compiled, (net.ReadUInt(8)))
 			end
 
@@ -387,8 +387,4 @@ SYNC_COS_CHEST = impulse.Sync.RegisterVar(SYNC_INT)
 SYNC_DOOR_NAME = impulse.Sync.RegisterVar(SYNC_STRING)
 SYNC_DOOR_GROUP = impulse.Sync.RegisterVar(SYNC_INT)
 SYNC_DOOR_BUYABLE = impulse.Sync.RegisterVar(SYNC_BOOL)
-SYNC_DOOR_OWNERS = impulse.Sync.RegisterVar(SYNC_MINITABLE)
-
--- conditional networking test 1
-SYNC_PRISON_SENTENCE = impulse.Sync.RegisterVar(SYNC_BIGINT, function(ply) return ply:IsCP() end)
-SYNC_PRISON_CHARGES = impulse.Sync.RegisterVar(SYNC_INTSTACK, function(ply) return ply:IsCP() end)
+SYNC_DOOR_OWNERS = impulse.Sync.RegisterVar(SYNC_INTSTACK)

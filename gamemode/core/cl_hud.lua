@@ -350,6 +350,19 @@ function IMPULSE:HUDPaint()
 			surface.SetMaterial(warningIcon)
 			surface.DrawTexturedRect(10, y-30, 18, 18)
 			aboveHUDUsed = true
+
+			surface.SetDrawColor(darkCol)
+			surface.DrawRect(scrW-140, scrH-85, 140, 70)
+
+			surface.SetFont("Impulse-Elements18-Shadow")
+			surface.SetTextPos(scrW-130, scrH-77)
+			surface.DrawText("Props: 0/80")
+
+			surface.SetTextPos(scrW-130, scrH-62)
+			surface.DrawText("Doors: 0/2")
+
+			surface.SetTextPos(scrW-130, scrH-47)
+			surface.DrawText("Chairs: 0/2")
 		end
 	end
 

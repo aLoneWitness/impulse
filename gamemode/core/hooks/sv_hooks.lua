@@ -336,13 +336,14 @@ function IMPULSE:DoPlayerDeath(ply)
 	ragdoll:SetSkin(ply:GetSkin())
 	ragdoll.DeadPlayer = ply
 	ragdoll.CanConstrain = false
+	ragdoll.NoCarry = true
 
 	for v,k in pairs(ply:GetBodyGroups()) do
 		ragdoll:SetBodygroup(k.id, ply:GetBodygroup(k.id))
 	end
 
 	ragdoll:Spawn()
-	ragdoll:SetCollisionGroup(COLLISION_GROUP_WEAPON)
+	ragdoll:SetCollisionGroup(COLLISION_GROUP_WORLD)
 
 	for x=0, ragdoll:GetPhysicsObjectCount() - 1 do
 		local bone = ragdoll:GetPhysicsObject(x)
@@ -355,10 +356,16 @@ function IMPULSE:DoPlayerDeath(ply)
 		end
 	end
 
-	net.Start("impulseRagdollLink")
-	net.WriteUInt(ragdoll:EntIndex(), 16)
-	net.WriteEntity(ply)
-	net.Broadcast()
+	timer.Simple(impulse.Config.BodyDeSpawnTime, function()
+		if ragdoll and IsValid(ragdoll) then
+			ragdoll:Remove()
+		end
+	end)
+
+	--net.Start("impulseRagdollLink")
+	--net.WriteUInt(ragdoll:EntIndex(), 16)
+	--net.WriteEntity(ply)
+	--net.Broadcast()
 
 	return true
 end
@@ -632,9 +639,9 @@ function IMPULSE:PlayerSpawnedProp(ply, model, ent)
 		price = impulse.Config.PropPriceDonator
 	end
 
-	if ply:CanAffordBank(price) then
-		ply:TakeBankMoney(price)
-		ply:Notify("You have purchased a prop for "..impulse.Config.CurrencyPrefix..price.." (deducted from bank account).")
+	if ply:CanAfford(price) then
+		ply:TakeMoney(price)
+		ply:Notify("You have purchased a prop for "..impulse.Config.CurrencyPrefix..price..".")
 	else
 		ply:Notify("You need "..impulse.Config.CurrencyPrefix..price.." to spawn this prop.")
 		SafeRemoveEntity(ent)

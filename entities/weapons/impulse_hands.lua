@@ -336,6 +336,10 @@ end
 function SWEP:CanCarry(ent)
 	local phys = ent:GetPhysicsObject()
 
+	if ent.NoCarry then
+		return false
+	end
+
 	if not IsValid(phys) then
 		return false
 	end

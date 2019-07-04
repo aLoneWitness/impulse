@@ -12,16 +12,6 @@ function PANEL:Init()
 
  	local w, h = self:GetSize()
 
- 	self.invBtn = vgui.Create("DButton", self)
- 	self.invBtn:SetSize(100, 25)
- 	self.invBtn:SetPos(0, 0)
- 	self.invBtn:SetText("Inventory")
-
- 	self.craftBtn = vgui.Create("DButton", self)
- 	self.craftBtn:SetSize(100, 25)
- 	self.craftBtn:SetPos(100, 0)
- 	self.craftBtn:SetText("Crafting")
-
  	self.infoName = vgui.Create("DLabel", self)
  	self.infoName:SetPos(15, 40)
  	self.infoName:SetText(LocalPlayer():Nick())
