@@ -493,6 +493,10 @@ function IMPULSE:HUDPaint()
 
 			if syncData then
 				for v,k in pairs(syncData) do
+					if type(k) == "table" then
+						k = table.ToString(k)
+					end
+
 					surface.SetTextPos((scrW / 2) + 30, y)
 					surface.DrawText("syncvalue: "..v.." ; "..tostring(k))
 					y = y + 20

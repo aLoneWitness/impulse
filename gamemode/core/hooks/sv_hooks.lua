@@ -153,7 +153,15 @@ function IMPULSE:PlayerDisconnected(ply)
 	if ply.OwnedDoors then
 		for door,k in pairs(ply.OwnedDoors) do
 			if IsValid(door) then
-				door:SetSyncVar(SYNC_DOOR_OWNERS, nil, true)
+				local owners = door:GetSyncVar(SYNC_DOOR_OWNERS, nil, true)
+
+				table.RemoveByValue(owners, ply:EntIndex())
+
+				if owners and table.Count(owners) < 2 then
+					owners = nil
+				end
+
+				door:SetSyncVar(SYNC_DOOR_OWNERS, owners or nil, true)
 				door:DoorUnlock()
 			end
 		end
