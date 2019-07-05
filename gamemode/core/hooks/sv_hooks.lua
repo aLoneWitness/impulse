@@ -35,8 +35,10 @@ function IMPULSE:PlayerInitialSpawn(ply)
 	query:Execute()
 
 	timer.Create(ply:UserID().."impulseXP", impulse.Config.XPTime, 0, function()
-		ply:GiveTimedXP()
-		ply:AddTeamTime(impulse.Config.XPTime)
+		if not ply:IsAFK() then
+			ply:GiveTimedXP()
+			ply:AddTeamTime(impulse.Config.XPTime)
+		end
 	end)
 
 	if ply:IsDonator() then

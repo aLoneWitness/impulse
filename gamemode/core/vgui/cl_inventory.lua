@@ -46,7 +46,7 @@ function PANEL:Init()
  	local skin = LocalPlayer():GetSkin()
 
  	self.modelPreview = vgui.Create("impulseModelPanel", self)
-	self.modelPreview:SetPos(0, 70)
+	self.modelPreview:SetPos(0, 80)
 	self.modelPreview:SetSize(270, h * .75)
 	self.modelPreview:SetModel(model, skin)
 	self.modelPreview:MoveToBack()

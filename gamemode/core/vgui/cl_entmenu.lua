@@ -112,7 +112,7 @@ function PANEL:SetDoor(door)
 			end
 
 			for v,k in pairs(player.GetAll()) do
-				if exclude[k] then 
+				if exclude[k] or k == LocalPlayer() then 
 					continue 
 				end
 

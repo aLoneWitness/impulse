@@ -53,42 +53,8 @@ function PANEL:Init()
 end
 
 function PANEL:QuickActions()
-	local model = LocalPlayer().defaultModel or "models/Humans/Group01/male_02.mdl"
-	local skin = LocalPlayer().defaultSkin or 0
-
-	if impulse.Teams.Data[LocalPlayer():Team()].model then
-		model = LocalPlayer():GetModel()
-		skin = LocalPlayer():GetSkin()
-	end
-	self.modelPreview = vgui.Create("impulseModelPanel", self.quickActions)
-	self.modelPreview:SetPos(373, 0)
-	self.modelPreview:SetSize(300, 370)
-	self.modelPreview:SetModel(model, skin)
-	self.modelPreview:MoveToBack()
-	self.modelPreview:SetCursor("arrow")
-	self.modelPreview:SetFOV(self.modelPreview:GetFOV() - 19)
- 	function self.modelPreview:LayoutEntity(ent)
- 		ent:SetAngles(Angle(0, 43, 0))
- 		--ent:SetSequence(ACT_IDLE)
- 		--self:RunAnimation()
- 	end
-
- 	timer.Simple(0, function()
-		if not IsValid(self.modelPreview) then
-			return
-		end
-
-		local ent = self.modelPreview.Entity
-
-		if IsValid(ent) then
-			for v,k in pairs(LocalPlayer():GetBodyGroups()) do
-				ent:SetBodygroup(k.id, LocalPlayer():GetBodygroup(k.id))
-			end
-		end
-	end)
-
 	self.quickActionsInner = vgui.Create("DPanel", self.quickActions)
-	self.quickActionsInner:SetSize(400, 580)
+	self.quickActionsInner:Dock(FILL)
 
 	local panel = self
 	function self.quickActionsInner:Paint(w, h)
@@ -383,39 +349,39 @@ function PANEL:Info()
 
 	self.infoSheet:AddSheet("Help & Tutorials", webTutorial)
 
-	local credits = vgui.Create("DLabel")
-	credits:SetText([[impulse framework:
-		Jake Green - vin - framework creator
+	local commands = vgui.Create("DScrollPanel", self.infoSheet)
+	commands:Dock(FILL)
 
-		impulse Half-Life 2 Roleplay schema:
-		Jake Green - vin - schema creator
-		Sander van Dinteren - aLoneWitness - contributor
+	for v,k in pairs(impulse.chatCommands) do
+		local c = impulse.Config.MainColour
+ 						
+ 		if k.adminOnly == true and LocalPlayer():IsAdmin() == false then 
+ 			continue 
+ 		elseif k.adminOnly == true then
+ 			c = impulse.Config.InteractColour
+ 		end
+ 						
+ 		if k.superAdminOnly == true and LocalPlayer():IsSuperAdmin() == false then 
+ 			continue 
+ 		elseif k.superAdminOnly == true then
+ 			c = Color(255, 0, 0, 255)
+ 		end
 
-		Third-party modules:
-		Alex Grist - MySQL wrapper
-		thelastpenguin - pON
-		Cat.jpeg - some string functions
-		Kyle Smith - UTF-8 module
-		rebel1324 and Chessnut - animations base
+		local command = commands:Add("DPanel", commands)
+		command:SetTall(40)
+		command:Dock(TOP)
+		command.name = v
+		command.desc = k.description
+		command.col = c
 
-		Early testing (and feedback) team:
-		confused
-		Bwah
-		KTG
-		Law
-		Oscar Holmes
-		Lefton
-		Y Tho
-		Morgan
-		Datamats
+		function command:Paint()
+			draw.SimpleText(self.name, "Impulse-Elements22-Shadow", 5, 0, self.col)
+			draw.SimpleText(self.desc, "Impulse-Elements18-Shadow", 5, 20, color_white)
+			return true
+		end
+	end
 
-		Find out how impulse was made at www.vingard.ovh/category/impulse
-		Copyright Jake Green 2019]])
-	credits:SetContentAlignment(7)
-	credits:SetFont("Impulse-Elements18")
-	credits:SetPos(5,5)
-
-	self.infoSheet:AddSheet("Credits", credits)
+	self.infoSheet:AddSheet("Commands", commands)
 end
 
 function PANEL:AddSheet(name, icon, pnl, loadFunc)

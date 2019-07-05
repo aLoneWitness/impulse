@@ -67,6 +67,8 @@ local oocCommand = {
 		net.Start("impulseUpdateOOCLimit")
 		net.WriteUInt(timeLeft, 16)
 		net.Send(ply)
+
+		hook.Run("ProcessOOCMessage", rawText)
 	end
 }
 
@@ -86,6 +88,8 @@ local loocCommand = {
 				k:SendChatClassMessage(3, rawText, ply)
 			end
 		end
+
+		hook.Run("ProcessOOCMessage", rawText)
 	end
 }
 

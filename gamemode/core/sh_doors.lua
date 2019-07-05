@@ -8,7 +8,7 @@ function meta:CanLockUnlockDoor(doorOwners, doorGroup)
 
 	local teamDoorGroups = impulse.Teams.Data[self:Team()].doorGroup
 
-	if doorOwners and doorOwners[self:EntIndex()] then
+	if doorOwners and table.HasValue(doorOwners, self:EntIndex()) then
 		return true
 	elseif doorGroup and teamDoorGroups and table.HasValue(teamDoorGroups, doorGroup) then
 		return true
@@ -16,7 +16,7 @@ function meta:CanLockUnlockDoor(doorOwners, doorGroup)
 end
 
 function meta:IsDoorOwner(doorOwners)
-	if doorOwners and doorOwners[self:EntIndex()] then
+	if doorOwners and table.HasValue(doorOwners, self:EntIndex()) then
 		return true
 	end
 	return false
