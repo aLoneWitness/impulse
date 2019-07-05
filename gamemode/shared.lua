@@ -7,7 +7,7 @@
 GM.Name = "impulse"
 GM.Author = "vin"
 GM.Website = "https://www.vingard.ovh"
-GM.Version = 0.6
+GM.Version = 0.8
 MsgC( Color( 83, 143, 239 ), "[impulse] Starting shared load...\n" )
 IMPULSE = GM
 meta = FindMetaTable("Player")
@@ -82,7 +82,10 @@ function impulse.reload()
 
     for v, plugin in ipairs(folders) do
         MsgC( Color( 83, 143, 239 ), "[impulse] Loading plugin '"..plugin.."'\n" )
+        impulse.lib.includeDir("impulse/plugins/"..plugin.."/setup")
 	    impulse.lib.includeDir("impulse/plugins/"..plugin)
+	    impulse.lib.includeDir("impulse/plugins/"..plugin.."/vgui")
+	    impulse.lib.includeDir("impulse/plugins/"..plugin.."/hooks")
     end
 end
 

@@ -1,10 +1,9 @@
 local PANEL = {}
 
-function PANEL:OnDrop(panels, dropped, command, x, y)
-	self.Unusable = true
+function PANEL:Init()
+	self:Receiver("impulseInv")
 end
 
-local gradient = Material("vgui/gradient-l")
 local outlineCol = Color(10, 10, 10, 255)
 local darkCol = Color(30, 30, 30, 190)
 local fullCol = Color(139, 0, 0, 15)

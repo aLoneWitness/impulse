@@ -1,3 +1,6 @@
+local isValid = IsValid
+local mathAbs = math.abs
+
 function IMPULSE:PlayerInitialSpawn(ply)
 	local isNew = true
 
@@ -36,6 +39,20 @@ function IMPULSE:PlayerInitialSpawn(ply)
 		ply:AddTeamTime(impulse.Config.XPTime)
 	end)
 
+	if ply:IsDonator() then
+		ply.OOCLimit = impulse.Config.OOCLimitVIP
+	else
+		ply.OOCLimit = impulse.Config.OOCLimit
+	end
+
+	timer.Create(ply:UserID().."impulseOOCLimit", 1800, 0, function()
+		if ply:IsDonator() then
+			ply.OOCLimit = impulse.Config.OOCLimitVIP
+		else
+			ply.OOCLimit = impulse.Config.OOCLimit
+		end
+	end)
+
 	timer.Create(ply:UserID().."impulseFullLoad", 0.5, 0, function()
 		if IsValid(ply) and ply:GetModel() != "player/default.mdl" then
 			hook.Run("PlayerInitialSpawnLoaded", ply)
@@ -71,6 +88,7 @@ function IMPULSE:PlayerSpawn(ply)
 
 	if ply.beenSetup then
 		ply:SetTeam(impulse.Config.DefaultTeam)
+		ply:SetLocalSyncVar(SYNC_HUNGER, 100, true)
 	end
 
 	ply:SetHunger(100)
@@ -104,6 +122,7 @@ function IMPULSE:PlayerDisconnected(ply)
 	end
 
 	timer.Remove(userID.."impulseXP")
+	timer.Remove(userID.."impulseOOCLimit")
 	if timer.Exists(userID.."impulseFullLoad") then
 		timer.Remove(userID.."impulseFullLoad")
 	end
@@ -127,12 +146,34 @@ function IMPULSE:PlayerDisconnected(ply)
 		end
 	end
 
+	if ply.impulseID then
+		impulse.Inventory.Data[ply.impulseID] = nil
+	end
+
 	if ply.OwnedDoors then
 		for door,k in pairs(ply.OwnedDoors) do
 			if IsValid(door) then
-				door:SetSyncVar(SYNC_DOOR_OWNERS, nil, true)
+				local owners = door:GetSyncVar(SYNC_DOOR_OWNERS, nil, true)
+
+				table.RemoveByValue(owners, ply:EntIndex())
+
+				if owners and table.Count(owners) < 2 then
+					owners = nil
+				end
+
+				door:SetSyncVar(SYNC_DOOR_OWNERS, owners or nil, true)
 				door:DoorUnlock()
 			end
+		end
+	end
+
+	if ply.InvSearching and IsValid(ply.InvSearching) then
+		ply.InvSearching:Freeze(false)
+	end
+
+	for v,k in pairs(ents.FindByClass("impulse_item")) do
+		if k.ItemOwner and k.ItemOwner == ply then
+			k.RemoveIn = CurTime() + impulse.Config.InventoryItemDeSpawnTime
 		end
 	end
 end
@@ -153,10 +194,6 @@ function IMPULSE:SetupPlayer(ply, dbData)
 
 	local data = util.JSONToTable(dbData.data)
 
-	if not data then
-		data = {}
-	end
-
 	ply.impulseData = data
 	ply.impulseRanks = util.JSONToTable(dbData.ranks or "[]")
 	ply.impulseID = dbData.id
@@ -171,8 +208,53 @@ function IMPULSE:SetupPlayer(ply, dbData)
 	ply:SetFOV(90, 0)
 	ply:SetTeam(impulse.Config.DefaultTeam)
 	ply:AllowFlashlight(true)
-	ply.beenSetup = true
 
+	local id = ply.impulseID
+	impulse.Inventory.Data[id] = {}
+	impulse.Inventory.Data[id][1] = {} -- inv
+	impulse.Inventory.Data[id][2] = {} -- storage
+
+	ply.InventoryWeight = 0
+	ply.InventoryWeightStorage = 0
+	ply.InventoryRegister = {}
+	ply.InventoryEquipGroups = {}
+
+	hook.Run("PreEarlyInventorySetup", ply)
+
+	local query = mysql:Select("impulse_inventory")
+	query:Select("id")
+	query:Select("uniqueid")
+	query:Select("ownerid")
+	query:Select("storagetype")
+	query:Where("ownerid", dbData.id)
+	query:Callback(function(result)
+		if IsValid(ply) and type(result) == "table" and #result > 0 then
+			local userid = ply.impulseID
+			local userInv = impulse.Inventory.Data[userid]
+
+			for v,k in pairs(result) do
+				local netid = impulse.Inventory.ClassToNetID(k.uniqueid)
+				if not netid then continue end -- when items are removed from a live server we will remove them manually in the db, if an item is broken auto doing this would break peoples items
+
+				local storetype = k.storagetype
+
+				if not userInv[storetype] then
+					userInv[storetype] = {}
+				end
+				
+				ply:GiveInventoryItem(k.uniqueid, k.storagetype, false, true)
+			end
+		end
+
+		if IsValid(ply) then
+			ply.beenInvSetup = true
+			hook.Run("PostInventorySetup", ply)
+		end
+	end)
+
+	query:Execute()
+
+	ply.beenSetup = true
 	hook.Run("PostSetupPlayer", ply)
 end
 
@@ -183,9 +265,11 @@ end
 local talkCol = Color(255, 255, 100)
 local infoCol = Color(135, 206, 250)
 
-function IMPULSE:PlayerSay(ply, text, teamChat)
-	if not ply.beenSetup or ply.beenSetup == false then return "" end -- keep out players who are not setup yet
+function IMPULSE:PlayerSay(ply, text, teamChat, newChat)
+	if not ply.beenSetup then return "" end -- keep out players who are not setup yet
 	if teamChat == true then return "" end -- disabled team chat
+
+	hook.Run("iPostPlayerSay", ply, text)
 
 	if string.StartWith(text, "/") then
 		local args = string.Explode(" ", text)
@@ -266,6 +350,49 @@ function IMPULSE:UpdatePlayerSync(ply)
 	end
 end
 
+function IMPULSE:DoPlayerDeath(ply)
+	local vel = ply:GetVelocity()
+
+	local ragdoll = ents.Create("prop_ragdoll")
+	ragdoll:SetModel(ply:GetModel())
+	ragdoll:SetPos(ply:GetPos())
+	ragdoll:SetSkin(ply:GetSkin())
+	ragdoll.DeadPlayer = ply
+	ragdoll.CanConstrain = false
+	ragdoll.NoCarry = true
+
+	for v,k in pairs(ply:GetBodyGroups()) do
+		ragdoll:SetBodygroup(k.id, ply:GetBodygroup(k.id))
+	end
+
+	ragdoll:Spawn()
+	ragdoll:SetCollisionGroup(COLLISION_GROUP_WORLD)
+
+	for x=0, ragdoll:GetPhysicsObjectCount() - 1 do
+		local bone = ragdoll:GetPhysicsObject(x)
+
+		if bone and bone:IsValid() then
+			local pos, ang = ply:GetBonePosition(ragdoll:TranslatePhysBoneToBone(x))
+			bone:SetPos(pos)
+			bone:SetAngles(ang)
+			bone:AddVelocity(vel)
+		end
+	end
+
+	timer.Simple(impulse.Config.BodyDeSpawnTime, function()
+		if ragdoll and IsValid(ragdoll) then
+			ragdoll:Remove()
+		end
+	end)
+
+	--net.Start("impulseRagdollLink")
+	--net.WriteUInt(ragdoll:EntIndex(), 16)
+	--net.WriteEntity(ply)
+	--net.Broadcast()
+
+	return true
+end
+
 function IMPULSE:PlayerDeath(ply)
 	local wait = impulse.Config.RespawnTime
 
@@ -309,6 +436,12 @@ function IMPULSE:SetupPlayerVisibility(ply)
 end
 
 function IMPULSE:KeyPress(ply, key)
+	if ply:IsAFK() then
+		ply:UnMakeAFK()	
+	end
+
+	ply.AFKTimer = CurTime() + impulse.Config.AFKTime
+
 	if key == IN_RELOAD then
 		timer.Create("impulseRaiseWait"..ply:SteamID(), 1, 1, function()
 			if IsValid(ply) then
@@ -336,12 +469,44 @@ function IMPULSE:KeyPress(ply, key)
 end
 
 function IMPULSE:PlayerUse(ply, entity)
+	if (ply.useNext or 0) > CurTime() then return false end
+	ply.useNext = CurTime() + 0.3
 
+	local btnKey = entity.ButtonCheck
+
+	if btnKey and impulse.Config.Buttons[btnKey] then
+		local btnData = impulse.Config.Buttons[btnKey]
+
+		if btnData.customCheck and not btnData.customCheck(ply, entity) then
+			ply.useNext = CurTime() + 1
+			return false
+		end
+
+		if btnData.doorgroup then
+			local teamDoorGroups = impulse.Teams.Data[ply:Team()].doorGroup
+
+			if not teamDoorGroups or not table.HasValue(teamDoorGroups, doorGroup) then
+				ply.useNext = CurTime() + 1
+				ply:Notify("You don't have access to use this button.")
+				return false
+			end
+		end
+	end
 end
 
 function IMPULSE:KeyRelease(ply, key)
 	if key == IN_RELOAD then
 		timer.Remove("impulseRaiseWait"..ply:SteamID())
+	end
+end
+
+local function LoadButtons()
+	for a,button in pairs(ents.FindByClass("func_button")) do
+		for v,k in pairs(impulse.Config.Buttons) do
+			if k.pos:DistToSqr(button:GetPos()) < (9 ^ 2) then -- getpos client/server innaccuracy
+				button.ButtonCheck = v
+			end
+		end
 	end
 end
 
@@ -369,7 +534,11 @@ function IMPULSE:InitPostEntity()
 	        end
 	    end
 	end
+
+	LoadButtons()
 end
+
+LoadButtons()
 
 function IMPULSE:PostCleanupMap()
 	IMPULSE:InitPostEntity()
@@ -379,6 +548,7 @@ function IMPULSE:GetFallDamage(ply, speed)
 	return (speed / 8)
 end
 
+local lastAFKScan
 function IMPULSE:Think()
 	for v,k in pairs(player.GetAll()) do
 		if not k.nextHungerUpdate then k.nextHungerUpdate = CurTime() + impulse.Config.HungerTime end
@@ -413,6 +583,16 @@ function IMPULSE:Think()
 			end
 		else
 			v:StopDrag()
+		end
+	end
+
+	if (lastAFKScan or 0) < CurTime() then
+		lastAFKScan = CurTime() + 2
+
+		for v,k in pairs(player.GetAll()) do
+			if k.AFKTimer and k.AFKTimer < CurTime() and not k:IsAFK() then
+				k:MakeAFK()
+			end
 		end
 	end
 end
@@ -482,9 +662,9 @@ function IMPULSE:PlayerSpawnedProp(ply, model, ent)
 		price = impulse.Config.PropPriceDonator
 	end
 
-	if ply:CanAffordBank(price) then
-		ply:TakeBankMoney(price)
-		ply:Notify("You have purchased a prop for "..impulse.Config.CurrencyPrefix..price.." (deducted from bank account).")
+	if ply:CanAfford(price) then
+		ply:TakeMoney(price)
+		ply:Notify("You have purchased a prop for "..impulse.Config.CurrencyPrefix..price..".")
 	else
 		ply:Notify("You need "..impulse.Config.CurrencyPrefix..price.." to spawn this prop.")
 		SafeRemoveEntity(ent)
@@ -492,36 +672,122 @@ function IMPULSE:PlayerSpawnedProp(ply, model, ent)
 	end
 end
 
-local isValid = IsValid
-local mathAbs = math.abs
-function IMPULSE:Move(ply, mvData)
-	local draggedPlayer = ply.ArrestedDragging
+function IMPULSE:CanDrive()
+	return false
+end
 
-	if isValid(draggedPlayer) and ply == draggedPlayer.ArrestedDragger then
-		local draggerPos = ply:GetPos()
-		local draggedPos = draggedPlayer:GetPos()
-		local dist = (draggerPos - draggedPos):LengthSqr()
+function IMPULSE:CanProperty()
+	return false
+end
 
-		local dragPosNormal = draggerPos:GetNormal()
-		local dX = mathAbs(dragPosNormal.x)
-		local dY = mathAbs(dragPosNormal.y)
+local bannedTools = {
+	["duplicator"] = true,
+	["physprop"] = true,
+	["dynamite"] = true,
+	["eyeposer"] = true,
+	["faceposer"] = true,
+	["fingerposer"] = true,
+	["inflator"] = true,
+	["trails"] = true,
+	["paint"] = true,
+	["wire_explosive"] = true,
+	["wire_simple_explosive"] = true,
+	["wire_turret"] = true,
+	["wire_user"] = true
+}
 
-		local speed = (dX + dY) * math.Clamp(dist / (100 ^ 2), 0, 30)
+local dupeBannedTools = {
+	["weld"] = true,
+	["weld_ez"] = true,
+	["spawner"] = true,
+	["duplicator"] = true,
+	["adv_duplicator"] = true
+}
 
-		local ang = mvData:GetMoveAngles()
-		local pos = mvData:GetOrigin()
-		local vel = mvData:GetVelocity()
+local donatorTools = {
+	["wire_expression2"] = true,
+	["wire_spu"] = true,
+	["wire_egp"] = true
+}
 
-		vel.x = vel.x * speed
-		vel.y = vel.y * speed
-		vel.z =  15
+function IMPULSE:CanTool(ply, tr, tool)
+	if not ply:IsAdmin() and tool == "spawner" then
+		return false
+	end
 
-		pos = pos + vel + ang:Right() + ang:Forward() + ang:Up()
+	if bannedTools[tool] then
+		return false
+	end
 
-		if dist > (55 ^ 2) then
-			draggedPlayer:SetVelocity(vel)
+	if donatorTools[tool] and not ply:IsDonator() then
+		ply:Notify("This tool is restricted to donators only.")
+		return false
+	end
+
+    local ent = tr.Entity
+
+    if IsValid(ent) then
+        if ent.onlyremover then
+            if tool == "remover" then
+                return ply:IsAdmin() or ply:IsSuperAdmin()
+            else
+                return false
+            end
+        end
+
+        if ent.nodupe and dupeBannedTools[tool] then
+            return false
+        end
+	end
+
+	return true
+end
+
+local bannedDupeEnts = {
+	["gmod_wire_explosive"] = true,
+	["gmod_wire_simple_explosive"] = true,
+	["gmod_wire_turret"] = true,
+	["gmod_wire_user"] = true
+}
+
+local donatorDupeEnts = {
+	["gmod_wire_expression2"] = true,
+	["gmod_wire_spu"] = true,
+	["prop_vehicle_prisoner_pod"] = true,
+	["gmod_wire_epg"] = true
+}
+
+local whitelistDupeEnts = {
+	["gmod_wheel"] = true,
+	["gmod_lamp"] = true,
+	["gmod_emitter"] = true,
+	["gmod_button"] = true,
+	["gmod_cameraprop"] = true,
+	["prop_dynamic"] = true,
+	["prop_physics"] = true,
+	["gmod_light"] = true,
+	["prop_door_rotating"] = true -- door tool
+}
+
+function IMPULSE:ADVDupeIsAllowed(ply, class, entclass) -- adv dupe 2 can be easily exploited, you must have the impulse version of AD2 for this to work
+	if bannedDupeEnts[class] then
+		return false
+	end
+
+	if donatorDupeEnts[class] then
+		if ply:IsDonator() then
+			return true
+		else
+			ply:Notify("This entity is restricted to donators only.")
+			return false
 		end
 	end
+
+	if whitelistDupeEnts[class] or string.sub(class, 1, 9) == "gmod_wire" then
+		return true
+	end
+
+	return false
 end
 
 function IMPULSE:SetupMove(ply, mvData)
@@ -567,5 +833,5 @@ function IMPULSE:PlayerSetHandsModel(ply, hands)
 end
 
 function IMPULSE:PlayerSpray()
-	return false
+	return true
 end

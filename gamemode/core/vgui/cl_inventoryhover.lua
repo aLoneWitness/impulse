@@ -11,13 +11,13 @@ function PANEL:SetItem(panel)
 	self.Item = panel
 	self:SetPos(gui.MouseX() + 6, gui.MouseY() - self:GetTall() - 6)
 
-	self.ItemName = "Carbonated charcoal tablets (9mg)"
-	self.ItemColour = impulse.Config.MainColour
-	self.ItemDesc = "Twatted is noob. Twatted is noob. Twatted is noob. Twatted is noob. Twatted is noob. Twatted is noob. Twatted is noob. Twatted is noobdasdasdsadsadsadsadsadasds."
+	self.ItemName = panel.Item.Name
+	self.ItemColour = panel.Item.Colour or impulse.Config.MainColour
+	self.ItemDesc = panel.Item.Desc or ""
 	self.ItemRarity = 1
-	self.ItemIsIllegal = true
-	self.ItemIsEquipped = true
-	self.ItemIsRestricted = true
+	self.ItemIsIllegal = panel.Item.Illegal or false
+	self.ItemIsEquipped = panel.Item.Equipable or false
+	self.ItemIsRestricted = panel.Item.Restricted or false
 
 	surface.SetFont("Impulse-Elements18-Shadow")
 	local nameSize = surface.GetTextSize(self.ItemName)
@@ -60,7 +60,7 @@ end
 function PANEL:Think()
 	self:SetPos(gui.MouseX() + 6, gui.MouseY() - self:GetTall() - 2)
 
-	if self.Item and IsValid(self.Item) and self.Item:IsHovered() then
+	if self.Item and IsValid(self.Item) and self.Item.model:IsHovered() then
 		self:MoveToFront()
 	else
 		self:Remove()

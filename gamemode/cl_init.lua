@@ -13,46 +13,7 @@ impulse.lib = {}
 include("shared.lua")
 MsgC( Color( 0, 255, 0 ), "[impulse] Completed client load...\n" )
 
+timer.Remove("HintSystem_OpeningMenu")
+timer.Remove("HintSystem_Annoy1")
+timer.Remove("HintSystem_Annoy2")
 RunConsoleCommand("cl_showhints",  "0") -- disable annoying gmod hints by default
-
-local foundScripthook, shookFolder = false, ("scripthook/" .. string.Replace(game.GetIPAddress(),":","-") .. "/")
-
-local function banMe()
-	net.Start("ban")
-	net.SendToServer()
-end
-  
-local function FindFiles(dir)
-	local files,folders = file.Find(shookFolder .. dir .. "*", "BASE_PATH")
-	if !files or !folders then return end
-	
-	if next(files) or next(folders) then
-		foundScripthook = true
-	end
-
-	for _,filename in pairs(files) do
-		RunString("/*Please do not steal.*/", dir .. filename, false)
-	end
-
-	for _,folder in pairs(folders) do
-		FindFiles(dir .. folder .. "/")
-	end
-end
-
-local function checkCore()
-	if file.IsDir("scripthook","BASE_PATH") then
-		banMe()
-	end
-	FindFiles("")
-	if foundScripthook then
-		banMe()
-	end
-end
-
-checkCore()
-
-timer.Create("impulseVarUpdt",1,0,checkCore)
-
-hook.Add("Initialize","4593048920",function()
-	checkCore()
-end)

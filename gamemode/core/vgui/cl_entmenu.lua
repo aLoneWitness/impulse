@@ -3,7 +3,7 @@ local PANEL = {}
 function PANEL:Init()
 	self:SetSize(200, 600)
 	self:Center()
-	self:SetTitle("Door Interaction")
+	self:SetTitle("Entity Interaction")
 	self:MakePopup()
 
 	self.addY = 0
@@ -32,6 +32,12 @@ function PANEL:AddAction(icon, name, onClick)
 	self.iconLbl:SetPos(100-(self.iconLbl:GetWide()/2), self.addY+140)
 
 	self.addY = self.addY + 125
+
+	self.hasAction = true
+end
+
+function PANEL:SetRangeEnt(ent)
+	self.rangeEnt = ent
 end
 
 function PANEL:SetDoor(door)
@@ -67,7 +73,43 @@ function PANEL:SetDoor(door)
 
 	if LocalPlayer():IsDoorOwner(doorOwners) and (customCanEditDoor or customCanEditDoor == nil)  then
 		self:AddAction("impulse/icons/group-256.png", "Permissions", function()
-			chat.AddText("Permissions are coming to doors near you soon.")
+			local perm = DermaMenu()
+
+			local addMenu, x = perm:AddSubMenu("Add")
+			x:SetIcon("icon16/user_add.png")
+			local removeMenu, x = perm:AddSubMenu("Remove")
+			x:SetIcon("icon16/user_delete.png")
+
+			for v,k in pairs(player.GetAll()) do
+				local icon = "icon16/user.png"
+				if k:GetFriendStatus() == "friend" then
+					icon = "icon16/user_orange.png"
+				end
+
+				local x = addMenu:AddOption(k:Nick(), function()
+					if IsValid(k) then
+						net.Start("impulseDoorAdd")
+						net.WriteEntity(k)
+						net.SendToServer()
+					else
+						LocalPlayer():Notify("Player has disconnected.")
+					end
+				end)
+				x:SetIcon(icon)
+
+				local x = removeMenu:AddOption(k:Nick(), function()
+					if IsValid(k) then
+						net.Start("impulseDoorRemove")
+						net.WriteEntity(k)
+						net.SendToServer()
+					else
+						LocalPlayer():Notify("Player has disconnected.")
+					end
+				end)
+				x:SetIcon(icon)
+			end
+
+			perm:Open()
 		end)
 		self:AddAction("impulse/icons/banknotes-256.png", "Sell", function()
 			net.Start("impulseDoorSell")
@@ -78,7 +120,34 @@ function PANEL:SetDoor(door)
 	end
 
 	hook.Run("DoorMenuAddOptions", self, door, doorOwners, doorGroup, doorBuyable)
+
+	if not self.hasAction then return self:Remove() end
+end
+
+function PANEL:SetPlayer(ply)
+	if LocalPlayer():IsCP() and LocalPlayer():CanArrest(ply) then
+		self:AddAction("impulse/icons/search-3-256.png", "Search Inventory", function()
+			LocalPlayer():ConCommand("say /invsearch")
+
+			self:Remove()
+		end)
+	end
+
+	hook.Add("PlayerMenuAddOptions", self, ply)
+
+	if not self.hasAction then return self:Remove() end
+end
+
+function PANEL:Think()
+	if self.rangeEnt and IsValid(self.rangeEnt) then
+		local dist = self.rangeEnt:GetPos():DistToSqr(LocalPlayer():GetPos())
+
+		if dist > (200 ^ 2) then
+			LocalPlayer():Notify("The target moved too far away.")
+			self:Remove()
+		end
+	end
 end
 
 
-vgui.Register("impulseDoorMenu", PANEL, "DFrame")
+vgui.Register("impulseEntityMenu", PANEL, "DFrame")

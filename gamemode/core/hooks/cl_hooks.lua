@@ -9,7 +9,7 @@ function IMPULSE:OnSchemaLoaded()
 end
 
 function IMPULSE:Think()
-	if LocalPlayer():Team() != 0 and not vgui.CursorVisible() then
+	if LocalPlayer():Team() != 0 and not vgui.CursorVisible() and not impulse_ActiveWorkbar then
 		if input.IsKeyDown(KEY_F1) and (not IsValid(impulse.MainMenu) or not impulse.MainMenu:IsVisible()) then
 			local mainMenu = impulse.MainMenu or vgui.Create("impulseMainMenu")
 			mainMenu:SetVisible(true)
@@ -18,7 +18,7 @@ function IMPULSE:Think()
 			mainMenu.popup = true
 		elseif input.IsKeyDown(KEY_F4) and not IsValid(impulse.playerMenu) and LocalPlayer():Alive() then
 			impulse.playerMenu = vgui.Create("impulsePlayerMenu")
-		elseif input.IsKeyDown(KEY_LALT) and LocalPlayer():Alive() then
+		elseif input.IsKeyDown(KEY_F2) and LocalPlayer():Alive() then
 			local trace = {}
 			trace.start = LocalPlayer():EyePos()
 			trace.endpos = trace.start + LocalPlayer():GetAimVector() * 85
@@ -26,14 +26,18 @@ function IMPULSE:Think()
 
 			local traceEnt = util.TraceLine(trace).Entity
 
-			if (not impulse.doorMenu or not IsValid(impulse.doorMenu)) and IsValid(traceEnt) and traceEnt:IsDoor() then
-				local doorOwners = traceEnt:GetSyncVar(SYNC_DOOR_OWNERS, nil) 
-				local doorGroup =  traceEnt:GetSyncVar(SYNC_DOOR_GROUP, nil)
-				local doorBuyable = traceEnt:GetSyncVar(SYNC_DOOR_BUYABLE, true)
+			if (not impulse.entityMenu or not IsValid(impulse.entityMenu)) and IsValid(traceEnt) then
+				if traceEnt:IsDoor() then
+					local doorOwners = traceEnt:GetSyncVar(SYNC_DOOR_OWNERS, nil) 
+					local doorGroup =  traceEnt:GetSyncVar(SYNC_DOOR_GROUP, nil)
+					local doorBuyable = traceEnt:GetSyncVar(SYNC_DOOR_BUYABLE, true)
 
-				if LocalPlayer():CanBuyDoor(doorOwners, doorBuyable) or LocalPlayer():CanLockUnlockDoor(doorOwners, doorGroup) then
-					impulse.doorMenu = vgui.Create("impulseDoorMenu")
-					impulse.doorMenu:SetDoor(traceEnt)
+					impulse.entityMenu = vgui.Create("impulseEntityMenu")
+					impulse.entityMenu:SetDoor(traceEnt)
+				elseif traceEnt:IsPlayer() then
+					impulse.entityMenu = vgui.Create("impulseEntityMenu")
+					impulse.entityMenu:SetRangeEnt(traceEnt)
+					impulse.entityMenu:SetPlayer(traceEnt)
 				end
 			end
 		end
@@ -76,6 +80,16 @@ function IMPULSE:Think()
 	end
 end
 
+function IMPULSE:InitPostEntity()
+	for a,button in pairs(ents.FindByClass("func_button")) do
+		for v,k in pairs(impulse.Config.Buttons) do
+			if k.pos:DistToSqr(button:GetPos()) < (9 ^ 2) then -- getpos client/server innaccuracy
+				button.ButtonCheck = v
+			end
+		end
+	end
+end
+
 function IMPULSE:ScoreboardShow()
 	if LocalPlayer():Team() == 0 then return end -- players who have not been loaded yet
 
@@ -100,6 +114,8 @@ function IMPULSE:DefineSettings()
 	end})
 	impulse.DefineSetting("perf_blur", {name="Blur enabled", category="Performance", type="tickbox", default=true})
 	impulse.DefineSetting("perf_bleedingrange", {name="Bleeding render range", category="Performance", type="slider", default=1000, minValue=200, maxValue=3000})
+	impulse.DefineSetting("inv_sortbyweight", {name="Sort by weight", category="Inventory", type="tickbox", default=true})
+	impulse.DefineSetting("inv_sortequippablesattop", {name="Sort equippables at top", category="Inventory", type="tickbox", default=true})
 end
 
 local loweredAngles = Angle(30, -30, -25)
@@ -262,7 +278,7 @@ function IMPULSE:FinishChat()
 end
 
 function IMPULSE:OnContextMenuOpen()
-	if LocalPlayer():Team() == 0 or not LocalPlayer():Alive() then return end
+	if LocalPlayer():Team() == 0 or not LocalPlayer():Alive() or impulse_ActiveWorkbar then return end
 
 	impulse_inventory = vgui.Create("impulseInventory")
 	gui.EnableScreenClicker(true)
@@ -275,6 +291,55 @@ function IMPULSE:OnContextMenuClose()
 	end
 end
 
+local blockedTabs = {
+	["#spawnmenu.category.saves"] = true,
+	["#spawnmenu.category.dupes"] = true,
+	["#spawnmenu.category.postprocess"] = true
+}
+
+local blockNormalTabs = {
+	["#spawnmenu.category.entities"] = true,
+	["#spawnmenu.category.weapons"] = true,
+	["#spawnmenu.category.npcs"] = true
+}
+
+function IMPULSE:PostReloadToolsMenu()
+	local spawnMenu = g_SpawnMenu
+
+	if spawnMenu then
+		local tabs = spawnMenu.CreateMenu
+		local closeMe = {}
+
+		for v,k in pairs(tabs:GetItems()) do
+			if blockedTabs[k.Name] then
+				table.insert(closeMe, k.Tab)
+			end
+
+			if LocalPlayer() and LocalPlayer().IsAdmin and LocalPlayer().IsDonator then -- when u first load lp doesnt exist
+				if blockNormalTabs[k.Name] and not LocalPlayer():IsAdmin() then
+					table.insert(closeMe, k.Tab)
+				end
+
+				if k.Name == "#spawnmenu.category.vehicles" and not LocalPlayer():IsDonator() then
+					table.insert(closeMe, k.Tab)
+				end
+			end
+		end
+
+		for v,k in pairs(closeMe) do
+			tabs:CloseTab(k, true)
+		end
+	end
+end
+
 concommand.Add("impulse_togglethirdperson", function() -- ease of use command for binds
 	impulse.SetSetting("view_thirdperson", (!impulse.GetSetting("view_thirdperson")))
+end)
+
+concommand.Add("impulse_reloadmenu", function()
+	if IsValid(impulse.MainMenu) then
+		impulse.MainMenu:Remove()
+	end
+
+	impulse.MainMenu = vgui.Create("impulseMainMenu")
 end)

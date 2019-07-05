@@ -103,7 +103,7 @@ local function DrawOverheadInfo(target, alpha)
 	pos = pos:ToScreen()
 	pos.y = pos.y - 50
 
-	draw.DrawText(target:Name(), "Impulse-Elements18-Shadow", pos.x, pos.y, ColorAlpha(team.GetColor(target:Team()), alpha), 1)
+	draw.DrawText(target:KnownName(), "Impulse-Elements18-Shadow", pos.x, pos.y, ColorAlpha(team.GetColor(target:Team()), alpha), 1)
 	if target:GetSyncVar(SYNC_TYPING, false) then
 		draw.DrawText("Typing...", "Impulse-Elements16-Shadow", pos.x, pos.y + 15, ColorAlpha(color_white, alpha), 1)
 	end
@@ -134,7 +134,7 @@ local function DrawDoorInfo(target)
 	end
 
 	if LocalPlayer():CanBuyDoor(doorOwners, doorBuyable) then
-		draw.DrawText("Ownable door (LALT)", "Impulse-Elements18-Shadow", scrW * .5, scrH * .6, impulse.Config.MainColour, 1)
+		draw.DrawText("Ownable door (F2)", "Impulse-Elements18-Shadow", scrW * .5, scrH * .6, impulse.Config.MainColour, 1)
 	end
 end
 
@@ -163,7 +163,7 @@ local function DrawCrosshair(x, y)
 end
 
 function IMPULSE:HUDPaint()
-	if impulse.hudEnabled == false or (impulse.CinematicIntro and LocalPlayer():Alive()) or (IsValid(impulse.MainMenu) and impulse.MainMenu:IsVisible()) then
+	if impulse.hudEnabled == false or (impulse.CinematicIntro and LocalPlayer():Alive()) or (IsValid(impulse.MainMenu) and impulse.MainMenu:IsVisible()) or hook.Run("ShouldDrawHUDBox") == false then
 		if IsValid(PlayerIcon) then
 			PlayerIcon:Remove()
 		end
@@ -271,15 +271,7 @@ function IMPULSE:HUDPaint()
 	surface.SetTextPos(30, y+30)
 	surface.DrawText(team.GetName(lpTeam))
 
-	local className = LocalPlayer():GetTeamClassName()
 	local yAdd = 0
-
-	if className != "Default" then
-		surface.SetFont("Impulse-Elements16")
-		surface.SetTextPos(30, y+49)
-		surface.DrawText(className)
-		yAdd = 10
-	end
 
 	surface.SetTextColor(color_white)
 	surface.SetFont("Impulse-Elements19")
@@ -358,6 +350,19 @@ function IMPULSE:HUDPaint()
 			surface.SetMaterial(warningIcon)
 			surface.DrawTexturedRect(10, y-30, 18, 18)
 			aboveHUDUsed = true
+
+			surface.SetDrawColor(darkCol)
+			surface.DrawRect(scrW-140, scrH-85, 140, 70)
+
+			surface.SetFont("Impulse-Elements18-Shadow")
+			surface.SetTextPos(scrW-130, scrH-77)
+			surface.DrawText("Props: 0/80")
+
+			surface.SetTextPos(scrW-130, scrH-62)
+			surface.DrawText("Doors: 0/2")
+
+			surface.SetTextPos(scrW-130, scrH-47)
+			surface.DrawText("Chairs: 0/2")
 		end
 	end
 
@@ -379,7 +384,7 @@ function IMPULSE:HUDPaint()
 
 	if not IsValid(PlayerIcon) and impulse.hudEnabled == true then
 		PlayerIcon = vgui.Create("impulseSpawnIcon")
-		PlayerIcon:SetPos(30, y+70)
+		PlayerIcon:SetPos(30, y+60)
 		PlayerIcon:SetSize(64, 64)
 		PlayerIcon:SetModel(LocalPlayer():GetModel(), LocalPlayer():GetSkin())
 
@@ -488,6 +493,10 @@ function IMPULSE:HUDPaint()
 
 			if syncData then
 				for v,k in pairs(syncData) do
+					if type(k) == "table" then
+						k = table.ToString(k)
+					end
+
 					surface.SetTextPos((scrW / 2) + 30, y)
 					surface.DrawText("syncvalue: "..v.." ; "..tostring(k))
 					y = y + 20

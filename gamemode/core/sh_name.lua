@@ -29,6 +29,9 @@ local blacklistNames = {
 	["mod"] = true,
 	["game moderator"] = true,
 	["adolf hitler"] = true,
+	["masked person"] = true,
+	["masked player"] = true,
+	["unknown"] = true,
 	["tyrone jenson"] = true
 }
 
@@ -61,3 +64,16 @@ function impulse.CanUseName(name)
 
 	return true, name
 end
+
+meta.SteamName = meta.SteamName or meta.Name
+function meta:Name()
+    return self:GetSyncVar(SYNC_RPNAME, self:SteamName())
+end
+
+function meta:KnownName()
+	local custom = hook.Run("PlayerGetKnownName", self)
+	return custom or self:GetSyncVar(SYNC_RPNAME, self:SteamName())
+end
+
+meta.GetName = meta.Name
+meta.Nick = meta.Name

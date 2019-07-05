@@ -5,9 +5,7 @@ end)
 net.Receive("impulseNotify", function(len)
 	local message = net.ReadString()
 
-	if LocalPlayer() and IsValid(LocalPlayer()) then
-		LocalPlayer():Notify(message)
-	end
+	LocalPlayer():Notify(message)
 end)
 
 net.Receive("impulseATMOpen", function()
@@ -107,4 +105,179 @@ net.Receive("impulseQuizForce", function()
 	local team = net.ReadUInt(8)
 	local quiz = vgui.Create("impulseQuiz")
 	quiz:SetQuiz(team)
+end)
+
+net.Receive("impulseInvGive", function()
+	local netid = net.ReadUInt(16)
+	local invid = net.ReadUInt(10)
+	local strid = net.ReadUInt(4)
+	local restricted = net.ReadBool()
+
+	if not impulse.Inventory.Data[0][strid] then
+		impulse.Inventory.Data[0][strid] = {}
+	end
+
+	impulse.Inventory.Data[0][strid][invid] = {
+		equipped = false,
+		restricted = restricted,
+		id = netid
+	}
+
+	if impulse_inventory and IsValid(impulse_inventory) then
+		impulse_inventory:SetupItems()
+	end
+end)
+
+net.Receive("impulseInvMove", function()
+	local invid = net.ReadUInt(10)
+	local newinvid = net.ReadUInt(10)
+	local from = net.ReadUInt(4)
+	local to = net.ReadUInt(4)
+	local netid
+
+	local take = impulse.Inventory.Data[0][from][invid]
+
+	netid = take.id
+
+	impulse.Inventory.Data[0][from][invid] = nil
+	impulse.Inventory.Data[0][to][newinvid] = {
+		id = netid
+	}
+
+	if impulse_storage and IsValid(impulse_storage) then
+		local invScroll = impulse_storage.invScroll:GetVBar():GetScroll()
+		local invStorageScroll = impulse_storage.invStorageScroll:GetVBar():GetScroll()
+
+		impulse_storage:SetupItems(invScroll, invStorageScroll)
+		surface.PlaySound("physics/wood/wood_crate_impact_hard2.wav")
+	end
+end)
+
+net.Receive("impulseInvRemove", function()
+	local invid = net.ReadUInt(10)
+	local strid = net.ReadUInt(4)
+	local item = impulse.Inventory.Data[0][strid][invid]
+
+	if item then
+		impulse.Inventory.Data[0][strid][invid] = nil
+
+		if impulse_inventory and IsValid(impulse_inventory) then
+			impulse_inventory:SetupItems()
+		end
+	end
+end)
+
+net.Receive("impulseInvUpdateEquip", function()
+	local invid = net.ReadUInt(10)
+	local state = net.ReadBool()
+	local item = impulse.Inventory.Data[0][1][invid]
+
+	item.equipped = state or false
+
+	if impulse_inventory and IsValid(impulse_inventory) then
+		impulse_inventory:FindItemPanelByID(invid).IsEquipped = state or false
+	end
+end)
+
+net.Receive("impulseInvDoSearch", function()
+	local searchee = Entity(net.ReadUInt(8))
+	local invSize = net.ReadUInt(16)
+	local invCompiled = {}
+
+	if not IsValid(searchee) then return end
+
+	for i=1,invSize do
+		local itemnetid = net.ReadUInt(10)
+		local item = impulse.Inventory.Items[itemnetid]
+		
+		table.insert(invCompiled, item)
+	end
+
+
+	impulse.MakeWorkbar(5, "Searching...", function()
+		if not IsValid(searchee) then return end
+
+		local searchMenu = vgui.Create("impulseSearchMenu")
+		searchMenu:SetInv(invCompiled)
+		searchMenu:SetPlayer(searchee)
+	end, true)
+end)
+
+net.Receive("impulseInvStorageOpen", function(len, ply)
+	impulse_storage = vgui.Create("impulseInventoryStorage")
+end)
+
+net.Receive("impulseRagdollLink", function()
+	local ragdoll = net.ReadUInt(16)
+	local ply = net.ReadEntity()
+
+	timer.Simple(0.1, function()
+		ragdoll = Entity(ragdoll)
+		if not IsValid(ply) or not IsValid(ragdoll) or not ragdoll:GetClass() == "prop_ragdoll" then
+			print(ragdoll)
+			print(ply)
+			print("[impulse] Death ragdoll player link failure!")
+			return
+		end
+
+		ragdoll.CosFace = ply:GetSyncVar(SYNC_COS_FACE)
+		ragdoll.CosHat = ply:GetSyncVar(SYNC_COS_HEAD)
+		ragdoll.CosChest = ply:GetSyncVar(SYNC_COS_CHEST)
+		ragdoll.PlayerName = ply:Nick()
+
+		if ragdoll.CosFace then
+			MakeCosmetic(ragdoll, ragdoll.CosFace, "ValveBiped.Bip01_Head1", impulse.Cosmetics[ragdoll.CosFace], 1)
+		end
+
+		if ragdoll.CosHat then
+			MakeCosmetic(ragdoll, ragdoll.CosHat, "ValveBiped.Bip01_Head1", impulse.Cosmetics[ragdoll.CosHat], 2)
+		end
+
+		if ragdoll.CosChest then
+			MakeCosmetic(ragdoll, ragdoll.CosChest, "ValveBiped.Bip01_Spine2", impulse.Cosmetics[ragdoll.CosChest], 3)
+		end
+
+		function ragdoll:Draw()
+			self:DrawModel()
+
+			PrintTable(self.Cosmetics)
+			if self.Cosmetics then
+				for a,b in pairs(self.Cosmetics) do
+					if not IsValid(b) then continue end
+					local bone = k:LookupBone(b.bone)
+
+					if not bone then
+						return
+					end
+					
+					local matrix = k:GetBoneMatrix(bone)
+
+					if not matrix then
+						return
+					end
+
+					local pos = matrix:GetTranslation()
+					local ang = matrix:GetAngles()
+					local f = ang:Forward()
+					local u = ang:Up()
+					local r = ang:Right()
+					pos = pos + (r * b.drawdata.pos.x) + (f * b.drawdata.pos.y) + (u * b.drawdata.pos.z)
+
+					b:SetRenderOrigin(pos)
+					ang:RotateAroundAxis(f, b.drawdata.ang.p)
+					ang:RotateAroundAxis(u, b.drawdata.ang.y)
+					ang:RotateAroundAxis(r, b.drawdata.ang.r)
+					b:SetRenderAngles(ang)
+					b:DrawModel()
+				end
+			end
+		end
+	end)
+end)
+
+net.Receive("impulseUpdateOOCLimit", function()
+	local time = net.ReadUInt(16)
+
+	LocalPlayer().OOCLimit = (LocalPlayer().OOCLimit and LocalPlayer().OOCLimit - 1) or ((LocalPlayer():IsDonator() and impulse.Config.OOCLimitVIP) or impulse.Config.OOCLimit)
+	LocalPlayer():Notify("You have "..LocalPlayer().OOCLimit.." OOC messages left for "..string.NiceTime(time)..".")
 end)

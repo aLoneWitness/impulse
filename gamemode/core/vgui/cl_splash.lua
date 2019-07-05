@@ -18,6 +18,9 @@ function PANEL:OnKeyCodeReleased()
 	self:AlphaTo(0, 2, 0, function()
 		self:Remove()
 	end)
+
+	IMPULSE:PostReloadToolsMenu()
+
 	if impulse_isNewPlayer == true then
 		local counter = 1
 		local function playIntroScenes()

@@ -24,6 +24,14 @@ surface.CreateFont("Impulse-Elements16", {
 	shadow = false,
 } )
 
+surface.CreateFont("Impulse-Elements17", {
+	font = "Arial",
+	size = 17,
+	weight = 800,
+	antialias = true,
+	shadow = false,
+} )
+
 surface.CreateFont("Impulse-Elements14", {
 	font = "Arial",
 	size = 14,
@@ -106,11 +114,27 @@ surface.CreateFont("Impulse-Elements23", {
 	shadow = false,
 } )
 
+surface.CreateFont("Impulse-Elements23-Shadow", {
+	font = "Arial",
+	size = 23,
+	weight = 800,
+	antialias = true,
+	shadow = true,
+} )
+
 surface.CreateFont("Impulse-Elements23-Italic", {
 	font = "Arial",
 	size = 23,
 	weight = 800,
 	italic = true,
+	antialias = true,
+	shadow = true,
+} )
+
+surface.CreateFont("Impulse-Elements24-Shadow", {
+	font = "Arial",
+	size = 24,
+	weight = 800,
 	antialias = true,
 	shadow = true,
 } )
@@ -184,4 +208,12 @@ surface.CreateFont("Impulse-UI-SmallFont", {
 	size = math.max(ScreenScale(6), 17),
 	extended = true,
 	weight = 500
+})
+
+surface.CreateFont("Impulse-SpecialFont", {
+	font = "Arial",
+	size = 33,
+	weight = 3700,
+	antialias = true,
+	shadow = true
 })

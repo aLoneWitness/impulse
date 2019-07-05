@@ -78,7 +78,7 @@ function PANEL:AddText(...)
 			table.insert(luaMsg, Color(v.r, v.g, v.b, 255))
 		elseif (type(v) == "Player") then
 			local color = team.GetColor(v:Team())
-			local str = v:Name():gsub("<", "&lt;"):gsub(">", "&gt;")
+			local str = v:KnownName():gsub("<", "&lt;"):gsub(">", "&gt;")
 
 			text = text.."<color="..color.r..","..color.g..","..color.b..">"..str
 			painText = plainText..v:Name()

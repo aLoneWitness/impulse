@@ -97,14 +97,32 @@ function impulse.chatBox.buildBox()
 		local entry = impulse.chatBox.entry
 
 		if (impulse.chatBox.frame:IsActive() and IsValid(entry)) then
-			local text = entry:GetValue()
+			local text = string.Explode(" ", entry:GetValue())
+			text = text[1] or ""
+
 			if (text:sub(1, 1) == "/") then
 				local command = string.PatternSafe(string.lower(text))
 
-				impulse.blur( self, 10, 20, 255 )
+				impulse.blur(self, 10, 20, 255)
 
 				surface.SetDrawColor(0, 0, 0, 200)
 				surface.DrawRect(0, 0, w, h)
+
+				if text == "//" or text == "/ooc" then
+					local limit = LocalPlayer().OOCLimit
+
+					if not limit then
+						if LocalPlayer():IsDonator() then
+							LocalPlayer().OOCLimit = impulse.Config.OOCLimitVIP
+						else
+							LocalPlayer().OOCLimit = impulse.Config.OOCLimit
+						end
+					end
+
+
+
+					draw.DrawText("(you have "..LocalPlayer().OOCLimit.." OOC messages left)", "Impulse-Elements18-Shadow", 5, h - 24)
+				end
 
 				local i = 0
 
@@ -259,6 +277,18 @@ end
 hook.Remove("PlayerBindPress", "impulse.chatBox_hijackbind")
 hook.Add("PlayerBindPress", "impulse.chatBox_hijackbind", function(ply, bind, pressed)
 	if string.sub( bind, 1, 11 ) == "messagemode" then
+		if ply:InVehicle() then -- piano compatablity kill me
+			local p1 = ply:GetVehicle():GetParent()
+
+			if p1 and IsValid(p1) then
+				local p2 = p1:GetParent()
+
+				if p2 and IsValid(p2) and p2:GetClass() == "gmt_instrument_piano" then
+					return true
+				end	
+			end
+		end
+
 		if bind == "messagemode2" then 
 			impulse.chatBox.ChatType = "radio"
 		else

@@ -5,7 +5,7 @@ function PANEL:Init()
 	self:SetSize(600, ScrH())
 	self:Center()
 
-	self.killTime = CurTime() + 37
+	self.killTime = CurTime() + 39
 
 	self.mainCredits = markup.Parse([[
 		<font=Impulse-Elements32>
@@ -21,6 +21,11 @@ function PANEL:Init()
 		thelastpenguin - pon
 		Kyle Smith - UTF-8 module
 		rebel1234 and Chessnut - animations base</font>
+
+		Powered by
+		<font=Impulse-Elements23>Discord - Discord API
+		Osyris - RbxDiscordProxy
+		Wordpress - Wordpress API</font>
 
 		Inspired by
 		<font=Impulse-Elements23>Aerolite, Apex-Rolplay and Cookie-Network</font>

@@ -53,6 +53,8 @@ function SWEP:PrimaryAttack()
 
 			ply:Notify("You have released "..traceEnt:Name()..".")
 			traceEnt:Notify("You have been released by"..ply:Name()..".")
+
+			hook.Run("PlayerUnArrested", traceEnt, ply)
 		else
 			timer.Simple(0.5, function()
 				if IsValid(self) and IsValid(self.Weapon) and IsValid(ply) and IsValid(traceEnt) and ply:CanArrest(traceEnt) then
@@ -60,6 +62,8 @@ function SWEP:PrimaryAttack()
 					
 					ply:Notify("You have detained "..traceEnt:Name()..".")
 					traceEnt:Notify("You have been detained by "..ply:Name()..".")
+
+					hook.Run("PlayerArrested", traceEnt, ply)
 				end
 			end)
 		end

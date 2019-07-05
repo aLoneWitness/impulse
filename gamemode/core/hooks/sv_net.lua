@@ -13,17 +13,41 @@ util.AddNetworkString("impulseDoorBuy")
 util.AddNetworkString("impulseDoorSell")
 util.AddNetworkString("impulseDoorLock")
 util.AddNetworkString("impulseDoorUnlock")
+util.AddNetworkString("impulseDoorAdd")
+util.AddNetworkString("impulseDoorRemove")
 util.AddNetworkString("impulseSceneFOV")
 util.AddNetworkString("impulseScenePVS")
 util.AddNetworkString("impulseQuizSubmit")
 util.AddNetworkString("impulseQuizForce")
 util.AddNetworkString("impulseSellAllDoors")
+util.AddNetworkString("impulseInvGive")
+util.AddNetworkString("impulseInvGiveSilent")
+util.AddNetworkString("impulseInvRemove")
+util.AddNetworkString("impulseInvUpdateStorage")
+util.AddNetworkString("impulseInvUpdateEquip")
+util.AddNetworkString("impulseInvUpdateData")
+util.AddNetworkString("impulseInvDoEquip")
+util.AddNetworkString("impulseInvDoDrop")
+util.AddNetworkString("impulseInvDoUse")
+util.AddNetworkString("impulseInvDoSearch")
+util.AddNetworkString("impulseInvDoSearchConfiscate")
+util.AddNetworkString("impulseCharacterCreate")
+util.AddNetworkString("impulseInvStorageOpen")
+util.AddNetworkString("impulseInvMove")
+util.AddNetworkString("impulseInvDoMove")
+util.AddNetworkString("impulseRagdollLink")
+util.AddNetworkString("impulseUpdateOOCLimit")
 
-netstream.Hook("impulseCharacterCreate", function(player, charName, charModel, charSkin)
-	if (player.NextCreate or 0) > CurTime() then return end
+net.Receive("impulseCharacterCreate", function(len, ply)
+	if (ply.NextCreate or 0) > CurTime() then return end
+	ply.NextCreate = CurTime() + 10
 
-	local playerID = player:SteamID()
-	local playerGroup = player:GetUserGroup()
+	local charName = net.ReadString()
+	local charModel = net.ReadString()
+	local charSkin = net.ReadUInt(8)
+
+	local plyID = ply:SteamID()
+	local plyGroup = ply:GetUserGroup()
 	local timestamp = math.floor(os.time())
 
 	local canUseName, filteredName =  impulse.CanUseName(charName)
@@ -32,15 +56,21 @@ netstream.Hook("impulseCharacterCreate", function(player, charName, charModel, c
 		charName = filteredName
 	end
 
+	local skinBlacklist = impulse.Config.DefaultSkinBlacklist[charModel]
+
+	if skinBlacklist and table.HasValue(skinBlacklist, charSkin) then
+		return
+	end
+
 	local query = mysql:Select("impulse_players")
-	query:Where("steamid", playerID)
+	query:Where("steamid", plyID)
 	query:Callback(function(result)
-		if (type(result) == "table" and #result > 0) then return end -- if player already exists; halt
+		if (type(result) == "table" and #result > 0) then return end -- if ply already exists; halt
 		
 		local insertQuery = mysql:Insert("impulse_players")
 		insertQuery:Insert("rpname", charName)
-		insertQuery:Insert("steamid", playerID)
-		insertQuery:Insert("group", "vip") -- testing value normal: playerGroup
+		insertQuery:Insert("steamid", plyID)
+		insertQuery:Insert("group", "vip") -- testing value normal: plyGroup
 		insertQuery:Insert("xp", 0)
 		insertQuery:Insert("money", impulse.Config.StartingMoney)
 		insertQuery:Insert("bankmoney", impulse.Config.StartingBankMoney)
@@ -50,29 +80,29 @@ netstream.Hook("impulseCharacterCreate", function(player, charName, charModel, c
 		insertQuery:Insert("data", "[]")
 		insertQuery:Insert("ranks", "[]")
 		insertQuery:Callback(function(result, status, lastID)
-			if IsValid(player) then
+			if IsValid(ply) then
 				local setupData = {
 					id = lastID,
 					rpname = charName,
-					steamid = playerID,
-					group = "vip", -- testing value normal: playerGroup
+					steamid = plyID,
+					group = "vip", -- testing value normal: plyGroup
 					xp = 0,
 					money = impulse.Config.StartingMoney,
 					bankmoney = impulse.Config.StartingBankMoney,
 					model = charModel,
+					data = "[]",
 					skin = charSkin
 				}
 
-				print("[impulse] "..playerID.." has been submitted to the database. RP Name: ".. charName)
-				hook.Run("SetupPlayer", player, setupData)
+				print("[impulse] "..plyID.." has been submitted to the database. RP Name: ".. charName)
+				hook.Run("SetupPlayer", ply, setupData)
 
-				player.extraPVS = nil
+				ply.extraPVS = nil
 			end
 		end)
 		insertQuery:Execute()
 	end)
 	query:Execute()
-	player.NextCreate = CurTime() + 10
 end)
 
 net.Receive("impulseSceneFOV", function(len, ply)
@@ -96,15 +126,17 @@ net.Receive("impulseScenePVS", function(len, ply)
 end)
 
 net.Receive("impulseChatMessage", function(len, ply) -- should implement a check on len here instead of string.len
-	if len > 80000 then return end
-
 	if (ply.nextChat or 0) < CurTime() then
-		local text = net.ReadString()
-		
-		if string.len(text) < 1000 then
-			hook.Run("PlayerSay", ply, text, false)
+		if len > 15000 then
+			ply.nextChat = CurTime() + 1 
+			return
 		end
-		ply.nextChat = CurTime() + 0.2 + math.max(#text / 1000, 1)
+
+		local text = net.ReadString()
+		ply.nextChat = CurTime() + 0.3 + math.Clamp(#text / 300, 0, 4)
+		
+		text = string.sub(text, 1, 1024)
+		hook.Run("PlayerSay", ply, text, false, true)
 	end
 end)
 
@@ -278,8 +310,7 @@ net.Receive("impulseDoorBuy", function(len, ply)
 
 	if IsValid(traceEnt) and ply:CanBuyDoor(traceEnt:GetSyncVar(SYNC_DOOR_OWNERS, nil), traceEnt:GetSyncVar(SYNC_DOOR_BUYABLE, true)) and hook.Run("CanEditDoor", ply, traceEnt) != false then
 		if ply:CanAfford(impulse.Config.DoorPrice) then
-			local owners = {}
-			owners[ply:EntIndex()] = true
+			local owners = {ply:EntIndex()}
 
 			traceEnt:SetSyncVar(SYNC_DOOR_OWNERS, owners, true)
 
@@ -362,6 +393,31 @@ net.Receive("impulseDoorUnlock", function(len, ply)
 	ply.nextDoorUnlock = CurTime() + 1
 end)
 
+net.Receive("impulseDoorAdd", function(len, ply)
+	if (ply.nextDoorChange or 0) > CurTime() then return end
+	ply.nextDoorChange = CurTime() + 0.5
+
+	local target = net.ReadEntity()
+
+	if not IsValid(target) or not target:IsPlayer() or not ply.beenSetup then
+		return
+	end
+
+	local trace = {}
+	trace.start = ply:EyePos()
+	trace.endpos = trace.start + ply:GetAimVector() * 85
+	trace.filter = ply
+
+	local traceEnt = util.TraceLine(trace).Entity
+
+	if IsValid(traceEnt) and ply:IsDoorOwner(traceEnt:GetSyncVar(SYNC_DOOR_OWNERS, nil)) then
+		local owners = traceEnt:GetSyncVar(SYNC_DOOR_OWNERS)
+		table.insert(owners, target)
+
+		traceEnt:SetSyncVar(SYNC_DOOR_OWNERS, owners, true)
+	end
+end)
+
 net.Receive("impulseQuizSubmit", function(len, ply)
 	if not ply.quizzing then return end
 	ply.quizzing = false
@@ -409,4 +465,119 @@ net.Receive("impulseSellAllDoors", function(len, ply)
 	local amount = sold * (impulse.Config.DoorPrice - 2)
 	ply:GiveMoney(amount)
 	ply:Notify("You have sold all your doors for "..impulse.Config.CurrencyPrefix..amount..".")
+end)
+
+net.Receive("impulseInvDoEquip", function(len, ply)
+	if not ply.beenInvSetup or (ply.nextInvEquip or 0) > CurTime() then return end
+	ply.nextInvEquip = CurTime() + 0.5
+
+	local invid = net.ReadUInt(10)
+	local equipState = net.ReadBool()
+
+	local hasItem, item = ply:HasInventoryItemSpecific(invid)
+
+	if hasItem then
+		ply:SetInventoryItemEquipped(invid, equipState or false)
+	end
+end)
+
+net.Receive("impulseInvDoDrop", function(len, ply)
+	if not ply.beenInvSetup or (ply.nextInvDrop or 0) > CurTime() then return end
+	ply.nextInvDrop = CurTime() + 0.5
+
+	local invid = net.ReadUInt(10)
+
+	local hasItem, item = ply:HasInventoryItemSpecific(invid)
+
+	if hasItem then
+		ply:DropInventoryItem(invid)
+	end
+end)
+
+net.Receive("impulseInvDoUse", function(len, ply)
+	if not ply.beenInvSetup or (ply.nextInvUse or 0) > CurTime() then return end
+	ply.nextInvUse = CurTime() + 0.5
+
+	local invid = net.ReadUInt(10)
+
+	local hasItem, item = ply:HasInventoryItemSpecific(invid)
+
+	if hasItem then
+		ply:UseInventoryItem(invid)
+	end
+end)
+
+net.Receive("impulseInvDoSearchConfiscate", function(len, ply)
+	if not ply:IsCP() then return end
+	if (ply.nextInvConf or 0) > CurTime() then return end
+	ply.nextInfConf = CurTime() + 2
+
+	local targ = ply.InvSearching
+	if not IsValid(targ) or not ply:CanArrest(targ) then return end
+
+	local count = net.ReadUInt(8) or 0
+
+	if count > 0 then
+		for i=1,count do
+			local netid = net.ReadUInt(10)
+			local item = impulse.Inventory.Items[netid]
+
+			if not item then continue end
+
+			if item.Illegal and targ:HasInventoryItem(item.UniqueID) then
+				targ:TakeInventoryItemClass(item.UniqueID, 1)
+
+				hook.Run("PlayerConfiscateItem", ply, targ, item.UniqueID)
+			end
+		end
+
+		ply:Notify("You have confiscated "..count.." items.")
+		targ:Notify("The search has been completed and "..count.." items have been confiscated.")
+	else
+		targ:Notify("The search has been completed.")
+	end
+
+	ply.InvSearching = nil
+	targ:Freeze(false)
+end)
+
+net.Receive("impulseInvDoMove", function(len, ply)
+	if (ply.nextInvMove or 0) > CurTime() then return end
+	ply.nextInvMove = CurTime() + 0.5
+
+	if not ply.currentStorage or not IsValid(ply.currentStorage) then return end
+	if ply.currentStorage:GetPos():DistToSqr(ply:GetPos()) > (100 ^ 2) then return end
+	if ply:GetSyncVar(SYNC_ARRESTED, false) or not ply:Alive() then return end
+
+	local itemid = net.ReadUInt(10)
+	local from = net.ReadUInt(4)
+	local to = 1
+
+	if from != 1 and from != 2 then
+		return
+	end
+
+	if from == 1 then
+		to = 2
+	end
+
+	local hasItem, item = ply:HasInventoryItemSpecific(itemid, from)
+
+	if not hasItem then
+		return
+	end
+
+	if item.restricted then
+		return ply:Notify("You cannot store a restricted item.")
+	end
+
+	if from == 2 and not ply:CanHoldItem(item.class) then
+		return ply:Notify("Item is too heavy to hold.")
+	end
+
+	if from == 1 and not ply:CanHoldItemStorage(item.class) then
+		return ply:Notify("Item is too heavy to store.")
+	end
+
+	ply:MoveInventoryItem(itemid, from, to)
 end)

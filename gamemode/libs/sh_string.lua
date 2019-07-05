@@ -102,7 +102,6 @@ if CLIENT then
 		surface.SetFont(font)
 
 		for k, w in pairs( words ) do
-			local s = SysTime()
 			processWord(w)
 		end
 

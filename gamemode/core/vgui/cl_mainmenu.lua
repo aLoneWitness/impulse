@@ -185,6 +185,30 @@ function PANEL:Init()
 		LocalPlayer():ConCommand("disconnect")
 	end
 
+	local button = vgui.Create("DImageButton", self)
+	button:SetPos(self:GetWide() - 30 - 53, 385)
+	button:SetImage("impulse/icons/social/discord.png")
+	button:SetSize(62, 55)
+
+	local normalCol = button:GetColor()
+	local highlightCol = Color(impulse.Config.MainColour.r, impulse.Config.MainColour.g, impulse.Config.MainColour.b)
+	function button:Paint()
+		if self:IsHovered() then
+			self:SetColor(highlightCol)
+		else
+			self:SetColor(normalCol)
+		end
+	end
+
+	function button:OnCursorEntered()
+		surface.PlaySound("ui/buttonrollover.wav")
+	end
+
+	function button:DoClick()
+		surface.PlaySound("ui/buttonclick.wav")
+		gui.OpenURL(impulse.Config.DiscordURL or "www.viniscool.com")
+	end
+
 	local year = os.date("%Y", os.time())
 	local copyrightLabel = vgui.Create("DLabel", self)
 	copyrightLabel:SetFont("Impulse-Elements14")
@@ -250,7 +274,7 @@ function PANEL:Init()
 	end)
 end
 
-PANEL.FullRemove = PANEL.Remove 
+local fullRemove = PANEL.Remove 
 function PANEL:Remove()
 	self:SetVisible(false)
 end
@@ -270,6 +294,8 @@ function PANEL:Paint(w,h)
 	surface.DrawRect(70,0,400,h) -- left body
 	surface.DrawRect(w-540,0,520,380)-- news body
 	impulse.render.glowgo(100,50,337,91)
+
+	draw.SimpleText("beta", "Impulse-SpecialFont", 370, 120, Color(170, 170, 170))
 end
 
 vgui.Register("impulseMainMenu", PANEL, "DPanel")

@@ -98,16 +98,4 @@ if SERVER then
 
 		net.Send(recipFilter)
 	end
-
-	local meta = FindMetaTable("Entity")
-
-	function entityMeta:DropToFloorAlt()
-		local startpos = self:GetPos()
-		local down = self:GetPos() - Vector(0,0,8000)
-
-		local trace = util.TraceLine({start = startpos, endpos = down, filter = self })
-		if trace.HitWorld then 
-			self:SetPos(Vector(startpos.x, startpos.y, trace.HitPos.z + .25))
-		end
-	end
 end
