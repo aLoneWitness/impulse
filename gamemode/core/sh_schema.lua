@@ -21,6 +21,10 @@ function impulse.Schema.Boot(name)
     	MsgC(Color( 83, 143, 239 ), "[impulse] Loading map config for '"..game.GetMap().."'\n")
     	include(mapPath)
     	AddCSLuaFile(mapPath)
+        
+        if impulse.Config.MapWorkshopID then
+            resource.AddWorkshop(impulse.Config.MapWorkshopID)
+        end
     elseif CLIENT then
         include(mapPath)
         AddCSLuaFile(mapPath) 

@@ -411,10 +411,17 @@ net.Receive("impulseDoorAdd", function(len, ply)
 	local traceEnt = util.TraceLine(trace).Entity
 
 	if IsValid(traceEnt) and ply:IsDoorOwner(traceEnt:GetSyncVar(SYNC_DOOR_OWNERS, nil)) then
-		local owners = traceEnt:GetSyncVar(SYNC_DOOR_OWNERS)
-		table.insert(owners, target)
+		if target.OwnedDoors and target.OwnedDoors[traceEnt] then
+			return ply:Notify("This player already has door access.")
+		end
 
+		local owners = traceEnt:GetSyncVar(SYNC_DOOR_OWNERS)
+
+		table.insert(owners, target:EntIndex())
 		traceEnt:SetSyncVar(SYNC_DOOR_OWNERS, owners, true)
+
+		target.OwnedDoors = target.OwnedDoors or {}
+		target.OwnedDoors[traceEnt] = true
 	end
 end)
 

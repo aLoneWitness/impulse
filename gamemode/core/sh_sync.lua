@@ -389,3 +389,5 @@ SYNC_DOOR_NAME = impulse.Sync.RegisterVar(SYNC_STRING)
 SYNC_DOOR_GROUP = impulse.Sync.RegisterVar(SYNC_INT)
 SYNC_DOOR_BUYABLE = impulse.Sync.RegisterVar(SYNC_BOOL)
 SYNC_DOOR_OWNERS = impulse.Sync.RegisterVar(SYNC_INTSTACK)
+
+hook.Run("CreateSyncVars")
