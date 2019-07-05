@@ -337,11 +337,17 @@ net.Receive("impulseDoorSell", function(len, ply)
 	local traceEnt = util.TraceLine(trace).Entity
 
 	if IsValid(traceEnt) and ply:IsDoorOwner(traceEnt:GetSyncVar(SYNC_DOOR_OWNERS, nil)) and hook.Run("CanEditDoor", ply, traceEnt) != false then
+		local owners = traceEnt:GetSyncVar(SYNC_DOOR_OWNERS)
 		traceEnt:SetSyncVar(SYNC_DOOR_OWNERS, nil, true)
 		traceEnt:DoorUnlock()
 
-		ply.OwnedDoors = ply.OwnedDoors or {}
-		ply.OwnedDoors[traceEnt] = nil
+		for v,k in pairs(owners) do
+			local owner = Entity(k)
+
+			if IsValid(owner) and owner:IsPlayer() then
+				owner.OwnedDoors[traceEnt] = nil
+			end
+		end
 
 		ply:GiveMoney(impulse.Config.DoorPrice - 2)
 		ply:Notify("You have sold a door for "..impulse.Config.CurrencyPrefix..(impulse.Config.DoorPrice - 2)..".")
@@ -415,10 +421,11 @@ net.Receive("impulseDoorAdd", function(len, ply)
 			return ply:Notify("This player already has door access.")
 		end
 
-		local owners = traceEnt:GetSyncVar(SYNC_DOOR_OWNERS)
+		local doorOwners = traceEnt:GetSyncVar(SYNC_DOOR_OWNERS)
 
-		table.insert(owners, target:EntIndex())
-		traceEnt:SetSyncVar(SYNC_DOOR_OWNERS, owners, true)
+		doorOwners[#doorOwners + 1] = target:EntIndex() -- fucking table.insert breaks 
+		--PrintTable(doorOwners)
+		traceEnt:SetSyncVar(SYNC_DOOR_OWNERS, doorOwners, true)
 
 		target.OwnedDoors = target.OwnedDoors or {}
 		target.OwnedDoors[traceEnt] = true

@@ -272,7 +272,7 @@ if SERVER then
 		if not targetData then
 			impulse.Sync.Data[targetID] = {}
 			targetData = impulse.Sync.Data[targetID]
-		elseif targetData[varID] and targetData[varID][1] == newValue then
+		elseif targetData[varID] and (type(newValue) != "table" and targetData[varID][1] == newValue) then
 			return
 		end
 

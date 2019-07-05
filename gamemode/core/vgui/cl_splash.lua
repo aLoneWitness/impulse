@@ -19,7 +19,7 @@ function PANEL:OnKeyCodeReleased()
 		self:Remove()
 	end)
 
-	IMPULSE:PostReloadToolsMenu()
+	hook.Run("PostReloadToolsMenu")
 
 	if impulse_isNewPlayer == true then
 		local counter = 1
@@ -42,31 +42,7 @@ function PANEL:OnKeyCodeReleased()
 end
 
 function PANEL:OnMousePressed()
-	if self.used then return end
-	
-	impulse.hudEnabled = true
-	self.used = true
-	self:AlphaTo(0, 2, 0, function()
-		self:Remove()
-	end)
-	if impulse_isNewPlayer == true then
-		local counter = 1
-		local function playIntroScenes()
-			if impulse.Config.IntroScenes[counter + 1] then
-				counter = counter + 1
-				impulse.Scenes.Play(counter, impulse.Config.IntroScenes[counter], playIntroScenes)
-			else
-				local mainMenu = vgui.Create("impulseMainMenu")
-				mainMenu:SetAlpha(0)
-				mainMenu:AlphaTo(255, 1)
-			end
-		end
-
-		impulse.Scenes.Play(1, impulse.Config.IntroScenes[counter], playIntroScenes)
-		surface.PlaySound(impulse.Config.IntroMusic)
-	else
-		vgui.Create("impulseMainMenu")
-	end
+	self:OnKeyCodeReleased()
 end
 
 function PANEL:Paint(w,h)
