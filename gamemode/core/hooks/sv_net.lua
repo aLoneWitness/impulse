@@ -409,6 +409,12 @@ net.Receive("impulseDoorAdd", function(len, ply)
 		return
 	end
 
+	local cost = math.ceil(impulse.Config.DoorPrice / 2)
+
+	if not ply:CanAfford(cost) then
+		return ply:Notify("You cannot afford to add a player to this door.")
+	end
+
 	local trace = {}
 	trace.start = ply:EyePos()
 	trace.endpos = trace.start + ply:GetAimVector() * 85
@@ -417,18 +423,63 @@ net.Receive("impulseDoorAdd", function(len, ply)
 	local traceEnt = util.TraceLine(trace).Entity
 
 	if IsValid(traceEnt) and ply:IsDoorOwner(traceEnt:GetSyncVar(SYNC_DOOR_OWNERS, nil)) then
-		if target.OwnedDoors and target.OwnedDoors[traceEnt] then
-			return ply:Notify("This player already has door access.")
+		if target == ply then
+			return
 		end
+
+		if target.OwnedDoors and target.OwnedDoors[traceEnt] then
+			return
+		end
+
+		ply:TakeMoney(cost)
 
 		local doorOwners = traceEnt:GetSyncVar(SYNC_DOOR_OWNERS)
 
-		doorOwners[#doorOwners + 1] = target:EntIndex() -- fucking table.insert breaks 
-		--PrintTable(doorOwners)
+		table.insert(doorOwners, target:EntIndex())
 		traceEnt:SetSyncVar(SYNC_DOOR_OWNERS, doorOwners, true)
 
 		target.OwnedDoors = target.OwnedDoors or {}
 		target.OwnedDoors[traceEnt] = true
+
+		ply:Notify("You have added "..target:Nick().." to this door for "..impulse.Config.CurrencyPrefix..cost..".")
+	end
+end)
+
+net.Receive("impulseDoorRemove", function(len, ply)
+	if (ply.nextDoorChange or 0) > CurTime() then return end
+	ply.nextDoorChange = CurTime() + 0.5
+
+	local target = net.ReadEntity()
+
+	if not IsValid(target) or not target:IsPlayer() or not ply.beenSetup then
+		return
+	end
+
+	local trace = {}
+	trace.start = ply:EyePos()
+	trace.endpos = trace.start + ply:GetAimVector() * 85
+	trace.filter = ply
+
+	local traceEnt = util.TraceLine(trace).Entity
+
+	if IsValid(traceEnt) and ply:IsDoorOwner(traceEnt:GetSyncVar(SYNC_DOOR_OWNERS, nil)) then
+		if target == ply then
+			return
+		end
+
+		if not target.OwnedDoors or not target.OwnedDoors[traceEnt] then
+			return
+		end
+
+		local doorOwners = traceEnt:GetSyncVar(SYNC_DOOR_OWNERS)
+
+		table.RemoveByValue(doorOwners, target:EntIndex())
+		traceEnt:SetSyncVar(SYNC_DOOR_OWNERS, doorOwners, true)
+
+		target.OwnedDoors = target.OwnedDoors or {}
+		target.OwnedDoors[traceEnt] = nil
+
+		ply:Notify("You have removed "..target:Nick().." from this door.")
 	end
 end)
 

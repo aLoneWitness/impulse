@@ -43,7 +43,7 @@ end
 function PANEL:SetDoor(door)
 	local panel = self
 	local doorOwners = door:GetSyncVar(SYNC_DOOR_OWNERS, nil) 
-	local doorGroup =  door:GetSyncVar(SYNC_DOOR_GROUP, nil)
+	local doorGroup = door:GetSyncVar(SYNC_DOOR_GROUP, nil)
 	local doorBuyable = door:GetSyncVar(SYNC_DOOR_BUYABLE, true)
 	local customCanEditDoor = hook.Run("CanEditDoor", LocalPlayer(), door)
 
@@ -71,33 +71,35 @@ function PANEL:SetDoor(door)
 		end)
 	end
 
-	if LocalPlayer():IsDoorOwner(doorOwners) and (customCanEditDoor or customCanEditDoor == nil)  then
+	if LocalPlayer():IsDoorOwner(doorOwners) and (customCanEditDoor or customCanEditDoor == nil) then
 		self:AddAction("impulse/icons/group-256.png", "Permissions", function()
+			doorOwners = door:GetSyncVar(SYNC_DOOR_OWNERS, nil) 
+
 			local perm = DermaMenu()
 
 			local addMenu, x = perm:AddSubMenu("Add")
-			x:SetIcon("icon16/user_add.png")
+			x:SetIcon("icon16/add.png")
 			local removeMenu, x = perm:AddSubMenu("Remove")
-			x:SetIcon("icon16/user_delete.png")
+			x:SetIcon("icon16/delete.png")
 
-			for v,k in pairs(player.GetAll()) do
-				local icon = "icon16/user.png"
-				if k:GetFriendStatus() == "friend" then
-					icon = "icon16/user_orange.png"
+			local exclude = {}
+
+			for v,k in pairs(doorOwners) do
+				k = Entity(k)
+
+				exclude[k] = true
+
+				if not IsValid(k) or not k:IsPlayer() or k == LocalPlayer() then
+					continue
 				end
 
-				local x = addMenu:AddOption(k:Nick(), function()
-					if IsValid(k) then
-						net.Start("impulseDoorAdd")
-						net.WriteEntity(k)
-						net.SendToServer()
-					else
-						LocalPlayer():Notify("Player has disconnected.")
-					end
-				end)
-				x:SetIcon(icon)
+				local name = k:Nick()
 
-				local x = removeMenu:AddOption(k:Nick(), function()
+				if k:GetFriendStatus() == "friend" then
+					name = "(FRIEND) "..name
+				end
+
+				local x = removeMenu:AddOption(name, function()
 					if IsValid(k) then
 						net.Start("impulseDoorRemove")
 						net.WriteEntity(k)
@@ -106,7 +108,30 @@ function PANEL:SetDoor(door)
 						LocalPlayer():Notify("Player has disconnected.")
 					end
 				end)
-				x:SetIcon(icon)
+				x:SetIcon("icon16/user_delete.png")
+			end
+
+			for v,k in pairs(player.GetAll()) do
+				if exclude[k] then 
+					continue 
+				end
+
+				local name = k:Nick()
+
+				if k:GetFriendStatus() == "friend" then
+					name = "(FRIEND) "..name
+				end
+
+				local x = addMenu:AddOption(name, function()
+					if IsValid(k) then
+						net.Start("impulseDoorAdd")
+						net.WriteEntity(k)
+						net.SendToServer()
+					else
+						LocalPlayer():Notify("Player has disconnected.")
+					end
+				end)
+				x:SetIcon("icon16/user_add.png")
 			end
 
 			perm:Open()
