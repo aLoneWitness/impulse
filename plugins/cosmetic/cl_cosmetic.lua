@@ -93,3 +93,76 @@ hook.Add("PostPlayerDraw", "impulseCosmeticDraw", function(k)
 		lastChest = -1
 	end
 end)
+
+hook.Add("SetupInventoryModel", "impulseDrawCosmetics", function(panel)
+	panel.lastFaceI = -1
+	panel.lastHatI = -1
+	panel.lastChestI = -1
+
+	function panel:PostDrawModel(k)
+		if k.Cosmetics then
+			for a,b in pairs(k.Cosmetics) do
+				if not IsValid(b) then continue end
+				local bone = k:LookupBone(b.bone)
+
+				if not bone then
+					return
+				end
+				
+				local matrix = k:GetBoneMatrix(bone)
+
+				if not matrix then
+					return
+				end
+
+				local pos = matrix:GetTranslation()
+				local ang = matrix:GetAngles()
+				local f = ang:Forward()
+				local u = ang:Up()
+				local r = ang:Right()
+				pos = pos + (r * b.drawdata.pos.x) + (f * b.drawdata.pos.y) + (u * b.drawdata.pos.z)
+
+				b:SetRenderOrigin(pos)
+				ang:RotateAroundAxis(f, b.drawdata.ang.p)
+				ang:RotateAroundAxis(u, b.drawdata.ang.y)
+				ang:RotateAroundAxis(r, b.drawdata.ang.r)
+				b:SetRenderAngles(ang)
+				b:DrawModel()
+			end
+		end
+
+		local faceCos = LocalPlayer():GetSyncVar(SYNC_COS_FACE) -- uses bone 6 face
+		local hatCos = LocalPlayer():GetSyncVar(SYNC_COS_HEAD) -- uses bone 6 face
+		local chestCos = LocalPlayer():GetSyncVar(SYNC_COS_CHEST) -- uses bone 1 spine
+
+		if faceCos then
+			if faceCos != self.lastFaceI then
+				MakeCosmetic(k, faceCos, "ValveBiped.Bip01_Head1", impulse.Cosmetics[faceCos], 1)
+				self.lastFaceI = faceCos
+			end  
+		elseif k.Cosmetics and k.Cosmetics[1] and IsValid(k.Cosmetics[1]) then -- cosmetic removed
+			RemoveCosmetic(k, k.Cosmetics[1], 1)
+			self.lastFaceI = -1
+		end
+
+		if hatCos then
+			if hatCos != self.lastHatI then
+				MakeCosmetic(k, hatCos, "ValveBiped.Bip01_Head1", impulse.Cosmetics[hatCos], 2)
+				self.lastHatI = hatCos
+			end  
+		elseif k.Cosmetics and k.Cosmetics[2] and IsValid(k.Cosmetics[2]) then -- cosmetic removed
+			RemoveCosmetic(k, k.Cosmetics[2], 2)
+			self.lastHatI = -1
+		end
+
+		if chestCos then
+			if chestCos != self.lastChestI then
+				MakeCosmetic(k, chestCos, "ValveBiped.Bip01_Spine2", impulse.Cosmetics[chestCos], 3)
+				self.lastChestI = hatCos
+			end  
+		elseif k.Cosmetics and k.Cosmetics[3] and IsValid(k.Cosmetics[3]) then -- cosmetic removed
+			RemoveCosmetic(k, k.Cosmetics[3], 3)
+			self.lastChestI = -1
+		end
+	end
+end)

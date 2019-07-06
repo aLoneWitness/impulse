@@ -70,6 +70,8 @@ function PANEL:Init()
 			for v,k in pairs(LocalPlayer():GetBodyGroups()) do
 				ent:SetBodygroup(k.id, LocalPlayer():GetBodygroup(k.id))
 			end
+
+			hook.Run("SetupInventoryModel", self.modelPreview, ent)
 		end
 	end)
 
@@ -100,6 +102,8 @@ function PANEL:SetupItems()
  	local reccurTemp = {}
  	local equipTemp = {}
 
+ 	local shouldSortEq = impulse.GetSetting("inv_sortequippablesattop", true)
+
  	for v,k in pairs(localInv) do -- fix for fucking table.sort desyncing client/server itemids!!!!!!!
  		k.realKey = v
 
@@ -107,32 +111,27 @@ function PANEL:SetupItems()
  		k.sortWeight = reccurTemp[k.id]
  	end
 
- 	--if impulse.GetSetting("inv_sortbyweight") then -- super messy sorting systems for the tables below
- 	--	localInv = SortedPairsByMemberValue(localInv, "sortWeight")
- 	--end
-
- 	-- if impulse.GetSetting("inv_sortequippablesattop") then
- 	-- 	local ridTemp = {} -- temp table 
-
- 	-- 	for v,k in pairs(localInv) do 
- 	-- 		if impulse.Inventory.Items[k.id].OnEquip then
- 	-- 			table.insert(ridTemp, v) -- add to destroy tbl
- 	-- 			table.insert(equipTemp, k) -- add to table to merge with localInv copy
- 	-- 		end
- 	-- 	end
-
- 	-- 	local take = 0
- 	-- 	for v,k in pairs(ridTemp) do -- im doing this because i cant table.remove on the go because it destroys the loop
- 	-- 		table.remove(localInv, k - take) --looks shit and hacky but it needs to be
- 	-- 		take = take + 1
- 	-- 	end
-
- 	-- 	table.Add(equipTemp, localInv) -- put localinv on the end of eqiuptemp
- 	-- 	localInv = equipTemp -- filp them around lol
- 	-- end
-
  	if localInv and table.Count(localInv) > 0 then
+ 		if shouldSortEq then
+	 		for v,k in SortedPairsByMemberValue(localInv, "sortWeight", true) do
+	 			if not k.equipped then continue end
+	 			local itemX = impulse.Inventory.Items[k.id]
+
+	 			local item = self.invScroll:Add("impulseInventoryItem")
+				item:Dock(TOP)
+				item:DockMargin(0, 0, 15, 5)
+				item:SetItem(k, w)
+				item.InvID = k.realKey
+				item.InvPanel = self
+				self.items[k.id] = item
+				self.itemsPanels[k.realKey] = item
+
+	 			weight =  weight + (itemX.Weight or 0)
+	 		end
+	 	end
+ 		
 	 	for v,k in SortedPairsByMemberValue(localInv, "sortWeight", true) do -- 01 is player 0 (localplayer) and storage 1 (local inv)
+	 		if shouldSortEq and k.equipped then continue end
 	 		local otherItem = self.items[k.id]
 	 		local itemX = impulse.Inventory.Items[k.id]
 
