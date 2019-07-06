@@ -107,7 +107,9 @@ function PANEL:QuickActions()
 	btn:SetText("Change RP name")
 	function btn:DoClick()
 		Derma_StringRequest("impulse", "Enter your new RP name:", nil, function(text)
-			LocalPlayer():ConCommand("say /rpname "..text)
+			net.Start("impulseChangeRPName")
+			net.WriteString(text)
+			net.SendToServer()
 		end)
 	end
 

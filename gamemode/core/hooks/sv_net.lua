@@ -37,6 +37,7 @@ util.AddNetworkString("impulseInvMove")
 util.AddNetworkString("impulseInvDoMove")
 util.AddNetworkString("impulseRagdollLink")
 util.AddNetworkString("impulseUpdateOOCLimit")
+util.AddNetworkString("impulseChangeRPName")
 
 net.Receive("impulseCharacterCreate", function(len, ply)
 	if (ply.NextCreate or 0) > CurTime() then return end
@@ -50,10 +51,12 @@ net.Receive("impulseCharacterCreate", function(len, ply)
 	local plyGroup = ply:GetUserGroup()
 	local timestamp = math.floor(os.time())
 
-	local canUseName, filteredName =  impulse.CanUseName(charName)
+	local canUseName, filteredName = impulse.CanUseName(charName)
 
 	if canUseName then
 		charName = filteredName
+	else
+		return
 	end
 
 	local skinBlacklist = impulse.Config.DefaultSkinBlacklist[charModel]
@@ -629,4 +632,30 @@ net.Receive("impulseInvDoMove", function(len, ply)
 	end
 
 	ply:MoveInventoryItem(itemid, from, to)
+end)
+
+net.Receive("impulseChangeRPName", function(len, ply)
+	if not ply.beenSetup then return end
+	if (ply.nextRPNameTry or 0) > CurTime() then return end
+	ply.nextRPNameTry = CurTime() + 2
+
+	if (ply.nextRPNameChange or 0) > CurTime() then 
+		return ply:Notify("You must wait "..string.NiceTime(ply.nextRPNameChange - CurTime()).." before changing your name again.")
+	end
+
+	local name = net.ReadString()
+
+	if ply:CanAfford(impulse.Config.RPNameChangePrice) then
+		local canUseName, output = impulse.CanUseName(name)
+
+		if canUseName then
+			ply:SetRPName(output, true)
+			ply.nextRPNameChange = CurTime() + 240
+			ply:Notify("You have changed your name to "..output.." successfully.")
+		else
+			ply:Notify("Name rejected: "..output)
+		end
+	else
+		ply:Notify("You cannot afford to change your name.")
+	end
 end)
