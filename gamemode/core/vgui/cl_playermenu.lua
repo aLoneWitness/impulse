@@ -104,7 +104,7 @@ function PANEL:QuickActions()
 
 	local btn = self.list:Add("DButton")
 	btn:Dock(TOP)
-	btn:SetText("Change RP name")
+	btn:SetText("Change RP name (requires "..impulse.Config.CurrencyPrefix..impulse.Config.RPNameChangePrice..")")
 	function btn:DoClick()
 		Derma_StringRequest("impulse", "Enter your new RP name:", nil, function(text)
 			net.Start("impulseChangeRPName")

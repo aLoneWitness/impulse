@@ -639,6 +639,10 @@ net.Receive("impulseChangeRPName", function(len, ply)
 	if (ply.nextRPNameTry or 0) > CurTime() then return end
 	ply.nextRPNameTry = CurTime() + 2
 
+	if impulse.Teams.Data[ply:Team()] and impulse.Teams.Data[ply:Team()].blockNameChange then
+		return ply:Notify("Your team can not change their name.")
+	end
+
 	if (ply.nextRPNameChange or 0) > CurTime() then 
 		return ply:Notify("You must wait "..string.NiceTime(ply.nextRPNameChange - CurTime()).." before changing your name again.")
 	end
@@ -649,9 +653,11 @@ net.Receive("impulseChangeRPName", function(len, ply)
 		local canUseName, output = impulse.CanUseName(name)
 
 		if canUseName then
+			ply:TakeMoney(impulse.Config.RPNameChangePrice)
 			ply:SetRPName(output, true)
+
 			ply.nextRPNameChange = CurTime() + 240
-			ply:Notify("You have changed your name to "..output.." successfully.")
+			ply:Notify("You have changed your name to "..output.." for "..impulse.Config.CurrencyPrefix..impulse.Config.RPNameChangePrice..".")
 		else
 			ply:Notify("Name rejected: "..output)
 		end
