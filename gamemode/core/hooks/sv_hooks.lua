@@ -96,16 +96,13 @@ function IMPULSE:PlayerSpawn(ply)
 	ply:SetHunger(100)
 	ply.ArrestedWeapons = nil
 
-	ply:GodEnable()
-	ply:SetRenderMode(RENDERMODE_TRANSALPHA)
-	ply:SetColor(Color(200, 200, 200, 100))
+	--ply:GodEnable()
+	ply.SpawnProtection = true
 	ply:SetJumpPower(160)
 
 	timer.Simple(10, function()
 		if IsValid(ply) then
-			ply:GodDisable()
-			ply:SetRenderMode(RENDERMODE_NORMAL)
-			ply:SetColor(color_white)
+			ply.SpawnProtection = false
 		end
 	end)
 
@@ -387,10 +384,13 @@ function IMPULSE:DoPlayerDeath(ply)
 		end
 	end)
 
-	--net.Start("impulseRagdollLink")
-	--net.WriteUInt(ragdoll:EntIndex(), 16)
-	--net.WriteEntity(ply)
-	--net.Broadcast()
+	timer.Simple(0.1, function()
+		if IsValid(ragdoll) and IsValid(ply) then
+			net.Start("impulseRagdollLink")
+			net.WriteEntity(ragdoll)
+			net.Send(ply)
+		end
+	end)
 
 	return true
 end
@@ -835,5 +835,13 @@ function IMPULSE:PlayerSetHandsModel(ply, hands)
 end
 
 function IMPULSE:PlayerSpray()
+	return true
+end
+
+function IMPULSE:PlayerShouldTakeDamage(ply, attacker)
+	if ply.SpawnProtection then
+		return false
+	end
+
 	return true
 end

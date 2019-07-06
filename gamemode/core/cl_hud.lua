@@ -223,6 +223,8 @@ function IMPULSE:HUDPaint()
 		if deathRegistered then
 			deathRegistered = false
 		end
+
+		LocalPlayer().Ragdoll = nil
 	end
 
 	if health < 45 then

@@ -105,6 +105,11 @@ function PANEL:QuickActions()
 	local btn = self.list:Add("DButton")
 	btn:Dock(TOP)
 	btn:SetText("Change RP name")
+	function btn:DoClick()
+		Derma_StringRequest("impulse", "Enter your new RP name:", nil, function(text)
+			LocalPlayer():ConCommand("say /rpname "..text)
+		end)
+	end
 
 	local btn = self.list:Add("DButton")
 	btn:Dock(TOP)

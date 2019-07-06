@@ -208,71 +208,11 @@ net.Receive("impulseInvStorageOpen", function(len, ply)
 end)
 
 net.Receive("impulseRagdollLink", function()
-	local ragdoll = net.ReadUInt(16)
-	local ply = net.ReadEntity()
+	local ragdoll = net.ReadEntity()
 
-	timer.Simple(0.1, function()
-		ragdoll = Entity(ragdoll)
-		if not IsValid(ply) or not IsValid(ragdoll) or not ragdoll:GetClass() == "prop_ragdoll" then
-			print(ragdoll)
-			print(ply)
-			print("[impulse] Death ragdoll player link failure!")
-			return
-		end
-
-		ragdoll.CosFace = ply:GetSyncVar(SYNC_COS_FACE)
-		ragdoll.CosHat = ply:GetSyncVar(SYNC_COS_HEAD)
-		ragdoll.CosChest = ply:GetSyncVar(SYNC_COS_CHEST)
-		ragdoll.PlayerName = ply:Nick()
-
-		if ragdoll.CosFace then
-			MakeCosmetic(ragdoll, ragdoll.CosFace, "ValveBiped.Bip01_Head1", impulse.Cosmetics[ragdoll.CosFace], 1)
-		end
-
-		if ragdoll.CosHat then
-			MakeCosmetic(ragdoll, ragdoll.CosHat, "ValveBiped.Bip01_Head1", impulse.Cosmetics[ragdoll.CosHat], 2)
-		end
-
-		if ragdoll.CosChest then
-			MakeCosmetic(ragdoll, ragdoll.CosChest, "ValveBiped.Bip01_Spine2", impulse.Cosmetics[ragdoll.CosChest], 3)
-		end
-
-		function ragdoll:Draw()
-			self:DrawModel()
-
-			PrintTable(self.Cosmetics)
-			if self.Cosmetics then
-				for a,b in pairs(self.Cosmetics) do
-					if not IsValid(b) then continue end
-					local bone = k:LookupBone(b.bone)
-
-					if not bone then
-						return
-					end
-					
-					local matrix = k:GetBoneMatrix(bone)
-
-					if not matrix then
-						return
-					end
-
-					local pos = matrix:GetTranslation()
-					local ang = matrix:GetAngles()
-					local f = ang:Forward()
-					local u = ang:Up()
-					local r = ang:Right()
-					pos = pos + (r * b.drawdata.pos.x) + (f * b.drawdata.pos.y) + (u * b.drawdata.pos.z)
-
-					b:SetRenderOrigin(pos)
-					ang:RotateAroundAxis(f, b.drawdata.ang.p)
-					ang:RotateAroundAxis(u, b.drawdata.ang.y)
-					ang:RotateAroundAxis(r, b.drawdata.ang.r)
-					b:SetRenderAngles(ang)
-					b:DrawModel()
-				end
-			end
-		end
-	end)
+	if IsValid(ragdoll) then
+		LocalPlayer().Ragdoll = ragdoll
+	end
 end)
 
 net.Receive("impulseUpdateOOCLimit", function()

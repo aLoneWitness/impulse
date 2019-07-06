@@ -180,7 +180,7 @@ function IMPULSE:CalcView(player, origin, angles, fov)
 		return view
 	end
 	
-	local ragdoll = player:GetRagdollEntity()
+	local ragdoll = player.Ragdoll
 
 	if ragdoll and IsValid(ragdoll) then
 		local eyes = ragdoll:GetAttachment(ragdoll:LookupAttachment( "eyes" ))
