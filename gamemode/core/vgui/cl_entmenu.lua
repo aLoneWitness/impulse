@@ -45,6 +45,11 @@ function PANEL:SetDoor(door)
 	local doorOwners = door:GetSyncVar(SYNC_DOOR_OWNERS, nil) 
 	local doorGroup = door:GetSyncVar(SYNC_DOOR_GROUP, nil)
 	local doorBuyable = door:GetSyncVar(SYNC_DOOR_BUYABLE, true)
+	local isDoorMaster = false
+	if doorOwners and doorOwners[1] == LocalPlayer():EntIndex() then
+		isDoorMaster = true
+	end
+
 	local customCanEditDoor = hook.Run("CanEditDoor", LocalPlayer(), door)
 
 	if LocalPlayer():CanLockUnlockDoor(doorOwners, doorGroup) then
@@ -71,7 +76,7 @@ function PANEL:SetDoor(door)
 		end)
 	end
 
-	if LocalPlayer():IsDoorOwner(doorOwners) and (customCanEditDoor or customCanEditDoor == nil) then
+	if LocalPlayer():IsDoorOwner(doorOwners) and isDoorMaster and (customCanEditDoor or customCanEditDoor == nil) then
 		self:AddAction("impulse/icons/group-256.png", "Permissions", function()
 			doorOwners = door:GetSyncVar(SYNC_DOOR_OWNERS, nil) 
 

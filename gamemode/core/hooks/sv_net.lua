@@ -331,7 +331,7 @@ net.Receive("impulseDoorSell", function(len, ply)
 
 	local traceEnt = util.TraceLine(trace).Entity
 
-	if IsValid(traceEnt) and ply:IsDoorOwner(traceEnt:GetSyncVar(SYNC_DOOR_OWNERS, nil)) and hook.Run("CanEditDoor", ply, traceEnt) != false then
+	if IsValid(traceEnt) and ply:IsDoorOwner(traceEnt:GetSyncVar(SYNC_DOOR_OWNERS, nil)) and traceEnt:GetDoorMaster() == ply and hook.Run("CanEditDoor", ply, traceEnt) != false then
 		ply:RemoveDoorMaster(traceEnt)
 		ply:GiveMoney(impulse.Config.DoorPrice - 2)
 		ply:Notify("You have sold a door for "..impulse.Config.CurrencyPrefix..(impulse.Config.DoorPrice - 2)..".")
@@ -405,14 +405,19 @@ net.Receive("impulseDoorAdd", function(len, ply)
 	trace.filter = ply
 
 	local traceEnt = util.TraceLine(trace).Entity
+	local owners = traceEnt:GetSyncVar(SYNC_DOOR_OWNERS, nil)
 
-	if IsValid(traceEnt) and ply:IsDoorOwner(traceEnt:GetSyncVar(SYNC_DOOR_OWNERS, nil)) then
+	if IsValid(traceEnt) and ply:IsDoorOwner(owners) and traceEnt:GetDoorMaster() == ply then
 		if target == ply then
 			return
 		end
 
 		if target.OwnedDoors and target.OwnedDoors[traceEnt] then
 			return
+		end
+
+		if table.Count(owners) > 9 then
+			return ply:Notify("Door user limit reached (9).")
 		end
 
 		ply:TakeMoney(cost)
@@ -439,7 +444,7 @@ net.Receive("impulseDoorRemove", function(len, ply)
 
 	local traceEnt = util.TraceLine(trace).Entity
 
-	if IsValid(traceEnt) and ply:IsDoorOwner(traceEnt:GetSyncVar(SYNC_DOOR_OWNERS, nil)) then
+	if IsValid(traceEnt) and ply:IsDoorOwner(traceEnt:GetSyncVar(SYNC_DOOR_OWNERS, nil)) and traceEnt:GetDoorMaster() == ply then
 		if target == ply then
 			return
 		end
@@ -494,9 +499,9 @@ net.Receive("impulseSellAllDoors", function(len, ply)
 	local sold = 0
 	for v,k in pairs(ply.OwnedDoors) do
 		if IsValid(v) then
-			if k:GetDoorMaster() == ply then
-				local noUnlock = door.NoDCUnlock or false
-				ply:RemoveDoorMaster(ply, noUnlock)
+			if v:GetDoorMaster() == ply then
+				local noUnlock = v.NoDCUnlock or false
+				ply:RemoveDoorMaster(v, noUnlock)
 				sold = sold + 1
 			else
 				ply:RemoveDoorUser(ply)
