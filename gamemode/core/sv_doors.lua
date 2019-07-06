@@ -63,6 +63,57 @@ function eMeta:DoorUnlock()
 	end
 end
 
+function eMeta:GetDoorMaster()
+	return self.MasterUser
+end
+
+function meta:SetDoorMaster(door)
+	local owners = {self:EntIndex()}
+
+	door:SetSyncVar(SYNC_DOOR_OWNERS, owners, true)
+	door.MasterUser = self
+
+	self.OwnedDoors = self.OwnedDoors or {}
+	self.OwnedDoors[door] = true
+end
+
+function meta:RemoveDoorMaster(door, noUnlock)
+	local owners = door:GetSyncVar(SYNC_DOOR_OWNERS)
+	door:SetSyncVar(SYNC_DOOR_OWNERS, nil, true)
+	door.MasterUser = nil
+
+	for v,k in pairs(owners) do
+		local owner = Entity(k)
+
+		if IsValid(owner) and owner:IsPlayer() then
+			owner.OwnedDoors[door] = nil
+		end
+	end
+
+	if not noUnlock then
+		door:DoorUnlock()
+	end
+end
+
+function meta:SetDoorUser(door)
+	local doorOwners = door:GetSyncVar(SYNC_DOOR_OWNERS)
+
+	table.insert(doorOwners, self:EntIndex())
+	door:SetSyncVar(SYNC_DOOR_OWNERS, doorOwners, true)
+
+	self.OwnedDoors = self.OwnedDoors or {}
+	self.OwnedDoors[door] = true
+end
+
+function meta:RemoveDoorUser(door)
+	local doorOwners = door:GetSyncVar(SYNC_DOOR_OWNERS)
+
+	table.RemoveByValue(doorOwners, self:EntIndex())
+	door:SetSyncVar(SYNC_DOOR_OWNERS, doorOwners, true)
+
+	self.OwnedDoors = self.OwnedDoors or {}
+	self.OwnedDoors[door] = nil
+end
 
 concommand.Add("impulse_doorsethidden", function(ply, cmd, args)
 	if not ply:IsSuperAdmin() then return false end

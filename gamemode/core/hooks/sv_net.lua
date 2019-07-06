@@ -310,14 +310,9 @@ net.Receive("impulseDoorBuy", function(len, ply)
 
 	if IsValid(traceEnt) and ply:CanBuyDoor(traceEnt:GetSyncVar(SYNC_DOOR_OWNERS, nil), traceEnt:GetSyncVar(SYNC_DOOR_BUYABLE, true)) and hook.Run("CanEditDoor", ply, traceEnt) != false then
 		if ply:CanAfford(impulse.Config.DoorPrice) then
-			local owners = {ply:EntIndex()}
-
-			traceEnt:SetSyncVar(SYNC_DOOR_OWNERS, owners, true)
-
-			ply.OwnedDoors = ply.OwnedDoors or {}
-			ply.OwnedDoors[traceEnt] = true
-
 			ply:TakeMoney(impulse.Config.DoorPrice)
+			ply:SetDoorMaster(traceEnt)
+
 			ply:Notify("You have bought a door for "..impulse.Config.CurrencyPrefix..impulse.Config.DoorPrice..".")
 		else
 			ply:Notify("You cannot afford to buy this door.")
@@ -337,18 +332,7 @@ net.Receive("impulseDoorSell", function(len, ply)
 	local traceEnt = util.TraceLine(trace).Entity
 
 	if IsValid(traceEnt) and ply:IsDoorOwner(traceEnt:GetSyncVar(SYNC_DOOR_OWNERS, nil)) and hook.Run("CanEditDoor", ply, traceEnt) != false then
-		local owners = traceEnt:GetSyncVar(SYNC_DOOR_OWNERS)
-		traceEnt:SetSyncVar(SYNC_DOOR_OWNERS, nil, true)
-		traceEnt:DoorUnlock()
-
-		for v,k in pairs(owners) do
-			local owner = Entity(k)
-
-			if IsValid(owner) and owner:IsPlayer() then
-				owner.OwnedDoors[traceEnt] = nil
-			end
-		end
-
+		ply:RemoveDoorMaster(ply)
 		ply:GiveMoney(impulse.Config.DoorPrice - 2)
 		ply:Notify("You have sold a door for "..impulse.Config.CurrencyPrefix..(impulse.Config.DoorPrice - 2)..".")
 	end
@@ -432,14 +416,7 @@ net.Receive("impulseDoorAdd", function(len, ply)
 		end
 
 		ply:TakeMoney(cost)
-
-		local doorOwners = traceEnt:GetSyncVar(SYNC_DOOR_OWNERS)
-
-		table.insert(doorOwners, target:EntIndex())
-		traceEnt:SetSyncVar(SYNC_DOOR_OWNERS, doorOwners, true)
-
-		target.OwnedDoors = target.OwnedDoors or {}
-		target.OwnedDoors[traceEnt] = true
+		ply:SetDoorUser(traceEnt)
 
 		ply:Notify("You have added "..target:Nick().." to this door for "..impulse.Config.CurrencyPrefix..cost..".")
 	end
@@ -471,13 +448,11 @@ net.Receive("impulseDoorRemove", function(len, ply)
 			return
 		end
 
-		local doorOwners = traceEnt:GetSyncVar(SYNC_DOOR_OWNERS)
+		if traceEnt:GetDoorMaster() == target then
+			return ply:Notify("The door's master cannot be removed.")
+		end
 
-		table.RemoveByValue(doorOwners, target:EntIndex())
-		traceEnt:SetSyncVar(SYNC_DOOR_OWNERS, doorOwners, true)
-
-		target.OwnedDoors = target.OwnedDoors or {}
-		target.OwnedDoors[traceEnt] = nil
+		ply:RemoveDoorUser(traceEnt)
 
 		ply:Notify("You have removed "..target:Nick().." from this door.")
 	end

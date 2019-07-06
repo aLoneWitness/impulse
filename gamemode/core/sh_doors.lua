@@ -24,7 +24,7 @@ end
 
 function meta:CanBuyDoor(doorOwners, doorBuyable)
 	if doorOwners or doorBuyable == false then
-			return false
+		return false
 	end
 	return true
 end
