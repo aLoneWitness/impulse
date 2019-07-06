@@ -332,7 +332,7 @@ net.Receive("impulseDoorSell", function(len, ply)
 	local traceEnt = util.TraceLine(trace).Entity
 
 	if IsValid(traceEnt) and ply:IsDoorOwner(traceEnt:GetSyncVar(SYNC_DOOR_OWNERS, nil)) and hook.Run("CanEditDoor", ply, traceEnt) != false then
-		ply:RemoveDoorMaster(ply)
+		ply:RemoveDoorMaster(traceEnt)
 		ply:GiveMoney(impulse.Config.DoorPrice - 2)
 		ply:Notify("You have sold a door for "..impulse.Config.CurrencyPrefix..(impulse.Config.DoorPrice - 2)..".")
 	end
@@ -416,7 +416,7 @@ net.Receive("impulseDoorAdd", function(len, ply)
 		end
 
 		ply:TakeMoney(cost)
-		ply:SetDoorUser(traceEnt)
+		target:SetDoorUser(traceEnt)
 
 		ply:Notify("You have added "..target:Nick().." to this door for "..impulse.Config.CurrencyPrefix..cost..".")
 	end
@@ -452,7 +452,7 @@ net.Receive("impulseDoorRemove", function(len, ply)
 			return ply:Notify("The door's master cannot be removed.")
 		end
 
-		ply:RemoveDoorUser(traceEnt)
+		target:RemoveDoorUser(traceEnt)
 
 		ply:Notify("You have removed "..target:Nick().." from this door.")
 	end
@@ -494,9 +494,13 @@ net.Receive("impulseSellAllDoors", function(len, ply)
 	local sold = 0
 	for v,k in pairs(ply.OwnedDoors) do
 		if IsValid(v) then
-			v:SetSyncVar(SYNC_DOOR_OWNERS, nil, true)
-			v:DoorUnlock()
-			sold = sold + 1
+			if k:GetDoorMaster() == ply then
+				local noUnlock = door.NoDCUnlock or false
+				ply:RemoveDoorMaster(ply, noUnlock)
+				sold = sold + 1
+			else
+				ply:RemoveDoorUser(ply)
+			end
 		end
 	end
 
