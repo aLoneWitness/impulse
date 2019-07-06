@@ -9,35 +9,61 @@ if SERVER then
 
 		local charName = net.ReadString()
 
-		if charName:len() >= 24 or charName:len() <= 6 then return ply:Notify("Name too long.") end -- min/max name sizes
-		charName = charName:Trim()
-		if charName == "" then return end
-		charName = impulse.SafeString(charName) -- dont allow for stings made to break stuff
+		local canUse, output = impulse.CanUseName(charName)
 
-		ply:SetRPName(charName, true)
-		ply:Notify("You have changed your name to "..charName..".")
+		if not canUse then
+			ply:Kick("Inappropriate roleplay name.")
+			return
+		end
+
+		ply:SetRPName(output, true)
+		ply:Notify("You have changed your name to "..output..".")
 
 		ply.NameChangeForced = nil
 	end)
 else
 	local nameChangeText = "You have been forced to change your name by a game moderator as it was deemed inappropriate.\nPlease change your name below to something more sutable.\nEXAMPLE: John Doe"
 	net.Receive("impulseOpsNamechange", function()
-		local panel = Derma_StringRequest("impulse", nameChangeText, "", 
-			function(newName)
-				net.Start("impulseOpsDoNamechange")
-				net.WriteString(newName)
-				net.SendToServer()
-			end,
-			function(newName)
-				return false
-			end, "Change name")
+		local panel = vgui.Create("DFrame")
+		panel:SetSize(500, 170)
+		panel:SetTitle("impulse")
+		panel:Center()
+		panel:ShowCloseButton(false)
+		panel:MakePopup()
 
-		local cancelButton = (panel:GetChildren()[6]):GetChildren()[2]
-		local changeButton = (panel:GetChildren()[6]):GetChildren()[1]
-		local buttonPanel = (panel:GetChildren()[6])
-		buttonPanel:SetWide(changeButton:GetWide() + 5)
-		buttonPanel:CenterHorizontal()
-		cancelButton:Remove()
+		local notice = vgui.Create("DLabel", panel)
+		notice:SetPos(5, 30)
+		notice:SetText(nameChangeText)
+		notice:SizeToContents()
+
+		local newName = vgui.Create("DLabel", panel)
+		newName:SetPos(15, 85)
+		newName:SetText("New name:")
+		newName:SetFont("Impulse-Elements18-Shadow")
+		newName:SizeToContents()
+
+		local entry = vgui.Create("DTextEntry", panel)
+		entry:SetPos(15, 105)
+		entry:SetSize(470, 20)
+
+		local done = vgui.Create("DButton", panel)
+		done:SetPos(15, 135)
+		done:SetSize(80, 25)
+		done:SetText("Done")
+
+		function done:DoClick()
+			local clear, rejectReason = impulse.CanUseName(entry:GetValue())
+
+			if not clear then
+				Derma_Message(rejectReason, "impulse", "OK")
+			else
+				net.Start("impulseOpsDoNamechange")
+				net.WriteString(entry:GetValue())
+				net.SendToServer()
+
+				panel:Remove()
+			end
+		end
 	end)
 end
 
