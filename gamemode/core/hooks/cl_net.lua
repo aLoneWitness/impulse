@@ -167,6 +167,26 @@ net.Receive("impulseInvRemove", function()
 	end
 end)
 
+net.Receive("impulseInvClear", function()
+	local storetype = net.ReadUInt(4)
+
+	if impulse.Inventory.Data[0][storetype] then
+		impulse.Inventory.Data[0][storetype] = {}
+	end
+end)
+
+net.Receive("impulseInvClearRestricted", function()
+	local storetype = net.ReadUInt(4)
+
+	if impulse.Inventory.Data[0][storetype] then
+		for v,k in pairs(impulse.Inventory.Data[0][storetype]) do
+			if k.restricted then
+				impulse.Inventory.Data[0][storetype][v] = nil
+			end
+		end
+	end
+end)
+
 net.Receive("impulseInvUpdateEquip", function()
 	local invid = net.ReadUInt(10)
 	local state = net.ReadBool()

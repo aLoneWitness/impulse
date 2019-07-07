@@ -23,6 +23,8 @@ util.AddNetworkString("impulseSellAllDoors")
 util.AddNetworkString("impulseInvGive")
 util.AddNetworkString("impulseInvGiveSilent")
 util.AddNetworkString("impulseInvRemove")
+util.AddNetworkString("impulseInvClear")
+util.AddNetworkString("impulseInvClearRestricted")
 util.AddNetworkString("impulseInvUpdateStorage")
 util.AddNetworkString("impulseInvUpdateEquip")
 util.AddNetworkString("impulseInvUpdateData")
@@ -523,6 +525,10 @@ net.Receive("impulseInvDoEquip", function(len, ply)
 	if not ply.beenInvSetup or (ply.nextInvEquip or 0) > CurTime() then return end
 	ply.nextInvEquip = CurTime() + 0.5
 
+	if not ply:Alive() or ply:GetSyncVar(SYNC_ARRESTED, false) then
+		return
+	end
+
 	local invid = net.ReadUInt(10)
 	local equipState = net.ReadBool()
 
@@ -537,6 +543,10 @@ net.Receive("impulseInvDoDrop", function(len, ply)
 	if not ply.beenInvSetup or (ply.nextInvDrop or 0) > CurTime() then return end
 	ply.nextInvDrop = CurTime() + 0.5
 
+	if not ply:Alive() or ply:GetSyncVar(SYNC_ARRESTED, false) then
+		return
+	end
+
 	local invid = net.ReadUInt(10)
 
 	local hasItem, item = ply:HasInventoryItemSpecific(invid)
@@ -549,6 +559,10 @@ end)
 net.Receive("impulseInvDoUse", function(len, ply)
 	if not ply.beenInvSetup or (ply.nextInvUse or 0) > CurTime() then return end
 	ply.nextInvUse = CurTime() + 0.5
+
+	if not ply:Alive() or ply:GetSyncVar(SYNC_ARRESTED, false) then
+		return
+	end
 
 	local invid = net.ReadUInt(10)
 

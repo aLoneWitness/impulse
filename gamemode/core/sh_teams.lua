@@ -51,6 +51,13 @@ function meta:CanBecomeTeam(teamID, notify)
 		return false
 	end
 
+	if SERVER and teamData.cp then
+		if self:HasIllegalInventoryItem() then
+			if notify then self:Notify("You cannot become this team with illegal items in your inventory.") end
+			return false
+		end
+	end
+
 	if teamData.limit then
 		if teamData.percentLimit and teamData.percentLimit == true then
 			local percentTeam = teamPlayers / #player.GetAll()

@@ -406,6 +406,8 @@ function IMPULSE:PlayerDeath(ply)
 		ply:SetMoney(0)
 		impulse.SpawnMoney(ply:GetPos(), money)
 	end
+
+	ply:ClearInventory(1)
 end
 
 function IMPULSE:PlayerDeathThink(ply)

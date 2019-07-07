@@ -112,6 +112,23 @@ function meta:HasInventoryItemSpecific(id, storetype)
 	return false
 end
 
+function meta:HasIllegalInventoryItem(storetype)
+	if not self.beenInvSetup then return false end
+	local storetype = storetype or 1
+	local inv = self:GetInventory(storetype)
+
+	for v,k in pairs(inv) do
+		local itemclass = impulse.Inventory.ClassToNetID(k.class)
+		local item = impulse.Inventory.Items[itemclass]
+
+		if not k.restricted and item.Illegal then
+			return true, v
+		end
+	end
+
+	return false
+end
+
 function meta:IsInventoryItemRestricted(id, storetype)
 	if not self.beenInvSetup then return false end
 	local storetype = storetype or 1
@@ -214,6 +231,40 @@ function meta:TakeInventoryItem(invid, storetype, moving)
 		net.WriteUInt(storetype, 4)
 		net.Send(self)
 	end
+end
+
+function meta:ClearInventory(storetype)
+	if not self.beenInvSetup then return end
+	local storetype = storetype or 1
+
+	local inv = self:GetInventory(storetype)
+
+	for v,k in pairs(inv) do
+		self:TakeInventoryItem(v, storetype, true)
+	end
+
+	impulse.Inventory.DBClearInventory(self.impulseID, storetype)
+
+	net.Start("impulseInvClear")
+	net.WriteUInt(storetype, 4)
+	net.Send(self)
+end
+
+function meta:ClearRestrictedInventory(storetype)
+	if not self.beenInvSetup then return end
+	local storetype = storetype or 1
+
+	local inv = self:GetInventory(storetype)
+
+	for v,k in pairs(inv) do
+		if k.restricted then
+			self:TakeInventoryItem(v, storetype, true)
+		end
+	end
+
+	net.Start("impulseInvClearRestricted")
+	net.WriteUInt(storetype, 4)
+	net.Send(self)
 end
 
 function meta:TakeInventoryItemClass(itemclass, storetype, amount)

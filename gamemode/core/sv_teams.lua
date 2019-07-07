@@ -24,6 +24,7 @@ function meta:SetTeam(teamID, forced)
 	end
 
 	self:StripWeapons()
+	self:ClearRestrictedInventory()
 	
 	if teamData.loadout then
 		for v,weapon in pairs(teamData.loadout) do

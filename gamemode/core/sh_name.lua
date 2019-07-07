@@ -32,6 +32,7 @@ local blacklistNames = {
 	["masked person"] = true,
 	["masked player"] = true,
 	["unknown"] = true,
+	["nigger"] = true,
 	["tyrone jenson"] = true
 }
 
