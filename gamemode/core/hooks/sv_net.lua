@@ -64,7 +64,7 @@ net.Receive("impulseCharacterCreate", function(len, ply)
 		return
 	end
 
-	if not table.HasValue(impulse.Config.DefaultMaleModels, newModel) and not table.HasValue(impulse.Config.DefaultFemaleModels, newModel) then
+	if not table.HasValue(impulse.Config.DefaultMaleModels, charModel) and not table.HasValue(impulse.Config.DefaultFemaleModels, charModel) then
 		return
 	end
 
