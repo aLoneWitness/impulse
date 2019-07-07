@@ -262,8 +262,8 @@ function PANEL:Teams()
 			local bodygroups = impulse.Teams.Data[self.team].bodygroups
 
 			if not model then
-				model = LocalPlayer().defaultModel or "models/Humans/Group01/male_02.mdl" 
-				skin = LocalPlayer().defaultSkin or 0
+				model = impulse_defaultModel or "models/Humans/Group01/male_02.mdl" 
+				skin = impulse_defaultSkin or 0
 			end
 
 			realSelf.modelPreview:SetModel(model)

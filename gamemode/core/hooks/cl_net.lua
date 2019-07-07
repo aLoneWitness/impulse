@@ -250,6 +250,6 @@ net.Receive("impulseCharacterEditorOpen", function()
 end)
 
 net.Receive("impulseUpdateDefaultModelSkin", function()
-	LocalPlayer().defaultModel = net.ReadString()
-	LocalPlayer().defaultSkin = net.ReadUInt(8)
+	impulse_defaultModel = net.ReadString()
+	impulse_defaultSkin = net.ReadUInt(8)
 end)

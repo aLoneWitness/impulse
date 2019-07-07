@@ -104,7 +104,11 @@ function meta:IsFemale()
 end
 
 function meta:IsCharacterFemale()
-    return string.find(self.defaultModel, "female")
+    if SERVER then
+        return string.find(self.defaultModel, "female")
+    else
+        return string.find(impulse_defaultModel, "female")
+    end
 end
 
 function impulse.FindPlayer(searchKey)

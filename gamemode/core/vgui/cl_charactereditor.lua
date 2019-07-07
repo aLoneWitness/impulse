@@ -42,8 +42,8 @@ function PANEL:Init()
 		self:Remove()
 	end
 
-	local curModel = LocalPlayer().defaultModel
-	local curSkin = LocalPlayer().defaultSkin
+	local curModel = impulse_defaultModel
+	local curSkin = impulse_defaultSkin
 	local isFemale = LocalPlayer():IsCharacterFemale()
 
 	function self.nextButton:Think()

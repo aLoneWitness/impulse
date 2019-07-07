@@ -11,8 +11,8 @@ function PANEL:SetTeam(teamID)
 	self.name = team.GetName(teamID)
 	self.players = #team.GetPlayers(teamID)
 	self.playerCount = self.players
-	self.model = LocalPlayer().defaultModel or "models/Humans/Group01/male_02.mdl" 
-	self.skin = LocalPlayer().defaultSkin or 0
+	self.model = impulse_defaultModel or "models/Humans/Group01/male_02.mdl" 
+	self.skin = impulse_defaultSkin or 0
 	self.bodygroups = impulse.Teams.Data[teamID].bodygroups
 	self.requirements = ""
 	local teamData = impulse.Teams.Data[teamID]
