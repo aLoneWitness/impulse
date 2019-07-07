@@ -54,3 +54,10 @@ function impulse.FindEmptyPos(pos, ignore, distance, step, area)
 
     return pos
 end
+
+function meta:UpdateDefaultModelSkin()
+    net.Start("impulseUpdateDefaultModelSkin")
+    net.WriteString(self.defaultModel)
+    net.WriteUInt(self.defaultSkin, 8)
+    net.Send(self)
+end

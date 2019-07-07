@@ -241,3 +241,15 @@ net.Receive("impulseUpdateOOCLimit", function()
 	LocalPlayer().OOCLimit = (LocalPlayer().OOCLimit and LocalPlayer().OOCLimit - 1) or ((LocalPlayer():IsDonator() and impulse.Config.OOCLimitVIP) or impulse.Config.OOCLimit)
 	LocalPlayer():Notify("You have "..LocalPlayer().OOCLimit.." OOC messages left for "..string.NiceTime(time)..".")
 end)
+
+net.Receive("impulseCharacterEditorOpen", function()
+	local vo = impulse.GetRandomAmbientVO("female")
+	surface.PlaySound(vo)
+
+	vgui.Create("impulseCharacterEditor")
+end)
+
+net.Receive("impulseUpdateDefaultModelSkin", function()
+	LocalPlayer().defaultModel = net.ReadString()
+	LocalPlayer().defaultSkin = net.ReadUInt(8)
+end)

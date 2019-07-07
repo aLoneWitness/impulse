@@ -59,7 +59,7 @@ function IMPULSE:Think()
 			if isBleeding and dist < bleedingRange and (k.nextBleed or 0) < CurTime() and k:GetMoveType() != MOVETYPE_NOCLIP then
 				local pos = k:GetPos()
 
-				if dist < 300 then
+				if dist < (300 ^ 2) then
 					local effectdata = EffectData()
 					effectdata:SetOrigin((pos + k:OBBCenter()))
 

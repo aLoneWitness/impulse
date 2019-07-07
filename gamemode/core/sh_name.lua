@@ -6,7 +6,7 @@ if SERVER then
 			query:Where("steamid", self:SteamID())
 			query:Execute(true)
 
-			self.SavedRPName = name
+			self.defaultRPName = name
 		end
 
 		hook.Run("PlayerRPNameChanged", self, self:Name(), name)

@@ -29,6 +29,8 @@ function IMPULSE:PlayerInitialSpawn(ply)
 		if IsValid(ply) and type(result) == "table" and #result > 0 then -- if player exists in db
 			isNew = false
 			hook.Run("SetupPlayer", ply, result[1])
+		elseif IsValid(ply) then
+			ply:Freeze(true)
 		end
 		netstream.Start(ply, "impulseJoinData", isNew)
 	end)
@@ -200,6 +202,8 @@ function IMPULSE:SetupPlayer(ply, dbData)
 	ply.defaultModel = dbData.model
 	ply.defaultSkin = dbData.skin
 	ply.defaultRPName = dbData.rpname
+	ply:UpdateDefaultModelSkin()
+	
 	ply:SetFOV(90, 0)
 	ply:SetTeam(impulse.Config.DefaultTeam)
 	ply:AllowFlashlight(true)
@@ -405,6 +409,24 @@ function IMPULSE:PlayerDeath(ply)
 	if money > 0 then
 		ply:SetMoney(0)
 		impulse.SpawnMoney(ply:GetPos(), money)
+	end
+
+	local inv = ply:GetInventory()
+	local pos = ply:GetPos()
+	local dropped = 0
+
+	for v,k in pairs(inv) do
+		local itemclass = impulse.Inventory.ClassToNetID(k.class)
+		local item = impulse.Inventory.Items[itemclass]
+
+		if item.DropOnDeath and not k.restricted then
+			impulse.Inventory.SpawnItem(k.class, pos)
+			dropped = dropped + 1
+
+			if dropped > 4 then
+				break
+			end
+		end
 	end
 
 	ply:ClearInventory(1)

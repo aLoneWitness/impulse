@@ -103,6 +103,10 @@ function meta:IsFemale()
     return string.find(self:GetModel(), "female")
 end
 
+function meta:IsCharacterFemale()
+    return string.find(self.defaultModel, "female")
+end
+
 function impulse.FindPlayer(searchKey)
     if not searchKey or searchKey == "" then return nil end
     local searchPlayers = player.GetAll()
@@ -136,4 +140,20 @@ function impulse.SafeString(str)
     end
 
     return clean
+end
+
+local idleVO = {
+    "question23.wav",
+    "question25.wav",
+    "question09.wav",
+    "question06.wav",
+    "question05.wav"
+}
+
+function impulse.GetRandomAmbientVO(gender)
+    if gender == "male" then
+        return "vo/npc/male01/"..idleVO[math.random(1, #idleVO)]
+    else
+        return "vo/npc/female01/"..idleVO[math.random(1, #idleVO)]
+    end
 end

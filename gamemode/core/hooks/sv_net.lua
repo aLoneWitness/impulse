@@ -40,6 +40,9 @@ util.AddNetworkString("impulseInvDoMove")
 util.AddNetworkString("impulseRagdollLink")
 util.AddNetworkString("impulseUpdateOOCLimit")
 util.AddNetworkString("impulseChangeRPName")
+util.AddNetworkString("impulseCharacterEditorOpen")
+util.AddNetworkString("impulseCharacterEdit")
+util.AddNetworkString("impulseUpdateDefaultModelSkin")
 
 net.Receive("impulseCharacterCreate", function(len, ply)
 	if (ply.NextCreate or 0) > CurTime() then return end
@@ -58,6 +61,10 @@ net.Receive("impulseCharacterCreate", function(len, ply)
 	if canUseName then
 		charName = filteredName
 	else
+		return
+	end
+
+	if not table.HasValue(impulse.Config.DefaultMaleModels, newModel) and not table.HasValue(impulse.Config.DefaultFemaleModels, newModel) then
 		return
 	end
 
@@ -100,6 +107,7 @@ net.Receive("impulseCharacterCreate", function(len, ply)
 				}
 
 				print("[impulse] "..plyID.." has been submitted to the database. RP Name: ".. charName)
+				ply:Freeze(false)
 				hook.Run("SetupPlayer", ply, setupData)
 
 				ply.extraPVS = nil
@@ -202,7 +210,6 @@ net.Receive("impulseTeamChange", function(len, ply)
 
 	if teamID and isnumber(teamID) and impulse.Teams.Data[teamID] then
 		if ply:CanBecomeTeam(teamID, true) then
-
 			if impulse.Teams.Data[teamID].quiz then
 				local data = ply:GetData()
 
@@ -492,7 +499,7 @@ net.Receive("impulseQuizSubmit", function(len, ply)
 		ply:SetTeam(teamID)
 		ply:Notify("You have changed your team to "..team.GetName(teamID)..".")
 	else
-		ply:Notify(team.GetName(teamID).." cannot be joined right now. However, you have still passed the quiz. Rejoin the team when it is available to play again.")
+		ply:Notify("You passed the quiz, however "..team.GetName(teamID).." cannot be joined right now. Rejoin the team when it is available to play again.")
 	end
 end)
 
@@ -678,4 +685,82 @@ net.Receive("impulseChangeRPName", function(len, ply)
 	else
 		ply:Notify("You cannot afford to change your name.")
 	end
+end)
+
+net.Receive("impulseCharacterEdit", function(len, ply)
+	if not ply.beenSetup then return end
+	if (ply.nextCharEditTry or 0) > CurTime() then return end
+	ply.nextCharEditTry = CurTime() + 3
+
+	if not ply.currentCosmeticEditor or not IsValid(ply.currentCosmeticEditor) or ply.currentCosmeticEditor:GetPos():DistToSqr(ply:GetPos()) > (120 ^ 2) then
+		return
+	end
+
+	if ply:Team() != impulse.Config.DefaultTeam then
+		return
+	end
+
+	local newIsFemale = net.ReadBool()
+	local newModel = net.ReadString()
+	local newSkin = net.ReadUInt(8)
+	local cost = 0
+	local isCurFemale = ply:IsCharacterFemale()
+	local curModel = ply.defaultModel
+	local curSkin = ply.defaultSkin
+
+	if not table.HasValue(impulse.Config.DefaultMaleModels, newModel) and not table.HasValue(impulse.Config.DefaultFemaleModels, newModel) then
+		return
+	end
+
+	local skinBlacklist = impulse.Config.DefaultSkinBlacklist[newModel]
+
+	if skinBlacklist and table.HasValue(skinBlacklist, newSkin) then
+		return
+	end
+
+	if newIsFemale != isCurFemale then
+		cost = cost + impulse.Config.CosmeticGenderPrice
+	end
+
+	if curModel != newModel or curSkin != newSkin then
+		cost = cost + impulse.Config.CosmeticModelSkinPrice
+	end
+
+	if cost == 0 then
+		return
+	end
+
+	if ply:CanAfford(cost) then
+		local query = mysql:Update("impulse_players")
+		query:Update("skin", newSkin)
+		query:Update("model", newModel)
+		query:Where("steamid", ply:SteamID())
+		query:Execute(true)
+
+		ply.defaultModel = newModel
+		ply.defaultSkin = newSkin
+
+		ply:UpdateDefaultModelSkin()
+
+		local oldBodyGroupsTemp = {}
+		local oldBodyGroups = ply:GetBodyGroups()
+
+		for v,k in pairs(oldBodyGroups) do
+			oldBodyGroupsTemp[k.id] = ply:GetBodygroup(k.id)
+		end
+
+		ply:SetModel(ply.defaultModel)
+		ply:SetSkin(ply.defaultSkin)
+
+		for v,k in pairs(oldBodyGroups) do
+			ply:SetBodygroup(k.id, oldBodyGroupsTemp[k.id])
+		end
+
+		ply:TakeMoney(cost)
+		ply:Notify("You have changed your appearance for "..impulse.Config.CurrencyPrefix..cost..".")
+	else
+		ply:Notify("You cannot afford to change your appearance.")
+	end
+
+	currentCosmeticEditor = nil
 end)

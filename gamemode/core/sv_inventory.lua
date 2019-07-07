@@ -349,7 +349,8 @@ function meta:DropInventoryItem(itemid)
 	end
 
 	self:TakeInventoryItem(itemid)
-	impulse.Inventory.SpawnItem(item.class, tr.HitPos)
+	local ent = impulse.Inventory.SpawnItem(item.class, tr.HitPos)
+	ent.ItemOwner = self
 end
 
 function meta:UseInventoryItem(itemid)

@@ -3,18 +3,25 @@ local PANEL = {}
 function PANEL:Init()
 	self:SetSize(600, 400)
 	self:Center()
-	self:SetTitle("Character Creation")
+	self:SetTitle("Character Editor")
 	self:MakePopup()
-	self:SetBackgroundBlur(true)
+
+	local panel = self
 
 	self.nextButton = vgui.Create("DButton", self)
-	self.nextButton:SetPos(530,370)
-	self.nextButton:SetSize(60,20)
-	self.nextButton:SetText("Finish")
+	self.nextButton:SetPos(470,370)
+	self.nextButton:SetSize(120,20)
+	self.nextButton:SetText("Change")
 	self.nextButton:SetDisabled(false)
 	self.nextButton.DoClick = function()
-		local characterName = self.nameEntry:GetValue()
 		local characterGender = self.genderBox:GetValue():lower()
+
+		if characterGender == "male" then
+			characterGender = false
+		else
+			characterGender = true
+		end
+
 		local characterModel = self.characterPreview.Entity:GetModel()
 		local characterSkin = self.characterPreview.Entity:GetSkin()
 
@@ -25,62 +32,72 @@ function PANEL:Init()
 		if skinBlacklist and table.HasValue(skinBlacklist, characterSkin) then
 			return msg("The skin you selected was on the blacklist.\nPlease select another skin or change the model.", "impulse", "OK")
 		end
-		
-		local name, rejectReason = impulse.CanUseName(characterName)
-		if name == false then return msg(rejectReason, "impulse", "OK") end
 
-		Derma_Query("Are you sure you are finished?\nYou can edit your character later, but it will cost a fee.", "impulse", "Yes", function()
-			print("[impulse] Sending character data to server...")
+		net.Start("impulseCharacterEdit")
+		net.WriteBool(characterGender)
+		net.WriteString(characterModel)
+		net.WriteUInt(characterSkin, 8)
+		net.SendToServer()
 
-			net.Start("impulseCharacterCreate")
-			net.WriteString(characterName)
-			net.WriteString(characterModel)
-			net.WriteUInt(characterSkin, 8)
-			net.SendToServer()
+		self:Remove()
+	end
 
-    		LocalPlayer():ScreenFade(SCREENFADE.IN, color_black, 4, 0)
-    		self:Remove()
-    		self:GetParent():Remove()
-			impulse.hudEnabled = true
-			impulse_isNewPlayer = false
-		end, "No, take me back")
+	local curModel = LocalPlayer().defaultModel
+	local curSkin = LocalPlayer().defaultSkin
+	local isFemale = LocalPlayer():IsCharacterFemale()
+
+	function self.nextButton:Think()
+		local cost = 0
+		if panel.genderBox:GetValue() != panel.genderBox.normal then
+			cost = cost + impulse.Config.CosmeticGenderPrice
+		end
+
+		if panel.characterPreview.Entity:GetModel() != curModel or panel.characterPreview.Entity:GetSkin() != curSkin then
+			cost = cost + impulse.Config.CosmeticModelSkinPrice
+		end
+
+		if cost > 0 then
+			self:SetDisabled(false)
+			self:SetText("Change ("..impulse.Config.CurrencyPrefix..cost..")")
+		else
+			self:SetDisabled(true)
+			self:SetText("Change")
+		end
 	end
 
 	self.characterPreview = vgui.Create("DModelPanel", self)
 	self.characterPreview:SetSize(600,400)
 	self.characterPreview:SetPos(0,30)
-	self.characterPreview:SetModel(impulse.Config.DefaultMaleModels[1])
+	self.characterPreview:SetModel(curModel)
 	self.characterPreview:MoveToBack()
 	self.characterPreview:SetCursor("arrow")
 	self.characterPreview:SetFOV(70)
 	self.characterPreview:SetCamPos(Vector(52, 52, 52))
+	self.characterPreview.Entity:SetSkin(curSkin)
  	function self.characterPreview:LayoutEntity(ent) 
   		ent:SetAngles(Angle(0,40,0))
  	end
 
  	local characterPreview = self.characterPreview
 
-	self.nameLbl = vgui.Create("DLabel", self)
- 	self.nameLbl:SetFont("Impulse-Elements18-Shadow")
-	self.nameLbl:SetText("Full Name:")
-	self.nameLbl:SizeToContents()
-	self.nameLbl:SetPos(10,40)
-
- 	self.nameEntry = vgui.Create("DTextEntry", self)
- 	self.nameEntry:SetSize(180,23)
- 	self.nameEntry:SetPos(10,60)
- 	self.nameEntry:SetAllowNonAsciiCharacters(false)
-
 	self.genderLbl = vgui.Create("DLabel", self)
 	self.genderLbl:SetFont("Impulse-Elements18-Shadow")
 	self.genderLbl:SetText("Gender:")
 	self.genderLbl:SizeToContents()
-	self.genderLbl:SetPos(10,90)
+	self.genderLbl:SetPos(10,40)
 
   	self.genderBox = vgui.Create("DComboBox", self)
-  	self.genderBox:SetPos(10,110)
+  	self.genderBox:SetPos(10,60)
   	self.genderBox:SetSize(180,23)
-  	self.genderBox:SetValue("Male")
+
+  	if isFemale then
+  		self.genderBox:SetValue("Female")
+  	else
+  		self.genderBox:SetValue("Male")
+  	end
+
+  	self.genderBox.normal = self.genderBox:GetValue()
+
   	self.genderBox:AddChoice("Male")
   	self.genderBox:AddChoice("Female")
   	function self.genderBox.OnSelect(panel, index, value)
@@ -97,13 +114,23 @@ function PANEL:Init()
   		end
   	end
 
+  	self.genderWarn = vgui.Create("DLabel", self)
+  	self.genderWarn:SetFont("Impulse-Elements16")
+  	self.genderWarn:SetText("Costs "..impulse.Config.CurrencyPrefix..impulse.Config.CosmeticGenderPrice.." per change")
+  	self.genderWarn:SizeToContents()
+  	self.genderWarn:SetPos(10, 90)
+
 	self.modelLbl = vgui.Create("DLabel", self)
 	self.modelLbl:SetFont("Impulse-Elements18-Shadow")
 	self.modelLbl:SetText("Models:")
 	self.modelLbl:SizeToContents()
 	self.modelLbl:SetPos(400,40)
 
-  	self:PopulateModels(impulse.Config.DefaultMaleModels)
+	if isFemale then
+		self:PopulateModels(impulse.Config.DefaultFemaleModels)
+	else
+		self:PopulateModels(impulse.Config.DefaultMaleModels)
+	end
 
 	self.skinLbl = vgui.Create("DLabel", self)
 	self.skinLbl:SetFont("Impulse-Elements18-Shadow")
@@ -117,12 +144,18 @@ function PANEL:Init()
 	self.skinSlider:SetMax(characterPreview.Entity:SkinCount()-1)
 	self.skinSlider:SetSize(395,20)
 	self.skinSlider:SetPos(230, 280)
-	self.skinSlider:SetValue(0)
+	self.skinSlider:SetValue(curSkin)
 	self.skinSlider.TextArea:SetTextColor(color_white)
 
 	function self.skinSlider:OnValueChanged(newSkin)
 		characterPreview.Entity:SetSkin(newSkin)
 	end
+
+  	self.skinWarn = vgui.Create("DLabel", self)
+  	self.skinWarn:SetFont("Impulse-Elements16")
+  	self.skinWarn:SetText("Costs "..impulse.Config.CurrencyPrefix..impulse.Config.CosmeticModelSkinPrice.." per change")
+  	self.skinWarn:SizeToContents()
+  	self.skinWarn:SetPos(400, 310)
 end
 
 function PANEL:PopulateModels(modelTable)
@@ -151,4 +184,4 @@ function PANEL:PopulateModels(modelTable)
 end
 
 
-vgui.Register("impulseCharacterCreator", PANEL, "DFrame")
+vgui.Register("impulseCharacterEditor", PANEL, "DFrame")
