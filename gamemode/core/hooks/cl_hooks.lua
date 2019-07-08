@@ -278,6 +278,7 @@ end
 
 function IMPULSE:OnContextMenuOpen()
 	if LocalPlayer():Team() == 0 or not LocalPlayer():Alive() or impulse_ActiveWorkbar then return end
+	if LocalPlayer():GetSyncVar(SYNC_ARRESTED, false) then return end
 
 	impulse_inventory = vgui.Create("impulseInventory")
 	gui.EnableScreenClicker(true)

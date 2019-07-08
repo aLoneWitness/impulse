@@ -92,12 +92,12 @@ function PANEL:SetItem(netitem, wide)
 
 	if self.IsRestricted then
 		self.tip = vgui.Create("DImageButton", self)
-		self.tip:SetPos(43, 5)
+		self.tip:SetPos(43, 45)
 		self.tip:SetSize(16, 16)
 		self.tip:SetImage(restrictedMat)
 	elseif self.Item.Illegal then
 		self.tip = vgui.Create("DImageButton", self)
-		self.tip:SetPos(43, 5)
+		self.tip:SetPos(43, 45)
 		self.tip:SetSize(16, 16)
 		self.tip:SetImage(illegalMat)
 	end
