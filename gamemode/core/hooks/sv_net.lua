@@ -297,16 +297,15 @@ net.Receive("impulseBuyItem", function(len, ply)
 end)
 
 net.Receive("impulseChatState", function(len, ply)
-	local state = ply:GetSyncVar(SYNC_TYPING, false)
-
 	if (ply.nextChatState or 0) < CurTime() then
 		local isTyping = net.ReadBool()
+		local state = ply:GetSyncVar(SYNC_TYPING, false)
 
 		if state != isTyping then
 			ply:SetSyncVar(SYNC_TYPING, isTyping, true)
 		end
 
-		ply.nextChatState = CurTime() + .1
+		ply.nextChatState = CurTime() + .02
 	end
 end)
 

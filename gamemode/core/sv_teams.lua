@@ -67,6 +67,8 @@ function meta:SetTeamClass(classID, skipLoadout)
 		self:SetSkin(teamData.skin or self.defaultSkin)
 	end
 
+	self:SetBodyGroups("0000000")
+	
 	if classData.bodygroups then
 		for v, bodygroupData in pairs(classData.bodygroups) do
 			self:SetBodygroup(bodygroupData[1], (bodygroupData[2] or math.random(0, self:GetBodygroupCount(bodygroupData[1]))))
@@ -75,8 +77,6 @@ function meta:SetTeamClass(classID, skipLoadout)
 		for v, bodygroupData in pairs(teamData.bodygroups) do
 			self:SetBodygroup(bodygroupData[1], (bodygroupData[2] or math.random(0, self:GetBodygroupCount(bodygroupData[1]))))
 		end
-	else
-		self:SetBodyGroups("0000000")
 	end
 
 	if not skipLoadout then
