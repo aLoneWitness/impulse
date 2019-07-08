@@ -309,15 +309,7 @@ function impulse.Anim.GetModelClass(model)
 	model = stringLower(model)
 	local class = translations[model]
 
-	if not class and stringFind(model, "/player") then
-		return "player"
-	end
-
-	class = class or "citizen_male"
-
-	if (class == "citizen_male" and (stringFind(model, "female") or stringFind(model, "alyx") or stringFind(model, "mossman"))) then
-		class = "citizen_female"
-	end
+	class = class or "player"
 	
 	return class
 end

@@ -7,10 +7,17 @@ function MakeCosmetic(ply, id, bone, data, slot)
 
 	ply.Cosmetics[slot] = ClientsideModel(data.model, RENDERGROUP_OPAQUE)
 	ply.Cosmetics[slot]:SetNoDraw(true)
+
 	if data.bodygroups then
 		ply.Cosmetics[slot]:SetBodyGroups(data.bodygroups)
 	end
-	ply.Cosmetics[slot]:SetModelScale(ply.Cosmetics[slot]:GetModelScale() * data.scale)
+
+	if ply:IsFemale() and data.femaleScale then
+		ply.Cosmetics[slot]:SetModelScale(ply.Cosmetics[slot]:GetModelScale() * data.femaleScale)
+	else
+		ply.Cosmetics[slot]:SetModelScale(ply.Cosmetics[slot]:GetModelScale() * data.scale)
+	end
+
 	ply.Cosmetics[slot].drawdata = data
 	ply.Cosmetics[slot].bone = bone
 	ply.Cosmetics[slot].owner = ply
@@ -48,12 +55,26 @@ hook.Add("PostPlayerDraw", "impulseCosmeticDraw", function(k)
 			local f = ang:Forward()
 			local u = ang:Up()
 			local r = ang:Right()
-			pos = pos + (r * b.drawdata.pos.x) + (f * b.drawdata.pos.y) + (u * b.drawdata.pos.z)
+			local isFemale = k:IsFemale()
+
+			if isFemale and b.drawdata.femalePos then
+				pos = pos + (r * b.drawdata.femalePos.x) + (f * b.drawdata.femalePos.y) + (u * b.drawdata.femalePos.z)
+			else
+				pos = pos + (r * b.drawdata.pos.x) + (f * b.drawdata.pos.y) + (u * b.drawdata.pos.z)
+			end
 
 			b:SetRenderOrigin(pos)
-			ang:RotateAroundAxis(f, b.drawdata.ang.p)
-			ang:RotateAroundAxis(u, b.drawdata.ang.y)
-			ang:RotateAroundAxis(r, b.drawdata.ang.r)
+
+			if isFemale and b.drawdata.femaleAng then
+				ang:RotateAroundAxis(f, b.drawdata.femaleAng.p)
+				ang:RotateAroundAxis(u, b.drawdata.femaleAng.y)
+				ang:RotateAroundAxis(r, b.drawdata.femaleAng.r)
+			else
+				ang:RotateAroundAxis(f, b.drawdata.ang.p)
+				ang:RotateAroundAxis(u, b.drawdata.ang.y)
+				ang:RotateAroundAxis(r, b.drawdata.ang.r)
+			end
+
 			b:SetRenderAngles(ang)
 			b:DrawModel()
 		end
@@ -120,12 +141,26 @@ hook.Add("SetupInventoryModel", "impulseDrawCosmetics", function(panel)
 				local f = ang:Forward()
 				local u = ang:Up()
 				local r = ang:Right()
-				pos = pos + (r * b.drawdata.pos.x) + (f * b.drawdata.pos.y) + (u * b.drawdata.pos.z)
+				local isFemale = k:IsFemale()
+
+				if isFemale and b.drawdata.femalePos then
+					pos = pos + (r * b.drawdata.femalePos.x) + (f * b.drawdata.femalePos.y) + (u * b.drawdata.femalePos.z)
+				else
+					pos = pos + (r * b.drawdata.pos.x) + (f * b.drawdata.pos.y) + (u * b.drawdata.pos.z)
+				end
 
 				b:SetRenderOrigin(pos)
-				ang:RotateAroundAxis(f, b.drawdata.ang.p)
-				ang:RotateAroundAxis(u, b.drawdata.ang.y)
-				ang:RotateAroundAxis(r, b.drawdata.ang.r)
+
+				if isFemale and b.drawdata.femaleAng then
+					ang:RotateAroundAxis(f, b.drawdata.femaleAng.p)
+					ang:RotateAroundAxis(u, b.drawdata.femaleAng.y)
+					ang:RotateAroundAxis(r, b.drawdata.femaleAng.r)
+				else
+					ang:RotateAroundAxis(f, b.drawdata.ang.p)
+					ang:RotateAroundAxis(u, b.drawdata.ang.y)
+					ang:RotateAroundAxis(r, b.drawdata.ang.r)
+				end
+				
 				b:SetRenderAngles(ang)
 				b:DrawModel()
 			end

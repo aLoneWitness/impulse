@@ -9,8 +9,6 @@ if CLIENT then
 	SWEP.DrawCrosshair = true
 end
 
-SWEP.Author = "vin"
-
 SWEP.ViewModel = Model("models/weapons/v_hands.mdl")
 SWEP.WorldModel	= ""
 

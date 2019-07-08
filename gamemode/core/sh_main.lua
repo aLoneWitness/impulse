@@ -40,6 +40,8 @@ else
     end)
 end
 
+local eMeta = FindMetaTable("Entity")
+
 function meta:IsDeveloper()
     return (self:SteamID() == "STEAM_0:1:95921723" or self:SteamID() == "STEAM_0:1:102639297")
 end
@@ -99,8 +101,18 @@ function meta:Notify(message)
     end
 end
 
-function meta:IsFemale()
-    return string.find(self:GetModel(), "female")
+local modelCache = {}
+function eMeta:IsFemale()
+    local model = self:GetModel()
+
+    if modelCache[model] then
+        return modelCache[model]
+    end
+
+    local isFemale = string.find(self:GetModel(), "female")
+
+    modelCache[model] = isFemale
+    return isFemale
 end
 
 function meta:IsCharacterFemale()
