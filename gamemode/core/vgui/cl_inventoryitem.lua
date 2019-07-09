@@ -37,7 +37,7 @@ function PANEL:SetItem(netitem, wide)
 		end
 
 		if not item.NoCenter then
-			self:SetLookAt(ent:OBBCenter())
+			self:SetLookAt(Vector(0, 0, 0))
 		end
 	end
 
@@ -49,7 +49,13 @@ function PANEL:SetItem(netitem, wide)
 	camPos:Add(Vector(0, 25, 25))
 
 	local min, max = self.model.Entity:GetRenderBounds()
-	self.model:SetCamPos(camPos -  Vector(10, 0, 16))
+
+	if item.CamPos then
+		self.model:SetCamPos(item.CamPos)
+	else
+		self.model:SetCamPos(camPos -  Vector(10, 0, 16))
+	end
+
 	self.model:SetLookAt((max + min) / 2)
 
 	self.desc = vgui.Create("DLabel", self)

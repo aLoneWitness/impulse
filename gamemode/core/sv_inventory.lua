@@ -223,6 +223,8 @@ function meta:TakeInventoryItem(invid, storetype, moving)
 		self:SetInventoryItemEquipped(invid, false)
 	end
 
+	local clip = item.clip
+
 	hook.Run("OnInventoryItemRemoved", self, storetype, item.class, item.id, item.equipped, item.restricted, invid)
 	impulse.Inventory.Data[impulseid][storetype][invid] = nil
 	
@@ -232,6 +234,8 @@ function meta:TakeInventoryItem(invid, storetype, moving)
 		net.WriteUInt(storetype, 4)
 		net.Send(self)
 	end
+
+	return clip
 end
 
 function meta:ClearInventory(storetype)
@@ -399,11 +403,13 @@ end
 
 function meta:MoveInventoryItem(itemid, from, to)
 	if self:IsInventoryItemRestricted(itemid, from) then return end
-	local itemclass = impulse.Inventory.Data[self.impulseID][from][itemid].class
+	local item = impulse.Inventory.Data[self.impulseID][from][itemid]
+	local itemclass = item.class
 
-	self:TakeInventoryItem(itemid, from, true)
+	local itemclip = self:TakeInventoryItem(itemid, from, true)
+
 	impulse.Inventory.DBUpdateStoreType(self.impulseID, itemclass, 1, from, to)
-	local newinvid = self:GiveInventoryItem(itemclass, to, false, nil, true)
+	local newinvid = self:GiveInventoryItem(itemclass, to, false, nil, true, (itemclip or nil))
 
 	net.Start("impulseInvMove")
 	net.WriteUInt(itemid, 10)

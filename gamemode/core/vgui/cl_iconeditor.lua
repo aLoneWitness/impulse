@@ -29,9 +29,17 @@ function PANEL:Init()
 	self.model:SetFOV(55)
 
 	local ang = Angle(0, 90, 0)
+	local noCnt = false
 
 	function self.model:LayoutEntity(ent)
 		ent:SetAngles(ang)
+
+		if not noCnt then
+			self:SetLookAt(Vector(0, 0, 0))
+		else
+			local min, max = ent:GetRenderBounds()
+			self:SetLookAt((max + min) / 2)
+		end
 
 		return
 	end
@@ -63,6 +71,13 @@ function PANEL:Init()
 	function self.modelBig:LayoutEntity(ent)
 		ent:SetAngles(ang)
 
+		if not noCnt then
+			self:SetLookAt(Vector(0, 0, 0))
+		else
+			local min, max = ent:GetRenderBounds()
+			self:SetLookAt((max + min) / 2)
+		end
+
 		return
 	end
 
@@ -81,6 +96,16 @@ function PANEL:Init()
 	function self.modelEntry:OnEnter()
 		panel.model:SetModel(self:GetValue())
 		panel.modelBig:SetModel(self:GetValue())
+	end
+
+	self.useNoCenter = vgui.Create("DCheckBoxLabel", self)
+	self.useNoCenter:SetPos(560, 50)
+	self.useNoCenter:SetText("No Center")
+	self.useNoCenter:SetValue(0)
+	self.useNoCenter:SizeToContents()
+
+	function self.useNoCenter:OnChange(v)
+		noCnt = v
 	end
 
 	self.fovSlider = vgui.Create("DNumSlider", self)
@@ -119,7 +144,7 @@ function PANEL:Init()
 	self.camYSlider:SetMin(-100)
 	self.camYSlider:SetMax(100)
 	self.camYSlider:SetDecimals(0)
-	self.camYSlider:SetValue(10)
+	self.camYSlider:SetValue(25)
 
 	function self.camYSlider:OnValueChanged(val)
 		local curPos = panel.model:GetCamPos()
@@ -134,7 +159,7 @@ function PANEL:Init()
 	self.camZSlider:SetMin(-100)
 	self.camZSlider:SetMax(100)
 	self.camZSlider:SetDecimals(0)
-	self.camZSlider:SetValue(10)
+	self.camZSlider:SetValue(9)
 
 	function self.camZSlider:OnValueChanged(val)
 		local curPos = panel.model:GetCamPos()
@@ -149,8 +174,12 @@ function PANEL:Init()
 
 	function self.output:DoClick()
 		local camPos = panel.model:GetCamPos()
-		local output = "FOV: "..panel.model:GetFOV().."\n"
-		output = output.."pos = Vector("..camPos.x..","..camPos.y..","..camPos.z..")\n"
+		local output = "ITEM.FOV = "..panel.model:GetFOV().."\n"
+		output = output.."ITEM.CamPos = Vector("..camPos.x..", "..camPos.y..", "..camPos.z..")"
+
+		if noCnt then
+			output = output.."\nITEM.NoCenter = true"
+		end
 
 		print(output)
 		SetClipboardText(output)
