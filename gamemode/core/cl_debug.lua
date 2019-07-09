@@ -48,6 +48,12 @@ concommand.Add("impulse_debug_hudtoggle", function(ply)
 	impulse_DevHud = !impulse_DevHud
 end)
 
+concommand.Add("impulse_debug_iconeditor", function(ply)
+	if ply:IsSuperAdmin() or ply:IsDeveloper() then
+		vgui.Create("impulseIconEditor")
+	end
+end)
+
 concommand.Add("impulse_debug_wtl", function(ply)
 	local traceEnt = LocalPlayer():GetEyeTrace().Entity
 
