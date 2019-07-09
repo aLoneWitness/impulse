@@ -411,6 +411,8 @@ function IMPULSE:PlayerDeath(ply)
 		impulse.SpawnMoney(ply:GetPos(), money)
 	end
 
+	ply:UnEquipInventory()
+
 	local inv = ply:GetInventory()
 	local pos = ply:GetPos()
 	local dropped = 0
@@ -420,7 +422,9 @@ function IMPULSE:PlayerDeath(ply)
 		local item = impulse.Inventory.Items[itemclass]
 
 		if item.DropOnDeath and not k.restricted then
-			impulse.Inventory.SpawnItem(k.class, pos)
+			local ent = impulse.Inventory.SpawnItem(k.class, pos)
+			ent.ItemClip = k.clip
+
 			dropped = dropped + 1
 
 			if dropped > 4 then
