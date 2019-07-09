@@ -24,6 +24,7 @@ function meta:SetTeam(teamID, forced)
 	end
 
 	self:StripWeapons()
+	self:UnEquipInventory()
 	self:ClearRestrictedInventory()
 	
 	if teamData.loadout then
@@ -97,6 +98,32 @@ function meta:SetTeamClass(classID, skipLoadout)
 				end
 			end
 		end
+
+		self:ClearRestrictedInventory()
+
+		if classData.items then
+			for v,item in pairs(classData.items) do
+				for i=1, (item.amount or 1) do
+					self:GiveInventoryItem(item.class, 1, true)
+				end
+			end
+		else
+			if teamData.items then
+				for v,item in pairs(teamData.items) do
+					for i=1, (item.amount or 1) do
+						self:GiveInventoryItem(item.class, 1, true)
+					end
+				end
+			end
+
+			if classData.itemsAdd then
+				for v,item in pairs(classData.itemsAdd) do
+					for i=1, (item.amount or 1) do
+						self:GiveInventoryItem(item.class, 1, true)
+					end
+				end
+			end
+		end
 	end
 
 	if classData.onBecome then
@@ -157,6 +184,40 @@ function meta:SetTeamRank(rankID)
 		if rankData.loadoutAdd then
 			for v,weapon in pairs(rankData.loadoutAdd) do
 				self:Give(weapon)
+			end
+		end
+	end
+
+	self:ClearRestrictedInventory()
+
+	if rankData.items then
+		for v,item in pairs(rankData.items) do
+			for i=1, (item.amount or 1) do
+				self:GiveInventoryItem(item.class, 1, true)
+			end
+		end
+	else
+		if teamData.items then
+			for v,item in pairs(teamData.items) do
+				for i=1, (item.amount or 1) do
+					self:GiveInventoryItem(item.class, 1, true)
+				end
+			end
+		end
+
+		if classData.itemsAdd then
+			for v,item in pairs(classData.itemsAdd) do
+				for i=1, (item.amount or 1) do
+					self:GiveInventoryItem(item.class, 1, true)
+				end
+			end
+		end
+
+		if rankData.itemsAdd then
+			for v,item in pairs(rankData.itemsAdd) do
+				for i=1, (item.amount or 1) do
+					self:GiveInventoryItem(item.class, 1, true)
+				end
 			end
 		end
 	end

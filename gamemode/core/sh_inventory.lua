@@ -12,6 +12,27 @@ end
 local count = 1
 
 function impulse.RegisterItem(item)
+	local class = item.WeaponClass
+
+	if class then
+		function item:OnEquip(ply)
+			local wep = ply:Give(class)
+
+			if wep and IsValid(wep) then
+				wep:SetClip1(self.clip or 0)
+			end
+		end
+
+		function item:UnEquip(ply)
+			local wep = ply:GetWeapon(class)
+
+			if wep and IsValid(wep) then
+				self.clip = wep:Clip1()
+				ply:StripWeapon(class)
+			end
+		end
+	end
+
 	impulse.Inventory.Items[count] = item
 	impulse.Inventory.ItemsRef[item.UniqueID] = count
 	count = count + 1

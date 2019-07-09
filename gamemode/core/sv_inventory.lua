@@ -141,7 +141,7 @@ function meta:IsInventoryItemRestricted(id, storetype)
 	return false
 end
 
-function meta:GiveInventoryItem(itemclass, storetype, restricted, isLoaded, moving) -- isLoaded is a internal arg used for first time item setup, when they are already half loaded
+function meta:GiveInventoryItem(itemclass, storetype, restricted, isLoaded, moving, clip) -- isLoaded is a internal arg used for first time item setup, when they are already half loaded
 	if not self.beenInvSetup and not isLoaded then return end
 
 	local storetype = storetype or 1
@@ -160,7 +160,8 @@ function meta:GiveInventoryItem(itemclass, storetype, restricted, isLoaded, movi
 				id = itemid,
 				class = itemclass,
 				restricted = restricted,
-				equipped = false
+				equipped = false,
+				clip = clip or nil
 			}
 			break
 		end
@@ -312,13 +313,13 @@ function meta:SetInventoryItemEquipped(itemid, state)
 		if itemclass.EquipGroup then
 			self.InventoryEquipGroups[itemclass.EquipGroup] = itemid
 		end
-		onEquip(item, self)
+		onEquip(item, self, itemclass)
 		self:EmitBudgetSound("impulse/equip.wav", 900)
 	elseif unEquip then
 		if itemclass.EquipGroup then
 			self.InventoryEquipGroups[itemclass.EquipGroup] = nil
 		end
-		unEquip(item, self)
+		unEquip(item, self, itemclass)
 		self:EmitBudgetSound("impulse/unequip.wav", 900)
 	end
 
@@ -330,6 +331,18 @@ function meta:SetInventoryItemEquipped(itemid, state)
 	net.Send(self)
 end
 
+function meta:UnEquipInventory()
+	if not self.beenInvSetup then return end
+
+	local inv = self:GetInventory(1)
+
+	for v,k in pairs(inv) do
+		if k.equipped then
+			self:SetInventoryItemEquipped(v, false)
+		end
+	end
+end
+
 function meta:DropInventoryItem(itemid)
 	local trace = {}
 	trace.start = self:EyePos()
@@ -339,10 +352,10 @@ function meta:DropInventoryItem(itemid)
 	local item = impulse.Inventory.Data[self.impulseID][1][itemid]
 	local tr = util.TraceLine(trace)
 
-	if item.restricted then
-		local itemnetid = impulse.Inventory.ClassToNetID(item.class)
-		local itemclass = impulse.Inventory.Items[itemnetid]
+	local itemnetid = impulse.Inventory.ClassToNetID(item.class)
+	local itemclass = impulse.Inventory.Items[itemnetid]
 
+	if item.restricted then
 		if not itemclass.DropIfRestricted then
 			return
 		end
@@ -351,6 +364,10 @@ function meta:DropInventoryItem(itemid)
 	self:TakeInventoryItem(itemid)
 	local ent = impulse.Inventory.SpawnItem(item.class, tr.HitPos)
 	ent.ItemOwner = self
+
+	if itemclass.WeaponClass and item.clip then
+		ent.ItemClip = item.clip
+	end
 end
 
 function meta:UseInventoryItem(itemid)

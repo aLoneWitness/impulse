@@ -599,3 +599,6 @@ function SWEP:Pickup()
 		end
 	end
 end
+
+function SWEP:PrintWeaponInfo(x, y, alpha)
+end

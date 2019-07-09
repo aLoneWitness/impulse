@@ -43,7 +43,13 @@ if SERVER then
 	function ENT:Use(activator)
 		if activator:IsPlayer() and activator:CanHoldItem(self.Item.UniqueID) then
 			self:Remove()
-			activator:GiveInventoryItem(self.Item.UniqueID)
+
+			if self.ItemClip then
+				activator:GiveInventoryItem(self.Item.UniqueID, nil, nil, nil, nil, self.ItemClip) -- kinda messy ik
+			else
+				activator:GiveInventoryItem(self.Item.UniqueID)
+			end
+			
 			activator:Notify("You have picked up a "..self.Item.Name..".")
 		else
 			activator:Notify("This item is too heavy to pick up.")
