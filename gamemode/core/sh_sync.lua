@@ -383,6 +383,7 @@ SYNC_DISEASES = impulse.Sync.RegisterVar(SYNC_INTSTACK)
 SYNC_COS_FACE = impulse.Sync.RegisterVar(SYNC_INT) -- cosmetic sync values for clothing
 SYNC_COS_HEAD = impulse.Sync.RegisterVar(SYNC_INT)
 SYNC_COS_CHEST = impulse.Sync.RegisterVar(SYNC_INT)
+SYNC_PROPCOUNT = impulse.Sync.RegisterVar(SYNC_INT)
 
 -- ent sync vars
 SYNC_DOOR_NAME = impulse.Sync.RegisterVar(SYNC_STRING)

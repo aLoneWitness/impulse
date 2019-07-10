@@ -61,3 +61,46 @@ function meta:UpdateDefaultModelSkin()
     net.WriteUInt(self.defaultSkin, 8)
     net.Send(self)
 end
+
+-- divert from slow nwvar shit
+function meta:GetPropCount(skip)
+    if ( !self:IsValid() ) then return end
+
+    local key = self:UniqueID()
+    local tab = g_SBoxObjects[key]
+
+    if ( !tab || !tab["props"] ) then
+        return 0
+    end
+
+    local c = 0
+
+    for k, v in pairs(tab["props"]) do
+        if ( IsValid(v) and !v:IsMarkedForDeletion() ) then
+            c = c + 1
+        else
+            tab["props"][k] = nil
+        end
+
+    end
+
+    if not skip then
+        self:SetLocalSyncVar(SYNC_PROPCOUNT, c)
+    end
+
+    return c
+end
+
+function meta:AddPropCount(ent)
+    local key = self:UniqueID()
+    g_SBoxObjects[ key ] = g_SBoxObjects[ key ] or {}
+    g_SBoxObjects[ key ]["props"] = g_SBoxObjects[ key ]["props"] or {}
+
+    local tab = g_SBoxObjects[ key ]["props"]
+
+    table.insert( tab, ent )
+
+    self:GetPropCount()
+
+    ent:CallOnRemove("GetPropCountUpdate", function(ent, ply) ply:GetPropCount() end, self)
+end

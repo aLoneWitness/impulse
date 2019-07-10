@@ -33,7 +33,7 @@ function ENT:CanPlayerUse(ply)
 		return true
 	end
 
-	if ply.OwnedDoors[door] then
+	if ply.OwnedDoors and ply.OwnedDoors[door] then
 		return true
 	else
 		return false

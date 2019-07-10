@@ -660,7 +660,39 @@ function IMPULSE:PlayerSpawnProp(ply, model)
 		return false
 	end
 
-	return self.BaseClass:PlayerSpawnProp(ply, model)
+	if ply:IsAdmin() then
+		return true
+	end
+
+	local limit
+	local price
+
+	if ply:IsDonator() then
+		limit = impulse.Config.PropLimitDonator
+		price = impulse.Config.PropPriceDonator
+	else
+		limit = impulse.Config.PropLimit
+		price = impulse.Config.PropPrice
+	end
+
+	if ply:GetPropCount(true) >= limit then
+		ply:Notify("You have reached your prop limit.")
+		return false
+	end
+
+	if ply:CanAfford(price) then
+		ply:TakeMoney(price)
+		ply:Notify("You have purchased a prop for "..impulse.Config.CurrencyPrefix..price..".")
+	else
+		ply:Notify("You need "..impulse.Config.CurrencyPrefix..price.." to spawn this prop.")
+		return false
+	end
+
+	return true
+end
+
+function IMPULSE:PlayerSpawnedProp(ply, model, ent)
+	ply:AddPropCount(ent)
 end
 
 function IMPULSE:PlayerSpawnVehicle(ply, model)
@@ -672,29 +704,6 @@ function IMPULSE:PlayerSpawnVehicle(ply, model)
 		return true
 	else
 		return ply:IsSuperAdmin()
-	end
-end
-
-function IMPULSE:PlayerSpawnedProp(ply, model, ent)
-	--self.BaseClass:PlayerSpawnedProp(ply, model, ent)
-
-	if ply:IsAdmin() then
-		return
-	end
-
-	local price = impulse.Config.PropPrice
-
-	if ply:IsDonator() then
-		price = impulse.Config.PropPriceDonator
-	end
-
-	if ply:CanAfford(price) then
-		ply:TakeMoney(price)
-		ply:Notify("You have purchased a prop for "..impulse.Config.CurrencyPrefix..price..".")
-	else
-		ply:Notify("You need "..impulse.Config.CurrencyPrefix..price.." to spawn this prop.")
-		SafeRemoveEntity(ent)
-		return false
 	end
 end
 

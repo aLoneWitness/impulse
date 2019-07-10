@@ -703,6 +703,8 @@ net.Receive("impulseChangeRPName", function(len, ply)
 			ply:TakeMoney(impulse.Config.RPNameChangePrice)
 			ply:SetRPName(output, true)
 
+			hook.Run("PlayerChangeRPName", ply, output)
+
 			ply.nextRPNameChange = CurTime() + 240
 			ply:Notify("You have changed your name to "..output.." for "..impulse.Config.CurrencyPrefix..impulse.Config.RPNameChangePrice..".")
 		else

@@ -358,7 +358,7 @@ function IMPULSE:HUDPaint()
 
 			surface.SetFont("Impulse-Elements18-Shadow")
 			surface.SetTextPos(scrW-130, scrH-77)
-			surface.DrawText("Props: 0/80")
+			surface.DrawText("Props: "..LocalPlayer():GetSyncVar(SYNC_PROPCOUNT, 0).."/"..((LocalPlayer():IsDonator() and impulse.Config.PropLimitDonator) or impulse.Config.PropLimit))
 
 			surface.SetTextPos(scrW-130, scrH-62)
 			surface.DrawText("Doors: 0/2")

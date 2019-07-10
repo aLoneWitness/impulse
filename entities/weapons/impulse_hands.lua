@@ -489,7 +489,7 @@ function SWEP:DoPickup(throw)
 		local ent = trace.Entity
 		local phys = trace.Entity:GetPhysicsObject()
 
-		if not IsValid(phys) or not phys:IsMoveable() or phys:HasGameFlag(FVPHYSICS_PLAYER_HELD) then
+		if not IsValid(phys) or not phys:IsMoveable() or phys:HasGameFlag(FVPHYSICS_PLAYER_HELD) or ent.NoCarry then
 			return
 		end
 

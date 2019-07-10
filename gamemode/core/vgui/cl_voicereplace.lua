@@ -44,7 +44,7 @@ end
 function PANEL:Think()
 	
 	if ( IsValid( self.ply ) ) then
-		self.LabelName:SetText( self.ply:Nick() )
+		self.LabelName:SetText( self.ply:KnownName() )
 	end
 
 	if ( self.fadeAnim ) then
