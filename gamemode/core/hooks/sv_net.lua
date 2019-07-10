@@ -619,7 +619,9 @@ net.Receive("impulseInvDoMove", function(len, ply)
 
 	if not ply.currentStorage or not IsValid(ply.currentStorage) then return end
 	if ply.currentStorage:GetPos():DistToSqr(ply:GetPos()) > (100 ^ 2) then return end
+	if ply:IsCP() then return end
 	if ply:GetSyncVar(SYNC_ARRESTED, false) or not ply:Alive() then return end
+	if (ply.NextStorage or 0) > CurTime() then return ply:Notify("Because you were recently in combat you must wait "..string.NiceTime(ply.NextStorage - CurTime()).." before using your storage.") end
 
 	local itemid = net.ReadUInt(10)
 	local from = net.ReadUInt(4)

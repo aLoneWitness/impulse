@@ -867,5 +867,10 @@ function IMPULSE:PlayerShouldTakeDamage(ply, attacker)
 		return false
 	end
 
+	if attacker and IsValid(attacker) and attacker:IsPlayer() then
+		ply.NextStorage = CurTime() + 30
+		attacker.NextStorage = CurTime() + 60
+	end
+
 	return true
 end
