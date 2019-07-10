@@ -22,6 +22,10 @@ function ENT:OnTakeDamage(dmg)
 	return false
 end
 
+function ENT:CanPlayerUse(ply)
+	return true
+end
+
 function ENT:Use(activator, caller)
 	if activator:IsPlayer() and activator:Alive() then
 		net.Start("impulseInvStorageOpen")

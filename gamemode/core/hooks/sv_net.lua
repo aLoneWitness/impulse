@@ -270,7 +270,7 @@ net.Receive("impulseBuyItem", function(len, ply)
 	if (ply.nextBuy or 0) > CurTime() then return end
 	ply.nextBuy = CurTime() + 1
 
-	if ply:GetSyncVar(SYNC_ARRESTED, false) then
+	if ply:GetSyncVar(SYNC_ARRESTED, false) or not ply:Alive() then
 		return
 	end
 
@@ -280,15 +280,26 @@ net.Receive("impulseBuyItem", function(len, ply)
 	local buyable = impulse.Business.Data[buyableName]
 
 	if buyable and ply:CanBuy(buyableName) and ply:CanAfford(buyable.price) then
+		local item = buyable.item
+
+		if item and not ply:CanHoldItem(item) then
+			ply:Notify("You do not have the inventory space to hold this item.")
+			return
+		end
+
 		ply:TakeMoney(buyable.price)
 
-		local trace = {}
-		trace.start = ply:EyePos()
-		trace.endpos = trace.start + ply:GetAimVector() * 85
-		trace.filter = ply
+		if item then
+			ply:GiveInventoryItem(item)
+		else
+			local trace = {}
+			trace.start = ply:EyePos()
+			trace.endpos = trace.start + ply:GetAimVector() * 85
+			trace.filter = ply
 
-		local tr = util.TraceLine(trace)
-		impulse.SpawnBuyable(tr.HitPos, buyable)
+			local tr = util.TraceLine(trace)
+			impulse.SpawnBuyable(tr.HitPos, buyable)
+		end
 
 		ply:Notify("You have purchased "..buyableName.." for "..impulse.Config.CurrencyPrefix..buyable.price..".")
 	else
@@ -631,6 +642,10 @@ net.Receive("impulseInvDoMove", function(len, ply)
 	if (ply.NextStorage or 0) > CurTime() then
 		ply.nextInvMove = CurTime() + 2
 		return ply:Notify("Because you were recently in combat you must wait "..string.NiceTime(ply.NextStorage - CurTime()).." before using your storage.") 
+	end
+
+	if not ply.currentStorage:CanPlayerUse(ply) then
+		return
 	end
 
 	local itemid = net.ReadUInt(10)
