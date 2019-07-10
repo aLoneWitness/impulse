@@ -35,6 +35,8 @@ function ENT:Use(activator, caller)
 		net.Start("impulseInvStorageOpen")
 		net.Send(activator)
 
+		hook.Run("PlayerOpenStorage", activator, self)
+
 		activator.currentStorage = self
 	end
 end

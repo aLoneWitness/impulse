@@ -325,6 +325,8 @@ net.Receive("impulseDoorBuy", function(len, ply)
 			ply:SetDoorMaster(traceEnt)
 
 			ply:Notify("You have bought a door for "..impulse.Config.CurrencyPrefix..impulse.Config.DoorPrice..".")
+
+			hook.Run("PlayerPurchaseDoor", ply, traceEnt)
 		else
 			ply:Notify("You cannot afford to buy this door.")
 		end
@@ -345,7 +347,10 @@ net.Receive("impulseDoorSell", function(len, ply)
 	if IsValid(traceEnt) and ply:IsDoorOwner(traceEnt:GetSyncVar(SYNC_DOOR_OWNERS, nil)) and traceEnt:GetDoorMaster() == ply and hook.Run("CanEditDoor", ply, traceEnt) != false then
 		ply:RemoveDoorMaster(traceEnt)
 		ply:GiveMoney(impulse.Config.DoorPrice - 2)
+
 		ply:Notify("You have sold a door for "..impulse.Config.CurrencyPrefix..(impulse.Config.DoorPrice - 2)..".")
+
+		hook.Run("PlayerSellDoor", ply, traceEnt)
 	end
 	ply.nextDoorSell = CurTime() + 1
 end)
@@ -559,6 +564,7 @@ net.Receive("impulseInvDoDrop", function(len, ply)
 
 	if hasItem then
 		ply:DropInventoryItem(invid)
+		hook.Run("PlayerDropItem", ply, item, invid)
 	end
 end)
 
@@ -621,7 +627,11 @@ net.Receive("impulseInvDoMove", function(len, ply)
 	if ply.currentStorage:GetPos():DistToSqr(ply:GetPos()) > (100 ^ 2) then return end
 	if ply:IsCP() then return end
 	if ply:GetSyncVar(SYNC_ARRESTED, false) or not ply:Alive() then return end
-	if (ply.NextStorage or 0) > CurTime() then return ply:Notify("Because you were recently in combat you must wait "..string.NiceTime(ply.NextStorage - CurTime()).." before using your storage.") end
+
+	if (ply.NextStorage or 0) > CurTime() then
+		ply.nextInvMove = CurTime() + 2
+		return ply:Notify("Because you were recently in combat you must wait "..string.NiceTime(ply.NextStorage - CurTime()).." before using your storage.") 
+	end
 
 	local itemid = net.ReadUInt(10)
 	local from = net.ReadUInt(4)

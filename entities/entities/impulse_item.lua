@@ -22,6 +22,8 @@ if SERVER then
     	if IsValid(physObj) then
 			physObj:Wake()
 		end
+
+		self.UseDelay = CurTime() + 1
 	end
 
 	function ENT:SetItem(itemclass, owner)
@@ -41,6 +43,10 @@ if SERVER then
 	end
 
 	function ENT:Use(activator)
+		if self.UseDelay > CurTime() then
+			return
+		end
+
 		if activator:IsPlayer() and activator:CanHoldItem(self.Item.UniqueID) then
 			self:Remove()
 
@@ -51,6 +57,8 @@ if SERVER then
 			end
 			
 			activator:Notify("You have picked up a "..self.Item.Name..".")
+
+			hook.Run("PlayerPickupItem", activator, self.Item.UniqueID)
 		else
 			activator:Notify("This item is too heavy to pick up.")
 		end
