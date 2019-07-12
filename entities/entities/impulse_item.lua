@@ -47,20 +47,27 @@ if SERVER then
 			return
 		end
 
-		if activator:IsPlayer() and activator:CanHoldItem(self.Item.UniqueID) then
-			self:Remove()
+		if activator:IsPlayer() then
+			if self.Item.Illegal and activator:IsCP() then
+				activator.ConfiscatingItem = self
+				net.Start("impulseConfiscateCheck")
+				net.WriteEntity(self)
+				net.Send(activator)				
+			elseif activator:CanHoldItem(self.Item.UniqueID) then
+				self:Remove()
 
-			if self.ItemClip then
-				activator:GiveInventoryItem(self.Item.UniqueID, nil, nil, nil, nil, self.ItemClip) -- kinda messy ik
+				if self.ItemClip then
+					activator:GiveInventoryItem(self.Item.UniqueID, nil, nil, nil, nil, self.ItemClip) -- kinda messy ik
+				else
+					activator:GiveInventoryItem(self.Item.UniqueID)
+				end
+				
+				activator:Notify("You have picked up a "..self.Item.Name..".")
+
+				hook.Run("PlayerPickupItem", activator, self.Item.UniqueID)
 			else
-				activator:GiveInventoryItem(self.Item.UniqueID)
+				activator:Notify("This item is too heavy to pick up.")
 			end
-			
-			activator:Notify("You have picked up a "..self.Item.Name..".")
-
-			hook.Run("PlayerPickupItem", activator, self.Item.UniqueID)
-		else
-			activator:Notify("This item is too heavy to pick up.")
 		end
 	end
 

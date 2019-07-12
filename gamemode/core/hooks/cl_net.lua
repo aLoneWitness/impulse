@@ -253,3 +253,24 @@ net.Receive("impulseUpdateDefaultModelSkin", function()
 	impulse_defaultModel = net.ReadString()
 	impulse_defaultSkin = net.ReadUInt(8)
 end)
+
+net.Receive("impulseConfiscateCheck", function()
+	local item = net.ReadEntity()
+
+	if IsValid(item) then
+		local request = Derma_Query("Would you like to confiscate this "..item.HUDName.."?", 
+			"impulse",
+			"Confiscate",
+			function()
+				net.Start("impulseDoConfiscate")
+				net.SendToServer()
+			end,
+			"Cancel")
+
+		function request:Think()
+			if not item or not IsValid(item) then
+				self:Remove()
+			end
+		end
+	end
+end)

@@ -43,6 +43,8 @@ util.AddNetworkString("impulseChangeRPName")
 util.AddNetworkString("impulseCharacterEditorOpen")
 util.AddNetworkString("impulseCharacterEdit")
 util.AddNetworkString("impulseUpdateDefaultModelSkin")
+util.AddNetworkString("impulseConfiscateCheck")
+util.AddNetworkString("impulseDoConfiscate")
 
 net.Receive("impulseCharacterCreate", function(len, ply)
 	if (ply.NextCreate or 0) > CurTime() then return end
@@ -791,4 +793,24 @@ net.Receive("impulseCharacterEdit", function(len, ply)
 	end
 
 	currentCosmeticEditor = nil
+end)
+
+net.Receive("impulseDoConfiscate", function(len, ply)
+	if (ply.nextDoConfiscate or 0) > CurTime() then return end
+	if not ply:IsCP() then return end
+
+	local item = ply.ConfiscatingItem
+
+	if not item or not IsValid(item) then
+		return
+	end
+
+	local itemName = item.Item.Name
+
+	if item:GetPos():DistToSqr(ply:GetPos()) < (200 ^ 2) then
+		ply:Notify("You have confiscated a "..itemName..".")
+		item:Remove()
+	end
+
+	ply.nextDoConfiscate = CurTime() + 1
 end)
