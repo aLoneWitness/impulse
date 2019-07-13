@@ -300,29 +300,55 @@ function PANEL:Business()
 		return true
 	end
 
-	self.buyableItems = vgui.Create("DCollapsibleCategory", self.businessInner)
-	self.buyableItems:SetLabel("Available items")
-	self.buyableItems:Dock(TOP)
+	self.itemsScroll = vgui.Create("DScrollPanel", self.businessInner)
+	self.itemsScroll:Dock(FILL)
+
+	self.utilItems = self.itemsScroll:Add("DCollapsibleCategory")
+	self.utilItems:SetLabel("Utilities")
+	self.utilItems:Dock(TOP)
 	local colInv = Color(0, 0, 0, 0)
-	function self.buyableItems:Paint()
+	function self.utilItems:Paint()
 		self:SetBGColor(colInv)
 	end
 
-	self.buyableItemsScroll = vgui.Create("DScrollPanel", self.availibleTeams)
-	self.buyableItemsScroll:Dock(FILL)
-	self.buyableItems:SetContents(self.buyableItemsScroll)
+	local utilList = vgui.Create("DIconLayout", self.utilItems)
+	utilList:Dock(FILL)
+	utilList:SetSpaceY(5)
+	utilList:SetSpaceX(5)
+	self.utilItems:SetContents(utilList)
 
-	local availibleList = vgui.Create("DIconLayout", self.buyableItemsScroll)
-	availibleList:Dock(FILL)
-	availibleList:SetSpaceY(5)
-	availibleList:SetSpaceX(5)
+	self.cat = {}
 
 	for name,k in pairs(impulse.Business.Data) do
 		if not LocalPlayer():CanBuy(name) then
 			continue
 		end
 
-		local item = availibleList:Add("SpawnIcon")
+		local parent = nil
+
+		if k.category then
+			if self.cat[k.category] then
+				parent = self.cat[k.category]
+			else
+				local cat = self.itemsScroll:Add("DCollapsibleCategory")
+				cat:SetLabel(k.category)
+				cat:Dock(TOP)
+				local colInv = Color(0, 0, 0, 0)
+				function cat:Paint()
+					self:SetBGColor(colInv)
+				end
+
+				self.cat[k.category] = vgui.Create("DIconLayout", cat)
+				self.cat[k.category]:Dock(FILL)
+				self.cat[k.category]:SetSpaceY(5)
+				self.cat[k.category]:SetSpaceX(5)
+				cat:SetContents(self.cat[k.category])
+
+				parent = self.cat[k.category]
+			end
+		end
+
+		local item = (parent or utilList):Add("SpawnIcon")
 		item:SetModel(k.model)
 		item:SetSize(58,58)
 		item:SetTooltip(name.." \n"..impulse.Config.CurrencyPrefix..k.price)

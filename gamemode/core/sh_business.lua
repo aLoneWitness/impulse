@@ -36,10 +36,6 @@ function impulse.SpawnBuyable(pos, buyable)
 		spawnedBuyable:SetModel(buyable.model)
 	end
 
-	if buyable.food then
-		spawnedBuyable.food = buyable.food
-	end
-	
 	spawnedBuyable:SetPos(pos)
 	spawnedBuyable:Spawn()
 end
