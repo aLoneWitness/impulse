@@ -109,20 +109,26 @@ local function DrawOverheadInfo(target, alpha)
 	end
 end
 
-local function DrawDoorInfo(target)
-	local scrW = ScrW()
-	local scrH = ScrH()
+local function DrawDoorInfo(target, alpha)
+	local pos = target.LocalToWorld(target, target:OBBCenter()):ToScreen()
 	local doorOwners = target:GetSyncVar(SYNC_DOOR_OWNERS, nil) 
 	local doorName = target:GetSyncVar(SYNC_DOOR_NAME, nil) 
 	local doorGroup =  target:GetSyncVar(SYNC_DOOR_GROUP, nil)
 	local doorBuyable = target:GetSyncVar(SYNC_DOOR_BUYABLE, nil)
-	local ownedBy = "Owner(s):"
+	local col = ColorAlpha(impulse.Config.MainColour, alpha)
 
 	if doorName then
-		draw.DrawText(doorName, "Impulse-Elements18-Shadow", scrW * .5, scrH * .6, impulse.Config.MainColour, 1)
+		draw.DrawText(doorName, "Impulse-Elements18-Shadow", pos.x, pos.y, col, 1)
 	elseif doorGroup then
-		draw.DrawText(impulse.Config.DoorGroups[doorGroup], "Impulse-Elements18-Shadow", scrW * .5, scrH * .6, impulse.Config.MainColour, 1)
+		draw.DrawText(impulse.Config.DoorGroups[doorGroup], "Impulse-Elements18-Shadow", pos.x, pos.y, col, 1)
 	elseif doorOwners then
+		local ownedBy
+		if #doorOwners > 1 then
+			ownedBy = "Owners:"
+		else
+			ownedBy = "Owner:"
+		end
+
 		for v,k in pairs(doorOwners) do
 			local owner = Entity(k)
 
@@ -130,26 +136,26 @@ local function DrawDoorInfo(target)
 				ownedBy = ownedBy.."\n"..owner:Name()
 			end
 		end
-		draw.DrawText(ownedBy, "Impulse-Elements18-Shadow", scrW * .5, scrH * .6, impulse.Config.MainColour, 1)
+		draw.DrawText(ownedBy, "Impulse-Elements18-Shadow", pos.x, pos.y, col, 1)
 	end
 
 	if LocalPlayer():CanBuyDoor(doorOwners, doorBuyable) then
-		draw.DrawText("Ownable door (F2)", "Impulse-Elements18-Shadow", scrW * .5, scrH * .6, impulse.Config.MainColour, 1)
+		draw.DrawText("Ownable door (F2)", "Impulse-Elements18-Shadow", pos.x, pos.y, col, 1)
 	end
 end
 
-local function DrawEntInfo(target)
-	local pos = (target:GetPos() + target:OBBCenter()):ToScreen()
+local function DrawEntInfo(target, alpha)
+	local pos = target.LocalToWorld(target, target:OBBCenter()):ToScreen()
 	local scrW = ScrW()
 	local scrH = ScrH()
 	local hudName = target.HUDName
 	local hudDesc = target.HUDDesc
 	local hudCol = target.HUDColour or impulse.Config.InteractColour
 
-	draw.DrawText(hudName, "Impulse-Elements19-Shadow", pos.x, pos.y, hudCol, 1)
+	draw.DrawText(hudName, "Impulse-Elements19-Shadow", pos.x, pos.y, ColorAlpha(hudCol, alpha), 1)
 
 	if hudDesc then
-		draw.DrawText(hudDesc, "Impulse-Elements16-Shadow", pos.x, pos.y + 20, color_white, 1)
+		draw.DrawText(hudDesc, "Impulse-Elements16-Shadow", pos.x, pos.y + 20, ColorAlpha(color_white, alpha), 1)
 	end
 end
 
@@ -446,21 +452,6 @@ function IMPULSE:HUDPaint()
 		end)
 	end
 
-	local trace = {}
-	trace.start = lp:EyePos()
-	trace.endpos = trace.start + lp:GetAimVector() * 85
-	trace.filter = lp
-
-	local traceEnt = util.TraceLine(trace).Entity
-
-	if IsValid(traceEnt) then
-		if traceEnt:IsDoor() then
-			DrawDoorInfo(traceEnt)
-		elseif traceEnt.HUDName then
-			DrawEntInfo(traceEnt)
-		end
-	end
-
 	-- watermark
 	surface.SetDrawColor(watermarkCol)
 	surface.SetMaterial(watermark)
@@ -575,8 +566,14 @@ function IMPULSE:HUDPaintBackground()
 			end
 
 			if alpha > 0 then
-				if entTarg:IsPlayer() and not entTarg:GetNoDraw() then
-					DrawOverheadInfo(entTarg, alpha)
+				if not entTarg:GetNoDraw() then
+					if entTarg:IsPlayer() then
+						DrawOverheadInfo(entTarg, alpha)
+					elseif entTarg.HUDName then
+						DrawEntInfo(entTarg, alpha)
+					elseif entTarg:IsDoor() then
+						DrawDoorInfo(entTarg, alpha)
+					end
 				end
 			end
 

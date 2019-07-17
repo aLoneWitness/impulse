@@ -1,5 +1,6 @@
 local red = Color(255, 0, 0, 255)
 local green = Color(0, 240, 0, 255)
+local col = Color(255,255,255,120)
 
 hook.Add("HUDPaint", "impulseOpsHUD", function()
 	if not impulse.hudEnabled then return end
@@ -8,12 +9,12 @@ hook.Add("HUDPaint", "impulseOpsHUD", function()
 		local onDuty = impulse.GetSetting("admin_onduty") or false
 
 		if onDuty then
-			draw.SimpleText("OBSERVER MODE", "Impulse-Elements16-Shadow", 20, 10, impulse.Config.MainColour)
+			draw.SimpleText("OBSERVER MODE", "Impulse-Elements16-Shadow", 20, 10, col)
 		else
 			draw.SimpleText("OBSERVER MODE (OFF DUTY! YOU WILL NOT VIEW INBOUND REPORTS!)", "Impulse-Elements16-Shadow", 20, 10, red)
 		end
 
-		draw.SimpleText("TOTAL REPORTS: " ..#impulse.Ops.Reports, "Impulse-Elements16-Shadow", 20, 30, impulse.Config.MainColour)
+		draw.SimpleText("TOTAL REPORTS: " ..#impulse.Ops.Reports, "Impulse-Elements16-Shadow", 20, 30, col)
 
 		local totalClaimed = 0
 		for v,k in pairs(impulse.Ops.Reports) do
@@ -30,16 +31,16 @@ hook.Add("HUDPaint", "impulseOpsHUD", function()
 			end
 		end
 
-		draw.SimpleText("CLAIMED REPORTS: " ..totalClaimed, "Impulse-Elements16-Shadow", 20, 50, impulse.Config.MainColour)
+		draw.SimpleText("CLAIMED REPORTS: " ..totalClaimed, "Impulse-Elements16-Shadow", 20, 50, col)
 
 		if impulse.GetSetting("admin_esp") and LocalPlayer():IsSuperAdmin() then
-			draw.SimpleText("ENTCOUNT: "..#ents.GetAll(), "Impulse-Elements16-Shadow", 20, 100, impulse.Config.MainColour)
-			draw.SimpleText("PLAYERCOUNT: "..#player.GetAll(), "Impulse-Elements16-Shadow", 20, 120, impulse.Config.MainColour)
+			draw.SimpleText("ENTCOUNT: "..#ents.GetAll(), "Impulse-Elements16-Shadow", 20, 100, col)
+			draw.SimpleText("PLAYERCOUNT: "..#player.GetAll(), "Impulse-Elements16-Shadow", 20, 120, col)
 
 			local y = 140
 
-			for v,k in pairs(team.GetAllTeams()) do
-				draw.SimpleText(team.GetName(v)..": "..#team.GetPlayers(v), "Impulse-Elements16-Shadow", 20, y, impulse.Config.MainColour)
+			for v,k in pairs(impulse.Teams.Data) do
+				draw.SimpleText(team.GetName(v)..": "..#team.GetPlayers(v), "Impulse-Elements16-Shadow", 20, y, col)
 				y = y + 20
 			end
 

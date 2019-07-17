@@ -11,6 +11,8 @@ function impulse.Schema.Boot(name)
     
     impulse.lib.includeDir(SCHEMA.."/schema/teams")
     impulse.lib.includeDir(SCHEMA.."/schema/items")
+    impulse.lib.includeDir(SCHEMA.."/schema/benches")
+    impulse.lib.includeDir(SCHEMA.."/schema/mixtures")
     impulse.lib.includeDir(SCHEMA.."/schema/buyables")
     impulse.lib.includeDir(SCHEMA.."/schema/npcs")
     impulse.lib.includeDir(SCHEMA.."/schema/config")

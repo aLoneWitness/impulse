@@ -3,6 +3,9 @@ impulse.Inventory.Data = impulse.Inventory.Data or {}
 impulse.Inventory.Data[0] = impulse.Inventory.Data[0] or {}
 impulse.Inventory.Items = impulse.Inventory.Items or {}
 impulse.Inventory.ItemsRef = impulse.Inventory.ItemsRef or {}
+impulse.Inventory.Benches = impulse.Inventory.Benches or {}
+impulse.Inventory.Mixtures = impulse.Inventory.Mixtures or {}
+impulse.Inventory.MixturesRef = impulse.Inventory.MixturesRef or {}
 
 if CLIENT then
 	impulse.Inventory.Data[0][1] = impulse.Inventory.Data[0][1] or {}
@@ -10,6 +13,7 @@ if CLIENT then
 end
 
 local count = 1
+local countX = 1
 
 function impulse.RegisterItem(item)
 	local class = item.WeaponClass
@@ -33,9 +37,23 @@ function impulse.RegisterItem(item)
 		end
 	end
 
-	impulse.Inventory.Items[count] = item
+	impulse.Inventory.Items[count] = item -- this is done the wrong way round yea yea ik
 	impulse.Inventory.ItemsRef[item.UniqueID] = count
 	count = count + 1
+end
+
+function impulse.RegisterBench(bench)
+	local class = bench.Class
+
+	impulse.Inventory.Benches[class] = bench	
+end
+
+function impulse.RegisterMixture(mix)
+	local class = mix.Class
+
+	impulse.Inventory.Mixtures[class] = mix
+	impulse.Inventory.MixturesRef[countX] = class
+	countX = countX + 1
 end
 
 function impulse.Inventory.ClassToNetID(class)

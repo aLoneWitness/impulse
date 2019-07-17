@@ -60,6 +60,19 @@ function impulse.Inventory.SpawnItem(class, pos)
 	return item
 end
 
+function impulse.Inventory.SpawnBench(class, pos, ang)
+	local benchClass = impulse.Inventory.Benches[class]
+	if not benchClass then return print("[impulse] Attempting to spawn nil bench!") end
+
+	local bench = ents.Create("impulse_bench")
+	bench:SetBench(benchClass)
+	bench:SetPos(pos)
+	bench:SetAngles(ang)
+	bench:Spawn()
+
+	return bench
+end
+
 function meta:GetInventory(storage)
 	return impulse.Inventory.Data[self.impulseID][storage or 1]
 end
