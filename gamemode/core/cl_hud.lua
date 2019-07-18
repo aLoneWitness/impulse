@@ -250,15 +250,18 @@ function IMPULSE:HUDPaint()
 	     
 	--Crosshair
 	local x, y
+	local curWep = lp:GetActiveWeapon()
 
-	if impulse.GetSetting("view_thirdperson") == true then
-		local p = LocalPlayer():GetEyeTrace().HitPos:ToScreen()
-		x, y = p.x, p.y
-	else
-		x, y = scrW/2, scrH/2
+	if not curWep or not curWep.ShouldDrawCrosshair or (curWep.ShouldDrawCrosshair and curWep.ShouldDrawCrosshair(curWep) != false) then
+		if impulse.GetSetting("view_thirdperson") == true then
+			local p = LocalPlayer():GetEyeTrace().HitPos:ToScreen()
+			x, y = p.x, p.y
+		else
+			x, y = scrW/2, scrH/2
+		end
+
+		DrawCrosshair(x, y)
 	end
-
-	DrawCrosshair(x, y)
 
 	-- HUD
 

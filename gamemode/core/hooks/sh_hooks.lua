@@ -1,8 +1,6 @@
 local KEY_BLACKLIST = IN_ATTACK + IN_ATTACK2
 
 function IMPULSE:StartCommand(ply, command)
-	local weapon = ply:GetActiveWeapon()
-
 	if not ply:IsWeaponRaised() then
 		command:RemoveKey(KEY_BLACKLIST)
 	end

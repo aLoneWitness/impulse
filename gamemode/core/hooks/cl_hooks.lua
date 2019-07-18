@@ -280,11 +280,27 @@ function IMPULSE:OnContextMenuOpen()
 	if LocalPlayer():Team() == 0 or not LocalPlayer():Alive() or impulse_ActiveWorkbar then return end
 	if LocalPlayer():GetSyncVar(SYNC_ARRESTED, false) then return end
 
-	impulse_inventory = vgui.Create("impulseInventory")
-	gui.EnableScreenClicker(true)
+	if not input.IsKeyDown(KEY_LALT) then
+		impulse_inventory = vgui.Create("impulseInventory")
+		gui.EnableScreenClicker(true)
+	else
+		if IsValid(g_ContextMenu) and not g_ContextMenu:IsVisible() then
+			g_ContextMenu:Open()
+			menubar.ParentTo(g_ContextMenu)
+
+			hook.Call("ContextMenuOpened", self)
+
+			chat.AddText("Opened context menu (ALT+C)")
+		end
+	end
 end
 
 function IMPULSE:OnContextMenuClose()
+	if IsValid(g_ContextMenu) then 
+		g_ContextMenu:Close()
+		hook.Call("ContextMenuClosed", self)
+	end
+
 	if IsValid(impulse_inventory) then
 		impulse_inventory:Remove()
 		gui.EnableScreenClicker(false)
