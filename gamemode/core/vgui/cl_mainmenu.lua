@@ -256,6 +256,16 @@ function PANEL:Init()
 
 	timer.Simple(0, function()
 		if impulse.MainMenu.popup then return end
+
+		if not steamworks.IsSubscribed("1651398810") then
+			Derma_Query("You are not subscribed to the impulse framework content!\nIf you do not subscribe you will experience missing textures and errors.\nAfter subscribing, rejoin the server.",
+				"impulse",
+				"Subscribe",
+				function()
+					gui.OpenURL("https://steamcommunity.com/sharedfiles/filedetails/?id=1651398810")
+				end,
+				"No thanks")
+		end
 		
 		if impulse.GetSetting("perf_mcore") == false then
 			Derma_Query("Would you like to enable Multi-core rendering?\nThis will often greatly improve your FPS, however if your computer has a low core count and/or\na small amount of RAM, it can cause crashes and performance problems.",
