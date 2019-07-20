@@ -234,10 +234,17 @@ function IMPULSE:CalcView(player, origin, angles, fov)
 			pos = pos + tr.HitNormal * 5
 		end
 
+		local fov = impulse.GetSetting("view_thirdperson_fov")
+		local wep = player:GetActiveWeapon()
+
+		if wep and IsValid(wep) and wep.GetIronsights then
+			fov = Lerp(FrameTime() * 15, wep.FOVMultiplier, wep:GetIronsights() and wep.IronsightsFOV or 1) * fov
+		end
+
 		return {
 			origin = pos,
 			angles = angles,
-			fov = impulse.GetSetting("view_thirdperson_fov")
+			fov = fov
 		}
 	end
 end
