@@ -480,6 +480,8 @@ PLAYER_HOLDTYPE_TRANSLATOR["passive"] = "normal"
 PLAYER_HOLDTYPE_TRANSLATOR["knife"] = "normal"
 PLAYER_HOLDTYPE_TRANSLATOR["duel"] = "normal"
 PLAYER_HOLDTYPE_TRANSLATOR["bugbait"] = "normal"
+PLAYER_HOLDTYPE_TRANSLATOR["pistol"] = "normal"
+PLAYER_HOLDTYPE_TRANSLATOR["revolver"] = "normal"
 
 local getModelClass = impulse.Anim.GetModelClass
 local IsValid = IsValid

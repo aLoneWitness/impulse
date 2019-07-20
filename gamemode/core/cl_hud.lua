@@ -516,6 +516,8 @@ function IMPULSE:HUDPaint()
 		surface.DrawText(tostring(lp:GetPos()))
 		surface.SetTextPos(400, (scrH / 1.5) + 20)
 		surface.DrawText(tostring(lp:GetAngles()))
+		surface.SetTextPos(400, (scrH / 1.5) + 40)
+		surface.DrawText(lp:GetVelocity():Length2D())
 	end
 
 	lasthealth = health
