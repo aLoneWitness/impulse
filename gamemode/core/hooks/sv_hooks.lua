@@ -367,14 +367,22 @@ function IMPULSE:DoPlayerDeath(ply)
 	ragdoll:Spawn()
 	ragdoll:SetCollisionGroup(COLLISION_GROUP_WORLD)
 
-	for x=0, ragdoll:GetPhysicsObjectCount() - 1 do
-		local bone = ragdoll:GetPhysicsObject(x)
+	local velocity = ply:GetVelocity()
 
-		if bone and bone:IsValid() then
-			local pos, ang = ply:GetBonePosition(ragdoll:TranslatePhysBoneToBone(x))
-			bone:SetPos(pos)
-			bone:SetAngles(ang)
-			bone:AddVelocity(vel)
+	for i = 0, ragdoll:GetPhysicsObjectCount() - 1 do
+		local physObj = ragdoll:GetPhysicsObjectNum(i)
+
+		if IsValid(physObj) then
+			physObj:SetVelocity(velocity)
+
+			local index = ragdoll:TranslatePhysBoneToBone(i)
+
+			if index then
+				local pos, ang = ply:GetBonePosition(index)
+
+				physObj:SetPos(pos)
+				physObj:SetAngles(ang)
+			end
 		end
 	end
 
