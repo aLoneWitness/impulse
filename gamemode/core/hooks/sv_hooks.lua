@@ -812,7 +812,7 @@ local whitelistDupeEnts = {
 	["prop_door_rotating"] = true -- door tool
 }
 
-function IMPULSE:ADVDupeIsAllowed(ply, class, entclass) -- adv dupe 2 can be easily exploited, you must have the impulse version of AD2 for this to work
+function IMPULSE:ADVDupeIsAllowed(ply, class, entclass) -- adv dupe 2 can be easily exploited, this fixes it. you must have the impulse version of AD2 for this to work
 	if bannedDupeEnts[class] then
 		return false
 	end

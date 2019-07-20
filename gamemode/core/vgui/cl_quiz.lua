@@ -25,6 +25,8 @@ function PANEL:SetQuiz(team)
 	local selections = {}
 	self:SetTitle(teamData.name.." Entry Quiz")
 
+	self.StartTeam = LocalPlayer():Team()
+
 	for v,k in pairs(teamData.quiz) do
 		selections[v] = {}
 
@@ -102,5 +104,10 @@ function PANEL:SetQuiz(team)
 	end
 end
 
+function PANEL:Think()
+	if self.StartTeam and (not LocalPlayer():Alive() or LocalPlayer():Team() != self.StartTeam) then
+		self:Remove()
+	end
+end
 
 vgui.Register("impulseQuiz", PANEL, "DFrame")
