@@ -355,6 +355,14 @@ function IMPULSE:PostReloadToolsMenu()
 	end
 end
 
+function IMPULSE:SpawnMenuOpen()
+	if LocalPlayer():Team() == 0 or not LocalPlayer():Alive() then
+		return false
+	else
+		return true
+	end
+end
+
 concommand.Add("impulse_togglethirdperson", function() -- ease of use command for binds
 	impulse.SetSetting("view_thirdperson", (!impulse.GetSetting("view_thirdperson")))
 end)

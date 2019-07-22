@@ -23,6 +23,7 @@ function IMPULSE:PlayerInitialSpawn(ply)
 	query:Select("model")
 	query:Select("skin")
 	query:Select("data")
+	query:Select("skills")
 	query:Select("ranks")
 	query:Where("steamid", ply:SteamID())
 	query:Callback(function(result)
@@ -194,6 +195,10 @@ function IMPULSE:SetupPlayer(ply, dbData)
 	ply.impulseData = data
 	ply.impulseRanks = util.JSONToTable(dbData.ranks or "[]")
 	ply.impulseID = dbData.id
+
+	local skills = util.JSONToTable(dbData.skills) or {}
+
+	ply.impulseSkills = skills
 
 	if dbData.group and dbData.group != "user" then
 		ply:SetUserGroup(dbData.group)

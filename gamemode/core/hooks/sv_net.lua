@@ -93,6 +93,7 @@ net.Receive("impulseCharacterCreate", function(len, ply)
 		insertQuery:Insert("firstjoin", timestamp)
 		insertQuery:Insert("data", "[]")
 		insertQuery:Insert("ranks", "[]")
+		insertQuery:Insert("skills", "[]")
 		insertQuery:Callback(function(result, status, lastID)
 			if IsValid(ply) then
 				local setupData = {
@@ -105,6 +106,7 @@ net.Receive("impulseCharacterCreate", function(len, ply)
 					bankmoney = impulse.Config.StartingBankMoney,
 					model = charModel,
 					data = "[]",
+					skills = "[]",
 					skin = charSkin
 				}
 
