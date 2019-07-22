@@ -12,6 +12,10 @@ function ENT:Initialize()
 	self:DrawShadow(false)
 
 	self:SetBenchType(self.Bench.Class)
+
+	local phys = self:GetPhysicsObject()
+	phys:Wake()
+	self:SetCollisionGroup(COLLISION_GROUP_INTERACTIVE_DEBRIS)
 end
 
 function ENT:SetBench(bench)
