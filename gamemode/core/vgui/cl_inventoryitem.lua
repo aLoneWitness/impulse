@@ -9,9 +9,6 @@ function PANEL:Init()
 	self:SetCursor("hand")
 end
 
-function PANEL:Paint()
-end
-
 function PANEL:SetItem(netitem, wide)
 	local item = impulse.Inventory.Items[netitem.id]
 	self.Item = item
@@ -226,7 +223,7 @@ function PANEL:Paint(w, h)
 	surface.SetDrawColor(bodyCol)
 	surface.DrawRect(0, 0, w, h)
 
-	local item =  self.Item
+	local item = self.Item
 	if item then
 		surface.SetTextColor(item.Colour or color_white)
 		surface.SetFont("Impulse-Elements19-Shadow")

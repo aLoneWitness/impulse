@@ -200,6 +200,11 @@ function IMPULSE:SetupPlayer(ply, dbData)
 
 	ply.impulseSkills = skills
 
+	for v,k in pairs(ply.impulseSkills) do
+		local xp = ply:GetSkillXP(v)
+		ply:NetworkSkill(v, xp)
+	end
+
 	if dbData.group and dbData.group != "user" then
 		ply:SetUserGroup(dbData.group)
 	end

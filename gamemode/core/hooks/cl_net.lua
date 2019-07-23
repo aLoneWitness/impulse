@@ -274,3 +274,16 @@ net.Receive("impulseConfiscateCheck", function()
 		end
 	end
 end)
+
+net.Receive("impulseSkillUpdate", function()
+	local skillid = net.ReadUInt(4)
+	local xp = net.ReadUInt(16)
+	local name = table.KeyFromValue(impulse.Skills.Skills, skillid)
+
+	impulse.Skills.Data[name] = xp
+end)
+
+net.Receive("impulseBenchUse", function()
+	local craft = vgui.Create("impulseCraftingMenu")
+	craft:SetupCrafting()
+end)

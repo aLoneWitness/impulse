@@ -45,6 +45,8 @@ util.AddNetworkString("impulseCharacterEdit")
 util.AddNetworkString("impulseUpdateDefaultModelSkin")
 util.AddNetworkString("impulseConfiscateCheck")
 util.AddNetworkString("impulseDoConfiscate")
+util.AddNetworkString("impulseSkillUpdate")
+util.AddNetworkString("impulseBenchUse")
 
 net.Receive("impulseCharacterCreate", function(len, ply)
 	if (ply.NextCreate or 0) > CurTime() then return end

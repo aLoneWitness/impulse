@@ -75,25 +75,36 @@ function PANEL:Init()
 		end
 	end)
 
- 	self.invName = vgui.Create("DLabel", self)
- 	self.invName:SetPos(270, 35)
- 	self.invName:SetText("Inventory")
- 	self.invName:SetFont("Impulse-Elements24-Shadow")
- 	self.invName:SizeToContents()
+ 	--self.invName = vgui.Create("DLabel", self)
+ 	--self.invName:SetPos(270, 35)
+ 	--self.invName:SetText("Inventory")
+ 	--self.invName:SetFont("Impulse-Elements24-Shadow")
+ 	--self.invName:SizeToContents()
 
  	self:SetupItems(w, h)
 end
 
 function PANEL:SetupItems()
 	local w, h = self:GetSize()
+
+ 	self.tabs = vgui.Create("DPropertySheet", self)
+ 	self.tabs:SetPos(270, 40)
+ 	self.tabs:SetSize(w - 270, h - 42)
+ 	self.tabs.tabScroller:DockMargin(-1, 0, -1, 0)
+ 	self.tabs.tabScroller:SetOverlap(0)
+
+ 	function self.tabs:Paint()
+ 		return true
+ 	end
 	
 	if self.invScroll and IsValid(self.invScroll) then
 		self.invScroll:Remove()
 	end
 
-	self.invScroll = vgui.Create("DScrollPanel", self)
- 	self.invScroll:SetPos(270, 65)
- 	self.invScroll:SetSize(w - 270, h - 65)
+	self.invScroll = vgui.Create("DScrollPanel", self.tabs)
+ 	self.invScroll:SetPos(0, 0)
+ 	self.invScroll:SetSize(w - 270, h - 42)
+
 	self.items = {}
 	self.itemsPanels = {}
  	local weight = 0
@@ -159,6 +170,70 @@ function PANEL:SetupItems()
 	end
 
 	self.invWeight = weight
+
+	self.tabs:AddSheet("Inventory", self.invScroll)
+
+	self:SetupSkills(w, h)
+end
+
+
+local bodyCol = Color(50, 50, 50, 210)
+function PANEL:SetupSkills(w, h)
+	self.skillScroll = vgui.Create("DScrollPanel", self.tabs)
+ 	self.skillScroll:SetPos(0, 0)
+ 	self.skillScroll:SetSize(w - 270, h - 42)
+
+ 	for v,k in pairs(impulse.Skills.Skills) do
+ 		local skillBg = self.skillScroll:Add("DPanel")
+ 		skillBg:SetTall(80)
+ 		skillBg:Dock(TOP)
+ 		skillBg:DockMargin(0, 0, 15, 5)
+ 		skillBg.Skill = v
+
+ 		local level = LocalPlayer():GetSkillLevel(v)
+ 		local xp = LocalPlayer():GetSkillXP(v)
+
+ 		function skillBg:Paint(w, h)
+ 			surface.SetDrawColor(bodyCol)
+			surface.DrawRect(0, 0, w, h)
+
+			local skill = self.Skill
+			local skillName = impulse.Skills.GetNiceName(skill)
+
+			draw.DrawText(skillName.." - Level "..level, "Impulse-Elements22-Shadow", 5, 3, color_white, TEXT_ALIGN_LEFT)
+			draw.DrawText("Total skill: "..xp.."XP", "Impulse-Elements16-Shadow", w - 5, 7, color_white, TEXT_ALIGN_RIGHT)
+
+ 			return true
+ 		end
+
+ 		local lastXp = impulse.Skills.GetLevelXPRequirement(level - 1)
+ 		local nextXp = impulse.Skills.GetLevelXPRequirement(level)
+ 		local perc = (xp - lastXp) / (nextXp - lastXp)
+
+ 		local bar = vgui.Create("DProgress", skillBg)
+ 		bar:SetPos(20, 30)
+ 		bar:SetSize(self.skillScroll:GetWide() - 73, 40)
+
+ 		if level == 10 then
+ 			bar:SetFraction(1)
+ 			bar.BarCol = Color(218, 165, 32)
+ 		else
+ 			bar:SetFraction(perc)
+ 		end
+
+ 		function bar:PaintOver(w, h)
+ 			if level != 10 then
+ 				draw.DrawText(math.Round(perc * 100, 1).."% to next level", "Impulse-Elements18-Shadow", w / 2, 10, color_white, TEXT_ALIGN_CENTER)
+ 			else
+ 				draw.DrawText("Mastered", "Impulse-Elements18-Shadow", w / 2, 10, color_white, TEXT_ALIGN_CENTER)
+ 			end
+
+ 			draw.DrawText(lastXp.."XP", "Impulse-Elements16-Shadow", 10, 10, color_white)
+ 			draw.DrawText(nextXp.."XP", "Impulse-Elements16-Shadow", w - 10, 10, color_white, TEXT_ALIGN_RIGHT)
+ 		end
+ 	end
+
+ 	self.tabs:AddSheet("Skills", self.skillScroll)
 end
 
 function PANEL:FindItemPanelByID(id)

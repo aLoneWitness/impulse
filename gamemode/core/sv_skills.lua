@@ -1,16 +1,17 @@
-function meta:GetSkill(name, fallback)
+function meta:GetSkillXP(name)
 	local skills = self.impulseSkills
 	if not skills then return end
 
 	if skills[name] then
 		return skills[name]
 	else
-		return (fallback or 1)
+		return 0
 	end
 end
 
-function meta:SetSkill(name, value)
+function meta:SetSkillXP(name, value)
 	if not self.impulseSkills then return end
+	if not impulse.Skills.Skills[name] then return end
 
 	self.impulseSkills[name] = value
 
@@ -22,15 +23,24 @@ function meta:SetSkill(name, value)
 		query:Where("steamid", self:SteamID())
 		query:Execute()
 	end
+
+	self:NetworkSkill(name, value)
 end
 
-function meta:AddSkill(name, value)
+function meta:NetworkSkill(name, value)
+	net.Start("impulseSkillUpdate")
+	net.WriteUInt(impulse.Skills.Skills[name], 4)
+	net.WriteUInt(value, 16)
+	net.Send(self)
+end
+
+function meta:AddSkillXP(name, value)
 	if not self.impulseSkills then return end
 
-	local cur = self:GetSkill(name, 1)
-	local new = math.Clamp(cur + value, 1, 100)
+	local cur = self:GetSkillXP(name)
+	local new = math.Clamp(cur + value, 0, 4500)
 
 	if cur != new then
-		self:SetSkill(name, new)
+		self:SetSkillXP(name, new)
 	end
 end
