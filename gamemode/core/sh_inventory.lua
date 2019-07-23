@@ -45,13 +45,15 @@ end
 function impulse.RegisterBench(bench)
 	local class = bench.Class
 
-	impulse.Inventory.Benches[class] = bench	
+	impulse.Inventory.Benches[class] = bench
+	impulse.Inventory.Mixtures[class] = {}
 end
 
 function impulse.RegisterMixture(mix)
 	local class = mix.Class
+	local bench = mix.Bench
 
-	impulse.Inventory.Mixtures[class] = mix
+	impulse.Inventory.Mixtures[bench][class] = mix
 	impulse.Inventory.MixturesRef[countX] = class
 	countX = countX + 1
 end
