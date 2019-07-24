@@ -57,8 +57,24 @@ function PANEL:SetupCrafting()
 	self.scroll = vgui.Create("DScrollPanel", self)
 	self.scroll:Dock(FILL)
 
+	self.availibleMixes = self.scroll:Add("DCollapsibleCategory")
+	self.availibleMixes:SetLabel("Available mixes")
+	self.availibleMixes:Dock(TOP)
+
+	function self.availibleMixes:Paint()
+		self:SetBGColor(colInv)
+	end
+
+	self.unAvailibleMixes = self.scroll:Add("DCollapsibleCategory")
+	self.unAvailibleMixes:SetLabel("Unavailable mixes")
+	self.unAvailibleMixes:Dock(TOP)
+
+	function self.unAvailibleMixes:Paint()
+		self:SetBGColor(colInv)
+	end
+
 	for i=0, 100 do
-		local DButton = self.scroll:Add( "DButton" )
+		local DButton = self.availibleMixes:Add( "DButton" )
 		DButton:SetText( "Button #" .. i )
 		DButton:Dock( TOP )
 		DButton:DockMargin( 0, 0, 0, 5 )

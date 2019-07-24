@@ -47,6 +47,12 @@ function impulse.lib.LoadFile(fileName)
 		else
 			include(fileName)
 		end
+	elseif fileName:find("rq_") then
+		if (SERVER) then
+			AddCSLuaFile(fileName)
+		end
+
+		_G[string.sub(fileName, 26, string.len(fileName) - 4)] = include(fileName)
 	end
 end
 

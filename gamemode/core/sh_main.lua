@@ -54,6 +54,10 @@ function meta:InSpawn()
     return self:GetPos():WithinAABox(impulse.Config.SpawnPos1, impulse.Config.SpawnPos2)
 end
 
+function impulse.AngleToBearing(ang)
+    return math.Round(360 - (ang.y % 360))
+end
+
 impulse.notices = impulse.notices or {}
 
 local function OrganizeNotices(i)
