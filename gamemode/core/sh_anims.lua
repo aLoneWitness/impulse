@@ -346,7 +346,7 @@ do
 			net.WriteBool(true)
 			net.WriteUInt(0, 16)
 			net.Broadcast()
-			return netstream.Start(nil, "seqSet", self)
+			--return netstream.Start(nil, "seqSet", self)
 		end
 
 		local sequence = self:LookupSequence(sequence)
