@@ -53,7 +53,7 @@ end
 
 local vignette = Material("impulse/vignette.png")
 local vig_alpha_normal = Color(10,10,10,190)
-local lasthealth = 100
+local lasthealth
 local time = 0
 local gradient = Material("vgui/gradient-l")
 local watermark = Material("impulse/impulse-logo-white.png")
@@ -87,7 +87,6 @@ local infoIcon = Material("impulse/icons/info-128.png")
 local announcementIcon = Material("impulse/icons/megaphone-128.png")
 local exitIcon = Material("impulse/icons/exit-128.png")
 local bleedingIcon = Material("impulse/icons/droplet-256.png")
-
 
 local lastModel = ""
 local lastSkin = ""
@@ -247,12 +246,12 @@ function IMPULSE:HUDPaint()
 
 	-- Draw any HUD stuff under this comment
 
-	if health < lasthealth then
-		painFde = nil
+	if lasthealth and health < lasthealth then
+		painFde = 0
 	end
 
 	painFt = FrameTime() * 2
-	painFde = math.Clamp((painFde or 0) + painFt, 0, 0.7)
+	painFde = math.Clamp(painFde + painFt, 0, 0.7)
 
 	surface.SetDrawColor(ColorAlpha(painCol, 255 * (0.7 - painFde)))
 	surface.DrawRect(0, 0, scrW, scrH)
