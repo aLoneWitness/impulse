@@ -423,6 +423,10 @@ do
 			if IsValid(weapon) then
 				weapon:SetNextPrimaryFire(CurTime() + 1)
 				weapon:SetNextSecondaryFire(CurTime() + 1)
+
+				if weapon.OnLowered then
+					weapon.OnLowered(weapon)
+				end
 			end
 		end
 

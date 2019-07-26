@@ -65,6 +65,7 @@ local darkCol = Color(30, 30, 30, 190)
 local whiteCol = Color(255, 255, 255, 255)
 local iconsWhiteCol = Color(255, 255, 255, 220)
 local bleedFlashCol = Color(230, 0, 0, 220)
+local painCol = Color(255,10,10,80)
 local zoneFde = 0
 local zoneHoldTime
 
@@ -93,6 +94,9 @@ local lastSkin = ""
 local lastTeam = 99
 local lastBodygroups = {}
 local iconLoaded = false
+
+local painFt
+local painFde = 1
 
 local bleedFlash = false
 
@@ -244,10 +248,15 @@ function IMPULSE:HUDPaint()
 	-- Draw any HUD stuff under this comment
 
 	if health < lasthealth then
-		LocalPlayer():ScreenFade(SCREENFADE.IN, Color(255,10,10,80), 1, 0)
+		painFde = nil
 	end
-	   
-	     
+
+	painFt = FrameTime() * 2
+	painFde = math.Clamp((painFde or 0) + painFt, 0, 0.7)
+
+	surface.SetDrawColor(ColorAlpha(painCol, 255 * (0.7 - painFde)))
+	surface.DrawRect(0, 0, scrW, scrH)
+
 	--Crosshair
 	local x, y
 	local curWep = lp:GetActiveWeapon()
