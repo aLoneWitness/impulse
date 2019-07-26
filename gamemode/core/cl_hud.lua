@@ -359,7 +359,7 @@ function IMPULSE:HUDPaint()
 
 	local weapon = LocalPlayer():GetActiveWeapon()
 	if IsValid(weapon) then
-		if weapon:Clip1() != -1 then
+		if weapon:GetMaxClip1() != -1 then
 			surface.SetDrawColor(darkCol)
 			surface.DrawRect(scrW-70, scrH-45, 70, 30)
 			surface.SetTextPos(scrW-60, scrH-40)
