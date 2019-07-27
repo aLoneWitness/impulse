@@ -115,6 +115,7 @@ end
 function IMPULSE:PlayerDisconnected(ply)
 	local userID = ply:UserID()
 	local steamID = ply:SteamID()
+	local entIndex = ply:EntIndex()
 	ply:SyncRemove()
 
 	local dragger = ply.ArrestedDragger
@@ -133,8 +134,8 @@ function IMPULSE:PlayerDisconnected(ply)
 
 	if jailCell then
 		timer.Remove(userID.."impulsePrison")
-		local duration = impulse.Arrest.Prison[jailCell][userID].duration
-		impulse.Arrest.Prison[jailCell][userID] = nil
+		local duration = impulse.Arrest.Prison[jailCell][entIndex].duration
+		impulse.Arrest.Prison[jailCell][entIndex] = nil
 		impulse.Arrest.DCRemember[steamID] = duration
 	elseif ply.BeingJailed then
 		impulse.Arrest.DCRemember[steamID] = ply.BeingJailed
@@ -607,7 +608,7 @@ function IMPULSE:Think()
 			end
 		end
 
-		if not k.nextHearUpdate or k.nextHearUpdate < CurTime() then -- optomized version of canhear hook based upon darkrp
+		if not k.nextHearUpdate or k.nextHearUpdate < CurTime() then -- optimized version of canhear hook based upon darkrp
 			canHearCheck(k)
 			k.nextHearUpdate = CurTime() + 0.65
 		end
@@ -890,7 +891,7 @@ function IMPULSE:PlayerSpray()
 end
 
 function IMPULSE:PlayerShouldTakeDamage(ply, attacker)
-	if ply.SpawnProtection then
+	if ply.SpawnProtection and attacker:IsPlayer() then
 		return false
 	end
 

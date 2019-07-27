@@ -99,19 +99,21 @@ function meta:Jail(time, jailData)
 
 		if doCellMates then
 			local cell = impulse.Arrest.Prison[v]
-			cell[self:UserID()] = {
+			cell[self:EntIndex()] = {
 				inmate = self,
 				jailData = jailData,
-				duration = time
+				duration = time,
+				start = CurTime()
 			} 
 
 			break
 		else
 			impulse.Arrest.Prison[v] = {}
-			impulse.Arrest.Prison[v][self:UserID()] = {
+			impulse.Arrest.Prison[v][self:EntIndex()] = {
 				inmate = self,
 				jailData = jailData,
-				duration = time
+				duration = time,
+				start = CurTime()
 			}
 
 			break
@@ -121,7 +123,6 @@ function meta:Jail(time, jailData)
 	if pos then
 		self:SetPos(impulse.FindEmptyPos(pos, {self}, 150, 30, Vector(16, 16, 64)))
 		self:SetEyeAngles(impulse.Config.PrisonAngle)
-		self:SetSyncVar(SYNC_PRISON_SENTENCE, time, true)
 		self:Notify("You have been imprisoned for "..(time / 60).." minutes.")
 		self:SendJailInfo(time, jailData)
 		self.InJail = cellID

@@ -46,7 +46,7 @@ function IMPULSE:Move(ply, mvData)
 	end
 
 	-- alt walk thing based on nutscripts
-	if ply:GetMoveType() == MOVETYPE_WALK and mvData:KeyDown(IN_WALK) then
+	if ply:GetMoveType() == MOVETYPE_WALK and (ply.BrokenLegs or mvData:KeyDown(IN_WALK)) then
 		local speed = ply:GetWalkSpeed()
 		local forwardRatio = 0
 		local sideRatio = 0
