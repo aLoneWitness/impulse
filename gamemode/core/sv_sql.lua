@@ -43,6 +43,14 @@ function IMPULSE:DatabaseConnected()
         sqlQuery:Create("closewait", "int(11) unsigned NOT NULL")
         sqlQuery:PrimaryKey("id")
     sqlQuery:Execute()
+
+    local sqlQuery = mysql:Create("impulse_whitelists")
+        sqlQuery:Create("id", "int unsigned NOT NULL AUTO_INCREMENT")
+        sqlQuery:Create("steamid", "varchar(25) NOT NULL")
+        sqlQuery:Create("team", "varchar(90) NOT NULL")
+        sqlQuery:Create("level", "int(11) unsigned NOT NULL")
+        sqlQuery:PrimaryKey("id")
+    sqlQuery:Execute()
 end
 
 timer.Create("impulsedb.Think", 1, 0, function()

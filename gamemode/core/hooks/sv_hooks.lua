@@ -24,7 +24,6 @@ function IMPULSE:PlayerInitialSpawn(ply)
 	query:Select("skin")
 	query:Select("data")
 	query:Select("skills")
-	query:Select("ranks")
 	query:Where("steamid", ply:SteamID())
 	query:Callback(function(result)
 		if IsValid(ply) and type(result) == "table" and #result > 0 then -- if player exists in db
@@ -40,7 +39,6 @@ function IMPULSE:PlayerInitialSpawn(ply)
 	timer.Create(ply:UserID().."impulseXP", impulse.Config.XPTime, 0, function()
 		if not ply:IsAFK() then
 			ply:GiveTimedXP()
-			ply:AddTeamTime(impulse.Config.XPTime)
 		end
 	end)
 
@@ -194,7 +192,6 @@ function IMPULSE:SetupPlayer(ply, dbData)
 	local data = util.JSONToTable(dbData.data)
 
 	ply.impulseData = data
-	ply.impulseRanks = util.JSONToTable(dbData.ranks or "[]")
 	ply.impulseID = dbData.id
 
 	local skills = util.JSONToTable(dbData.skills) or {}

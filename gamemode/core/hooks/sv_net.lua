@@ -94,7 +94,6 @@ net.Receive("impulseCharacterCreate", function(len, ply)
 		insertQuery:Insert("skin", charSkin)
 		insertQuery:Insert("firstjoin", timestamp)
 		insertQuery:Insert("data", "[]")
-		insertQuery:Insert("ranks", "[]")
 		insertQuery:Insert("skills", "[]")
 		insertQuery:Callback(function(result, status, lastID)
 			if IsValid(ply) then

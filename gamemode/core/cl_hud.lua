@@ -172,13 +172,6 @@ local function DrawCrosshair(x, y)
 end
 
 function IMPULSE:HUDPaint()
-	if impulse.hudEnabled == false or (impulse.CinematicIntro and LocalPlayer():Alive()) or (IsValid(impulse.MainMenu) and impulse.MainMenu:IsVisible()) or hook.Run("ShouldDrawHUDBox") == false then
-		if IsValid(PlayerIcon) then
-			PlayerIcon:Remove()
-		end
-		return
-	end
-
 	local health = LocalPlayer():Health()
 	local lp = LocalPlayer()
 	local lpTeam = lp:Team()
@@ -234,6 +227,13 @@ function IMPULSE:HUDPaint()
 		end
 
 		LocalPlayer().Ragdoll = nil
+	end
+
+	if impulse.hudEnabled == false or (impulse.CinematicIntro and LocalPlayer():Alive()) or (IsValid(impulse.MainMenu) and impulse.MainMenu:IsVisible()) or hook.Run("ShouldDrawHUDBox") == false then
+		if IsValid(PlayerIcon) then
+			PlayerIcon:Remove()
+		end
+		return
 	end
 
 	if health < 45 then

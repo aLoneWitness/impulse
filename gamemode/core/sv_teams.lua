@@ -231,53 +231,54 @@ function meta:SetTeamRank(rankID)
 	return true
 end
 
-function meta:AddTeamTime(time)
-	-- if not self.beenSetup then
-	-- 	return
-	-- end
-	
-	-- local rankTable = self.impulseRanks
-	-- local teamTime = rankTable[self:Team()]
-
-	-- if not teamTime then
-	-- 	rankTable[self:Team()] = 0
-	-- 	teamTime = 0
-	-- end
-
-	-- rankTable[self:Team()] = teamTime + (time / 60)
-
-	-- local query = mysql:Update("impulse_players")
-	-- query:Update("ranks", util.TableToJSON(rankTable))
-	-- query:Where("steamid", self:SteamID())
-	-- query:Execute(true) -- queued
+function impulse.Teams.WhitelistSetup(steamid)
+	local query = mysql:Insert("impulse_whitelists")
+	query:Insert("steamid")
 end
 
--- function meta:SetTeamWhitelist(type, level)
--- 	local data = self:GetData()
--- 	data.whitelists = data.whitelists or {}
+function impulse.Teams.SetWhitelist(steamid, team, level)
+	local inTable = impulse.Teams.GetWhitelist(steamid, team, function(exists)
+		if exists then
+			local query = mysql:Update("impulse_whitelists")
+			query:Update("level", level)
+			query:Where("team", team)
+			query:Where("steamid", steamid)
+			query:Execute()	
+		else
+			local query = mysql:Insert("impulse_whitelists")
+			query:Insert("level", level)
+			query:Insert("team", team)
+			query:Insert("steamid", steamid)
+			query:Execute()	
+		end
+	end)
+end
 
--- 	data.whitelists[type] = level
+function impulse.Teams.GetAllWhitelists(team, callback)
+	local query = mysql:Select("impulse_whitelists")
+	query:Select("level")
+	query:Select("steamid")
+	query:Where("team", team)
+	query:Callback(function(result)
+		if type(result) == "table" and #result > 0 and callback then -- if player exists in db
+			callback(result)
+		end
+	end)
+	query:Execute()
+end
 
--- 	self:SaveData()
--- end
-
--- function meta:GetTeamWhitelist(type)
--- 	local data = self:GetData()
--- 	local whitelist = data.whitelists
-
--- 	if whitelist and whitelist[type] then
--- 		return whitelist[type]
--- 	end
--- end
-
--- function meta:HasTeamWhitelist(type, level)
--- 	local whitelistLevel = self:GetTeamWhitelist(type)
-
--- 	if whitelistLevel and not level then
--- 		return true
--- 	elseif whitelistLevel and level <= whitelistLevel then
--- 		return true
--- 	end
-
--- 	return false
--- end
+function impulse.Teams.GetWhitelist(steamid, team, callback)
+	local query = mysql:Select("impulse_whitelists")
+	query:Select("level")
+	query:Where("team", team)
+	query:Where("steamid", steamid)
+	query:Callback(function(result)
+		PrintTable(result)
+		if type(result) == "table" and #result > 0 and callback then -- if player exists in db
+			callback(result[1].level)
+		else
+			callback()
+		end
+	end)
+	query:Execute()
+end
