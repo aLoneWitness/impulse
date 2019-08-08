@@ -12,7 +12,7 @@ local unArrestCommand = {
 			ply:Notify(plyTarget:Name().." has been un-arrested.")
 
 			if plyTarget.InJail then
-				impulse.Arrest.Prison[plyTarget.InJail][plyTarget:UserID()] = nil
+				impulse.Arrest.Prison[plyTarget.InJail][plyTarget:EntIndex()] = nil
 				plyTarget.InJail = nil
 				timer.Remove(plyTarget:UserID().."impulsePrison")
 				plyTarget:StopDrag()

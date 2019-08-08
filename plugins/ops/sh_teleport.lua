@@ -8,8 +8,9 @@ if SERVER then
 
 	function opsBring(ply, target)
 		local hasPhysgun = false
+		local wep = target:GetActiveWeapon()
 
-		if not target:IsBot() and target:GetActiveWeapon() and target:GetActiveWeapon():GetClass() == "weapon_physgun" and target:KeyDown(IN_ATTACK) then
+		if not target:IsBot() and wep and IsValid(wep) and wep:GetClass() == "weapon_physgun" and target:KeyDown(IN_ATTACK) then
 			target:ConCommand("-attack")
 			target:GetActiveWeapon():Remove()
 			hasPhysgun = true

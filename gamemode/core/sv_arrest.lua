@@ -136,15 +136,14 @@ function meta:Jail(time, jailData)
 end
 
 function meta:UnJail()
-	impulse.Arrest.Prison[self.InJail] = nil
-	--impulse.Arrest.Prison[self.InJail][self:UserID()] = nil
+	impulse.Arrest.Prison[self.InJail][self:EntIndex()] = nil
 	self.InJail = nil
 
 	self:Spawn()
 	self:StopDrag()
 	self:UnArrest()
 
-	self:Notify("You have been released from prison as your setence has ended.")
+	self:Notify("You have been released from prison as your sentence has ended.")
 
 	hook.Run("PlayerUnJailed", self)
 end
