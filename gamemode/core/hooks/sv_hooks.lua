@@ -81,6 +81,7 @@ function IMPULSE:PlayerSpawn(ply)
 		local pos = impulse.Config.PrisonCells[cellID]
 		ply:SetPos(impulse.FindEmptyPos(pos, {self}, 150, 30, Vector(16, 16, 64)))
 		ply:SetEyeAngles(impulse.Config.PrisonAngle)
+		ply:Arrest()
 
 		return
 	end
@@ -114,6 +115,8 @@ function IMPULSE:PlayerDisconnected(ply)
 	local userID = ply:UserID()
 	local steamID = ply:SteamID()
 	local entIndex = ply:EntIndex()
+	local arrested = ply:GetSyncVar(SYNC_ARRESTED, false)
+
 	ply:SyncRemove()
 
 	local dragger = ply.ArrestedDragger
@@ -137,6 +140,8 @@ function IMPULSE:PlayerDisconnected(ply)
 		impulse.Arrest.DCRemember[steamID] = duration
 	elseif ply.BeingJailed then
 		impulse.Arrest.DCRemember[steamID] = ply.BeingJailed
+	elseif arrested then
+		impulse.Arrest.DCRemember[steamID] = impulse.Config.MaxJailTime
 	end
 
 	if ply.CanHear then

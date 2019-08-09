@@ -316,6 +316,7 @@ end)
 
 net.Receive("impulseDoorBuy", function(len, ply)
 	if (ply.nextDoorBuy or 0) > CurTime() then return end
+	if not ply:Alive() or ply:GetSyncVar(SYNC_ARRESTED, false) then return end
 
 	local trace = {}
 	trace.start = ply:EyePos()
@@ -341,6 +342,7 @@ end)
 
 net.Receive("impulseDoorSell", function(len, ply)
 	if (ply.nextDoorSell or 0) > CurTime() then return end
+	if not ply:Alive() or ply:GetSyncVar(SYNC_ARRESTED, false) then return end
 
 	local trace = {}
 	trace.start = ply:EyePos()
@@ -362,6 +364,7 @@ end)
 
 net.Receive("impulseDoorLock", function(len, ply)
 	if (ply.nextDoorLock or 0) > CurTime() then return end
+	if not ply:Alive() or ply:GetSyncVar(SYNC_ARRESTED, false) then return end
 
 	local trace = {}
 	trace.start = ply:EyePos()
@@ -384,6 +387,7 @@ end)
 
 net.Receive("impulseDoorUnlock", function(len, ply)
 	if (ply.nextDoorUnlock or 0) > CurTime() then return end
+	if not ply:Alive() or ply:GetSyncVar(SYNC_ARRESTED, false) then return end
 
 	local trace = {}
 	trace.start = ply:EyePos()
@@ -407,6 +411,8 @@ end)
 net.Receive("impulseDoorAdd", function(len, ply)
 	if (ply.nextDoorChange or 0) > CurTime() then return end
 	ply.nextDoorChange = CurTime() + 0.5
+
+	if not ply:Alive() or ply:GetSyncVar(SYNC_ARRESTED, false) then return end
 
 	local target = net.ReadEntity()
 
@@ -451,6 +457,8 @@ end)
 net.Receive("impulseDoorRemove", function(len, ply)
 	if (ply.nextDoorChange or 0) > CurTime() then return end
 	ply.nextDoorChange = CurTime() + 0.5
+
+	if not ply:Alive() or ply:GetSyncVar(SYNC_ARRESTED, false) then return end
 
 	local target = net.ReadEntity()
 

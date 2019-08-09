@@ -15,7 +15,7 @@ function meta:Arrest()
 	self:StripAmmo()
 	self:SetRunSpeed(impulse.Config.WalkSpeed - 30)
 	self:SetWalkSpeed(impulse.Config.WalkSpeed - 30)
-	self:SetJumpPower(0)
+	--self:SetJumpPower(0)
 
 	self:SetSyncVar(SYNC_ARRESTED, true, true)
 end
@@ -33,7 +33,7 @@ function meta:UnArrest()
 
 	self:SetRunSpeed(impulse.Config.JogSpeed)
 	self:SetWalkSpeed(impulse.Config.WalkSpeed)
-	self:SetJumpPower(160)
+	--self:SetJumpPower(160)
 	self:StopDrag()
 end
 

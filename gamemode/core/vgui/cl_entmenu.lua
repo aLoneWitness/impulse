@@ -155,7 +155,7 @@ function PANEL:SetDoor(door)
 end
 
 function PANEL:SetPlayer(ply)
-	if LocalPlayer():IsCP() and LocalPlayer():CanArrest(ply) then
+	if LocalPlayer():IsCP() and LocalPlayer():CanArrest(ply) and ply:GetSyncVar(SYNC_ARRESTED, false) then
 		self:AddAction("impulse/icons/search-3-256.png", "Search Inventory", function()
 			LocalPlayer():ConCommand("say /invsearch")
 
