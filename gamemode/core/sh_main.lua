@@ -25,6 +25,14 @@ if SERVER then
         net.Broadcast()
     end
 
+    function meta:AllowScenePVSControl(bool)
+        self.allowPVS = bool
+
+        if not bool then
+            self.extraPVS = nil
+        end
+    end
+
     concommand.Add("impulse_cinematicintro", function(ply, cmd, args)
         if not ply:IsSuperAdmin() then return end
 

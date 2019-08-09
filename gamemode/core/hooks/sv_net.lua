@@ -15,7 +15,6 @@ util.AddNetworkString("impulseDoorLock")
 util.AddNetworkString("impulseDoorUnlock")
 util.AddNetworkString("impulseDoorAdd")
 util.AddNetworkString("impulseDoorRemove")
-util.AddNetworkString("impulseSceneFOV")
 util.AddNetworkString("impulseScenePVS")
 util.AddNetworkString("impulseQuizSubmit")
 util.AddNetworkString("impulseQuizForce")
@@ -123,23 +122,13 @@ net.Receive("impulseCharacterCreate", function(len, ply)
 	query:Execute()
 end)
 
-net.Receive("impulseSceneFOV", function(len, ply)
-	if ply:Team() != 0 then return end
-
-	local fov = net.ReadUInt(8)
-	local time = net.ReadUInt(8)
-
-	if fov == 0 then fov = 70 end
-	ply:SetFOV(fov, time)
-end)
-
 net.Receive("impulseScenePVS", function(len, ply)
-	if ply:Team() != 0 then return end
+	if (ply.nextPVSTry or 0) > CurTime() then return end
+	ply.nextPVSTry = CurTime() + 1
 
-	local stage = net.ReadUInt(8)
-
-	if impulse.Config.IntroScenes[stage] then
-		ply.extraPVS = impulse.Config.IntroScenes[stage].pos
+	if ply:Team() == 0 or ply.allowPVS then -- this code needs to be looked at later on, it trusts client too much, pvs locations should be stored in a shared tbl
+		local pos = net.ReadVector()
+		ply.extraPVS = pos
 	end
 end)
 

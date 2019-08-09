@@ -139,8 +139,10 @@ function meta:UnJail()
 	impulse.Arrest.Prison[self.InJail][self:EntIndex()] = nil
 	self.InJail = nil
 
-	self:Spawn()
-	self:StopDrag()
+	if self:Alive() then
+		self:Spawn()
+	end
+	
 	self:UnArrest()
 
 	self:Notify("You have been released from prison as your sentence has ended.")

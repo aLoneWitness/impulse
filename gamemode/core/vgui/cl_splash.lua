@@ -21,21 +21,12 @@ function PANEL:OnKeyCodeReleased()
 
 	hook.Run("PostReloadToolsMenu")
 
-	if impulse_isNewPlayer == true then
-		local counter = 1
-		local function playIntroScenes()
-			if impulse.Config.IntroScenes[counter + 1] then
-				counter = counter + 1
-				impulse.Scenes.Play(counter, impulse.Config.IntroScenes[counter], playIntroScenes)
-			else
-				local mainMenu = vgui.Create("impulseMainMenu")
-				mainMenu:SetAlpha(0)
-				mainMenu:AlphaTo(255, 1)
-			end
-		end
-
-		impulse.Scenes.Play(1, impulse.Config.IntroScenes[counter], playIntroScenes)
-		surface.PlaySound(impulse.Config.IntroMusic)
+	if impulse_isNewPlayer then
+		impulse.Scenes.PlaySet(impulse.Config.IntroScenes, impulse.Config.IntroMusic, function()
+			local mainMenu = vgui.Create("impulseMainMenu")
+			mainMenu:SetAlpha(0)
+			mainMenu:AlphaTo(255, 1)
+		end)
 	else
 		vgui.Create("impulseMainMenu")
 	end
