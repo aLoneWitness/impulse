@@ -70,3 +70,72 @@ function PANEL:FadeOut( anim, delta, data )
 end
 
 derma.DefineControl( "VoiceNotify", "", PANEL, "DPanel" )
+
+function GM:PlayerStartVoice( ply )
+
+	if ( !IsValid( g_VoicePanelList ) ) then return end
+	
+	-- There'd be an exta one if voice_loopback is on, so remove it.
+	GAMEMODE:PlayerEndVoice( ply )
+
+
+	if ( IsValid( PlayerVoicePanels[ ply ] ) ) then
+
+		if ( PlayerVoicePanels[ ply ].fadeAnim ) then
+			PlayerVoicePanels[ ply ].fadeAnim:Stop()
+			PlayerVoicePanels[ ply ].fadeAnim = nil
+		end
+
+		PlayerVoicePanels[ ply ]:SetAlpha( 255 )
+
+		return
+
+	end
+
+	if ( !IsValid( ply ) ) then return end
+
+	local pnl = g_VoicePanelList:Add( "VoiceNotify" )
+	pnl:Setup( ply )
+	
+	PlayerVoicePanels[ ply ] = pnl
+
+end
+
+local function VoiceClean()
+
+	for k, v in pairs( PlayerVoicePanels ) do
+	
+		if ( !IsValid( k ) ) then
+			GAMEMODE:PlayerEndVoice( k )
+		end
+	
+	end
+
+end
+timer.Create( "VoiceClean", 10, 0, VoiceClean )
+
+function GM:PlayerEndVoice( ply )
+
+	if ( IsValid( PlayerVoicePanels[ ply ] ) ) then
+
+		if ( PlayerVoicePanels[ ply ].fadeAnim ) then return end
+
+		PlayerVoicePanels[ ply ].fadeAnim = Derma_Anim( "FadeOut", PlayerVoicePanels[ ply ], PlayerVoicePanels[ ply ].FadeOut )
+		PlayerVoicePanels[ ply ].fadeAnim:Start( 2 )
+
+	end
+
+end
+
+local function CreateVoiceVGUI()
+
+	g_VoicePanelList = vgui.Create( "DPanel" )
+
+	g_VoicePanelList:ParentToHUD()
+	g_VoicePanelList:SetPos( ScrW() - 300, 100 )
+	g_VoicePanelList:SetSize( 250, ScrH() - 200 )
+	g_VoicePanelList:SetPaintBackground( false )
+
+end
+
+hook.Add( "InitPostEntity", "CreateVoiceVGUI", CreateVoiceVGUI )

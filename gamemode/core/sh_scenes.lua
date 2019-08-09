@@ -95,7 +95,7 @@ if CLIENT then
 
 			if sceneData.fadeOut then
 				timer.Simple(sceneData.time - 1, function()
-					LocalPlayer():ScreenFade(SCREENFADE.OUT, Color(0, 0, 0), 1, 0)
+					LocalPlayer():ScreenFade(SCREENFADE.OUT, Color(0, 0, 0), 1, 0.05)
 				end)
 			end
 		end
