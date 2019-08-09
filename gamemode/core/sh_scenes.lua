@@ -10,12 +10,10 @@ if CLIENT then
 		net.WriteVector(sceneData.pos)
 		net.SendToServer()
 
-		for k,v in pairs(ents.FindByClass("prop_physics")) do
-			v:SetNoDraw(true)
-		end
-
-		for k,v in pairs(ents.FindByClass("gmod_wire_textscreen")) do
-			v:SetNoDraw(true)
+		for k,v in pairs(ents.GetAll()) do
+			if v.CPPIGetOwner and v:CPPIGetOwner() then
+				v:SetNoDraw(true)
+			end
 		end
 
 		local fov
@@ -88,12 +86,10 @@ if CLIENT then
 					onDone()
 				end
 
-				for k,v in pairs(ents.FindByClass("prop_physics")) do
-					v:SetNoDraw(false)
-				end
-
-				for k,v in pairs(ents.FindByClass("gmod_wire_textscreen")) do
-					v:SetNoDraw(false)
+				for k,v in pairs(ents.GetAll()) do
+					if v.CPPIGetOwner and v:CPPIGetOwner() then
+						v:SetNoDraw(false)
+					end
 				end
 			end)
 
