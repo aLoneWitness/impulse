@@ -527,7 +527,7 @@ net.Receive("impulseSellAllDoors", function(len, ply)
 
 	local sold = 0
 	for v,k in pairs(ply.OwnedDoors) do
-		if IsValid(v) then
+		if IsValid(v) and hook.Run("CanEditDoor", ply, v) != false then
 			if v:GetDoorMaster() == ply then
 				local noUnlock = v.NoDCUnlock or false
 				ply:RemoveDoorMaster(v, noUnlock)
