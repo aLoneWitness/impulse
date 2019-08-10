@@ -114,7 +114,7 @@ net.Receive("impulseCharacterCreate", function(len, ply)
 				ply:Freeze(false)
 				hook.Run("SetupPlayer", ply, setupData)
 
-				ply.extraPVS = nil
+				ply:AllowScenePVSControl(false) -- stop cutscene
 			end
 		end)
 		insertQuery:Execute()
@@ -128,7 +128,27 @@ net.Receive("impulseScenePVS", function(len, ply)
 
 	if ply:Team() == 0 or ply.allowPVS then -- this code needs to be looked at later on, it trusts client too much, pvs locations should be stored in a shared tbl
 		local pos = net.ReadVector()
-		ply.extraPVS = pos
+		local last = ply.lastPVS or 1
+
+		if last == 1 then
+			ply.extraPVS = pos
+			ply.lastPVS = 2
+		else
+			ply.extraPVS2 = pos
+			ply.lastPVS = 1
+		end
+
+		timer.Simple(1.33, function()
+			if not IsValid(ply) then
+				return
+			end
+
+			if last == 1 then
+				ply.extraPVS2 = nil
+			else
+				ply.extraPVS = nil
+			end
+		end)
 	end
 end)
 

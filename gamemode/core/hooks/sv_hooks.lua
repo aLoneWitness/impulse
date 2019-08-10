@@ -480,6 +480,10 @@ function IMPULSE:SetupPlayerVisibility(ply)
 	if ply.extraPVS then
 		AddOriginToPVS(ply.extraPVS)
 	end
+
+	if ply.extraPVS2 then
+		AddOriginToPVS(ply.extraPVS2)
+	end
 end
 
 function IMPULSE:KeyPress(ply, key)

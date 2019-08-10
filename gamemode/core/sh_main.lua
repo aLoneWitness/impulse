@@ -30,14 +30,9 @@ if SERVER then
 
         if not bool then
             self.extraPVS = nil
+            self.extraPVS2 = nil
         end
     end
-
-    concommand.Add("impulse_cinematicintro", function(ply, cmd, args)
-        if not ply:IsSuperAdmin() then return end
-
-        impulse.CinematicIntro(args[1])
-    end)
 else
 	netstream.Hook("IMPULSE-ColoredMessage",function(msg)
 		chat.AddText(unpack(msg))

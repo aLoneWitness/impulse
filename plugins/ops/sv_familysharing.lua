@@ -1,10 +1,12 @@
 local APIKey = "***REMOVED***" -- this key is private do not share it
 
-local function CheckFamilySharing(ply)
+local function CheckFamilySharing(ply, sid)
+	local s64id = util.SteamIDTo64(sid)
+	
 	http.Fetch(
 	string.format("http://api.steampowered.com/IPlayerService/IsPlayingSharedGame/v0001/?key=%s&format=json&steamid=%s&appid_playing=4000",
 		APIKey,
-		ply:SteamID64()
+		s64id
 	),
 
 	function(body)

@@ -1,20 +1,35 @@
 if CLIENT then
 	impulse.Scenes = impulse.Scenes or {}
 
-	function impulse.Scenes.Play(stage, sceneData, onDone)
+	local function hideEnts(hide)
+		for k,v in pairs(ents.GetAll()) do
+			if v.CPPIGetOwner then
+				local owner = v:CPPIGetOwner()
+
+				if owner then
+					if not hide and not v.sceneHide then
+						continue
+					end
+
+					v:SetNoDraw(hide)
+					v.sceneHide = hide
+				end
+			end
+		end
+	end
+
+	function impulse.Scenes.Play(stage, sceneData, onDone, skipPVS, preLoad)
 		impulse.Scenes.pos = nil
 		impulse.Scenes.ang = nil
 		sceneData.speed = sceneData.speed or 1
 
-		net.Start("impulseScenePVS")
-		net.WriteVector(sceneData.pos)
-		net.SendToServer()
-
-		for k,v in pairs(ents.GetAll()) do
-			if v.CPPIGetOwner and v:CPPIGetOwner() then
-				v:SetNoDraw(true)
-			end
+		if not skipPVS then
+			net.Start("impulseScenePVS")
+			net.WriteVector(sceneData.pos)
+			net.SendToServer()
 		end
+
+		hideEnts(true)
 
 		local fov
 		local lastAdd = 0
@@ -82,22 +97,22 @@ if CLIENT then
 				hook.Remove("HUDPaint", "impulseScene")
 				impulse.hudEnabled = true
 
+				hideEnts(false)
+
 				if onDone then
 					onDone()
 				end
-
-				for k,v in pairs(ents.GetAll()) do
-					if v.CPPIGetOwner and v:CPPIGetOwner() then
-						v:SetNoDraw(false)
-					end
-				end
 			end)
 
-			if sceneData.fadeOut then
-				timer.Simple(sceneData.time - 1, function()
+			timer.Simple(sceneData.time - 1, function()
+				if sceneData.fadeOut then
 					LocalPlayer():ScreenFade(SCREENFADE.OUT, Color(0, 0, 0), 1, 0.05)
-				end)
-			end
+				end
+
+				if preLoad then
+					preLoad(stage)
+				end
+			end)
 		end
 
 		if sceneData.onStart then
@@ -114,10 +129,20 @@ if CLIENT then
 	function impulse.Scenes.PlaySet(set, music, onDone)
 		local counter = 1
 
+		local function pvsPreLoad(counter) -- preloads the pvs 1 second before scene loads
+			local nextScene = set[counter + 1]
+
+			if nextScene then
+				net.Start("impulseScenePVS")
+				net.WriteVector(nextScene.pos)
+				net.SendToServer()
+			end
+		end
+
 		local function playScenes()
 			if set[counter + 1] then
 				counter = counter + 1
-				impulse.Scenes.Play(counter, set[counter], playScenes)
+				impulse.Scenes.Play(counter, set[counter], playScenes, true, pvsPreLoad)
 			elseif onDone then
 				onDone()
 			end
@@ -140,6 +165,6 @@ if CLIENT then
 			end
 		end
 
-		impulse.Scenes.Play(1, set[counter], playScenes)
+		impulse.Scenes.Play(1, set[counter], playScenes, false, pvsPreLoad)
 	end
 end
