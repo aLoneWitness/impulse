@@ -43,6 +43,16 @@ function PANEL:Init()
     		self:GetParent():Remove()
 			impulse.hudEnabled = true
 			impulse_isNewPlayer = false
+
+			if CHAR_MUSIC and CHAR_MUSIC:IsPlaying() then
+				CHAR_MUSIC:FadeOut(15)
+
+				timer.Simple(16, function()
+					if CHAR_MUSIC:IsPlaying() then
+						CHAR_MUSIC:Stop()
+					end
+				end)
+			end
 		end, "No, take me back")
 	end
 

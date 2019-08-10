@@ -97,6 +97,15 @@ function PANEL:Init()
 		</font>]], 550)
 
 	self.scrollY = ScrH() + 160
+
+	if CREDIT_MUSIC and CREDIT_MUSIC:IsPlaying() then
+		CREDIT_MUSIC:Stop()
+	end
+
+	CREDIT_MUSIC = CreateSound(LocalPlayer(), "music/HL2_song20_submix4.mp3")
+	CREDIT_MUSIC:SetSoundLevel(0)
+	CREDIT_MUSIC:ChangeVolume(1)
+	CREDIT_MUSIC:Play()
 end
 
 local bodyCol = Color(30, 30, 30, 190)
@@ -109,6 +118,17 @@ function PANEL:Paint(w,h)
 
 	impulse.render.glowgo((w / 2) - 165, self.scrollY + 70, 337, 91)
 	self.mainCredits:Draw(0, self.scrollY + 190, TEXT_ALIGN_LEFT, TEXT_ALIGN_TOP)
+end
+
+function PANEL:OnRemove()
+	if CREDIT_MUSIC and CREDIT_MUSIC:IsPlaying() then
+		CREDIT_MUSIC:FadeOut(4)
+		timer.Simple(4, function()
+			if CREDIT_MUSIC:IsPlaying() then
+				CREDIT_MUSIC:Stop()
+			end
+		end)
+	end
 end
 
 function PANEL:Think()
