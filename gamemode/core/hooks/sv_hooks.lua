@@ -266,6 +266,8 @@ function IMPULSE:SetupPlayer(ply, dbData)
 
 	query:Execute()
 
+	ply:SetupWhitelists()
+
 	ply.beenSetup = true
 	hook.Run("PostSetupPlayer", ply)
 end

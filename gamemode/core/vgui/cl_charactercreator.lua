@@ -38,7 +38,7 @@ function PANEL:Init()
 			net.WriteUInt(characterSkin, 8)
 			net.SendToServer()
 
-    		LocalPlayer():ScreenFade(SCREENFADE.IN, color_black, 4, 0)
+    		LocalPlayer():ScreenFade(SCREENFADE.IN, color_black, 4, 0.3)
     		self:Remove()
     		self:GetParent():Remove()
 			impulse.hudEnabled = true

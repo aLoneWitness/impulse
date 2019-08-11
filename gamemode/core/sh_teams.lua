@@ -6,11 +6,13 @@
 impulse.Teams = impulse.Teams or {}
 impulse.Teams.Data = impulse.Teams.Data or {}
 impulse.Teams.ClassRef = impulse.Teams.ClassRef or {}
+impulse.Teams.NameRef = impulse.Teams.NameRef or {}
 teamID = 0
 
 function impulse.Teams.Define(teamData)
     teamID = teamID + 1
     impulse.Teams.Data[teamID] = teamData
+    impulse.Teams.NameRef[teamData.name] = teamID
 
     if teamData.classes then
     	impulse.Teams.Data[teamID].ClassRef = {}
@@ -123,6 +125,12 @@ function meta:CanBecomeTeamRank(rankID, notify)
 	local rankPlayers = 0
 
 	if not self:Alive() then return false end
+
+	if rankData.whitelistLevel and not self:HasTeamWhitelist(self:Team(), rankData.whitelistLevel) then
+		local add = rankData.whitelistFailMessage or ""
+		if notify then self:Notify("You must be whitelisted to play as this rank. "..add) end
+		return false
+	end
 		
 	if rankData.xp and rankData.xp > self:GetXP() and forced == false then
 		if notify then self:Notify("You don't have the XP required to play as this rank.") end

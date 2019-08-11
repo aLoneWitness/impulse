@@ -6,7 +6,7 @@ function LoadSaveEnts()
 			x:SetPos(k.pos)
 			x:SetAngles(k.angle)
 			
-			if k.class == "prop_physics" or k.class == "prop_dynamic" then
+			if k.class == "prop_physics" or k.class == "prop_dynamic" or k.class == "impulse_hl2rp_scavengable" then
 				x:SetModel(k.model)
 			end
 			x.impulseSaveEnt = true
