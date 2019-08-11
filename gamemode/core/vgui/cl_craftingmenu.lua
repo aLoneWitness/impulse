@@ -57,13 +57,17 @@ function PANEL:SetupCrafting()
 	self.scroll = vgui.Create("DScrollPanel", self)
 	self.scroll:Dock(FILL)
 
-	self.availibleMixes = self.scroll:Add("DCollapsibleCategory")
+	self.availibleMixes = vgui.Create("DCollapsibleCategory", self.scroll)
 	self.availibleMixes:SetLabel("Available mixes")
 	self.availibleMixes:Dock(TOP)
 
 	function self.availibleMixes:Paint()
 		self:SetBGColor(colInv)
 	end
+
+	self.availibleMixesLayout = vgui.Create("DListLayout")
+	self.availibleMixesLayout:Dock(FILL)
+	self.availibleMixes:SetContents(self.availibleMixesLayout)
 
 	self.unAvailibleMixes = self.scroll:Add("DCollapsibleCategory")
 	self.unAvailibleMixes:SetLabel("Unavailable mixes")
@@ -73,11 +77,11 @@ function PANEL:SetupCrafting()
 		self:SetBGColor(colInv)
 	end
 
-	for i=0, 100 do
-		local DButton = self.availibleMixes:Add( "DButton" )
-		DButton:SetText( "Button #" .. i )
-		DButton:Dock( TOP )
-		DButton:DockMargin( 0, 0, 0, 5 )
+	for v,k in pairs(impulse.Inventory.Mixtures[benchType]) do
+		local cat = self.availibleMixesLayout
+		local mix = cat:Add("impulseCraftingItem")
+		mix:Dock(TOP)
+		mix:SetMix(k)
 	end
 end
 

@@ -4,18 +4,18 @@ function PANEL:Init()
 	self.model = vgui.Create("DModelPanel", self)
 	self.model:SetPaintBackground(false)
 	self:SetMouseInputEnabled(true)
-	self:SetTall(64)
+	self:SetTall(74)
 
 	self:SetCursor("hand")
 end
 
-function PANEL:SetItem(netitem, wide)
-	local item = impulse.Inventory.Items[netitem.id]
+function PANEL:SetMix(mix)
+	local wide = self:GetWide()
+	local class = mix.Output
+	local id = impulse.Inventory.ClassToNetID(class)
+	local item = impulse.Inventory.Items[id]
+
 	self.Item = item
-	self.IsEquipped = netitem.equipped or false
-	self.IsRestricted = netitem.restricted or false
-	self.Weight = item.Weight or 0
-	self.Count = 1
 
 	local panel = self
 
@@ -58,11 +58,7 @@ function PANEL:SetItem(netitem, wide)
 	self.desc = vgui.Create("DLabel", self)
 	self.desc:SetPos(65, 30)
 
-	if self.Basic then
-		self.desc:SetSize(270, 30)
-	else
-		self.desc:SetSize(wide - 530, 30)
-	end
+	self.desc:SetSize(wide - 530, 30)
 
 	if wide < 800 then -- small resolutions have trouble with 16
 		self.desc:SetFont("Impulse-Elements14")
@@ -73,152 +69,13 @@ function PANEL:SetItem(netitem, wide)
 	self.desc:SetText(item.Desc or "")
 	self.desc:SetContentAlignment(7)
 	self.desc:SetWrap(true)
-
-	self.count = vgui.Create("DLabel", self)
-	self.count:SetPos(34, 38)
-	self.count:SetText("")
-	self.count:SetTextColor(impulse.Config.MainColour)
-	self.count:SetFont("Impulse-Elements19-Shadow")
-	self.count:SetSize(30, 20)
-
-	function self.count:Think()
-		if panel.Count > 1 and panel.Count != self.lastCount then
-			self:SetText("x"..panel.Count)
-			self.lastCount = panel.Count
-			panel.Weight = panel.Count * panel.Item.Weight
-		end
-	end
-
-	if self.Basic then return end
-	local restrictedMat = "icon16/error.png"
-	local illegalMat = "icon16/exclamation.png"
-
-	if self.IsRestricted then
-		self.tip = vgui.Create("DImageButton", self)
-		self.tip:SetPos(43, 45)
-		self.tip:SetSize(16, 16)
-		self.tip:SetImage(restrictedMat)
-	elseif self.Item.Illegal then
-		self.tip = vgui.Create("DImageButton", self)
-		self.tip:SetPos(43, 45)
-		self.tip:SetSize(16, 16)
-		self.tip:SetImage(illegalMat)
-	end
 end
 
 function PANEL:OnMousePressed(keycode)
-	if self.Basic then
-		local invid = self.InvID
-
-		net.Start("impulseInvDoMove")
-		net.WriteUInt(invid, 10)
-		net.WriteUInt(self.Type, 4)
-		net.SendToServer()
-
-		return
-	end
-
-	local popup = DermaMenu(self)
-	popup.Inv = self
-
-	if self.Item.OnUse then
-		local shouldUse = true
-
-		if self.Item.ShouldTraceUse then
-			local trace = {}
-			trace.start = LocalPlayer():EyePos()
-			trace.endpos = trace.start + LocalPlayer():GetAimVector() * 85
-			trace.filter = LocalPlayer()
-
-			local trEnt = util.TraceLine(trace).Entity
-			shouldUse = false
-
-			if trEnt and IsValid(trEnt) and self.Item.ShouldTraceUse(self.Item, LocalPlayer(), trEnt) then
-				shouldUse = true
-			end
-		end
-		
-		if shouldUse then
-			popup:AddOption(self.Item.UseName or "Use", function()
-				if self.Item.ShouldTraceUse then
-					local trace = {}
-					trace.start = LocalPlayer():EyePos()
-					trace.endpos = trace.start + LocalPlayer():GetAimVector() * 85
-					trace.filter = LocalPlayer()
-
-					local trEnt = util.TraceLine(trace).Entity
-
-					if not trEnt or not IsValid(trEnt) or not self.Item.ShouldTraceUse(self.Item, LocalPlayer(), trEnt) then
-						return
-					end
-				end
-				if self.Item.UseWorkBarTime then
-					local invid = self.InvID
-					gui.EnableScreenClicker(false)
-
-					if self.Item.UseWorkBarSound then
-						surface.PlaySound(self.Item.UseWorkBarSound)
-					end
-
-					impulse.MakeWorkbar(self.Item.UseWorkBarTime, self.Item.UseWorkBarName or "Using...", function()
-						net.Start("impulseInvDoUse")
-						net.WriteUInt(invid, 10)
-						net.SendToServer()
-					end, self.Item.UseWorkBarFreeze or false)
-
-					self.InvPanel:Remove()
-				else
-					net.Start("impulseInvDoUse")
-					net.WriteUInt(self.InvID, 10)
-					net.SendToServer()
-				end
-			end)
-		end
-	end
-
-	if self.Item.OnEquip then
-		if not self.Item.CanEquip or self.Item.CanEquip(self.Item, LocalPlayer()) then
-			if not self.IsEquipped then
-				popup:AddOption(self.Item.EquipName or "Equip", function()
-					net.Start("impulseInvDoEquip")
-					net.WriteUInt(self.InvID, 10)
-					net.WriteBool(true)
-					net.SendToServer()
-				end)
-			else
-				popup:AddOption(self.Item.UnEquipName or "Un-Equip", function()
-					net.Start("impulseInvDoEquip")
-					net.WriteUInt(self.InvID, 10)
-					net.WriteBool(false)
-					net.SendToServer()
-				end)
-			end
-		end
-	end
-
-	if (not self.IsRestricted and not self.Item.DropIfRestricted) then
-		popup:AddOption("Drop", function()
-			net.Start("impulseInvDoDrop")
-			net.WriteUInt(self.InvID, 10)
-			net.SendToServer()
-		end)
-	end
-
-	function popup:Think()
-		if not IsValid(self.Inv) then
-			return self:Remove()
-		end
-	end
-
-	popup:Open()
+	
 end
 
 local bodyCol = Color(50, 50, 50, 210)
-local restrictedCol = Color(255, 223, 0, 255)
-local illegalCol = Color(255, 0, 0, 255)
-local equippedCol =  Color(0, 220, 0, 140)
-local restrictedMat =  Material("icon16/error.png")
-local illegalMat = Material("icon16/exclamation.png")
 function PANEL:Paint(w, h)
 	surface.SetDrawColor(bodyCol)
 	surface.DrawRect(0, 0, w, h)
@@ -229,15 +86,6 @@ function PANEL:Paint(w, h)
 		surface.SetFont("Impulse-Elements19-Shadow")
 		surface.SetTextPos(65, 10)
 		surface.DrawText(item.Name)
-
-		draw.SimpleText(self.Weight.."kg", "Impulse-Elements16", w - 10, 10, color_white, TEXT_ALIGN_RIGHT)
-
-		if self.Basic then return end
-
-		if self.IsEquipped then -- if equipped
-			surface.SetDrawColor(equippedCol)
-			surface.DrawRect(0, 0, 5, h)
-		end
 	end
 end
 
