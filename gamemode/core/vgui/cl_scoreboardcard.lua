@@ -102,13 +102,22 @@ function PANEL:Paint(w,h)
 		xShift = xShift + 20
 	end 
 end
-function PANEL:OnMousePressed()
-	if impulse_infoCard and IsValid(impulse_infoCard) then 
-		impulse_infoCard:Remove() 
+function PANEL:OnMousePressed(key)
+	if not IsValid(self.Player) then
+		return false
 	end
-	
-	impulse_infoCard = vgui.Create("impulsePlayerInfoCard")
-	impulse_infoCard:SetPlayer(self.Player, self.Badges)
+
+	if key == MOUSE_RIGHT then
+		LocalPlayer():Notify("You have copied "..self.Player:SteamName().."'s Steam ID.")
+		SetClipboardText(self.Player:SteamID())
+	else
+		if impulse_infoCard and IsValid(impulse_infoCard) then 
+			impulse_infoCard:Remove() 
+		end
+		
+		impulse_infoCard = vgui.Create("impulsePlayerInfoCard")
+		impulse_infoCard:SetPlayer(self.Player, self.Badges)
+	end
 end
 
 vgui.Register("impulseScoreboardCard", PANEL, "DPanel")
