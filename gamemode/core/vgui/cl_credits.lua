@@ -21,7 +21,8 @@ function PANEL:Init()
 		thelastpenguin - pon
 		Kyle Smith - UTF-8 module
 		rebel1234 and Chessnut - animations base
-		wyozi - medialib</font>
+		wyozi - medialib
+		Falco - CPPI</font>
 
 		Powered by
 		<font=Impulse-Elements23>Discord - Discord API
@@ -43,6 +44,7 @@ function PANEL:Init()
 		EnigmaFusion
 		Bobby
 		Shadow
+		Ho
 		greasy breads
 		Jamsu
 		KTG
@@ -80,6 +82,9 @@ function PANEL:Init()
 		<font=Impulse-Elements23>vin
 		aLoneWitness</font>
 
+		Powered by
+		<font=Impulse-Elements23>vin - Longsword weapon base</font>
+
 		Special thanks
 		<font=Impulse-Elements23>nutscript - great examples of HL2:RP systems
 		zepla - Enhanced Citizens v4
@@ -91,7 +96,7 @@ function PANEL:Init()
 
 
 		<font=Impulse-Elements23>
-		Copyright 2019 vin
+		Copyright 2019 Jake Green (vin)
 		impulse-community.com
 		vingard.ovh
 		</font>]], 550)
