@@ -24,6 +24,7 @@ function PANEL:SetupCrafting()
 
 	local benchType = tr.Entity:GetBenchType()
 	local benchClass = impulse.Inventory.Benches[benchType]
+	local panel = self
 
 	self:SetTitle(benchClass.Name)
 
@@ -47,10 +48,29 @@ function PANEL:SetupCrafting()
 	self.search:SetSize(280, 24)
 	self.search:SetFont("Impulse-Elements18")
 	self.search:SetText("")
+	self.search:SetUpdateOnType(true)
+
+	self.mixes = {}
+
+	local strMatch = string.match
+	function self.search:OnValueChange(search)
+		search = search:upper()
+
+		for v,k in pairs(panel.mixes) do
+			local name = k.Item.Name
+			local x, y = k:GetPos()
+
+			if strMatch(name, search) then
+				print(name)
+				panel.scroll:GetVBar():AnimateTo(y, 0.2)
+				break
+			end
+		end
+	end
 
 	self.craftLbl = vgui.Create("DLabel", self.upper)
 	self.craftLbl:SetPos(5, 5)
-	self.craftLbl:SetFont("Impulse-Elements18-Shadow")
+	self.craftLbl:SetFont("Impulse-Elements22-Shadow")
 	self.craftLbl:SetText("Crafting Level: "..LocalPlayer():GetSkillLevel("craft"))
 	self.craftLbl:SizeToContents()
 
@@ -79,9 +99,14 @@ function PANEL:SetupCrafting()
 
 	for v,k in pairs(impulse.Inventory.Mixtures[benchType]) do
 		local cat = self.availibleMixesLayout
-		local mix = cat:Add("impulseCraftingItem")
-		mix:Dock(TOP)
-		mix:SetMix(k)
+
+		for i=1,11 do
+			local mix = cat:Add("impulseCraftingItem")
+			mix:Dock(TOP)
+			mix:SetMix(k)
+
+			table.insert(self.mixes, mix)
+		end
 	end
 end
 

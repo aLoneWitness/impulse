@@ -69,3 +69,24 @@ function meta:GetMaxInventoryStorage()
 
 	return impulse.Config.InventoryStorageMaxWeight
 end
+
+if CLIENT then
+	function meta:HasInventoryItem(id)
+		if self:Team() == 0 then
+			return false
+		end
+
+		local inv = impulse.Inventory.Data[0][1]
+		local has = false
+		local count
+
+		for v,k in pairs(inv) do
+			if k.id == id then
+				has = true
+				count = (count or 0) + 1
+			end
+		end
+
+		return has, count
+	end
+end
