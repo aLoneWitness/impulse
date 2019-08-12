@@ -812,7 +812,7 @@ net.Receive("impulseCharacterEdit", function(len, ply)
 		ply:Notify("You cannot afford to change your appearance.")
 	end
 
-	currentCosmeticEditor = nil
+	ply.currentCosmeticEditor = nil
 end)
 
 net.Receive("impulseDoConfiscate", function(len, ply)

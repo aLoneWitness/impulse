@@ -29,11 +29,11 @@ end
 function ENT:Use(activator, caller)
 	if activator:IsPlayer() and activator:Alive() then
 		if activator:GetSyncVar(SYNC_ARRESTED, false) then 
-			return activator:Notify("You cannot access your storage when detained.") 
+			return activator:Notify("You cannot access this when detained.") 
 		end
 
 		if self.Bench.Illegal and activator:IsCP() then
-			return activator:Notify("You cannot access your storage as this team.")
+			return activator:Notify("You cannot access this due to your team.")
 		end
 
 		net.Start("impulseBenchUse")

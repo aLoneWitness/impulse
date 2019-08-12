@@ -6,6 +6,7 @@ impulse.Inventory.ItemsRef = impulse.Inventory.ItemsRef or {}
 impulse.Inventory.Benches = impulse.Inventory.Benches or {}
 impulse.Inventory.Mixtures = impulse.Inventory.Mixtures or {}
 impulse.Inventory.MixturesRef = impulse.Inventory.MixturesRef or {}
+impulse.Inventory.CraftInfo = impulse.Inventory.CraftInfo or {}
 
 if CLIENT then
 	impulse.Inventory.Data[0][1] = impulse.Inventory.Data[0][1] or {}
@@ -37,6 +38,16 @@ function impulse.RegisterItem(item)
 		end
 	end
 
+	local craftSound = item.CraftSound
+	local craftTime = item.CraftTime
+
+	if craftSound or craftTime then
+		impulse.Inventory.CraftInfo[item.UniqueID] = {
+			time = craftTime or nil,
+			sound = craftSound or nil
+		}
+	end
+
 	impulse.Inventory.Items[count] = item -- this is done the wrong way round yea yea ik
 	impulse.Inventory.ItemsRef[item.UniqueID] = count
 	count = count + 1
@@ -60,6 +71,26 @@ end
 
 function impulse.Inventory.ClassToNetID(class)
 	return impulse.Inventory.ItemsRef[class]
+end
+
+function impulse.Inventory.GetCraftingTime(mix)
+	local items = mix.Input
+	local time = 0
+	local sounds = {}
+
+	for v,k in pairs(items) do
+		local hasCustom = impulse.Inventory.CraftInfo[v]
+
+		for i=1, k.take do
+			if hasCustom and hasCustom.sound then
+				table.insert(sounds, {time, hasCustom.sound})
+			end
+
+			time = time + ((hasCustom and hasCustom.time) or 3)
+		end
+	end
+
+	return time, sounds
 end
 
 function meta:GetMaxInventoryStorage()

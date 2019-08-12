@@ -86,9 +86,40 @@ function SKIN:PaintVScrollBar(panel, w, h)
     surface.DrawRect(0, 0, w, h)
 end
 
+local scrollCol = Color(120, 120, 120, 80)
 function SKIN:PaintScrollBarGrip(panel, w, h)
-    surface.SetDrawColor(DARK_100)
-    surface.DrawRect(0, 0, w, h)
+    surface.SetDrawColor(scrollCol)
+    surface.DrawRect(1, 0, w - 2, h)
+end
+
+function SKIN:PaintButtonDown( panel, w, h )
+	if ( !panel.m_bBackground ) then return end
+
+	if ( panel.Depressed || panel:IsSelected() ) then
+		return self.tex.Scroller.DownButton_Down( 0, 0, w, h )
+	end
+
+	if ( panel.Hovered ) then
+		return self.tex.Scroller.DownButton_Hover(0, 0, w, h, Color(130, 130, 130, 200))
+	end
+
+	self.tex.Scroller.DownButton_Normal(0, 0, w, h, Color(90, 90, 90, 200))
+end
+
+function SKIN:PaintButtonUp( panel, w, h )
+
+	if ( !panel.m_bBackground ) then return end
+
+	if ( panel.Depressed || panel:IsSelected() ) then
+		return self.tex.Scroller.UpButton_Down( 0, 0, w, h )
+	end
+
+	if ( panel.Hovered ) then
+		return self.tex.Scroller.UpButton_Hover( 0, 0, w, h, Color(130, 130, 130, 200))
+	end
+
+	self.tex.Scroller.UpButton_Normal(0, 0, w, h, Color(90, 90, 90, 200))
+
 end
 
 local depressedCol = Color(155, 52, 102, 255)

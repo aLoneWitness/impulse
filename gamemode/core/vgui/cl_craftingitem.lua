@@ -4,8 +4,6 @@ function PANEL:Init()
 	self.model = vgui.Create("DModelPanel", self)
 	self.model:SetPaintBackground(false)
 	self:SetTall(86)
-
-	--self:SetCursor("hand")
 end
 
 function PANEL:SetMix(mix)
@@ -38,10 +36,6 @@ function PANEL:SetMix(mix)
 		end
 	end
 
-	function self.model:DoClick()
-		panel:OnMousePressed()
-	end
-
 	local camPos = self.model.Entity:GetPos()
 	camPos:Add(Vector(0, 25, 25))
 
@@ -61,11 +55,23 @@ function PANEL:SetMix(mix)
 	self.craftBtn:SetFont("Impulse-Elements17")
 	self.craftBtn:SetDisabled(true)
 
-	required = "<font=Impulse-Elements17>"
-
-	--local interCol = impulse.Config.InteractColour
+	function self.craftBtn:DoClick()
+		panel.dad:DoCraft(panel.Item, panel.Mix)
+	end
 
 	local canCraft = true
+
+	function self.craftBtn:Think()
+		local level = LocalPlayer():GetSkillLevel("craft")
+
+		if panel.Mix.Level > level and canCraft then
+			self:SetDisabled(true)
+		else
+			self:SetDisabled(false)
+		end
+	end
+
+	local required = "<font=Impulse-Elements17>"
 
 	for v,k in pairs(mix.Input) do
 		local id = impulse.Inventory.ClassToNetID(v)
@@ -100,19 +106,27 @@ end
 
 local bodyCol = Color(50, 50, 50, 210)
 local secCol = Color(209, 209, 209, 255)
+local noCol = Color(215, 40, 40, 255)
 function PANEL:Paint(w, h)
 	surface.SetDrawColor(bodyCol)
 	surface.DrawRect(0, 0, w, h)
 
 	local item = self.Item
 	local mix = self.Mix
+	local level = LocalPlayer():GetSkillLevel("craft")
+
 	if item then
 		surface.SetTextColor(item.Colour or color_white)
 		surface.SetFont("Impulse-Elements19-Shadow")
 		surface.SetTextPos(82, 10)
 		surface.DrawText(item.Name)
 
-		surface.SetTextColor(secCol)
+		if mix.Level > level then
+			surface.SetTextColor(noCol)
+		else
+			surface.SetTextColor(secCol)
+		end
+
 		surface.SetFont("Impulse-Elements16")
 		surface.SetTextPos(82, 25)
 		surface.DrawText("Level: "..mix.Level)
