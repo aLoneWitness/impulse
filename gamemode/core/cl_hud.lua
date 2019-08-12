@@ -636,4 +636,10 @@ end
 
 concommand.Add("impulse_cameratoggle", function()
 	impulse.hudEnabled = (!impulse.hudEnabled)
+
+	if impulse.hudEnabled then
+		impulse.chatBox.frame:Show()
+	else
+		impulse.chatBox.frame:Hide()
+	end
 end)

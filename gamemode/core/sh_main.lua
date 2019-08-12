@@ -76,6 +76,10 @@ end
 
 function meta:Notify(message)
     if CLIENT then
+        if not impulse.hudEnabled then
+            return MsgN(message)
+        end
+
         local notice = vgui.Create("impulseNotify")
         local i = table.insert(impulse.notices, notice)
 

@@ -64,7 +64,7 @@ function PANEL:SetMix(mix)
 	function self.craftBtn:Think()
 		local level = LocalPlayer():GetSkillLevel("craft")
 
-		if panel.Mix.Level > level and canCraft then
+		if panel.Mix.Level > level or not canCraft then
 			self:SetDisabled(true)
 		else
 			self:SetDisabled(false)

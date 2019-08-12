@@ -270,7 +270,10 @@ function chat.AddText(...)
 	end
 	
 	impulse.chatBox.chatLog:AddText(...)
-	chat.PlaySound()
+
+	if impulse.hudEnabled then
+		chat.PlaySound()
+	end
 end
 
 --// Stops the default chat box from being opened
