@@ -24,6 +24,7 @@ function meta:SetTeam(teamID, forced)
 	end
 
 	self:StripWeapons()
+	self:StripAmmo()
 	self:UnEquipInventory()
 	self:ClearRestrictedInventory()
 	
