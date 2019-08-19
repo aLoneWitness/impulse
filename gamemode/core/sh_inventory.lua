@@ -3,6 +3,7 @@ impulse.Inventory.Data = impulse.Inventory.Data or {}
 impulse.Inventory.Data[0] = impulse.Inventory.Data[0] or {}
 impulse.Inventory.Items = impulse.Inventory.Items or {}
 impulse.Inventory.ItemsRef = impulse.Inventory.ItemsRef or {}
+impulse.Inventory.ItemsQW = impulse.Inventory.ItemsQW or {}
 impulse.Inventory.Benches = impulse.Inventory.Benches or {}
 impulse.Inventory.Mixtures = impulse.Inventory.Mixtures or {}
 impulse.Inventory.MixturesRef = impulse.Inventory.MixturesRef or {}
@@ -50,6 +51,7 @@ function impulse.RegisterItem(item)
 
 	impulse.Inventory.Items[count] = item -- this is done the wrong way round yea yea ik
 	impulse.Inventory.ItemsRef[item.UniqueID] = count
+	impulse.Inventory.ItemsQW[item.UniqueID] = (item.Weight or 1)
 	count = count + 1
 end
 
@@ -64,8 +66,10 @@ function impulse.RegisterMixture(mix)
 	local class = mix.Class
 	local bench = mix.Bench
 
+	mix.NetworkID = countX
+
 	impulse.Inventory.Mixtures[bench][class] = mix
-	impulse.Inventory.MixturesRef[countX] = class
+	impulse.Inventory.MixturesRef[countX] = {bench, class}
 	countX = countX + 1
 end
 
@@ -91,6 +95,32 @@ function impulse.Inventory.GetCraftingTime(mix)
 	end
 
 	return time, sounds
+end
+
+local sounds = {
+	["chemical"] = 3,
+	["electronics"] = 3,
+	["fabric"] = 6,
+	["fuel"] = 3,
+	["generic"] = 3,
+	["gunmetal"] = 3,
+	["metal"] = 3,
+	["nuclear"] = 2,
+	["plastic"] = 4,
+	["powder"] = 3,
+	["rock"] = 4,
+	["water"] = 3,
+	["wood"] = 6
+}
+
+function impulse.Inventory.PickRandomCraftSound(crafttype)
+	local max = sounds[crafttype]
+
+	if not max then
+		crafttype = "generic"
+	end
+
+	return "impulse/craft/"..crafttype.."/"..math.random(1, max)..".wav"
 end
 
 function meta:GetMaxInventoryStorage()

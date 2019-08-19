@@ -22,6 +22,8 @@ function PANEL:SetupCrafting()
 		return self:Remove()
 	end
 
+	self.bench = tr.Entity
+
 	local benchType = tr.Entity:GetBenchType()
 	local benchClass = impulse.Inventory.Benches[benchType]
 	local panel = self
@@ -119,7 +121,15 @@ function PANEL:SetupCrafting()
 end
 
 function PANEL:Think()
+	if self.bench and (not IsValid(self.bench) or self.bench:GetPos():DistToSqr(LocalPlayer():GetPos()) > (120 ^ 2)) then
+		return self:Remove()
+	end
+	
 	if not LocalPlayer():Alive() or LocalPlayer():IsCP() then
+		return self:Remove()
+	end
+
+	if LocalPlayer():GetSyncVar(SYNC_ARRESTED, false) then
 		return self:Remove()
 	end
 end
@@ -176,6 +186,12 @@ function PANEL:DoCraft(item, mix)
 			panel.craftBar:Remove()
 			panel.model:Remove()
 			panel.IsCrafting = false
+
+			for v,k in pairs(panel.mixes) do
+				if IsValid(k) then
+					k:RefreshCanCraft()
+				end
+			end
 		end
 	end
 

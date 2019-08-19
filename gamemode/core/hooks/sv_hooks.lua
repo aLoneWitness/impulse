@@ -49,7 +49,7 @@ function IMPULSE:PlayerInitialSpawn(ply)
 	end
 
 	timer.Create(ply:UserID().."impulseOOCLimit", 1800, 0, function()
-		if ply:IsDonator() then
+		if IsValid(ply) and ply:IsDonator() then
 			ply.OOCLimit = impulse.Config.OOCLimitVIP
 		else
 			ply.OOCLimit = impulse.Config.OOCLimit
@@ -899,6 +899,10 @@ function IMPULSE:PlayerSpray()
 end
 
 function IMPULSE:PlayerShouldTakeDamage(ply, attacker)
+	if ply:Team() == 0 then
+		return false
+	end
+	
 	if ply.SpawnProtection and attacker:IsPlayer() then
 		return false
 	end

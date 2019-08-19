@@ -36,6 +36,10 @@ function ENT:Use(activator, caller)
 			return activator:Notify("You cannot access this due to your team.")
 		end
 
+		if self.InUse then
+			return activator:Notify("This workbench is already in use.")
+		end
+
 		net.Start("impulseBenchUse")
 		net.Send(activator)
 

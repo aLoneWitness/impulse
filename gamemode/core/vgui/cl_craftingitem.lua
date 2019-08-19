@@ -56,21 +56,33 @@ function PANEL:SetMix(mix)
 	self.craftBtn:SetDisabled(true)
 
 	function self.craftBtn:DoClick()
-		panel.dad:DoCraft(panel.Item, panel.Mix)
+		panel.dad.UseItem = panel.Item
+		panel.dad.UseMix = panel.Mix
+
+		net.Start("impulseMixTry")
+		net.WriteUInt(panel.Mix.NetworkID, 8)
+		net.SendToServer()
 	end
 
-	local canCraft = true
+	self.canCraft = true
 
 	function self.craftBtn:Think()
 		local level = LocalPlayer():GetSkillLevel("craft")
 
-		if panel.Mix.Level > level or not canCraft then
+		if panel.Mix.Level > level or not panel.canCraft then
 			self:SetDisabled(true)
 		else
 			self:SetDisabled(false)
 		end
 	end
 
+	self:RefreshCanCraft()
+end
+
+function PANEL:RefreshCanCraft()
+	local mix = self.Mix
+
+	self.canCraft = true
 	local required = "<font=Impulse-Elements17>"
 
 	for v,k in pairs(mix.Input) do
@@ -84,7 +96,7 @@ function PANEL:SetMix(mix)
 
 			if amount < need then
 				required = required.."<colour=120, 120, 120, 255>"
-				canCraft = false
+				self.canCraft = false
 			else
 				required = required.."<colour=255, 255, 255, 255>"
 			end

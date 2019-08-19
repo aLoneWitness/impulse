@@ -46,6 +46,8 @@ util.AddNetworkString("impulseConfiscateCheck")
 util.AddNetworkString("impulseDoConfiscate")
 util.AddNetworkString("impulseSkillUpdate")
 util.AddNetworkString("impulseBenchUse")
+util.AddNetworkString("impulseMixTry")
+util.AddNetworkString("impulseMixDo")
 
 net.Receive("impulseCharacterCreate", function(len, ply)
 	if (ply.NextCreate or 0) > CurTime() then return end
@@ -312,7 +314,10 @@ net.Receive("impulseBuyItem", function(len, ply)
 			trace.filter = ply
 
 			local tr = util.TraceLine(trace)
-			impulse.SpawnBuyable(tr.HitPos, buyable)
+
+			local ang = Angle(0, 0, 0)
+
+			impulse.SpawnBuyable(tr.HitPos, ang, buyable, ply)
 		end
 
 		ply:Notify("You have purchased "..buyableName.." for "..impulse.Config.CurrencyPrefix..buyable.price..".")
@@ -833,4 +838,128 @@ net.Receive("impulseDoConfiscate", function(len, ply)
 	end
 
 	ply.nextDoConfiscate = CurTime() + 1
+end)
+
+net.Receive("impulseMixTry", function(len, ply)
+	if (ply.nextMixTry or 0) > CurTime() then return end
+	ply.nextMixTry = CurTime() + 1
+
+	if ply.IsCrafting then
+		return -- already crafting
+	end
+
+	if not ply:Alive() or ply:GetSyncVar(SYNC_ARRESTED, false) then
+		return -- ded or arrested
+	end
+
+	if ply:IsCP() then
+		return -- is cp
+	end
+
+	local bench = ply.currentBench
+
+	if not bench or not IsValid(bench) or bench:GetPos():DistToSqr(ply:GetPos()) > (120 ^ 2) then
+		return -- bench not real or too far from
+	end
+
+	if bench.InUse then
+		return ply:Notify("This workbench is already in use.")
+	end
+
+	local benchEnt = bench
+
+	local mix = net.ReadUInt(8)
+	local mixClass = impulse.Inventory.MixturesRef[mix]
+
+	if not mixClass then
+		return
+	end
+
+	local bench = mixClass[1]
+	mix = mixClass[2]
+
+	mixClass = impulse.Inventory.Mixtures[bench][mix]
+
+	local output = mixClass.Output
+	local takeWeight = 0
+
+	if not ply:CanMakeMix(mixClass) then -- checks input items + craft level
+		return
+	end
+
+	local oWeight = impulse.Inventory.ItemsQW[output]
+
+	for v,k in pairs(mixClass.Input) do
+		local iWeight = impulse.Inventory.ItemsQW[v]
+
+		if iWeight then
+			iWeight = iWeight * k.take
+		end
+
+		takeWeight = takeWeight + iWeight
+	end
+
+	if (ply.InventoryWeight - takeWeight) + oWeight >= impulse.Config.InventoryMaxWeight then
+		return ply:Notify("You do not have the inventory space to craft this item.")
+	end
+
+	benchEnt.InUse = true
+
+	local startTeam = ply:Team()
+	local time, sounds = impulse.Inventory.GetCraftingTime(mixClass)
+	ply.CraftFail = false
+
+	for v,k in pairs(sounds) do
+		timer.Simple(k[1], function()
+			if not IsValid(ply) or not IsValid(benchEnt) or not ply:Alive() or ply:GetSyncVar(SYNC_ARRESTED, false) or ply.CraftFail or benchEnt:GetPos():DistToSqr(ply:GetPos()) > (120 ^ 2) then
+				if IsValid(ply) then
+					ply.CraftFail = true
+				end
+
+				return
+			end
+
+			local crafttype = k[2]
+			local snd = impulse.Inventory.PickRandomCraftSound(crafttype)
+
+			benchEnt:EmitSound(snd, 100)
+		end)
+	end
+
+	timer.Simple(time, function()
+		if IsValid(benchEnt) then
+			benchEnt.InUse = false
+		end
+
+		if IsValid(ply) and ply:Alive() and IsValid(benchEnt) and ply:CanMakeMix(mixClass) then
+			if benchEnt:GetPos():DistToSqr(ply:GetPos()) > (120 ^ 2) then
+				return
+			end
+
+			if ply.CraftFail then
+				return
+			end
+
+			if ply:GetSyncVar(SYNC_ARRESTED, false) or ply:IsCP() then
+				return
+			end
+
+			if startTeam != ply:Team() then
+				return
+			end
+
+			local item = impulse.Inventory.Items[impulse.Inventory.ClassToNetID(mixClass.Output)]
+
+			for v,k in pairs(mixClass.Input) do
+				ply:TakeInventoryItemClass(v, nil, k.take)
+			end
+
+			ply:GiveInventoryItem(mixClass.Output)
+			ply:Notify("You have crafted a "..item.Name..".")
+			ply:AddSkillXP("craft", mixClass.XP)
+		end
+	end)
+
+	net.Start("impulseMixDo") -- send response to allow crafting to client
+	net.Send(ply)
 end)

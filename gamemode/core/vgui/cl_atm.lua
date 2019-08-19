@@ -27,9 +27,14 @@ function PANEL:Init()
 	self.withdrawButton:SetSize(55, 20)
 	function self.withdrawButton:DoClick()
 		if parent.withdrawInput:GetValue() == "" then return true end
+		local num = tonumber(parent.withdrawInput:GetValue())
+
+		if not num then
+			return
+		end
 
 		net.Start("impulseATMWithdraw")
-		net.WriteUInt(math.floor(tonumber(parent.withdrawInput:GetValue())), 32)
+		net.WriteUInt(math.floor(num), 32)
 		net.SendToServer()
 
 		timer.Simple(0.1, function()
@@ -51,9 +56,14 @@ function PANEL:Init()
 	self.despoitButton:SetSize(55, 20)
 	function self.despoitButton:DoClick()
 		if parent.depositInput:GetValue() == "" then return true end
+		local num = tonumber(parent.depositInput:GetValue())
+
+		if not num then
+			return
+		end
 
 		net.Start("impulseATMDeposit")
-		net.WriteUInt(math.floor(tonumber(parent.depositInput:GetValue())), 32)
+		net.WriteUInt(math.floor(num), 32)
 		net.SendToServer()
 
 		timer.Simple(0.2, function()

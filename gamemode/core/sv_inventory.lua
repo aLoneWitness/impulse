@@ -431,3 +431,19 @@ function meta:MoveInventoryItem(itemid, from, to)
 	net.WriteUInt(to, 4)
 	net.Send(self)
 end
+
+function meta:CanMakeMix(mixClass)
+	local skill = self:GetSkillLevel("craft")
+
+	if mixClass.Level > skill then
+		return false
+	end
+
+	for v,k in pairs(mixClass.Input) do
+		if not self:HasInventoryItem(v, k.take) then
+			return false
+		end
+	end
+
+	return true
+end

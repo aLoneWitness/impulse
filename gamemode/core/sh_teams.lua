@@ -9,6 +9,8 @@ impulse.Teams.ClassRef = impulse.Teams.ClassRef or {}
 impulse.Teams.NameRef = impulse.Teams.NameRef or {}
 teamID = 0
 
+CLASS_EMPTY = 0
+
 function impulse.Teams.Define(teamData)
     teamID = teamID + 1
     impulse.Teams.Data[teamID] = teamData

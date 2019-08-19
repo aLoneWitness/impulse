@@ -26,16 +26,28 @@ function meta:CanBuy(name)
 		return false
 	end
 
+	if buyable.customCheck and not buyable.customCheck(self) then
+		return false
+	end
+
 	return true
 end
 
-function impulse.SpawnBuyable(pos, buyable)
-	local spawnedBuyable = ents.Create(buyable.entity)
+function impulse.SpawnBuyable(pos, ang, buyable, owner)
+	local spawnedBuyable
 
-	if buyable.model then
-		spawnedBuyable:SetModel(buyable.model)
+	if buyable.bench then
+		spawnedBuyable = impulse.Inventory.SpawnBench(buyable.bench, pos, ang)
+	else
+		spawnedBuyable = ents.Create(buyable.entity)
+
+		if buyable.model then
+			spawnedBuyable:SetModel(buyable.model)
+		end
+
+		spawnedBuyable:SetPos(pos)
+		spawnedBuyable:Spawn()
 	end
 
-	spawnedBuyable:SetPos(pos)
-	spawnedBuyable:Spawn()
+	spawnedBuyable:CPPISetOwner(owner)
 end

@@ -284,6 +284,16 @@ net.Receive("impulseSkillUpdate", function()
 end)
 
 net.Receive("impulseBenchUse", function()
-	local craft = vgui.Create("impulseCraftingMenu")
-	craft:SetupCrafting()
+	if impulse_craft and IsValid(impulse_craft) then
+		impulse_craft:Remove()
+	end
+
+	impulse_craft = vgui.Create("impulseCraftingMenu")
+	impulse_craft:SetupCrafting()
+end)
+
+net.Receive("impulseMixDo", function()
+	if impulse_craft and IsValid(impulse_craft) and impulse_craft.UseItem and impulse_craft.UseMix then
+		impulse_craft:DoCraft(impulse_craft.UseItem, impulse_craft.UseMix)
+	end
 end)
