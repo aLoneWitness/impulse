@@ -197,11 +197,15 @@ function PANEL:DoCraft(item, mix)
 			panel.model:Remove()
 			panel.IsCrafting = false
 
-			for v,k in pairs(panel.mixes) do
-				if IsValid(k) then
-					k:RefreshCanCraft()
+			timer.Simple(0.2, function()
+				if IsValid(panel) then
+					for v,k in pairs(panel.mixes) do
+						if IsValid(k) then
+							k:RefreshCanCraft()
+						end
+					end
 				end
-			end
+			end)
 		end
 	end
 

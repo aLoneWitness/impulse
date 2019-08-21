@@ -914,3 +914,23 @@ function IMPULSE:PlayerShouldTakeDamage(ply, attacker)
 
 	return true
 end
+
+function IMPULSE:LongswordCalculateMeleeDamage(ply, damage)
+	local skill = ply:GetSkillLevel("strength")
+
+	return damage * (1 + (skill * .059))
+end
+
+function IMPULSE:LongswordMeleeHit(ply)
+	if ply.StrengthUp and ply.StrengthUp > 5 then
+		ply:AddSkillXP("strength", math.random(1, 6))
+		ply.StrengthUp = 0
+		return
+	end
+
+	ply.StrengthUp = (ply.StrengthUp or 0) + 1
+end
+
+function IMPULSE:LongswordHitEntity(ply, ent)
+	-- if tree then vood ect.
+end

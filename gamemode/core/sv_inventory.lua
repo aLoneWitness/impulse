@@ -440,7 +440,9 @@ function meta:CanMakeMix(mixClass)
 	end
 
 	for v,k in pairs(mixClass.Input) do
-		if not self:HasInventoryItem(v, k.take) then
+		local item = self:HasInventoryItem(v, k.take)
+
+		if not item or self:IsInventoryItemRestricted(item) then
 			return false
 		end
 	end
