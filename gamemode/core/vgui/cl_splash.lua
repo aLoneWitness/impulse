@@ -15,6 +15,7 @@ function PANEL:OnKeyCodeReleased()
 	
 	impulse.hudEnabled = true
 	self.used = true
+	impulse_IsReady = true
 	self:AlphaTo(0, 2, 0, function()
 		self:Remove()
 	end)

@@ -280,7 +280,7 @@ net.Receive("impulseSkillUpdate", function()
 	local xp = net.ReadUInt(16)
 	local name = table.KeyFromValue(impulse.Skills.Skills, skillid)
 
-	if LocalPlayer():Team() == 0 then -- in setup
+	if not impulse_IsReady then -- in setup
 		impulse.Skills.Data[name] = xp
 		return
 	end

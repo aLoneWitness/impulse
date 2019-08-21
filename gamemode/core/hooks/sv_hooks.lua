@@ -915,10 +915,12 @@ function IMPULSE:PlayerShouldTakeDamage(ply, attacker)
 	return true
 end
 
-function IMPULSE:LongswordCalculateMeleeDamage(ply, damage)
+function IMPULSE:LongswordCalculateMeleeDamage(ply, damage, ent)
 	local skill = ply:GetSkillLevel("strength")
+	local dmg = damage * (1 + (skill * .059))
+	local override = hook.Run("CalculateMeleeDamage", ply, dmg, ent)
 
-	return damage * (1 + (skill * .059))
+	return override or dmg
 end
 
 function IMPULSE:LongswordMeleeHit(ply)

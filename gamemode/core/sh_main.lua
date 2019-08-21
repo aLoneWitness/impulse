@@ -25,6 +25,12 @@ if SERVER then
         net.Broadcast()
     end
 
+    concommand.Add("impulse_cinemessage", function(ply, cmd, args)
+        if not ply:IsSuperAdmin() then return end
+        
+        impulse.CinematicIntro(args[1] or "")
+    end)
+
     function meta:AllowScenePVSControl(bool)
         self.allowPVS = bool
 
