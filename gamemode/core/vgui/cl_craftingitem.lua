@@ -12,6 +12,11 @@ function PANEL:SetMix(mix)
 	local id = impulse.Inventory.ClassToNetID(class)
 	local item = impulse.Inventory.Items[id]
 
+	if not item then
+		print("[impulse] Could not find item: "..class.." for use in mix: "..mix.Class.."!")
+		return self:Remove()
+	end
+
 	self.Item = item
 	self.Mix = mix
 
@@ -89,7 +94,7 @@ function PANEL:RefreshCanCraft()
 		local id = impulse.Inventory.ClassToNetID(v)
 
 		if id then
-			local name = impulse.Inventory.Items[id].Name
+			local name = (impulse.Inventory.Items[id] and impulse.Inventory.Items[id].Name) or "PANIC! INVALID ITEM!!! AHHHH!!"
 			local has, amount = LocalPlayer():HasInventoryItem(id)
 			local need = k.take or 1
 			amount = amount or 0
@@ -140,7 +145,7 @@ function PANEL:Paint(w, h)
 		end
 
 		surface.SetFont("Impulse-Elements16")
-		surface.SetTextPos(82, 25)
+		surface.SetTextPos(82, 28)
 		surface.DrawText("Level: "..mix.Level)
 
 		if self.requiredMarkup then

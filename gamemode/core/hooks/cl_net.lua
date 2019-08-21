@@ -279,8 +279,15 @@ net.Receive("impulseSkillUpdate", function()
 	local skillid = net.ReadUInt(4)
 	local xp = net.ReadUInt(16)
 	local name = table.KeyFromValue(impulse.Skills.Skills, skillid)
+	local oldLevel = LocalPlayer():GetSkillLevel(name)
 
 	impulse.Skills.Data[name] = xp
+
+	local newLevel = LocalPlayer():GetSkillLevel(name)
+
+	if oldLevel != newLevel then
+		LocalPlayer():Notify("You have reached skill level "..newLevel.." for the "..impulse.Skills.GetNiceName(name).." skill.")
+	end
 end)
 
 net.Receive("impulseBenchUse", function()

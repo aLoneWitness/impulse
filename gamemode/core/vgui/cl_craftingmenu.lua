@@ -103,8 +103,18 @@ function PANEL:SetupCrafting()
 	self.unAvailibleMixes:SetContents(self.unAvailibleMixesLayout)
 
 	local level = LocalPlayer():GetSkillLevel("craft")
+	local mix = impulse.Inventory.Mixtures[benchType]
+	local sortedMix = {}
 
-	for v,k in pairs(impulse.Inventory.Mixtures[benchType]) do
+	for v,k in pairs(mix) do
+		table.insert(sortedMix, k)
+	end
+
+	table.sort(sortedMix, function(a, b)
+		return a.Level < b.Level
+	end)
+
+	for v,k in pairs(sortedMix) do
 		local cat = self.availibleMixesLayout
 
 		if level < k.Level then
