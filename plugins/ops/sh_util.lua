@@ -3,18 +3,18 @@ local setHealthCommand = {
     requiresArg = true,
     adminOnly = true,
     onRun = function(ply, arg, rawText)
-        local firstArg = arg[1]
-        local secondArg = arg[2]
+        local targ = impulse.FindPlayer(arg[1])
+        local hp = arg[2]
 
-        if tonumber(firstArg) then
-            ply:SetHealth(firstArg)
-            ply:Notify("You set your own health to " ..firstArg)
-        elseif type(firstArg) == "string" then
-            if tonumber(secondArg) then
-                local target = impulse.FindPlayer(firstArg)
-                target:Notify("Your health has been set to " ..secondArg)
-                target:SetHealth(secondArg)
-            end
+        if not hp then
+            return
+        end
+
+        if targ and IsValid(targ) then
+            targ:SetHealth(hp)
+            ply:Notify("You have set "..targ:Nick().."'s health to "..hp..".")
+        else
+            return ply:Notify("Could not find player: "..tostring(arg[1]))
         end
     end
 }
