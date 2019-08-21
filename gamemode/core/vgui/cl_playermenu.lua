@@ -349,7 +349,14 @@ function PANEL:Business()
 		end
 
 		local item = (parent or utilList):Add("SpawnIcon")
-		item:SetModel(k.model)
+
+		if k.item then
+			local x = impulse.Inventory.Items[impulse.Inventory.ClassToNetID(k.item)]
+			item:SetModel(x.Model)
+		else
+			item:SetModel(k.model)
+		end
+
 		item:SetSize(58,58)
 		item:SetTooltip(name.." \n"..impulse.Config.CurrencyPrefix..k.price)
 		item.id = table.KeyFromValue(impulse.Business.DataRef, name)

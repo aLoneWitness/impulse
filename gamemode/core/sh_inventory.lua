@@ -88,6 +88,8 @@ function impulse.Inventory.GetCraftingTime(mix)
 		for i=1, k.take do
 			if hasCustom and hasCustom.sound then
 				table.insert(sounds, {time, hasCustom.sound})
+			else
+				table.insert(sounds, {time, "generic"})
 			end
 
 			time = time + ((hasCustom and hasCustom.time) or 3)
