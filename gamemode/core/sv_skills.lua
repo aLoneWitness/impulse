@@ -13,6 +13,8 @@ function meta:SetSkillXP(name, value)
 	if not self.impulseSkills then return end
 	if not impulse.Skills.Skills[name] then return end
 
+	value = math.Round(value)
+
 	self.impulseSkills[name] = value
 
 	local data = util.TableToJSON(self.impulseSkills)
@@ -38,7 +40,7 @@ function meta:AddSkillXP(name, value)
 	if not self.impulseSkills then return end
 
 	local cur = self:GetSkillXP(name)
-	local new = math.Clamp(cur + value, 0, 4500)
+	local new = math.Round(math.Clamp(cur + value, 0, 4500))
 
 	if cur != new then
 		self:SetSkillXP(name, new)

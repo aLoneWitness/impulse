@@ -602,3 +602,6 @@ end
 
 function SWEP:PrintWeaponInfo(x, y, alpha)
 end
+
+function SWEP:DrawWeaponSelection()
+end

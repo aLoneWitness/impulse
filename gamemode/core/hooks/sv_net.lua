@@ -956,7 +956,9 @@ net.Receive("impulseMixTry", function(len, ply)
 
 			ply:GiveInventoryItem(mixClass.Output)
 			ply:Notify("You have crafted a "..item.Name..".")
-			ply:AddSkillXP("craft", mixClass.XP)
+
+			local xp = 30 + ((10 * 1.5) * 1.9)
+			ply:AddSkillXP("craft", xp)
 		end
 	end)
 
