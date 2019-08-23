@@ -69,7 +69,6 @@ function SKIN:PaintWindowMaximizeButton( panel, w, h )
 
 end
 
-
 function SKIN:DrawGenericBackground(x, y, w, h)
 	surface.SetDrawColor(45, 90, 45, 240)
 	surface.DrawRect(x, y, w, h)
