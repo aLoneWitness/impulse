@@ -86,6 +86,13 @@ function IMPULSE:PlayerSpawn(ply)
 		return
 	end
 
+	local killSilent = ply.IsKillSilent
+
+	if killSilent then
+		ply.IsKillSilent = false
+		return
+	end
+	
 	if ply:GetSyncVar(SYNC_ARRESTED, false) == true then
 		ply:SetSyncVar(SYNC_ARRESTED, false, true)
 	end
@@ -98,7 +105,6 @@ function IMPULSE:PlayerSpawn(ply)
 	ply:SetHunger(100)
 	ply.ArrestedWeapons = nil
 
-	--ply:GodEnable()
 	ply.SpawnProtection = true
 	ply:SetJumpPower(160)
 
@@ -459,7 +465,16 @@ function IMPULSE:PlayerDeath(ply)
 	ply:ClearInventory(1)
 end
 
+function IMPULSE:PlayerSilentDeath(ply)
+	ply.IsKillSilent = true
+end
+
 function IMPULSE:PlayerDeathThink(ply)
+	if not ply.respawnWait then
+		ply:Spawn()
+		return true
+	end
+
 	if ply.respawnWait < CurTime() then
 		ply:Spawn()
 	end
