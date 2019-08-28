@@ -92,7 +92,8 @@ function IMPULSE:PlayerSpawn(ply)
 		ply.IsKillSilent = false
 
 		for v,k in pairs(ply.TempWeapons) do
-			ply:Give(k)
+			local wep = ply:Give(k.wep)
+			wep:SetClip1(k.clip)
 		end
 
 		for v,k in pairs(ply.TempAmmo) do
@@ -484,7 +485,7 @@ function IMPULSE:PlayerSilentDeath(ply)
 	ply.TempWeapons = {}
 
 	for v,k in pairs(ply:GetWeapons()) do
-		ply.TempWeapons[v] = k:GetClass()
+		ply.TempWeapons[v] = {wep = k:GetClass(), clip = k:Clip1()}
 	end
 
 	ply.TempAmmo = ply:GetAmmo()
