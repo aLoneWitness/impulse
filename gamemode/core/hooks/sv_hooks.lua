@@ -90,6 +90,20 @@ function IMPULSE:PlayerSpawn(ply)
 
 	if killSilent then
 		ply.IsKillSilent = false
+
+		for v,k in pairs(ply.TempWeapons) do
+			ply:Give(k)
+		end
+
+		for v,k in pairs(ply.TempAmmo) do
+			ply:SetAmmo(k, v)
+		end
+
+		if ply.TempSelected then
+			ply:SelectWeapon(ply.TempSelected)
+			ply:SetWeaponRaised(ply.TempSelectedRaised)
+		end
+
 		return
 	end
 	
@@ -467,6 +481,20 @@ end
 
 function IMPULSE:PlayerSilentDeath(ply)
 	ply.IsKillSilent = true
+	ply.TempWeapons = {}
+
+	for v,k in pairs(ply:GetWeapons()) do
+		ply.TempWeapons[v] = k:GetClass()
+	end
+
+	ply.TempAmmo = ply:GetAmmo()
+
+	local wep = ply:GetActiveWeapon()
+
+	if wep and IsValid(wep) then
+		ply.TempSelected = wep:GetClass()
+		ply.TempSelectedRaised = ply:IsWeaponRaised()
+	end
 end
 
 function IMPULSE:PlayerDeathThink(ply)
