@@ -578,6 +578,12 @@ net.Receive("impulseInvDoEquip", function(len, ply)
 		return
 	end
 
+	local canUse = hook.Run("CanUseInventory", ply)
+
+	if canUse != nil and canUse == false then
+		return
+	end
+
 	local invid = net.ReadUInt(10)
 	local equipState = net.ReadBool()
 
@@ -596,6 +602,12 @@ net.Receive("impulseInvDoDrop", function(len, ply)
 		return
 	end
 
+	local canUse = hook.Run("CanUseInventory", ply)
+
+	if canUse != nil and canUse == false then
+		return
+	end
+
 	local invid = net.ReadUInt(10)
 
 	local hasItem, item = ply:HasInventoryItemSpecific(invid)
@@ -611,6 +623,12 @@ net.Receive("impulseInvDoUse", function(len, ply)
 	ply.nextInvUse = CurTime() + 0.5
 
 	if not ply:Alive() or ply:GetSyncVar(SYNC_ARRESTED, false) then
+		return
+	end
+
+	local canUse = hook.Run("CanUseInventory", ply)
+
+	if canUse != nil and canUse == false then
 		return
 	end
 
@@ -665,6 +683,12 @@ net.Receive("impulseInvDoMove", function(len, ply)
 	if ply.currentStorage:GetPos():DistToSqr(ply:GetPos()) > (100 ^ 2) then return end
 	if ply:IsCP() then return end
 	if ply:GetSyncVar(SYNC_ARRESTED, false) or not ply:Alive() then return end
+
+	local canUse = hook.Run("CanUseInventory", ply)
+
+	if canUse != nil and canUse == false then
+		return
+	end
 
 	if (ply.NextStorage or 0) > CurTime() then
 		ply.nextInvMove = CurTime() + 2
