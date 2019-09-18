@@ -46,7 +46,7 @@ function PANEL:Init()
 			panel.Status = ucCount.." report(s) awaiting claim and "..cCount.." in processing..."
 			panel.StatusCol = Color(255, 255, 0)
 		else
-			panel.Status = "No reports waiting! :)"
+			panel.Status = "No reports waiting."
 			panel.StatusCol = Color(0, 255, 0)
 		end
 	end
@@ -200,6 +200,12 @@ hook.Add("Think", "impulseReportMenuFastOpen", function()
 		elseif LocalPlayer():IsAdmin() then
 			impulse_reportMenu = vgui.Create("impulseReportMenu")
 			wait = CurTime() + 1
+		end
+
+		if not LocalPlayer():IsAdmin() and not vgui.CursorVisible() then
+			if not impulse_userReportMenu or not IsValid(impulse_userReportMenu) then
+				impulse_userReportMenu = vgui.Create("impulseUserReportMenu")
+			end
 		end
 	end
 end)

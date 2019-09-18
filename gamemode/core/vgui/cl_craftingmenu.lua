@@ -39,35 +39,7 @@ function PANEL:SetupCrafting()
 		return true
 	end
 
-	self.searchLbl = vgui.Create("DLabel", self.upper)
-	self.searchLbl:SetPos(410, 10)
-	self.searchLbl:SetFont("Impulse-Elements19-Shadow")
-	self.searchLbl:SetText("Search:")
-	self.searchLbl:SizeToContents()
-
-	self.search = vgui.Create("DTextEntry", self.upper)
-	self.search:SetPos(475, 8)
-	self.search:SetSize(280, 24)
-	self.search:SetFont("Impulse-Elements18")
-	self.search:SetText("")
-	self.search:SetUpdateOnType(true)
-
 	self.mixes = {}
-
-	local strMatch = string.match
-	function self.search:OnValueChange(search)
-		search = search:upper()
-
-		for v,k in pairs(panel.mixes) do
-			local name = k.Item.Name
-			local x, y = k:GetPos()
-
-			if strMatch(name, search) then
-				panel.scroll:GetVBar():AnimateTo(y, 0.2)
-				break
-			end
-		end
-	end
 
 	self.craftLbl = vgui.Create("DLabel", self.upper)
 	self.craftLbl:SetPos(5, 5)

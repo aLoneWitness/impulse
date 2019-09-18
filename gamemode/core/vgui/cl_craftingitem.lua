@@ -3,6 +3,7 @@ local PANEL = {}
 function PANEL:Init()
 	self.model = vgui.Create("DModelPanel", self)
 	self.model:SetPaintBackground(false)
+	self.model:SetCursor("none")
 	self:SetTall(86)
 end
 
