@@ -303,6 +303,25 @@ net.Receive("impulseBuyItem", function(len, ply)
 			return
 		end
 
+		if not item then
+			local count = 0
+
+			ply.BusinessSpawnCount = ply.BusinessSpawnCount or {}
+
+			for v,k in pairs(ply.BusinessSpawnCount) do
+				if IsValid(k) then
+					count = count + 1
+				else
+					ply.BusinessSpawnCount[v] = nil
+				end
+			end
+
+			if count >= impulse.Config.BuyableSpawnLimit then
+				ply:Notify("You have reached the buyable spawn limit.")
+				return
+			end
+		end
+
 		ply:TakeMoney(buyable.price)
 
 		if item then
@@ -317,7 +336,9 @@ net.Receive("impulseBuyItem", function(len, ply)
 
 			local ang = Angle(0, 0, 0)
 
-			impulse.SpawnBuyable(tr.HitPos, ang, buyable, ply)
+			local ent = impulse.SpawnBuyable(tr.HitPos, ang, buyable, ply)
+
+			table.insert(ply.BusinessSpawnCount, ent)
 		end
 
 		ply:Notify("You have purchased "..buyableName.." for "..impulse.Config.CurrencyPrefix..buyable.price..".")
