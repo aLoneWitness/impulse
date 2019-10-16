@@ -19,7 +19,7 @@ local setHealthCommand = {
     end
 }
 
-impulse.RegisterChatCommand("/sethealth", setHealthCommand)
+impulse.RegisterChatCommand("/sethp", setHealthCommand)
 
 local kickCommand = {
     description = "Kicks the specified player from the server.",

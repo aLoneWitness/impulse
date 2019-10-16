@@ -75,7 +75,13 @@ function PANEL:SetItem(netitem, wide)
 	self.desc:SetWrap(true)
 
 	self.count = vgui.Create("DLabel", self)
-	self.count:SetPos(34, 38)
+
+	if self.IsRestricted or self.Item.Illegal then
+		self.count:SetPos(42, 28)
+	else
+		self.count:SetPos(42, 38)
+	end
+
 	self.count:SetText("")
 	self.count:SetTextColor(impulse.Config.MainColour)
 	self.count:SetFont("Impulse-Elements19-Shadow")
@@ -86,6 +92,18 @@ function PANEL:SetItem(netitem, wide)
 			self:SetText("x"..panel.Count)
 			self.lastCount = panel.Count
 			panel.Weight = panel.Count * panel.Item.Weight
+
+			local wShift = 0
+
+			if panel.Count > 9 then
+				wShift = -8
+			end
+
+			if panel.IsRestricted or panel.Item.Illegal then
+				self:SetPos(42 + wShift, 28)
+			else
+				self:SetPos(42 + wShift, 38)
+			end
 		end
 	end
 

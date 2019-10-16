@@ -1,6 +1,8 @@
 -- This file contains private info, do NOT publicise.
 
 function opsDiscordLog(message)
+--[[ 	return -- discord FUCKED IT UP
+	
 	local post = {
 		content = message,
 		username = "impulse (ops)"
@@ -14,5 +16,5 @@ function opsDiscordLog(message)
 		type = "application/json; charset=utf-8"
 	}
 
-	HTTP(struct)
+	HTTP(struct)--]] 
 end
