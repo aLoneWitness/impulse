@@ -156,12 +156,13 @@ function impulse.Ops.ReportClose(ply, arg, rawText)
         local reporter = targetReport[1]
         local reportMessage = targetReport[2]
         local reportClaimant = targetReport[3]
+        local isDc = false
 
         if not IsValid(reporter) then
-            return ply:AddChatText(newReportCol, "The player who submitted this report has left the game. Please close.")
+            isDc = true
         end
 
-        if reportClaimant then
+        if reportClaimant and not isDc and IsValid(reportClaimant) then
         	local query = mysql:Insert("impulse_reports")
 			query:Insert("reporter", reporter:SteamID())
 			query:Insert("mod", reportClaimant:SteamID())
@@ -185,11 +186,13 @@ function impulse.Ops.ReportClose(ply, arg, rawText)
 
         opsDiscordLog(":closed_book: **[REPORT CLOSED]** [#"..reportId.."] closed by "..ply:SteamName().." ("..ply:SteamID()..")")
 
-        net.Start("opsReportMessage")
-        net.WriteUInt(reportId, 16)
-        net.WriteUInt(4, 4)
-        net.WriteEntity(ply)
-        net.Send(reporter)
+        if not isDc then
+            net.Start("opsReportMessage")
+            net.WriteUInt(reportId, 16)
+            net.WriteUInt(4, 4)
+            net.WriteEntity(ply)
+            net.Send(reporter)
+        end
     else
         ply:AddChatText(claimedReportCol, "Report #"..reportId.." does not exist.")
     end
