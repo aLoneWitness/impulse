@@ -27,6 +27,12 @@ if (SERVER) then
 	RunConsoleCommand("sv_defaultdeployspeed", 1)
 end
 
+-- disable widgets cause it uses like 30% server cpu lol
+function widgets.PlayerTick()
+end
+
+hook.Remove("PlayerTick", "TickWidgets")
+
 function impulse.lib.LoadFile(fileName)
 	if (!fileName) then
 		error("[impulse] File to include has no name!")

@@ -17,12 +17,6 @@ impulse = impulse or {} -- defining global function table
 impulse.meta = FindMetaTable( "Player" )
 impulse.lib = {}
 
--- disable widgets cause it uses like 30% server cpu lol
-function widgets.PlayerTick()
-end
-
-hook.Remove("PlayerTick", "TickWidgets")
-
 -- load the framework bootstrapper
 
 AddCSLuaFile("shared.lua")
