@@ -183,9 +183,21 @@ local idleVO = {
     "question05.wav"
 }
 
+local idleCPVO = {
+    "copy.wav",
+    "needanyhelpwiththisone.wav",
+    "unitis10-8standingby.wav",
+    "affirmative.wav",
+    "affirmative2.wav",
+    "rodgerthat.wav",
+    "checkformiscount.wav"
+}
+
 function impulse.GetRandomAmbientVO(gender)
     if gender == "male" then
         return "vo/npc/male01/"..idleVO[math.random(1, #idleVO)]
+    elseif gender == "cp" then
+        return "npc/metropolice/vo/"..idleCPVO[math.random(1, #idleCPVO)]
     else
         return "vo/npc/female01/"..idleVO[math.random(1, #idleVO)]
     end

@@ -1,5 +1,5 @@
-netstream.Hook("impulseJoinData", function(xisNew)
-	impulse_isNewPlayer = xisNew -- this is saved as a normal global variable cuz impulse or localplayer have not loaded yet on the client
+net.Receive("impulseJoinData", function()
+	impulse_isNewPlayer = net.ReadBool() -- this is saved as a normal global variable cuz impulse or localplayer have not loaded yet on the client
 end)
 
 net.Receive("impulseNotify", function(len)
@@ -307,4 +307,13 @@ net.Receive("impulseMixDo", function()
 	if impulse_craft and IsValid(impulse_craft) and impulse_craft.UseItem and impulse_craft.UseMix then
 		impulse_craft:DoCraft(impulse_craft.UseItem, impulse_craft.UseMix)
 	end
+end)
+
+net.Receive("impulseVendorUse", function()
+	if impulse_vendor and IsValid(impulse_vendor) then
+		return
+	end
+
+	impulse_vendor = vgui.Create("impulseVendorMenu")
+	impulse_vendor:SetupVendor()
 end)

@@ -14,7 +14,7 @@ function impulse.Schema.Boot(name)
     impulse.lib.includeDir(SCHEMA.."/schema/benches")
     impulse.lib.includeDir(SCHEMA.."/schema/mixtures")
     impulse.lib.includeDir(SCHEMA.."/schema/buyables")
-    impulse.lib.includeDir(SCHEMA.."/schema/npcs")
+    impulse.lib.includeDir(SCHEMA.."/schema/vendors")
     impulse.lib.includeDir(SCHEMA.."/schema/config")
 
     local mapPath = SCHEMA.."/schema/config/maps/"..game.GetMap()..".lua"

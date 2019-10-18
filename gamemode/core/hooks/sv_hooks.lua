@@ -32,7 +32,10 @@ function IMPULSE:PlayerInitialSpawn(ply)
 		elseif IsValid(ply) then
 			ply:Freeze(true)
 		end
-		netstream.Start(ply, "impulseJoinData", isNew)
+
+		net.Start("impulseJoinData")
+		net.WriteBool(isNew)
+		net.Send(ply)
 	end)
 	query:Execute()
 

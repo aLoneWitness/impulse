@@ -1,3 +1,4 @@
+util.AddNetworkString("impulseJoinData")
 util.AddNetworkString("impulseATMWithdraw")
 util.AddNetworkString("impulseATMDeposit")
 util.AddNetworkString("impulseATMOpen")
@@ -48,6 +49,7 @@ util.AddNetworkString("impulseSkillUpdate")
 util.AddNetworkString("impulseBenchUse")
 util.AddNetworkString("impulseMixTry")
 util.AddNetworkString("impulseMixDo")
+util.AddNetworkString("impulseVendorUse")
 
 net.Receive("impulseCharacterCreate", function(len, ply)
 	if (ply.NextCreate or 0) > CurTime() then return end
