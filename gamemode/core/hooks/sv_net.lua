@@ -356,6 +356,8 @@ net.Receive("impulseChatState", function(len, ply)
 
 		if state != isTyping then
 			ply:SetSyncVar(SYNC_TYPING, isTyping, true)
+
+			hook.Run("ChatStateChanged", ply, state, isTyping)
 		end
 
 		ply.nextChatState = CurTime() + .02
