@@ -95,7 +95,7 @@ function meta:CanBecomeTeamClass(classID, notify)
 		return false
 	end
 
-	if classData.limit and forced == false then
+	if classData.limit then
 		local classPlayers = 0
 
 		for v,k in pairs(team.GetPlayers(self:Team())) do
@@ -139,7 +139,7 @@ function meta:CanBecomeTeamRank(rankID, notify)
 		return false
 	end
 
-	if rankData.limit and forced == false then
+	if rankData.limit then
 		local rankPlayers = 0 
 
 		for v,k in pairs(team.GetPlayers(self:Team())) do

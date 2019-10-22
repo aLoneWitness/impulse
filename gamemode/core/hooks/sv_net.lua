@@ -1008,7 +1008,7 @@ net.Receive("impulseMixTry", function(len, ply)
 			ply:GiveInventoryItem(mixClass.Output)
 			ply:Notify("You have crafted a "..item.Name..".")
 
-			local xp = 30 + ((10 * 1.5) * 1.9)
+			local xp = 30 + ((mixClass.Level * 1.5) * 1.9) -- needs balancing
 			ply:AddSkillXP("craft", xp)
 		end
 	end)
@@ -1039,7 +1039,6 @@ net.Receive("impulseVendorBuy", function(len, ply)
 
 	local sellData = vendor.Vendor.Sell[itemclass]
 
-	PrintTable(sellData)
 	if not sellData then
 		return
 	end
