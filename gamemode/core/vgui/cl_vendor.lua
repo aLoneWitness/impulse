@@ -111,9 +111,37 @@ function PANEL:SetupVendor()
 		emptyLbl:SetContentAlignment(5)
 	end
 
+	empty = true
+
 	self.youScroll = vgui.Create("DScrollPanel", self)
 	self.youScroll:SetPos(440, 83)
 	self.youScroll:SetSize(340, h - 83)
+
+	for v,k in pairs(impulse.Inventory.Data[0][1]) do
+		local item = impulse.Inventory.Items[k.id]
+		local class = item.UniqueID
+
+		if self.Vendor.Buy[class] then
+			local vendorItem = self.youScroll:Add("impulseVendorItem")
+			vendorItem.Selling = true
+			vendorItem.ItemID = v
+			vendorItem:SetItem(item, self.Vendor.Buy[class])
+			vendorItem.Parent = self
+			vendorItem:Dock(TOP)
+
+			empty = false
+		end
+	end
+
+	if empty then
+		local emptyLbl = vgui.Create("DLabel", self.youScroll)
+		emptyLbl:SetText("Nothing to sell")
+		emptyLbl:SetFont("Impulse-Elements18-Shadow")
+		emptyLbl:SizeToContents()
+		emptyLbl:Dock(TOP)
+		emptyLbl:DockMargin(0, 20, 0, 0)
+		emptyLbl:SetContentAlignment(5)
+	end
 end
 
 local headerDark = Color(20, 20, 20, 180)

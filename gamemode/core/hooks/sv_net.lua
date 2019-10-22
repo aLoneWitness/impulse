@@ -50,6 +50,8 @@ util.AddNetworkString("impulseBenchUse")
 util.AddNetworkString("impulseMixTry")
 util.AddNetworkString("impulseMixDo")
 util.AddNetworkString("impulseVendorUse")
+util.AddNetworkString("impulseVendorBuy")
+util.AddNetworkString("impulseVendorSell")
 
 net.Receive("impulseCharacterCreate", function(len, ply)
 	if (ply.NextCreate or 0) > CurTime() then return end
@@ -1013,4 +1015,59 @@ net.Receive("impulseMixTry", function(len, ply)
 
 	net.Start("impulseMixDo") -- send response to allow crafting to client
 	net.Send(ply)
+end)
+
+net.Receive("impulseVendorBuy", function(len, ply)
+	if (ply.nextVendorBuy or 0) > CurTime() then return end
+	ply.nextVendorBuy = CurTime() + 1
+
+	if not ply.currentVendor or not IsValid(ply.currentVendor) then
+		return
+	end
+
+	local vendor = ply.currentVendor
+
+	if (ply:GetPos() - vendor:GetPos()):LengthSqr() > (120 ^ 2) then 
+		return
+	end
+
+	local itemclass = net.ReadString()
+
+	if string.len(itemclass) > 128 then
+		return
+	end
+
+	local sellData = vendor.Vendor.Sell[itemclass]
+
+	PrintTable(sellData)
+	if not sellData then
+		return
+	end
+
+	if sellData.Cost and not ply:CanAfford(sellData.Cost) then
+		return
+	end
+
+	if sellData.Max then
+		local hasItem, amount = ply:HasInventoryItem(itemclass)
+
+		if hasItem and amount >= sellData.Max then
+			return
+		end
+	end
+
+	if sellData.CanBuy and sellData.CanBuy(ply) == false then
+		return
+	end
+
+	local item = impulse.Inventory.Items[impulse.Inventory.ClassToNetID(itemclass)]
+
+	if sellData.Cost then
+		ply:TakeMoney(sellData.Cost)
+		ply:Notify("You have purchased "..item.Name.." for "..impulse.Config.CurrencyPrefix..sellData.Cost..".")
+	else
+		ply:Notify("You have acquired a "..item.Name..".")
+	end
+	
+	ply:GiveInventoryItem(itemclass, 1, sellData.Restricted or false)
 end)

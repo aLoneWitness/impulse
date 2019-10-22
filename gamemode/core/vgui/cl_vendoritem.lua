@@ -52,6 +52,28 @@ function PANEL:SetItem(item, sellData)
 	self.model:SetLookAt((max + min) / 2)
 end
 
+function PANEL:Think()
+	if self.ItemID then
+		local inv = impulse.Inventory.Data[0][1]
+
+		if not inv[self.ItemID] then
+			self:Remove()
+		end
+	end
+end
+
+function PANEL:OnMousePressed()
+	if self.Selling then
+		net.Start("impulseVendorSell")
+		net.WriteUInt(self.ItemID, 10)
+		net.SendToServer()
+	else
+		net.Start("impulseVendorBuy")
+		net.WriteString(self.Item.UniqueID)
+		net.SendToServer()
+	end
+end
+
 local activeCol = Color(35, 35, 35, 88)
 local hoverCol = Color(120, 120, 120, 88)
 local disabledCol = Color(15, 15, 15, 150)
@@ -70,7 +92,7 @@ function PANEL:Paint(w, h)
 		disabled = true
 	end
 
-	if hasItem and amount >= max then
+	if max and hasItem and amount >= max then
 		col = disabledCol
 		disabled = true
 		maxed = true
@@ -89,7 +111,7 @@ function PANEL:Paint(w, h)
 		surface.DrawRect(0, 0, w, h)
 	end
 
-	draw.SimpleText(self.Item.Name, "Impulse-Elements18-Shadow", 80, 10)
+	draw.SimpleText(self.Item.Name, "Impulse-Elements18-Shadow", 80, 10, (disabled and grey) or color_white)
 
 	local desc = ""
 

@@ -57,6 +57,8 @@ end
 function ENT:Use(activator, caller)
     net.Start("impulseVendorUse")
     net.Send(activator)
+
+    activator.currentVendor = self
 end
 
 function ENT:Think()
