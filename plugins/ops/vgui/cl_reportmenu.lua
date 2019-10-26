@@ -78,19 +78,30 @@ function PANEL:ReloadReports()
 
 		if not report.data[3] then
 			local claimBtn =  vgui.Create("DButton", report)
-			claimBtn:SetPos(300, 5)
-			claimBtn:SetSize(40, 25)
+			claimBtn:SetPos(300, 0)
+			claimBtn:SetSize(40, 23)
 			claimBtn:SetText("Claim")
 			claimBtn:SetColor(Color(0, 255, 0))
 
 			function claimBtn:DoClick()
 				LocalPlayer():ConCommand("say /rc "..id)
 			end
+		else
+			local replyBtn = vgui.Create("DButton", report)
+			replyBtn:SetPos(300, 0)
+			replyBtn:SetSize(40, 23)
+			replyBtn:SetText("Reply")
+
+			function replyBtn:DoClick()
+				Derma_StringRequest("ops report reply", "Message to send:", nil, function(msg)
+					LocalPlayer():ConCommand("say /rmsg "..msg)
+				end, nil, "Send")
+			end
 		end
 
 		local viewBtn = vgui.Create("DButton", report)
-		viewBtn:SetPos(340, 5)
-		viewBtn:SetSize(40, 25)
+		viewBtn:SetPos(340, 0)
+		viewBtn:SetSize(40, 23)
 		viewBtn:SetText("View")
 
 		function viewBtn:DoClick()
@@ -98,8 +109,8 @@ function PANEL:ReloadReports()
 		end
 
 		local gotoBtn = vgui.Create("DButton", report)
-		gotoBtn:SetPos(380, 5)
-		gotoBtn:SetSize(40, 25)
+		gotoBtn:SetPos(380, 0)
+		gotoBtn:SetSize(40, 23)
 		gotoBtn:SetText("Goto")
 
 		function gotoBtn:DoClick()
@@ -113,8 +124,8 @@ function PANEL:ReloadReports()
 		end
 
 		local closeBtn =  vgui.Create("DButton", report)
-		closeBtn:SetPos(420, 5)
-		closeBtn:SetSize(40, 25)
+		closeBtn:SetPos(420, 0)
+		closeBtn:SetSize(40, 23)
 		closeBtn:SetText("Close")
 		closeBtn:SetColor(Color(255, 0, 0))
 

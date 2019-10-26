@@ -198,3 +198,9 @@ function PANEL:SetupUI()
 end
 
 vgui.Register("impulseUserReportMenu", PANEL, "DFrame")
+
+concommand.Add("impulse_userreportmenu", function()
+	if not impulse_userReportMenu or not IsValid(impulse_userReportMenu) then
+		impulse_userReportMenu = vgui.Create("impulseUserReportMenu")
+	end
+end)

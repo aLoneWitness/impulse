@@ -10,6 +10,7 @@ function impulse.Ops.NewLog(msg, isMe)
 	})
 end
 
+local uniqueReportKey = 0
 net.Receive("opsReportMessage", function()
 	local reportId = net.ReadUInt(16)
 	local msgId = net.ReadUInt(4)
@@ -20,6 +21,19 @@ net.Receive("opsReportMessage", function()
 
         impulse.Ops.NewLog({Color(50, 205, 50), "(#"..reportId..") Report submitted", color_white, " message: "..impulse_reportMessage or ""}, true)
         impulse.Ops.CurReport = reportId
+        uniqueReportKey = uniqueReportKey + 1
+
+        local urkCopy = uniqueReportKey + 0
+        timer.Simple(360, function()
+        	if impulse.Ops.CurReport and urkCopy == uniqueReportKey and not impulse.Ops.CurReportClaimed then
+        		LocalPlayer():Notify("Apologies for the delay in processing your report. We will resolve your report as soon as possible.")
+        		impulse.Ops.NewLog({"(#"..reportId..") Apologies for the delay in processing your report. We will resolve your report as soon as possible"}, false)
+
+        		if impulse_userReportMenu and IsValid(impulse_userReportMenu) then
+					impulse_userReportMenu:SetupUI()
+				end
+        	end
+        end)
     elseif msgId == 2 then
     	LocalPlayer():Notify("Your report has been updated. Thank you for keeping us informed. Report ID: #"..reportId..".")
     	impulse.Ops.NewLog({"(#"..reportId..") Report updated: "..impulse_reportMessage or ""}, true)
@@ -30,6 +44,8 @@ net.Receive("opsReportMessage", function()
     		LocalPlayer():Notify("Your report has been claimed for review by a game moderator ("..claimer:SteamName()..").")
     		impulse.Ops.NewLog({Color(255, 140, 0), "(#"..reportId..") Report claimed for review by a game moderator ("..claimer:SteamName()..") and currently under review"}, false)
     	end
+
+    	impulse.Ops.CurReportClaimed = true
     elseif msgId == 4 then
     	local claimer = net.ReadEntity()
 
@@ -41,10 +57,25 @@ net.Receive("opsReportMessage", function()
     	end
 
     	impulse.Ops.CurReport = nil
+    	impulse.Ops.CurReportClaimed = nil
 	end
 
 	if impulse_userReportMenu and IsValid(impulse_userReportMenu) then
 		impulse_userReportMenu:SetupUI()
+	end
+end)
+
+net.Receive("opsReportAdminMessage", function()
+	local claimer = net.ReadEntity()
+	local msg = net.ReadString()
+
+	if IsValid(claimer) and impulse.Ops.CurReport then
+		LocalPlayer():Notify("A game moderator has replied to your report. Press F3 to view it.")
+		impulse.Ops.NewLog({"(#"..impulse.Ops.CurReport..") ", Color(34, 88, 216), "Game Moderator", color_white, " ("..claimer:SteamName().."): ", color_white, msg}, false)
+
+		if impulse_userReportMenu and IsValid(impulse_userReportMenu) then
+			impulse_userReportMenu:SetupUI()
+		end
 	end
 end)
 

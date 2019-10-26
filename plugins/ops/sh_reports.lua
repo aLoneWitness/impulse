@@ -38,3 +38,13 @@ local gotoReportCommand = {
 }
 
 impulse.RegisterChatCommand("/rgoto", gotoReportCommand)
+
+local msgReportCommand = {
+    description = "Messages the reporter of your claimed report.",
+    adminOnly = true,
+    onRun = function(ply, arg, rawText)
+        impulse.Ops.ReportMsg(ply, arg, rawText)
+    end
+}
+
+impulse.RegisterChatCommand("/rmsg", msgReportCommand)

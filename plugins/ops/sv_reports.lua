@@ -12,7 +12,7 @@ util.AddNetworkString("opsReportMessage")
 util.AddNetworkString("opsReportUpdate")
 util.AddNetworkString("opsReportClaimed")
 util.AddNetworkString("opsReportClosed")
-
+util.AddNetworkString("opsReportAdminMessage")
 
 function impulse.Ops.ReportNew(ply, arg, rawText)
 	if ply.nextReport and ply.nextReport > CurTime() then
@@ -229,5 +229,36 @@ function impulse.Ops.ReportGoto(ply, arg, rawText)
         ply:Notify("You have teleported to "..reporter:Nick()..".")
     else
         ply:AddChatText(claimedReportCol, "Report #"..reportId.." does not exist.")
+    end
+end
+
+function impulse.Ops.ReportMsg(ply, arg, rawText)
+    local reportId
+
+    for id, data in pairs(impulse.Ops.Reports) do
+        if data[3] and data[3] == ply then
+            reportId = id
+            break
+        end
+    end
+
+    if not reportId then
+        return ply:AddChatText(newReportCol, "You must claim a report to use this command.")
+    end
+
+    local targetReport = impulse.Ops.Reports[reportId]
+    if targetReport then
+        local reporter = targetReport[1]
+
+        if not IsValid(reporter) then
+            return ply:AddChatText(newReportCol, "The player who submitted this report has left the game. Please close.")
+        end
+
+        net.Start("opsReportAdminMessage")
+        net.WriteEntity(ply)
+        net.WriteString(rawText)
+        net.Send(reporter)
+
+        ply:Notify("Reply sent to "..reporter:Nick()..".")
     end
 end
