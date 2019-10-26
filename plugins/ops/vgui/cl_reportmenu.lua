@@ -93,8 +93,16 @@ function PANEL:ReloadReports()
 			replyBtn:SetText("Reply")
 
 			function replyBtn:DoClick()
-				Derma_StringRequest("ops report reply", "Message to send:", nil, function(msg)
-					LocalPlayer():ConCommand("say /rmsg "..msg)
+				local reporteeName = "disconnected"
+
+				if IsValid(report.data[1]) then
+					reporteeName = report.data[1]:SteamName()
+				end 
+
+				Derma_StringRequest("ops report reply to "..reporteeName, "Message to send:", nil, function(msg)
+					net.Start("impulseChatMessage")
+					net.WriteString("/rmsg "..msg)
+					net.SendToServer()
 				end, nil, "Send")
 			end
 		end
