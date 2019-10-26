@@ -55,6 +55,10 @@ function ENT:SpawnFunction(ply, trace, class)
 end
 
 function ENT:Use(activator, caller)
+    if self.Vendor.CanUse and self.Vendor.CanUse(activator) == false then
+        return activator:Notify("You can not use this vendor.")    
+    end
+
     net.Start("impulseVendorUse")
     net.Send(activator)
 

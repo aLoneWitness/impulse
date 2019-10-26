@@ -118,6 +118,10 @@ function PANEL:SetupVendor()
 	self.youScroll:SetSize(340, h - 83)
 
 	for v,k in pairs(impulse.Inventory.Data[0][1]) do
+		if k.restricted then
+			continue	
+		end
+
 		local item = impulse.Inventory.Items[k.id]
 		local class = item.UniqueID
 

@@ -1033,6 +1033,10 @@ net.Receive("impulseVendorBuy", function(len, ply)
 		return
 	end
 
+	if vendor.Vendor.CanUse and vendor.Vendor.CanUse(ply) == false then
+		return
+	end
+
 	local itemclass = net.ReadString()
 
 	if string.len(itemclass) > 128 then
@@ -1075,6 +1079,58 @@ net.Receive("impulseVendorBuy", function(len, ply)
 	end
 	
 	ply:GiveInventoryItem(itemclass, 1, sellData.Restricted or false)
+end)
+
+net.Receive("impulseVendorSell", function(len, ply)
+	if (ply.nextVendorSell or 0) > CurTime() then return end
+	ply.nextVendorSell = CurTime() + 1
+
+	if not ply.currentVendor or not IsValid(ply.currentVendor) then
+		return
+	end
+
+	local vendor = ply.currentVendor
+
+	if (ply:GetPos() - vendor:GetPos()):LengthSqr() > (120 ^ 2) then 
+		return
+	end
+
+	if vendor.Vendor.CanUse and vendor.Vendor.CanUse(ply) == false then
+		return
+	end
+
+	local itemid = net.ReadUInt(10)
+	local hasItem, itemData = ply:HasInventoryItemSpecific(itemid)
+
+	if not hasItem then
+		return
+	end
+
+	if itemData.restricted then
+		return
+	end
+
+	local itemclass = itemData.class
+
+	local buyData = vendor.Vendor.Buy[itemclass]
+	local itemName = impulse.Inventory.Items[impulse.Inventory.ClassToNetID(itemclass)].Name
+
+	if not buyData then
+		return
+	end
+
+	if buyData.CanBuy and buyData.CanBuy(ply) == false then
+		return
+	end
+
+	ply:TakeInventoryItem(itemid)
+
+	if buyData.Cost then
+		ply:GiveMoney(buyData.Cost)
+		ply:Notify("You have sold a "..itemName.." for "..impulse.Config.CurrencyPrefix..buyData.Cost..".")
+	else
+		ply:Notify("You have handed over a "..itemName..".")
+	end
 end)
 
 net.Receive("impulseRequestWhitelists", function(len, ply)
