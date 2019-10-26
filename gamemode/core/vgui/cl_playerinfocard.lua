@@ -204,25 +204,44 @@ function PANEL:Init()
 		self.profileButton = vgui.Create("DButton", self)
 		self.profileButton:SetText("Steam Profile")
 		self.profileButton:SetPos(10,105)
-		self.profileButton:SetSize(100,20)
+		self.profileButton:SetSize(90,20)
 		self.profileButton.DoClick = function()
 			gui.OpenURL("http://steamcommunity.com/profiles/"..self.Player:SteamID64())
 		end
 
 		self.sidButton = vgui.Create("DButton", self)
 		self.sidButton:SetText("Copy Steam ID")
-		self.sidButton:SetPos(115,105)
-		self.sidButton:SetSize(100,20)
+		self.sidButton:SetPos(105,105)
+		self.sidButton:SetSize(90,20)
 		self.sidButton.DoClick = function()
 			SetClipboardText(self.Player:SteamID())
 		end
 
 		self.forumButton = vgui.Create("DButton", self)
 		self.forumButton:SetText("Forum Profile")
-		self.forumButton:SetPos(220,105)
-		self.forumButton:SetSize(100,20)
+		self.forumButton:SetPos(200,105)
+		self.forumButton:SetSize(90,20)
 		self.forumButton.DoClick = function()
 			print("WIP")
+		end
+
+		self.whitelistButton = vgui.Create("DButton", self)
+		self.whitelistButton:SetText("Whitelists")
+		self.whitelistButton:SetPos(295, 105)
+		self.whitelistButton:SetSize(90, 20)
+		self.whitelistButton.DoClick = function()
+			if not IsValid(self.Player) then
+				return
+			end
+
+			if (LocalPlayer().nextWhitelistReq or 0) > CurTime() then return LocalPlayer():Notify("Please wait 5 seconds before making another whitelist request.") end
+			LocalPlayer().nextWhitelistReq = CurTime() + 5
+
+			impulse_WhitelistReqTarg = self.Player
+
+			net.Start("impulseRequestWhitelists")
+			net.WriteUInt(self.Player:EntIndex(), 8)
+			net.SendToServer()
 		end
 
 		-- badges
@@ -245,14 +264,14 @@ function PANEL:Init()
 
 		-- usergroup
 		self.rank = vgui.Create("DLabel", self)
-		self.rank:SetFont("Impulse-Elements18")
+		self.rank:SetFont("Impulse-Elements18-Shadow")
 		self.rank:SetText("Usergroup: "..self.Player:GetUserGroup())
 		self.rank:SizeToContents()
 		self.rank:SetPos(10,130)
 
 		-- xp/playtime
 		self.playtime = vgui.Create("DLabel", self)
-		self.playtime:SetFont("Impulse-Elements18")
+		self.playtime:SetFont("Impulse-Elements18-Shadow")
 		self.playtime:SetText("XP: "..self.Player:GetXP())
 		self.playtime:SizeToContents()
 		self.playtime:SetPos(10,150)

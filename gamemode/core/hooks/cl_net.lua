@@ -317,3 +317,28 @@ net.Receive("impulseVendorUse", function()
 	impulse_vendor = vgui.Create("impulseVendorMenu")
 	impulse_vendor:SetupVendor()
 end)
+
+net.Receive("impulseViewWhitelists", function()
+	local targ = impulse_WhitelistReqTarg
+
+	if not targ or not IsValid(targ) then
+		return
+	end
+
+	local count = net.ReadUInt(4)
+	local top = targ:SteamName().."'s whitelist(s):\n\n"
+	local mid = ""
+
+	for i=1, count do
+		local teamid = net.ReadUInt(8)
+		local level = net.ReadUInt(8)
+		local teamname = team.GetName(teamid)
+		mid = mid..teamname.."   Level: "..level.."\n"
+	end
+
+	if mid == "" then
+		mid = "None"
+	end
+
+	Derma_Message(top..mid, targ:SteamName().."'s whitelist(s)", "Close")
+end)

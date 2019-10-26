@@ -52,6 +52,8 @@ util.AddNetworkString("impulseMixDo")
 util.AddNetworkString("impulseVendorUse")
 util.AddNetworkString("impulseVendorBuy")
 util.AddNetworkString("impulseVendorSell")
+util.AddNetworkString("impulseRequestWhitelists")
+util.AddNetworkString("impulseViewWhitelists")
 
 net.Receive("impulseCharacterCreate", function(len, ply)
 	if (ply.NextCreate or 0) > CurTime() then return end
@@ -1059,6 +1061,10 @@ net.Receive("impulseVendorBuy", function(len, ply)
 		return
 	end
 
+	if not ply:CanHoldItem(itemclass) then
+		return ply:Notify("You don't have enough inventory space to hold this item.")
+	end
+
 	local item = impulse.Inventory.Items[impulse.Inventory.ClassToNetID(itemclass)]
 
 	if sellData.Cost then
@@ -1069,4 +1075,27 @@ net.Receive("impulseVendorBuy", function(len, ply)
 	end
 	
 	ply:GiveInventoryItem(itemclass, 1, sellData.Restricted or false)
+end)
+
+net.Receive("impulseRequestWhitelists", function(len, ply)
+	if (ply.nextWhitelistReq or 0) > CurTime() then return end
+	ply.nextWhitelistReq = CurTime() + 5
+
+	local id = net.ReadUInt(8)
+	local targ = Entity(id)
+
+	if targ and IsValid(targ) and targ:IsPlayer() and targ.Whitelists then
+		local whitelists = targ.Whitelists
+		local count = table.Count(whitelists)
+
+		net.Start("impulseViewWhitelists")
+		net.WriteUInt(count, 4)
+
+		for v,k in pairs(whitelists) do
+			net.WriteUInt(v, 8)
+			net.WriteUInt(k, 8)
+		end
+
+		net.Send(ply)
+	end
 end)
