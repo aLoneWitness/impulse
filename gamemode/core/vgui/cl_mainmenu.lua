@@ -256,6 +256,7 @@ function PANEL:Init()
 
 	timer.Simple(0, function()
 		if impulse.MainMenu.popup then return end
+		hook.Run("DisplayMenuMessages", self)
 
 		if not steamworks.IsSubscribed("1651398810") then
 			Derma_Query("You are not subscribed to the impulse framework content!\nIf you do not subscribe you will experience missing textures and errors.\nAfter subscribing, rejoin the server.",

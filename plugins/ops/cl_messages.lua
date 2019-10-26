@@ -1,5 +1,14 @@
 impulse.Ops = impulse.Ops or {}
 impulse.Ops.Reports = impulse.Ops.Reports or {}
+impulse.Ops.Log = impulse.Ops.Log or {}
+
+function impulse.Ops.NewLog(msg, isMe)
+	table.insert(impulse.Ops.Log, {
+		message = msg,
+		isMe = isMe or false,
+		time = CurTime()
+	})
+end
 
 net.Receive("opsReportMessage", function()
 	local reportId = net.ReadUInt(16)
@@ -7,21 +16,35 @@ net.Receive("opsReportMessage", function()
 
 	if msgId == 1 then
 		LocalPlayer():Notify("Report submitted for review. Thank you for doing your part in keeping the community clean. Report ID: #"..reportId..".")
-        LocalPlayer():Notify("If you have any further requests or info for us, just send another report.")
+        LocalPlayer():Notify("If you have any further requests or info for us, just send another report by pressing F3.")
+
+        impulse.Ops.NewLog({Color(50, 205, 50), "(#"..reportId..") Report submitted", color_white, " message: "..impulse_reportMessage or ""}, true)
+        impulse.Ops.CurReport = reportId
     elseif msgId == 2 then
     	LocalPlayer():Notify("Your report has been updated. Thank you for keeping us informed. Report ID: #"..reportId..".")
+    	impulse.Ops.NewLog({"(#"..reportId..") Report updated: "..impulse_reportMessage or ""}, true)
     elseif msgId == 3 then
     	local claimer = net.ReadEntity()
 
     	if IsValid(claimer) then
     		LocalPlayer():Notify("Your report has been claimed for review by a game moderator ("..claimer:SteamName()..").")
+    		impulse.Ops.NewLog({Color(255, 140, 0), "(#"..reportId..") Report claimed for review by a game moderator ("..claimer:SteamName()..") and currently under review"}, false)
     	end
     elseif msgId == 4 then
     	local claimer = net.ReadEntity()
 
     	if IsValid(claimer) then
     		LocalPlayer():Notify("Your report has been closed by a game moderator ("..claimer:SteamName().."). We hope we have managed to resolve your issue.")
+    		impulse.Ops.NewLog({Color(240, 0, 0), "(#"..reportId..") Report closed by a game moderator ("..claimer:SteamName()..")"}, false)
+    	else
+    		impulse.Ops.NewLog({Color(240, 0, 0), "(#"..reportId..") Report closed by a game moderator"}, false)
     	end
+
+    	impulse.Ops.CurReport = nil
+	end
+
+	if impulse_userReportMenu and IsValid(impulse_userReportMenu) then
+		impulse_userReportMenu:SetupUI()
 	end
 end)
 
