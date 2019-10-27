@@ -1033,7 +1033,7 @@ net.Receive("impulseVendorBuy", function(len, ply)
 		return
 	end
 
-	if vendor.Vendor.CanUse and vendor.Vendor.CanUse(ply) == false then
+	if vendor.Vendor.CanUse and vendor.Vendor.CanUse(vendor, ply) == false then
 		return
 	end
 
@@ -1095,7 +1095,7 @@ net.Receive("impulseVendorSell", function(len, ply)
 		return
 	end
 
-	if vendor.Vendor.CanUse and vendor.Vendor.CanUse(ply) == false then
+	if vendor.Vendor.CanUse and vendor.Vendor.CanUse(vendor, ply) == false then
 		return
 	end
 

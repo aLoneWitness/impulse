@@ -13,6 +13,14 @@ function ENT:Initialize()
 
     if self.Vendor then
         self:SetModel(self.Vendor.Model)
+
+        if self.Vendor.Skin then
+            self:SetSkin(self.Vendor.Skin)
+        end
+
+        if self.Vendor.Bodygroups then
+            self:SetBodyGroups(self.Vendor.Bodygroups)
+        end
     else
         self:SetModel("models/Humans/Group01/male_02.mdl")
     end
@@ -55,7 +63,7 @@ function ENT:SpawnFunction(ply, trace, class)
 end
 
 function ENT:Use(activator, caller)
-    if self.Vendor.CanUse and self.Vendor.CanUse(activator) == false then
+    if self.Vendor.CanUse and self.Vendor.CanUse(self, activator) == false then
         return activator:Notify("You can not use this vendor.")    
     end
 

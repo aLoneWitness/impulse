@@ -71,7 +71,7 @@ net.Receive("opsReportAdminMessage", function()
 
 	if IsValid(claimer) and impulse.Ops.CurReport then
 		LocalPlayer():Notify("A game moderator has replied to your report. Press F3 to view it.")
-		impulse.Ops.NewLog({"(#"..impulse.Ops.CurReport..") ", Color(34, 88, 216), "Game Moderator", color_white, " ("..claimer:SteamName().."): ", color_white, msg}, false)
+		impulse.Ops.NewLog({"(#"..impulse.Ops.CurReport..") ", "Game moderator reply", " ("..claimer:SteamName().."): ", color_white, msg}, false)
 
 		if impulse_userReportMenu and IsValid(impulse_userReportMenu) then
 			impulse_userReportMenu:SetupUI()

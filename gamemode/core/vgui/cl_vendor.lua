@@ -47,7 +47,7 @@ function PANEL:SetupVendor()
 
 	local vDescLbl = vgui.Create("DLabel", self)
 	vDescLbl:SetText(self.Vendor.Desc)
-	vDescLbl:SetFont("Impulse-Elements17-Shadow")
+	vDescLbl:SetFont("Impulse-Elements14-Shadow")
 	vDescLbl:SetPos(10, 58)
 	vDescLbl:SetSize(300, 20)
 

@@ -55,6 +55,7 @@ local vignette = Material("impulse/vignette.png")
 local vig_alpha_normal = Color(10,10,10,190)
 local lasthealth
 local time = 0
+local zoneLbl
 local gradient = Material("vgui/gradient-l")
 local watermark = Material("impulse/impulse-logo-white.png")
 local watermarkCol = Color(255,255,255,120)
@@ -66,8 +67,6 @@ local whiteCol = Color(255, 255, 255, 255)
 local iconsWhiteCol = Color(255, 255, 255, 220)
 local bleedFlashCol = Color(230, 0, 0, 220)
 local painCol = Color(255,10,10,80)
-local zoneFde = 0
-local zoneHoldTime
 
 local crosshairGap = 5
 local crosshairLength = crosshairGap + 5
@@ -385,20 +384,16 @@ function IMPULSE:HUDPaint()
 		end
 	end
 
-	if not aboveHUDUsed and (impulse.ShowZone or (zoneHoldTime and zoneHoldTime + 4 > CurTime())) then
-		local ft = FrameTime()
-		zoneFde = math.Clamp(zoneFde + ft * .3, 0, 1)
+	if not aboveHUDUsed then
+		if impulse.ShowZone then
+			zoneLbl = vgui.Create("impulseZoneLabel")
+			zoneLbl:SetPos(30, y - 25)
+			zoneLbl.Zone = lp:GetZoneName()
 
-		draw.DrawText(lp:GetZoneName(), "Impulse-Elements23-Italic", 30, y - 25, ColorAlpha(color_white, (255 * zoneFde)), TEXT_ALIGN_LEFT)
-
-		if zoneFde == 1 then
-			zoneHoldTime = zoneHoldTime or CurTime()
 			impulse.ShowZone = false
 		end
-	else
-		zoneHoldTime = nil
-		zoneFde = 0
-		impulse.ShowZone = false
+	elseif zoneLbl and IsValid(zoneLbl) then
+		zoneLbl:Remove()
 	end
 
 	if not IsValid(PlayerIcon) and impulse.hudEnabled == true then

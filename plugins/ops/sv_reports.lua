@@ -19,6 +19,10 @@ function impulse.Ops.ReportNew(ply, arg, rawText)
         return 
     end
 
+    if string.len(rawText) > 600 then
+        return ply:Notify("Your message is too big. (600 characters max.)")    
+    end
+
     local reportId
 
     local hasActiveReport = false
@@ -56,6 +60,10 @@ function impulse.Ops.ReportNew(ply, arg, rawText)
             ply:Notify("Unfortunatley, no game moderators are currently availble to review your report. Please goto impulse-community.com and submit a ban request.")
         end
     else
+        if string.len(impulse.Ops.Reports[reportId][2]) > 3000 then
+            return ply:Notify("Your report has too many characters. You may not send any more updates for this report.")    
+        end
+
         local reportClaimant = impulse.Ops.Reports[reportId][3]
 
         for v,k in pairs(player.GetAll()) do

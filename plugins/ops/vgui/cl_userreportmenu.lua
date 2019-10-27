@@ -87,6 +87,10 @@ function PANEL:SetupUI()
 		self.sendBtn:Remove()
 	end
 
+	if self.warn then
+		self.warn:Remove()
+	end
+
 	if self.lbl then
 		self.lbl:Remove()
 	end
@@ -105,6 +109,14 @@ function PANEL:SetupUI()
 	end
 
 	self.title:SizeToContents()
+
+	if curReport then
+		self.warn = vgui.Create("DLabel", self)
+		self.warn:SetFont("Impulse-Elements14-Shadow")
+		self.warn:SetPos(10 + self.title:GetWide() + 3, 40)
+		self.warn:SetText("Please note: All reports are recorded for quality control purposes.")
+		self.warn:SizeToContents()
+	end
 
 	self.log = vgui.Create("DScrollPanel", self)
 	self.log:SetPos(10, 60)
@@ -196,6 +208,8 @@ function PANEL:SetupUI()
 		end
 
 		impulse_reportMessage = msg
+
+		panel.entry:SetValue("")
 
 		net.Start("impulseChatMessage")
 		net.WriteString("/report "..msg)
