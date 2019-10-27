@@ -67,6 +67,10 @@ function ENT:Use(activator, caller)
         return activator:Notify("You can not use this vendor.")    
     end
 
+    if activator:GetSyncVar(SYNC_ARRESTED, false) or not activator:Alive() then
+        return
+    end
+
     net.Start("impulseVendorUse")
     net.Send(activator)
 

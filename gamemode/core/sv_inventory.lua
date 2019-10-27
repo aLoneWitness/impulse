@@ -408,7 +408,7 @@ function meta:UseInventoryItem(itemid)
 		end
 		local shouldRemove = item.OnUse(item, self, trEnt or nil)
 
-		if shouldRemove then
+		if shouldRemove and self:HasInventoryItemSpecific(itemid) then
 			self:TakeInventoryItem(itemid)
 		end
 	end

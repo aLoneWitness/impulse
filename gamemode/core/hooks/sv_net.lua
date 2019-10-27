@@ -1010,7 +1010,7 @@ net.Receive("impulseMixTry", function(len, ply)
 			ply:GiveInventoryItem(mixClass.Output)
 			ply:Notify("You have crafted a "..item.Name..".")
 
-			local xp = 30 + ((mixClass.Level * 1.5) * 1.9) -- needs balancing
+			local xp = 35 + ((math.Clamp(mixClass.Level, 2, 8)  * 1.5) * 1.9) -- needs balancing
 			ply:AddSkillXP("craft", xp)
 		end
 	end)
@@ -1032,6 +1032,10 @@ net.Receive("impulseVendorBuy", function(len, ply)
 	if (ply:GetPos() - vendor:GetPos()):LengthSqr() > (120 ^ 2) then 
 		return
 	end
+
+	if ply:GetSyncVar(SYNC_ARRESTED, false) or not ply:Alive() then
+        return
+    end
 
 	if vendor.Vendor.CanUse and vendor.Vendor.CanUse(vendor, ply) == false then
 		return
@@ -1094,6 +1098,10 @@ net.Receive("impulseVendorSell", function(len, ply)
 	if (ply:GetPos() - vendor:GetPos()):LengthSqr() > (120 ^ 2) then 
 		return
 	end
+
+	if ply:GetSyncVar(SYNC_ARRESTED, false) or not ply:Alive() then
+        return
+    end
 
 	if vendor.Vendor.CanUse and vendor.Vendor.CanUse(vendor, ply) == false then
 		return

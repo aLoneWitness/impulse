@@ -120,14 +120,10 @@ function PANEL:ShowNormal(should)
 	if should then
 		self.scroll:Show()
 		self.craftLbl:Show()
-		self.search:Show()
-		self.searchLbl:Show()
 		self.upper:Show()
 	else
 		self.scroll:Hide()
 		self.craftLbl:Hide()
-		self.search:Hide()
-		self.searchLbl:Hide()
 		self.upper:Hide()
 	end
 end

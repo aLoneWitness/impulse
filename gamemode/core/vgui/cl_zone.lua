@@ -10,6 +10,10 @@ function PANEL:Think()
 	if self.Zone != LocalPlayer():GetZoneName() then
 		self.Zone = LocalPlayer():GetZoneName()
 	end
+
+	if not LocalPlayer():Alive() then
+		return
+	end
 end
 
 function PANEL:Paint(w,h)
