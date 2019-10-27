@@ -79,7 +79,10 @@ function PANEL:SetupUI()
 		self.log:Remove()
 	end
 
+	local text = ""
+
 	if self.entry then
+		text = self.entry:GetValue()
 		self.entry:Remove()
 		self.sendBtn:Remove()
 	end
@@ -176,6 +179,7 @@ function PANEL:SetupUI()
 	self.entry:SetMultiline(true)
 	self.entry:SetEnterAllowed(false)
 	self.entry:SetFont("Impulse-Elements16")
+	self.entry:SetValue(text)
 
 	self.sendBtn = vgui.Create("DButton", self)
 	self.sendBtn:SetPos(10, 430)
@@ -193,7 +197,9 @@ function PANEL:SetupUI()
 
 		impulse_reportMessage = msg
 
-		LocalPlayer():ConCommand("say /report "..msg)
+		net.Start("impulseChatMessage")
+		net.WriteString("/report "..msg)
+		net.SendToServer()
 	end
 end
 
