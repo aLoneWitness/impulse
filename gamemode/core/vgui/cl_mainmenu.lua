@@ -288,6 +288,19 @@ function PANEL:Remove()
 	self:SetVisible(false)
 end
 
+local konamiCode = {KEY_UP, KEY_UP, KEY_DOWN, KEY_DOWN, KEY_LEFT, KEY_RIGHT, KEY_LEFT, KEY_RIGHT, KEY_B, KEY_A}
+local keyPos = 1
+function PANEL:OnKeyCodePressed(key)
+	if key == konamiCode[keyPos] then
+		if key == KEY_A then
+			vgui.Create("impulseMinigame", self)
+			keyPos = 1	
+		end
+
+		keyPos = keyPos + 1
+	end
+end
+
 function PANEL:OnChildAdded(child)
 	if IsValid(self.openElement) then
 		self.openElement:Remove()
