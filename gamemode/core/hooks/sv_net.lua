@@ -54,6 +54,7 @@ util.AddNetworkString("impulseVendorBuy")
 util.AddNetworkString("impulseVendorSell")
 util.AddNetworkString("impulseRequestWhitelists")
 util.AddNetworkString("impulseViewWhitelists")
+util.AddNetworkString("impulseUnRestrain")
 
 net.Receive("impulseCharacterCreate", function(len, ply)
 	if (ply.NextCreate or 0) > CurTime() then return end
@@ -1162,4 +1163,32 @@ net.Receive("impulseRequestWhitelists", function(len, ply)
 
 		net.Send(ply)
 	end
+end)
+
+net.Receive("impulseUnRestrain", function(len, ply)
+	if (ply.nextUnRestrain or 0) > CurTime() then return end
+	ply.nextUnRestrain = CurTime() + 2
+
+	local trace = {}
+	trace.start = ply:EyePos()
+	trace.endpos = trace.start + ply:GetAimVector() * 85
+	trace.filter = ply
+
+	local tr = util.TraceLine(trace)
+	local ent = tr.Entity
+
+	if not ent or not IsValid(ent) then
+		return
+	end
+
+	if not ent:IsPlayer() or ent:GetSyncVar(SYNC_ARRESTED, false) == false or not ply:CanArrest(ent) then
+		return
+	end 
+
+	ent:UnArrest()
+
+	ply:Notify("You have released "..ent:Name()..".")
+	ent:Notify("You have been released by"..ply:Name()..".")
+
+	hook.Run("PlayerUnArrested", ent, ply)
 end)

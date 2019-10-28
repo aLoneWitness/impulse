@@ -108,6 +108,8 @@ local function DrawOverheadInfo(target, alpha)
 	draw.DrawText(target:KnownName(), "Impulse-Elements18-Shadow", pos.x, pos.y, ColorAlpha(team.GetColor(target:Team()), alpha), 1)
 	if target:GetSyncVar(SYNC_TYPING, false) then
 		draw.DrawText("Typing...", "Impulse-Elements16-Shadow", pos.x, pos.y + 15, ColorAlpha(color_white, alpha), 1)
+	elseif target:GetSyncVar(SYNC_ARRESTED, false) and LocalPlayer():CanArrest(target) then
+		draw.DrawText("(F2 to unrestrain)", "Impulse-Elements16-Shadow", pos.x, pos.y + 15, ColorAlpha(color_white, alpha), 1)
 	end
 end
 
@@ -294,29 +296,23 @@ function IMPULSE:HUDPaint()
 	surface.SetTextColor(color_white)
 	surface.SetFont("Impulse-Elements19")
 
-	surface.SetTextPos(136, y+57+yAdd)
+	surface.SetTextPos(136, y+64+yAdd)
 	surface.DrawText("Health: "..LocalPlayer():Health())
 	if seeColIcons == true then surface.SetDrawColor(healthCol) end
 	surface.SetMaterial(healthIcon)
-	surface.DrawTexturedRect(110, y+59+yAdd, 18, 16)
+	surface.DrawTexturedRect(110, y+66+yAdd, 18, 16)
 
-	surface.SetTextPos(136, y+77+yAdd)
-	surface.DrawText("Armour: "..LocalPlayer():Armor())
-	if seeColIcons == true then surface.SetDrawColor(armourCol) end
-	surface.SetMaterial(armourIcon)
-	surface.DrawTexturedRect(110, y+77+yAdd, 18, 18)
-
-	surface.SetTextPos(136, y+97+yAdd)
+	surface.SetTextPos(136, y+86+yAdd)
 	surface.DrawText("Hunger: "..LocalPlayer():GetSyncVar(SYNC_HUNGER, 100))
 	if seeColIcons == true then surface.SetDrawColor(hungerCol) end
 	surface.SetMaterial(hungerIcon)
-	surface.DrawTexturedRect(110, y+97+yAdd, 18, 18)
+	surface.DrawTexturedRect(110, y+87+yAdd, 18, 18)
 
-	surface.SetTextPos(136, y+117+yAdd)
+	surface.SetTextPos(136, y+108+yAdd)
 	surface.DrawText("Money: "..impulse.Config.CurrencyPrefix..LocalPlayer():GetSyncVar(SYNC_MONEY, 0))
 	if seeColIcons == true then surface.SetDrawColor(moneyCol) end
 	surface.SetMaterial(moneyIcon)
-	surface.DrawTexturedRect(110, y+117+yAdd, 18, 18)
+	surface.DrawTexturedRect(110, y+107+yAdd, 18, 18)
 
 	surface.SetDrawColor(color_white)
 

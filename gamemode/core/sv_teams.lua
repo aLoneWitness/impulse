@@ -127,6 +127,14 @@ function meta:SetTeamClass(classID, skipLoadout)
 		end
 	end
 
+	if classData.armour then
+		self:SetArmor(classData.armour)
+		self.MaxArmour = classData.armour
+	else
+		self:SetArmor(0)
+		self.MaxArmour = nil
+	end
+
 	if classData.onBecome then
 		classData.onBecome(self)
 	end

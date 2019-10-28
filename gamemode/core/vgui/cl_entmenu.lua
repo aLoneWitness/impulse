@@ -161,6 +161,13 @@ function PANEL:SetPlayer(ply)
 
 			self:Remove()
 		end)
+
+		self:AddAction("impulse/icons/padlock-2-256.png", "Unrestrain", function()
+			net.Start("impulseUnRestrain")
+			net.SendToServer()
+
+			self:Remove()
+		end)
 	end
 
 	hook.Add("PlayerMenuAddOptions", self, ply)
