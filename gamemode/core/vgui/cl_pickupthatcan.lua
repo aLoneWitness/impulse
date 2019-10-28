@@ -19,10 +19,11 @@ surface.CreateFont("impulsePTCOther", {
 })
 
 local levels = {
-	[1] = {cans = 10, rate = 1, col = Color(0, 225, 0), snd = "vo/Streetwar/Alyx_gate/al_letsgo01.wav"},
-	[2] = {cans = 20, rate = 2, col = Color(0, 225, 255), snd = "vo/npc/male01/nice.wav"},
-	[3] = {cans = 25, rate = 2.4, col = Color(225, 225, 0), snd = "vo/npc/male01/watchout.wav"},
-	[4] = {cans = 30, rate = 2.6, col = Color(225, 0, 0), snd = "vo/k_lab/ba_goodluck02.wav"}
+	[1] = {cans = 5, rate = 1, col = Color(0, 225, 0), snd = "vo/Streetwar/Alyx_gate/al_letsgo01.wav"},
+	[2] = {cans = 10, rate = 1.5, col = Color(51, 179, 146), snd = "vo/npc/male01/gordead_ques16.wav"},
+	[3] = {cans = 20, rate = 2, col = Color(0, 225, 255), snd = "vo/npc/male01/nice.wav"},
+	[4] = {cans = 25, rate = 2.4, col = Color(225, 225, 0), snd = "vo/npc/male01/watchout.wav"},
+	[5] = {cans = 30, rate = 2.6, col = Color(225, 0, 0), snd = "vo/k_lab/ba_goodluck02.wav"}
 }
 
 function PANEL:Init()
@@ -65,7 +66,7 @@ function PANEL:Init()
 
 	timer.Simple(4, function()
 		if IsValid(self) then
-			self:StartLevel(1, 1)	
+			self:StartLevel(1, 1)
 		end
 	end)
 end
@@ -116,7 +117,6 @@ function PANEL:GameOver(win)
 	title:Dock(TOP)
 	if win then
 		title:SetText("YOU WIN!!!!")
-		LocalPlayer():Notify("Nice work, you won! Mostly due to luck though because the last level can be impossible if you get unlucky with spawns. Anyway glad you found this! - vin")
 	else
 		title:SetText("GAME OVER")
 	end
@@ -138,11 +138,19 @@ function PANEL:GameOver(win)
 		timer.Simple(0.5, function()
 			surface.PlaySound("npc/metropolice/vo/chuckle.wav")
 		end)
+
+		timer.Simple(1.2, function()
+			surface.PlaySound("weapons/stunstick/stunstick_fleshhit1.wav")
+		end)
 	end
 
 	timer.Simple(6, function()
 		if IsValid(self) then
 			self:Remove()
+
+			if win then
+				Derma_Message("Nice work, you won!\nMostly due to luck though because the last level can be impossible if you get unlucky with spawns.\nAnyway glad you found this! - vin", "impulse", "Ok")
+			end
 		end
 	end)
 end
@@ -176,7 +184,7 @@ function PANEL:SpawnCan(speed)
 			panel.Cans = panel.Cans - 1
 
 			if panel.Cans == 0 then
-				if panel.Level == 4 then
+				if panel.Level == table.Count(levels) then
 					panel:GameOver(true)
 				else
 					panel:StartLevel(panel.Level + 1)

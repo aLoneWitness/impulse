@@ -111,7 +111,7 @@ function meta:CanBecomeTeamClass(classID, notify)
 				return false
 			end
 		else
-			if classData.limit >= classPlayers then
+			if classData.limit <= classPlayers then
 				if notify then self:Notify(classData.name .. " is full.") end
 				return false
 			end
@@ -150,12 +150,13 @@ function meta:CanBecomeTeamRank(rankID, notify)
 
 		if rankData.percentLimit and rankData.percentLimit == true then
 			local percentRank = rankPlayers / #player.GetAll()
+
 			if percentRank > rankData.limit then
 				if notify then self:Notify(rankData.name .. " is full.") end
 				return false
 			end
 		else
-			if rankData.limit >= rankPlayers then
+			if rankData.limit <= rankPlayers then
 				if notify then self:Notify(rankData.name .. " is full.") end
 				return false
 			end
