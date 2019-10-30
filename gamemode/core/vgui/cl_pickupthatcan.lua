@@ -59,9 +59,9 @@ function PANEL:Init()
 		MINIGAME_MUSIC:Stop()
 	end
 
-	MINIGAME_MUSIC = CreateSound(LocalPlayer(), "music/HL1_song10.mp3")
+	MINIGAME_MUSIC = CreateSound(LocalPlayer(), "music/HL2_song20_submix0.mp3")
 	MINIGAME_MUSIC:SetSoundLevel(0)
-	MINIGAME_MUSIC:ChangeVolume(1)
+	MINIGAME_MUSIC:ChangeVolume(0.6)
 	MINIGAME_MUSIC:Play()
 
 	timer.Simple(4, function()
@@ -128,6 +128,7 @@ function PANEL:GameOver(win)
 
 	title:SetFont("impulsePTCTitle")
 	title:SizeToContents()
+	title:SetContentAlignment(5)
 
 	startScreen:AddItem(title)
 
@@ -244,6 +245,12 @@ function PANEL:Paint(w,h)
 
 	draw.SimpleText("SCORE: "..self.Score, "impulsePTCOther", 5, 15)
 	draw.SimpleText(self.Level.." :LEVEL", "impulsePTCOther", w - 5, 15, nil, TEXT_ALIGN_RIGHT)
+end
+
+function PANEL:OnFocusChanged(state)
+	if not state then
+		self:Remove()
+	end
 end
 
 function PANEL:OnRemove()

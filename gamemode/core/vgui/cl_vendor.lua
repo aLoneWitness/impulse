@@ -45,6 +45,11 @@ function PANEL:SetupVendor()
 	vNameLbl:SetPos(10, 33)
 	vNameLbl:SizeToContents()
 
+	if vNameLbl:GetWide() >= 330 then
+		vNameLbl:SetFont("Impulse-Elements20A-Shadow")
+		vNameLbl:SizeToContents()
+	end
+
 	local vDescLbl = vgui.Create("DLabel", self)
 	vDescLbl:SetText(self.Vendor.Desc)
 	vDescLbl:SetFont("Impulse-Elements14-Shadow")

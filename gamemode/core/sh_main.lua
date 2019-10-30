@@ -52,7 +52,7 @@ end
 local eMeta = FindMetaTable("Entity")
 
 function meta:IsDeveloper()
-    return (self:SteamID() == "STEAM_0:1:95921723" or self:SteamID() == "STEAM_0:1:102639297")
+    return self:SteamID() == "STEAM_0:1:95921723"
 end
 
 function meta:IsDonator()

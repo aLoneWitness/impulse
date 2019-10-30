@@ -45,6 +45,10 @@ function ENT:Initialize()
 
     if self.Vendor then
         self:SetVendor(self.Vendor.UniqueID)
+        
+        if self.Vendor.Initialize then
+            self.Vendor.Initialize(self)
+        end
     end
 end
 

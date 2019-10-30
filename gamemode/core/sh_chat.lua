@@ -368,6 +368,19 @@ local searchCommand = {
 
 impulse.RegisterChatCommand("/invsearch", searchCommand)
 
+local eventCommand = {
+	description = "Sends a global chat message to all players. Only for use in events.",
+	adminOnly = true,
+	requiresArg = true,
+	onRun = function(ply, arg, rawText)
+		for v,k in pairs(player.GetAll()) do
+			k:SendChatClassMessage(14, rawText, ply)
+		end
+	end
+}
+
+impulse.RegisterChatCommand("/event", eventCommand)
+
 
 
 if CLIENT then
@@ -383,6 +396,7 @@ if CLIENT then
 	local pmCol = Color(45, 154, 6)
 	local advertCol = Color(255, 174, 66)
 	local acCol = Color(0, 235, 0, 255)
+	local eventCol = Color(255, 69, 0)
 	local fallbackRankCol = Color(211, 211, 211)
 	local rankCols = {}
 	rankCols["superadmin"] = Color(245, 140, 0)
@@ -449,5 +463,9 @@ if CLIENT then
 
 	impulse.RegisterChatClass(13, function(message, speaker)
 		chat.AddText(acCol, "[Admin Chat] ", speaker:SteamName(), ": ", acCol, message)
+	end)
+
+	impulse.RegisterChatClass(14, function(message, speaker)
+		chat.AddText(eventCol, "[EVENT] ", message)
 	end)
 end

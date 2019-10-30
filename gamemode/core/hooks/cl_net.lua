@@ -342,3 +342,63 @@ net.Receive("impulseViewWhitelists", function()
 
 	Derma_Message(top..mid, targ:SteamName().."'s whitelist(s)", "Close")
 end)
+
+net.Receive("impulseInvContainerCodeTry", function()
+	Derma_StringRequest("impulse", "Enter container passcode (numerics only):", nil, function(text)
+		local code = tonumber(text)
+
+		if code then
+			code = math.floor(code)
+
+			if code < 0 then
+				return LocalPlayer():Notify("Passcode can not be negative.")
+			end
+
+			net.Start("impulseInvContainerCodeReply")
+			net.WriteUInt(code, 16)
+			net.SendToServer()
+		else
+			LocalPlayer():Notify("Passcode must only contain numeric characters.")
+		end
+	end, nil, "Enter")
+end)
+
+net.Receive("impulseInvContainerOpen", function()
+	local count = net.ReadUInt(8)
+	local containerInv = {}
+
+	for i=1,count do
+		local itemid = net.ReadUInt(10)
+		local amount = net.ReadUInt(8)
+
+		containerInv[itemid] = {amount = amount}
+	end
+
+	if impulse_container and IsValid(impulse_container) then
+		impulse_container:Remove()
+	end
+
+	impulse_container = vgui.Create("impulseInventoryContainer")
+	impulse_container:SetupContainer()
+	impulse_container:SetupItems(containerInv)
+end)
+
+net.Receive("impulseInvContainerUpdate", function()
+	local count = net.ReadUInt(8)
+	local containerInv = {}
+
+	for i=1,count do
+		local itemid = net.ReadUInt(10)
+		local amount = net.ReadUInt(8)
+
+		containerInv[itemid] = {amount = amount}
+	end
+	
+	if impulse_container and IsValid(impulse_container) then
+		local invScroll = impulse_container.invScroll:GetVBar():GetScroll()
+		local invStorageScroll = impulse_container.invStorageScroll:GetVBar():GetScroll()
+
+		impulse_container:SetupItems(containerInv, invScroll, invStorageScroll)
+		surface.PlaySound("physics/wood/wood_crate_impact_hard2.wav")
+	end
+end)

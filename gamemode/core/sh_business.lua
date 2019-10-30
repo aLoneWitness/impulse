@@ -50,6 +50,7 @@ function impulse.SpawnBuyable(pos, ang, buyable, owner)
 	end
 
 	spawnedBuyable:CPPISetOwner(owner)
+	spawnedBuyable.IsBuyable = true
 
 	return spawnedBuyable
 end

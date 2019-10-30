@@ -112,6 +112,15 @@ local quickTools = {
 		end
 	},
 	{
+		name = "Cleanup Props",
+		icon = "icon16/building_delete.png",
+		onRun = function(ply, sid)
+			Derma_Query("Are you sure you want to cleanup the props of:\n"..ply:Nick().."("..ply:SteamName()..")?", "ops", "Yes", function()
+				LocalPlayer():ConCommand("say /cleanup "..sid)
+			end, "No, take me back!")
+		end
+	},
+	{
 		name = "Warn",
 		icon = "icon16/error_add.png",
 		onRun = function(ply, sid)

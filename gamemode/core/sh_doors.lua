@@ -6,7 +6,23 @@ function meta:CanLockUnlockDoor(doorOwners, doorGroup)
 
 	hook.Run("playerCanUnlockLock", self, doorOwners, doorGroup)
 
-	local teamDoorGroups = impulse.Teams.Data[self:Team()].doorGroup
+	local teamDoorGroups = self.DoorGroups or {}
+
+	if CLIENT then
+		local t = impulse.Teams.Data[LocalPlayer():Team()]
+		teamDoorGroups = t.doorGroup
+
+		local class = LocalPlayer():GetTeamClass()
+		local rank = LocalPlayer():GetTeamRank()
+
+		if class != 0 and t.classes[class].doorGroup then
+			teamDoorGroups = t.classes[class].doorGroup
+		end
+
+		if rank != 0 and t.ranks[rank].doorGroup then
+			teamDoorGroups = t.ranks[rank].doorGroup
+		end
+	end
 
 	if doorOwners and table.HasValue(doorOwners, self:EntIndex()) then
 		return true

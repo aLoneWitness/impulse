@@ -259,7 +259,7 @@ function impulse.chatBox.showBox()
 	hook.Run("StartChat")
 end
 
-local oldAddText = chat.AddText
+chat.oldAddText = chat.oldAddText or chat.AddText
 
 --// Overwrite chat.AddText to detour it into my chatbox
 function chat.AddText(...)
@@ -272,6 +272,7 @@ function chat.AddText(...)
 	end
 	
 	impulse.chatBox.chatLog:AddText(...)
+	--chat.oldAddText(...)
 
 	if impulse.hudEnabled then
 		chat.PlaySound()

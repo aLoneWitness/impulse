@@ -583,9 +583,9 @@ function IMPULSE:PlayerUse(ply, entity)
 		end
 
 		if btnData.doorgroup then
-			local teamDoorGroups = impulse.Teams.Data[ply:Team()].doorGroup
+			local teamDoorGroups = ply.DoorGroups
 
-			if not teamDoorGroups or not table.HasValue(teamDoorGroups, doorGroup) then
+			if not teamDoorGroups or not table.HasValue(teamDoorGroups, btnData.doorgroup) then
 				ply.useNext = CurTime() + 1
 				ply:Notify("You don't have access to use this button.")
 				return false
@@ -714,11 +714,11 @@ function IMPULSE:PlayerSpawnSENT(ply)
 end
 
 function IMPULSE:PlayerSpawnSWEP(ply)
-	return ply:IsAdmin()
+	return ply:IsSuperAdmin()
 end
 
 function IMPULSE:PlayerGiveSWEP(ply)
-	return ply:IsAdmin()
+	return ply:IsSuperAdmin()
 end
 
 function IMPULSE:PlayerSpawnedEffect(ply)
@@ -819,6 +819,14 @@ local donatorTools = {
 	["wire_egp"] = true
 }
 
+local adminWorldRemoveWhitelist = {
+	["impulse_item"] = true,
+	["impulse_money"] = true,
+	["impulse_letter"] = true,
+	["prop_ragdoll"] = true,
+	["prop_physics"] = true
+}
+
 function IMPULSE:CanTool(ply, tr, tool)
 	if not ply:IsAdmin() and tool == "spawner" then
 		return false
@@ -847,6 +855,15 @@ function IMPULSE:CanTool(ply, tr, tool)
         if ent.nodupe and dupeBannedTools[tool] then
             return false
         end
+
+       	if tool == "remover" and ply:IsAdmin() and not ply:IsSuperAdmin() then
+    		local owner = ent:CPPIGetOwner()
+
+    		if not owner and not adminWorldRemoveWhitelist[ent:GetClass()] then
+    			ply:Notify("You can not remove this entity.")
+    			return false
+    		end
+    	end
 	end
 
 	return true

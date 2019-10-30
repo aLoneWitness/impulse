@@ -28,6 +28,14 @@ end
 
 function ENT:Use(activator, caller)
 	if activator:IsPlayer() and activator:Alive() then
+		if activator:GetSyncVar(SYNC_ARRESTED, false) then 
+			return activator:Notify("You cannot access your storage when detained.") 
+		end
+
+		if activator:IsCP() then
+			return activator:Notify("You cannot access your storage as this team.")
+		end
+		
 		net.Start("impulseInvStorageOpen")
 		net.Send(activator)
 

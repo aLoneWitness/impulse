@@ -24,6 +24,7 @@ end
 
 if (SERVER) then
 	concommand.Remove("gm_save")
+	concommand.Remove("gmod_admin_cleanup")
 	RunConsoleCommand("sv_defaultdeployspeed", 1)
 end
 

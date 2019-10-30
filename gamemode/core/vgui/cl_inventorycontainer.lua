@@ -5,11 +5,39 @@ local grey = Color(209, 209, 209)
 function PANEL:Init()
 	self:SetSize(700, 470)
 	self:Center()
-	self:SetTitle("Storage")
  	self:MakePopup()
 
- 	self:SetupItems()
+ 	--self:SetupItems()
  end
+
+ function PANEL:SetupContainer()
+	local lp = LocalPlayer()
+
+	local trace = {}
+	trace.start = lp:EyePos()
+	trace.endpos = trace.start + lp:GetAimVector() * 120
+	trace.filter = lp
+
+	local tr = util.TraceLine(trace)
+
+	if not tr.Entity or not IsValid(tr.Entity) or tr.Entity:GetClass() != "impulse_container" then
+		return self:Remove()
+	end
+
+	self.container = tr.Entity
+	self.isLoot = self.container:GetLoot()
+
+	if self.container:GetLoot() then
+		self:SetTitle("Loot Container")
+	else
+		self:SetTitle("Storage Container")
+	end
+end
+
+function PANEL:OnRemove()
+	net.Start("impulseInvContainerClose")
+	net.SendToServer()
+end
 
  function PANEL:PaintOver(w, h)
  	draw.SimpleText("You", "Impulse-Elements23-Shadow", 5, 30, grey)
@@ -17,13 +45,29 @@ function PANEL:Init()
  		draw.SimpleText(self.invWeight.."kg/"..impulse.Config.InventoryMaxWeight.."kg", "Impulse-Elements18-Shadow", 345, 35, grey, TEXT_ALIGN_RIGHT)
  	end
 
- 	draw.SimpleText("Storage", "Impulse-Elements23-Shadow", w - 5, 30, grey, TEXT_ALIGN_RIGHT)
-  	if self.storageWeight then
- 		draw.SimpleText(self.storageWeight.."kg/"..LocalPlayer():GetMaxInventoryStorage().."kg", "Impulse-Elements18-Shadow", 355, 35, grey, TEXT_ALIGN_LEFT)
+ 	draw.SimpleText("Container", "Impulse-Elements23-Shadow", w - 5, 30, grey, TEXT_ALIGN_RIGHT)
+  	if self.storageWeight and self.container then
+ 		draw.SimpleText(self.storageWeight.."kg/"..self.container:GetCapacity().."kg", "Impulse-Elements18-Shadow", 355, 35, grey, TEXT_ALIGN_LEFT)
  	end
  end
 
- function PANEL:SetupItems(invscroll, storescroll)
+ function PANEL:Think()
+ 	if self.container then
+ 		if not IsValid(self.container) or self.container:GetPos():DistToSqr(LocalPlayer():GetPos()) > (120 ^ 2) then
+			return self:Remove()
+		end
+	
+		if not LocalPlayer():Alive()  then
+			return self:Remove()
+		end
+
+		if LocalPlayer():GetSyncVar(SYNC_ARRESTED, false) then
+			return self:Remove()
+		end
+ 	end
+ end
+
+ function PANEL:SetupItems(containerInv, invscroll, storescroll)
  	local w,h = self:GetSize()
 
  	if self.invScroll and IsValid(self.invScroll) then
@@ -42,7 +86,6 @@ function PANEL:Init()
  	self.invStorageScroll:SetPos(354, 55)
  	self.invStorageScroll:SetSize(346, h - 55)
 
-
  	self.items = {}
  	self.itemPanels = {}
   	self.itemsStorage = {}
@@ -51,8 +94,6 @@ function PANEL:Init()
  	local realInv = impulse.Inventory.Data[0][1]
  	local localInv = table.Copy(impulse.Inventory.Data[0][1]) or {}
 	local storageWeight = 0
-  	local realInvStorage = impulse.Inventory.Data[0][2]
- 	local localInvStorage = table.Copy(impulse.Inventory.Data[0][2]) or {}
  	local reccurTemp = {}
 
  	for v,k in pairs(localInv) do -- fix for fucking table.sort desyncing client/server itemids!!!!!!!
@@ -62,34 +103,12 @@ function PANEL:Init()
  		k.sortWeight = reccurTemp[k.id]
  	end
 
- 	-- if impulse.GetSetting("inv_sortbyweight") then -- super messy sorting systems for the tables below
- 	-- 	table.sort(localInv, function(a, b)
- 	-- 		if not a or not b then -- worst sorting system ever gives fucking errors for no reason what the fuck so i added this
- 	-- 			return	
- 	-- 		end
-
- 	-- 		return a.sortWeight > b.sortWeight
- 	-- 	end)
- 	-- end
-
  	local reccurTemp = {}
 
- 	for v,k in pairs(localInvStorage) do
+ 	for v,k in pairs(containerInv) do
  		k.realKey = v
-
- 		reccurTemp[k.id] = (reccurTemp[k.id] or 0) + (impulse.Inventory.Items[k.id].Weight or 0)
- 		k.sortWeight = reccurTemp[k.id]
+ 		k.sortWeight = (impulse.Inventory.Items[v].Weight or 0) * k.amount
  	end
-
- 	-- if impulse.GetSetting("inv_sortbyweight") then
- 	-- 	table.sort(localInvStorage, function(a, b)
- 	-- 		if not a or not b then
- 	-- 			return	
- 	-- 		end
-
- 	-- 		return a.sortWeight > b.sortWeight
- 	-- 	end)
- 	-- end
 
  	if localInv and table.Count(localInv) > 0 then
 	 	for v,k in SortedPairsByMemberValue(localInv, "sortWeight", true) do
@@ -107,6 +126,8 @@ function PANEL:Init()
 	 			item:SetItem(k, w)
 	 			item.InvID = k.realKey
 	 			item.InvPanel = self
+	 			item.Disabled = true
+
 	 			self.items[k.id] = item
 	 		end
 
@@ -120,26 +141,23 @@ function PANEL:Init()
 		self.empty:SetFont("Impulse-Elements19-Shadow")
 	end
 
-	if localInvStorage and table.Count(localInvStorage) > 0 then
-	  	for v,k in SortedPairsByMemberValue(localInvStorage, "sortWeight", true) do
-	 		local otherItem = self.itemsStorage[k.id]
-	 		local itemX = impulse.Inventory.Items[k.id]
+	if table.Count(containerInv) > 0 then
+	  	for v,k in SortedPairsByMemberValue(containerInv, "sortWeight", true) do
+	 		local itemX = impulse.Inventory.Items[k.realKey]
 
-	 		if itemX.CanStack and otherItem then
-	 			otherItem.Count = (otherItem.Count or 1) + 1
-	 		else
-	 			local item = self.invStorageScroll:Add("impulseInventoryItem")
-	 			item:Dock(TOP)
-	 			item:DockMargin(0, 0, 0, 5)
-	 			item.Basic = true
-	 			item.Type = 2
-	 			item:SetItem(k, w)
-	 			item.InvID = k.realKey
-	 			item.InvPanel = self
-	 			self.itemsStorage[k.id] = item
-	 		end
+	 		local item = self.invStorageScroll:Add("impulseInventoryItem")
+	 		item:Dock(TOP)
+	 		item:DockMargin(0, 0, 0, 5)
+	 		item.Basic = true
+	 		item.ContainerType = true
+	 		item.Type = 2
+	 		item:SetItem(k.realKey, w)
+	 		item.InvClass = k.realKey
+	 		item.InvPanel = self
+	 		item.Count = k.amount
+	 		self.itemsStorage[k.realKey] = item
 
-	 		storageWeight =  storageWeight + (itemX.Weight or 0)
+	 		storageWeight = storageWeight + ((itemX.Weight or 0) * k.amount)
 	 	end
 	 else
 		self.empty = self.invStorageScroll:Add("DLabel", self)
@@ -158,4 +176,4 @@ function PANEL:Init()
 	end
  end
 
-vgui.Register("impulseInventoryStorage", PANEL, "DFrame")
+vgui.Register("impulseInventoryContainer", PANEL, "DFrame")

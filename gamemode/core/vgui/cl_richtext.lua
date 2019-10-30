@@ -90,7 +90,7 @@ function PANEL:AddText(...)
 			text = text..str
 			plainText = plainText..str
 
-			table.insert(luaMsg, str)
+			table.insert(luaMsg, v)
 		end
 	end
 

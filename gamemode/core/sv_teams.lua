@@ -34,6 +34,8 @@ function meta:SetTeam(teamID, forced)
 		end
 	end
 
+	self.DoorGroups = teamData.doorGroup or {}
+
 	hook.Run("OnPlayerChangedTeam", self, self:Team(), teamID)
 
 	self:SetLocalSyncVar(SYNC_CLASS, nil, true)
@@ -135,6 +137,12 @@ function meta:SetTeamClass(classID, skipLoadout)
 		self.MaxArmour = nil
 	end
 
+	if classData.doorGroup then
+		self.DoorGroups = classData.doorGroup
+	else
+		self.DoorGroups = teamData.doorGroup or {}
+	end
+
 	if classData.onBecome then
 		classData.onBecome(self)
 	end
@@ -228,6 +236,16 @@ function meta:SetTeamRank(rankID)
 					self:GiveInventoryItem(item.class, 1, true)
 				end
 			end
+		end
+	end
+
+	if rankData.doorGroup then
+		self.DoorGroups = rankData.doorGroup
+	else
+		if classData.doorGroup then
+			self.DoorGroups = classData.doorGroup
+		else
+			self.DoorGroups = teamData.doorGroup or {}
 		end
 	end
 

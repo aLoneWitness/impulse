@@ -10,10 +10,15 @@ function PANEL:Init()
 end
 
 function PANEL:SetItem(netitem, wide)
-	local item = impulse.Inventory.Items[netitem.id]
+	local direct = self.ContainerType
+	local item = impulse.Inventory.Items[(direct and netitem) or netitem.id]
 	self.Item = item
-	self.IsEquipped = netitem.equipped or false
-	self.IsRestricted = netitem.restricted or false
+
+	if not direct then
+		self.IsEquipped = netitem.equipped or false
+		self.IsRestricted = netitem.restricted or false
+	end
+
 	self.Weight = item.Weight or 0
 	self.Count = 1
 
@@ -125,6 +130,27 @@ function PANEL:SetItem(netitem, wide)
 end
 
 function PANEL:OnMousePressed(keycode)
+	if self.Disabled then
+		return
+	end
+
+	if self.ContainerType then
+		local itemid
+
+		if self.Type == 1 then
+			itemid = self.InvID
+		else
+			itemid = impulse.Inventory.ClassToNetID(self.Item.UniqueID)
+		end
+
+		net.Start("impulseInvContainerDoMove")
+		net.WriteUInt(itemid, 10)
+		net.WriteUInt(self.Type, 4)
+		net.SendToServer()
+
+		return
+	end
+
 	if self.Basic then
 		local invid = self.InvID
 
@@ -256,6 +282,14 @@ function PANEL:Paint(w, h)
 			surface.SetDrawColor(equippedCol)
 			surface.DrawRect(0, 0, 5, h)
 		end
+	end
+end
+
+local disabledCol = Color(15, 15, 15, 210)
+function PANEL:PaintOver(w, h)
+	if self.Disabled then
+		surface.SetDrawColor(disabledCol)
+		surface.DrawRect(0, 0, w, h)
 	end
 end
 

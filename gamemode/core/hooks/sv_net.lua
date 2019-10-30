@@ -37,6 +37,12 @@ util.AddNetworkString("impulseCharacterCreate")
 util.AddNetworkString("impulseInvStorageOpen")
 util.AddNetworkString("impulseInvMove")
 util.AddNetworkString("impulseInvDoMove")
+util.AddNetworkString("impulseInvContainerOpen") -- DO :
+util.AddNetworkString("impulseInvContainerClose")
+util.AddNetworkString("impulseInvContainerUpdate")
+util.AddNetworkString("impulseInvContainerDoMove")
+util.AddNetworkString("impulseInvContainerCodeTry")
+util.AddNetworkString("impulseInvContainerCodeReply") -- END :
 util.AddNetworkString("impulseRagdollLink")
 util.AddNetworkString("impulseUpdateOOCLimit")
 util.AddNetworkString("impulseChangeRPName")
@@ -349,6 +355,8 @@ net.Receive("impulseBuyItem", function(len, ply)
 		end
 
 		ply:Notify("You have purchased "..buyableName.." for "..impulse.Config.CurrencyPrefix..buyable.price..".")
+
+		hook.Run("PlayerBuyablePurchase", ply, buyableName)
 	else
 		ply:Notify("You cannot afford this purchase.")
 	end
@@ -747,6 +755,18 @@ net.Receive("impulseInvDoMove", function(len, ply)
 		return
 	end
 
+	if ply.currentStorage:GetClass() == "impulse_storage_public" then
+		local item = impulse.Inventory.Items[impulse.Inventory.ClassToNetID(item.class)]
+
+		if not item then
+			return
+		end
+
+		if item.Illegal then
+			return ply:Notify("You may not access or store illegal items at public storage lockers.")
+		end
+	end
+
 	if item.restricted then
 		return ply:Notify("You cannot store a restricted item.")
 	end
@@ -1038,6 +1058,12 @@ net.Receive("impulseVendorBuy", function(len, ply)
         return
     end
 
+    local canUse = hook.Run("CanUseInventory", ply)
+
+	if canUse != nil and canUse == false then
+		return
+	end
+
 	if vendor.Vendor.CanUse and vendor.Vendor.CanUse(vendor, ply) == false then
 		return
 	end
@@ -1095,6 +1121,8 @@ net.Receive("impulseVendorBuy", function(len, ply)
 	end
 	
 	ply:GiveInventoryItem(itemclass, 1, sellData.Restricted or false)
+
+	hook.Run("PlayerVendorBuy", ply, vendor, itemclass, sellData.Cost or 0)
 end)
 
 net.Receive("impulseVendorSell", function(len, ply)
@@ -1114,6 +1142,12 @@ net.Receive("impulseVendorSell", function(len, ply)
 	if ply:GetSyncVar(SYNC_ARRESTED, false) or not ply:Alive() then
         return
     end
+
+   	local canUse = hook.Run("CanUseInventory", ply)
+
+	if canUse != nil and canUse == false then
+		return
+	end
 
 	if vendor.Vendor.CanUse and vendor.Vendor.CanUse(vendor, ply) == false then
 		return
@@ -1151,6 +1185,8 @@ net.Receive("impulseVendorSell", function(len, ply)
 	else
 		ply:Notify("You have handed over a "..itemName..".")
 	end
+
+	hook.Run("PlayerVendorSell", ply, vendor, itemclass, buyData.Cost or "free")
 end)
 
 net.Receive("impulseRequestWhitelists", function(len, ply)
@@ -1202,4 +1238,118 @@ net.Receive("impulseUnRestrain", function(len, ply)
 	ent:Notify("You have been released by"..ply:Name()..".")
 
 	hook.Run("PlayerUnArrested", ent, ply)
+end)
+
+net.Receive("impulseInvContainerCodeReply", function(len, ply)
+	if (ply.nextPassCodeTry or 0) > CurTime() then return end
+	ply.nextPassCodeTry = CurTime() + 3
+
+	local container = ply.currentContainerPass
+
+	if not container or not IsValid(container) then
+		return
+	end
+
+	if not ply:Alive() then
+		return
+	end
+
+	if (ply:GetPos() - container:GetPos()):LengthSqr() > (120 ^ 2) then 
+		return
+	end
+
+	local code = net.ReadUInt(16)
+	code = math.floor(code)
+
+	if code < 0 then
+		return
+	end
+
+	if code == container.Code then
+		container:AddAuthorised(ply)
+		container:AddUser(ply)
+
+		ply:Notify("Passcode accepted.")
+	else
+		ply:Notify("Incorrect container passcode.")
+	end
+end)
+
+net.Receive("impulseInvContainerClose", function(len, ply)
+	local container = ply.currentContainer
+
+	if container then
+		if IsValid(container) and container.Users[ply] then
+			container:RemoveUser(ply)
+		else
+			ply.currentContainer = nil
+		end
+	end
+end)
+
+net.Receive("impulseInvContainerDoMove", function(len, ply)
+	if (ply.nextInvMove or 0) > CurTime() then return end
+	ply.nextInvMove = CurTime() + 0.5
+
+	local container = ply.currentContainer
+
+	if not container or not IsValid(container) then 
+		return 
+	end
+
+	if container:GetPos():DistToSqr(ply:GetPos()) > (120 ^ 2) then
+		return 
+	end
+
+	local isLoot = container:GetLoot()
+
+	if isLoot then 
+		if ply:IsCP() then
+			return
+		end
+	elseif container.Code and not container.Authorised[ply] then
+		return
+	end
+
+	if ply:GetSyncVar(SYNC_ARRESTED, false) or not ply:Alive() then 
+		return 
+	end
+
+	local canUse = hook.Run("CanUseInventory", ply)
+
+	if canUse != nil and canUse == false then
+		return
+	end
+
+	local itemid = net.ReadUInt(10)
+	local from = net.ReadUInt(4)
+	local to = 1
+
+	if from != 1 and from != 2 then
+		return
+	end
+
+	if from == 1 then
+		to = 2
+	end
+
+	if from == 2 then
+		if not impulse.Inventory.Items[itemid] then
+			return
+		end
+
+		local itemclass = impulse.Inventory.Items[itemid].UniqueID
+
+		if not container.Inventory[itemclass] then
+			return
+		end
+
+		if not ply:CanHoldItem(itemclass) then
+			return ply:Notify("Item is too heavy to hold.")
+		end
+
+		container:TakeItem(itemclass, 1, true)
+		ply:GiveInventoryItem(itemclass)
+		container:UpdateUsers()
+	end
 end)
