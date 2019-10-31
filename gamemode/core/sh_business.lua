@@ -49,6 +49,16 @@ function impulse.SpawnBuyable(pos, ang, buyable, owner)
 		spawnedBuyable:Spawn()
 	end
 
+	if buyable.removeOnTeamSwitch then
+		owner.BuyableTeamRemove = owner.BuyableTeamRemove or {}
+		table.insert(owner.BuyableTeamRemove, spawnedBuyable)
+	end
+
+	if buyable.postSpawn then
+		buyable.postSpawn(spawnedBuyable, owner)
+	end
+
+	spawnedBuyable.BuyableOwner = owner
 	spawnedBuyable:CPPISetOwner(owner)
 	spawnedBuyable.IsBuyable = true
 

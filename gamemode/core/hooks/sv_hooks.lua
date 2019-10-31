@@ -522,7 +522,14 @@ function IMPULSE:CanPlayerSuicide()
 	return false
 end
 
-function IMPULSE:OnPlayerChangedTeam() -- get rid of it logging team changes to console
+function IMPULSE:OnPlayerChangedTeam(ply) -- get rid of it logging team changes to console
+	if ply.BuyableTeamRemove then
+		for v,k in pairs(ply.BuyableTeamRemove) do
+			if k and IsValid(k) and k.BuyableOwner == ply then
+				k:Remove()
+			end
+		end
+	end
 end
 
 function IMPULSE:SetupPlayerVisibility(ply)
