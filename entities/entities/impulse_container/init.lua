@@ -4,7 +4,14 @@ AddCSLuaFile("shared.lua")
 include("shared.lua")
 
 function ENT:Initialize()
-	self:SetModel("models/props_junk/wood_crate001a.mdl") -- rmv me
+	local model = self.impulseSaveKeyValue and self.impulseSaveKeyValue["model"]
+
+	if model then
+		self:SetModel(model)
+	elseif self:GetModel() == "models/error.mdl" then
+		self:SetModel("models/props_junk/wood_crate001a.mdl")
+	end
+	
 	self:PhysicsInit(SOLID_VPHYSICS)
 	self:SetMoveType(SOLID_VPHYSICS)
 	self:SetSolid(SOLID_VPHYSICS)
@@ -15,7 +22,7 @@ function ENT:Initialize()
 	if (phys:IsValid()) then
 		phys:Wake()
 
-		if self.NoMove then
+		if self.impulseSaveKeyValue then
 			phys:EnableMotion(false)
 		else
 			phys:EnableMotion(true)
@@ -24,21 +31,40 @@ function ENT:Initialize()
 
 	self.Users = {}
 	self.Authorised = {}
-	self.Inventory = {
-		["testitem"] = 3,
-		["cos_facewrap"] = 1
-	}
-	self.Weight = {}
-	self.Max = 32
+	self.Inventory = {}
 
-	self.Code = 44546 -- rmv me
+	local lootpool = self.impulseSaveKeyValue and self.impulseSaveKeyValue["lootpool"]
 
-	self:SetCapacity(4) -- rmv me
-	self:SetLoot(true)
+	if lootpool then
+		self:SetLoot(true)
+		self:SetCapacity(30)
+		self.LootPool = lootpool
+		self:MakeLoot()
+	end
 end
 
 function ENT:OnTakeDamage(dmg) 
 	return false
+end
+
+function ENT:MakeLoot()
+	local pool = self.LootPool
+
+	if impulse.Config.LootPools and impulse.Config.LootPools[pool] then
+		local loot = impulse.Loot.GenerateFromPool(pool)
+
+		self.Inventory = {}
+
+		PrintTable(loot)
+		
+		for v,k in pairs(loot) do
+			self:AddItem(v, k, true)	
+		end
+
+		self:UpdateUsers()
+
+		self.LootNext = CurTime() + impulse.Config.LootPools[pool].Wait
+	end
 end
 
 function ENT:SetCode(code)
@@ -149,3 +175,13 @@ function ENT:Use(activator, caller)
 	end
 end
 
+function ENT:Think()
+	if self:GetLoot() then
+		if self.LootNext and CurTime() > self.LootNext and table.Count(self.Inventory) == 0 then
+			self:MakeLoot()
+		end
+
+		self:NextThink(CurTime() + 10)
+		return true
+	end
+end

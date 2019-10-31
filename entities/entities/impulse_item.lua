@@ -77,6 +77,15 @@ if SERVER then
 		end
 		self:NextThink(CurTime() + 5)
 	end
+
+	function ENT:OnRemove()
+		local owner = self.ItemOwner
+
+		if owner and IsValid(owner) then
+			owner.DroppedItemsC = math.Clamp((owner.DroppedItemsC or 0) - 1, 0, impulse.Config.DroppedItemsLimit)
+			owner.DroppedItems[self.DropIndex] = nil
+		end
+	end
 else
 	function ENT:Think()
 		local itemid = self:GetItemID()

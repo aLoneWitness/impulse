@@ -379,12 +379,29 @@ function meta:DropInventoryItem(itemid)
 	end
 
 	self:TakeInventoryItem(itemid)
+
+	self.DroppedItemsC = (self.DroppedItemsC or 0)
+	self.DroppedItems = self.DroppedItems or {}
+
+	if self.DroppedItemsC >= impulse.Config.DroppedItemsLimit then
+		for v,k in pairs(self.DroppedItems) do
+			if k and IsValid(k) and k.ItemOwner and k.ItemOwner == self then
+				k:Remove()
+				break
+			end
+		end
+	end
+
 	local ent = impulse.Inventory.SpawnItem(item.class, tr.HitPos)
 	ent.ItemOwner = self
 
 	if itemclass.WeaponClass and item.clip then
 		ent.ItemClip = item.clip
 	end
+
+	self.DroppedItemsC = self.DroppedItemsC + 1
+	local index = table.insert(self.DroppedItems, ent)
+	ent.DropIndex = index
 end
 
 function meta:UseInventoryItem(itemid)
