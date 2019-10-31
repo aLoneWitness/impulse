@@ -7,8 +7,6 @@ function impulse.Loot.GenerateFromPool(pool)
 	local loot = {}
 
 	for v,k in RandomPairs(lootPool.Items) do
-		print(v)
-		
 		for i=1, (k.Rep or 1) do
 			local rGen = math.random(1, 1000)
 

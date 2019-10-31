@@ -55,8 +55,6 @@ function ENT:MakeLoot()
 
 		self.Inventory = {}
 
-		PrintTable(loot)
-		
 		for v,k in pairs(loot) do
 			self:AddItem(v, k, true)	
 		end
