@@ -57,3 +57,37 @@ local setTeamCommand = {
 }
 
 impulse.RegisterChatCommand("/setteam", setTeamCommand)
+
+local forceUnlockCommand = {
+    description = "Unlocks the door you are looking at.",
+    adminOnly = true,
+    onRun = function(ply, arg, rawText)
+		local door = ply:GetEyeTrace().Entity
+
+		if not door or not IsValid(door) or not door:IsDoor() then
+			return ply:Notify("You are not looking at a door.")
+		end
+
+		door:DoorUnlock()
+		ply:Notify("Door unlocked.")
+    end
+}
+
+impulse.RegisterChatCommand("/forceunlock", forceUnlockCommand)
+
+local forceLockCommand = {
+    description = "Locks the door you are looking at.",
+    adminOnly = true,
+    onRun = function(ply, arg, rawText)
+		local door = ply:GetEyeTrace().Entity
+
+		if not door or not IsValid(door) or not door:IsDoor() then
+			return ply:Notify("You are not looking at a door.")
+		end
+
+		door:DoorLock()
+		ply:Notify("Door locked.")
+    end
+}
+
+impulse.RegisterChatCommand("/forcelock", forceLockCommand)
