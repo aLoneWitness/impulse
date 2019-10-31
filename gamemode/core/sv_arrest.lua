@@ -42,7 +42,6 @@ function meta:DragPlayer(ply)
 		ply.ArrestedDragger = self
 		self.ArrestedDragging = ply
 		impulse.Arrest.Dragged[ply] = true
-		ply:Freeze(true)
 
 		self:Say("/me starts dragging "..ply:Name()..".")
 	end
@@ -50,7 +49,6 @@ end
 
 function meta:StopDrag()
 	impulse.Arrest.Dragged[self] = nil
-	self:Freeze(false)
 
 	local dragger = self.ArrestedDragger
 

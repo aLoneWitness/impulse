@@ -1,8 +1,25 @@
 local KEY_BLACKLIST = IN_ATTACK + IN_ATTACK2
+local isValid = IsValid
+local mathAbs = math.abs
 
-function IMPULSE:StartCommand(ply, command)
+function IMPULSE:StartCommand(ply, cmd)
 	if not ply:IsWeaponRaised() then
-		command:RemoveKey(KEY_BLACKLIST)
+		cmd:RemoveKey(KEY_BLACKLIST)
+	end
+
+	if SERVER then
+		local dragger = ply.ArrestedDragger
+
+		if isValid(dragger) and ply == dragger.ArrestedDragging and ply:Alive() then
+			cmd:ClearMovement()
+			cmd:ClearButtons()
+
+			if ply:GetPos():DistToSqr(dragger:GetPos()) > (60 ^ 2) then
+				cmd:SetForwardMove(200)
+			end
+
+			cmd:SetViewAngles((dragger:GetShootPos() - ply:GetShootPos()):GetNormalized():Angle())
+		end
 	end
 end
 
@@ -12,39 +29,7 @@ function IMPULSE:PlayerSwitchWeapon(ply, oldWep, newWep)
 	end
 end
 
-local isValid = IsValid
-local mathAbs = math.abs
 function IMPULSE:Move(ply, mvData)
-	if SERVER then
-		local draggedPlayer = ply.ArrestedDragging
-
-		if isValid(draggedPlayer) and ply == draggedPlayer.ArrestedDragger then
-			local draggerPos = ply:GetPos()
-			local draggedPos = draggedPlayer:GetPos()
-			local dist = (draggerPos - draggedPos):LengthSqr()
-
-			local dragPosNormal = draggerPos:GetNormal()
-			local dX = mathAbs(dragPosNormal.x)
-			local dY = mathAbs(dragPosNormal.y)
-
-			local speed = (dX + dY) * math.Clamp(dist / (100 ^ 2), 0, 30)
-
-			local ang = mvData:GetMoveAngles()
-			local pos = mvData:GetOrigin()
-			local vel = mvData:GetVelocity()
-
-			vel.x = vel.x * speed
-			vel.y = vel.y * speed
-			vel.z =  15
-
-			pos = pos + vel + ang:Right() + ang:Forward() + ang:Up()
-
-			if dist > (55 ^ 2) then
-				draggedPlayer:SetVelocity(vel)
-			end
-		end
-	end
-
 	-- alt walk thing based on nutscripts
 	if ply:GetMoveType() == MOVETYPE_WALK and (ply.BrokenLegs or mvData:KeyDown(IN_WALK)) then
 		local speed = ply:GetWalkSpeed()

@@ -782,10 +782,31 @@ function IMPULSE:PlayerSpawnVehicle(ply, model)
 	end
 
 	if ply:IsDonator() and model:find("chair") or model:find("seat") or model:find("pod") then
+		local count = 0
+		ply.SpawnedVehicles = ply.SpawnedVehicles or {}
+
+		for v,k in pairs(ply.SpawnedVehicles) do
+			if k and IsValid(k) then
+				count = count + 1
+			else
+				ply.SpawnedVehicles[v] = nil
+			end
+		end
+
+		if count >= impulse.Config.ChairsLimit then
+			ply:Notify("You have spawned the maximum amount of chairs.")
+			return false
+		end
+
 		return true
 	else
 		return ply:IsSuperAdmin()
 	end
+end
+
+function IMPULSE:PlayerSpawnedVehicle(ply, ent)
+	ply.SpawnedVehicles = ply.SpawnedVehicles or {}
+	table.insert(ply.SpawnedVehicles, ent)
 end
 
 function IMPULSE:CanDrive()
@@ -924,10 +945,8 @@ function IMPULSE:ADVDupeIsAllowed(ply, class, entclass) -- adv dupe 2 can be eas
 end
 
 function IMPULSE:SetupMove(ply, mvData)
-	if ply:GetSyncVar(SYNC_ARRESTED, false) and ply.ArrestedDragger then
-		mvData:SetMaxClientSpeed(mvData:GetMaxClientSpeed() / 3)
-	elseif isValid(ply.ArrestedDragging) then
-		mvData:SetMaxClientSpeed(mvData:GetMaxClientSpeed() / 3)
+	if isValid(ply.ArrestedDragging) then
+		mvData:SetMaxClientSpeed(mvData:GetMaxClientSpeed() * 0.4)
 	end
 end
 
