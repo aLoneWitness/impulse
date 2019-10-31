@@ -175,8 +175,12 @@ end
 
 function ENT:Think()
 	if self:GetLoot() then
-		if self.LootNext and CurTime() > self.LootNext and table.Count(self.Inventory) == 0 then
-			self:MakeLoot()
+		if self.LootNext and CurTime() > self.LootNext then
+			if table.Count(self.Inventory) == 0 then
+				self:MakeLoot()
+			else
+				self.LootNext = CurTime() + impulse.Config.LootPools[self.LootPool].Wait
+			end
 		end
 
 		self:NextThink(CurTime() + 10)
