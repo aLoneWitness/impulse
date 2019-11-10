@@ -7,6 +7,9 @@ impulse is a semi-serious roleplay framework designed by vin (Jake Green) for Ap
 ## Working with impulse
 If your working with impulse I reccomend you read the wiki first, feel free to DM me on discord if you have any questions.
 
+### Understanding the builds load process
+Currently, the build load process is very simple. The framework will look for a file called database.json in the data folder, and if it exists it will merge it with the default developer database configuration. This system will probably be updated at some point to allow to to apply to config objects and other things.
+
 ### Running development builds
 * Ensure mysqloov9 is installed
 * Install XAMPP and create a database called impulse_development
@@ -15,13 +18,17 @@ If your working with impulse I reccomend you read the wiki first, feel free to D
 ### Running release builds (on a server)
 * Ensure mysqloov9 is installed on the server
 * Create your database and database user
-* In your server.cfg file add this and configure to your settings:
+* Navigate to data/impulse/database.json (make these files or folders if they don't exist)
+* Enter the JSON data below into database.json and configure it for your database
+* WARNING: Never use localhost instead use 127.0.0.1
 ```
-impulse_db_ip "127.0.0.1"
-impulse_db_username "impulsehl2rp"
-impulse_db_password "pass123"
-impulse_db_database "impulsehl2rp"
-impulse_db_port 3306
+{
+	"ip": "127.0.0.1",
+	"username": "impulsehl2rp",
+	"password": "dsdsds",
+	"database": "impulsehl2rp",
+	"port": 3306.0
+}
 ```
 
 ## Required plugins

@@ -69,22 +69,26 @@ function impulse.lib.includeDir(directory, fromLua)
 	end
 end
 
-local function GetDBCFG(name, isInt)
-	local name = "impulse_db_"..name
-	local convar = GetConVar(name)
+-- Create impulse folder
+file.CreateDir("impulse")
 
-	if isInt then
-		if convar:GetInt() == convar:GetDefault() then
-			return nil
-		end
+if SERVER then
+	local dbFile = "impulse/database.json"
 
-		return convar:GetInt()
+	impulse.DB = {
+		ip = "localhost",
+		username = "root",
+		password = "",
+		database = "impulse_development",
+		port = 3306
+	}
+
+	if file.Exists(dbFile, "DATA") then
+		local dbConf = util.JSONToTable(file.Read(dbFile, "DATA"))
+		table.Merge(impulse.DB, dbConf)
+		print("[impulse] [database.json] Loaded release database config file!")
 	else
-		if convar:GetString() == convar:GetDefault() then
-			return nil
-		end
-
-		return convar:GetString()
+		print("[impulse] [database.json] Found no file. Assuming development database configuration. If this is a live server please setup this file!")
 	end
 end
 
@@ -92,24 +96,9 @@ end
 impulse.lib.includeDir("impulse/gamemode/libs")
 -- Load config
 impulse.Config = impulse.Config or {}
-
 -- Load DB
 if SERVER then
-	CreateConVar("impulse_db_ip", "0", FCVAR_PROTECTED)
-	CreateConVar("impulse_db_username", "0", FCVAR_PROTECTED)
-	CreateConVar("impulse_db_password", "0", FCVAR_PROTECTED)
-	CreateConVar("impulse_db_database", "0", FCVAR_PROTECTED)
-	CreateConVar("impulse_db_port", 0, FCVAR_PROTECTED)
-
-	impulse.DB = {
-		ip = GetDBCFG("ip") or "localhost",
-		username = GetDBCFG("username") or "root",
-		password = GetDBCFG("password") or "",
-		database = GetDBCFG("database") or "impulse_development",
-		port = GetDBCFG("port", true) or 3306
-	}
-
-	mysql:Connect(impulse.DB.ip, impulse.DB.username, impulse.DB.password, impulse.DB.database, 3306)
+	mysql:Connect(impulse.DB.ip, impulse.DB.username, impulse.DB.password, impulse.DB.database, impulse.DB.port)
 end
 -- Load core
 impulse.lib.includeDir("impulse/gamemode/core")
@@ -117,8 +106,6 @@ impulse.lib.includeDir("impulse/gamemode/core")
 impulse.lib.includeDir("impulse/gamemode/core/vgui")
 -- Load hooks
 impulse.lib.includeDir("impulse/gamemode/core/hooks")
--- Create impulse folder
-file.CreateDir("impulse")
 
 function impulse.reload()
     MsgC( Color( 83, 143, 239 ), "[impulse] Reloading gamemode...\n" )
