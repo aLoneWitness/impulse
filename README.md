@@ -21,6 +21,7 @@ Currently, the build load process is very simple. The framework will look for a 
 * Navigate to data/impulse/database.json (make these files or folders if they don't exist)
 * Enter the JSON data below into database.json and configure it for your database
 * WARNING: Never use localhost instead use 127.0.0.1
+* WARNING: SQL strict mode MUST BE DISABLED
 ```
 {
 	"ip": "127.0.0.1",

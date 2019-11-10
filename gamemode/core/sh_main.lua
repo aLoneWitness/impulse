@@ -56,7 +56,7 @@ function meta:IsDeveloper()
 end
 
 function meta:IsDonator()
-    return (self:IsUserGroup("vip") or self:IsAdmin())
+    return (self:IsUserGroup("donator") or self:IsAdmin())
 end 
 
 function meta:InSpawn()
