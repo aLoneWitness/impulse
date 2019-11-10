@@ -7,6 +7,23 @@ impulse is a semi-serious roleplay framework designed by vin (Jake Green) for Ap
 ## Working with impulse
 If your working with impulse I reccomend you read the wiki first, feel free to DM me on discord if you have any questions.
 
+### Running development builds
+* Ensure mysqloov9 is installed
+* Install XAMPP and create a database called impulse_development
+* Using the default XAMPP root user the development build should connect automatically
+
+### Running release builds (on a server)
+* Ensure mysqloov9 is installed on the server
+* Create your database and database user
+* In your server.cfg file add this and configure to your settings:
+```
+impulse_db_ip "127.0.0.1"
+impulse_db_username "impulsehl2rp"
+impulse_db_password "pass123"
+impulse_db_database "impulsehl2rp"
+impulse_db_port 3306
+```
+
 ## Required plugins
 chatbox_v2, ops
 
