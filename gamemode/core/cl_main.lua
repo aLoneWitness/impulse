@@ -12,16 +12,15 @@ local blur = Material("pp/blurscreen")
 local superTesters = {
 	["STEAM_0:1:53542485"] = true, -- mats
 	["STEAM_0:1:75156459"] = true, -- jamsu
-	["STEAM_0:1:83204982"] = true -- oscar
+	["STEAM_0:1:83204982"] = true, -- oscar
+	["STEAM_0:1:199354868"] = true  -- enigma
 }
 
 local mappers = {
 	["STEAM_0:0:24607430"] = true -- stranger
 }
 
-local winners = {
-
-}
+local winners = {}
 
 
 -- Please don't ever remove credit or users/badges from this section. People worked hard on this. Thanks!

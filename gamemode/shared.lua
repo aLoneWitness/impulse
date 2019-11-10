@@ -69,13 +69,46 @@ function impulse.lib.includeDir(directory, fromLua)
 	end
 end
 
+local function GetDBCFG(name, isInt)
+	local name = "impulse_db_"..name
+	local convar = GetConVar(name)
+
+	if isInt then
+		if convar:GetInt() == convar:GetDefault() then
+			return nil
+		end
+
+		return convar:GetInt()
+	else
+		if convar:GetString() == convar:GetDefault() then
+			return nil
+		end
+
+		return convar:GetString()
+	end
+end
+
 -- Loading 3rd party libs
 impulse.lib.includeDir("impulse/gamemode/libs")
 -- Load config
 impulse.Config = impulse.Config or {}
-impulse.lib.includeDir("impulse/gamemode/config")
+
 -- Load DB
 if SERVER then
+	CreateConVar("impulse_db_ip", "0", FCVAR_PROTECTED)
+	CreateConVar("impulse_db_username", "0", FCVAR_PROTECTED)
+	CreateConVar("impulse_db_password", "0", FCVAR_PROTECTED)
+	CreateConVar("impulse_db_database", "0", FCVAR_PROTECTED)
+	CreateConVar("impulse_db_port", 0, FCVAR_PROTECTED)
+
+	impulse.DB = {
+		ip = GetDBCFG("ip") or "localhost",
+		username = GetDBCFG("username") or "root",
+		password = GetDBCFG("password") or "",
+		database = GetDBCFG("database") or "impulse_development",
+		port = GetDBCFG("port", true) or 3306
+	}
+
 	mysql:Connect(impulse.DB.ip, impulse.DB.username, impulse.DB.password, impulse.DB.database, 3306)
 end
 -- Load core

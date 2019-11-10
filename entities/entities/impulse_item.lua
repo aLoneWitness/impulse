@@ -81,7 +81,7 @@ if SERVER then
 	function ENT:OnRemove()
 		local owner = self.ItemOwner
 
-		if owner and IsValid(owner) then
+		if owner and IsValid(owner) and owner.DroppedItems then
 			owner.DroppedItemsC = math.Clamp((owner.DroppedItemsC or 0) - 1, 0, impulse.Config.DroppedItemsLimit)
 			owner.DroppedItems[self.DropIndex] = nil
 		end

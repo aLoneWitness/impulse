@@ -946,7 +946,7 @@ end
 
 function IMPULSE:SetupMove(ply, mvData)
 	if isValid(ply.ArrestedDragging) then
-		mvData:SetMaxClientSpeed(mvData:GetMaxClientSpeed() * 0.4)
+		mvData:SetMaxClientSpeed(impulse.Config.WalkSpeed - 30)
 	end
 end
 
