@@ -454,15 +454,19 @@ function IMPULSE:HUDPaint()
 		end)
 	end
 
-	-- watermark
-	surface.SetDrawColor(watermarkCol)
-	surface.SetMaterial(watermark)
-	surface.DrawTexturedRect(390, y, 112, 30)
+	local isPreview = GetConVar("impulse_ispreview"):GetBool()
 
-	surface.SetTextPos(390, y + 30)
-	surface.SetTextColor(watermarkCol)
-	surface.SetFont("Impulse-Elements18-Shadow")
-	surface.DrawText("TEST BUILD - "..IMPULSE.Version.." - "..LocalPlayer():SteamID64().. " - ".. os.date("%H:%M:%S - %d/%m/%Y", os.time()))
+	if isPreview then
+		-- watermark
+		surface.SetDrawColor(watermarkCol)
+		surface.SetMaterial(watermark)
+		surface.DrawTexturedRect(390, y, 112, 30)
+
+		surface.SetTextPos(390, y + 30)
+		surface.SetTextColor(watermarkCol)
+		surface.SetFont("Impulse-Elements18-Shadow")
+		surface.DrawText("PREVIEW BUILD - "..IMPULSE.Version.." - "..LocalPlayer():SteamID64().. " - ".. os.date("%H:%M:%S - %d/%m/%Y", os.time()))
+	end
 
 	-- dev hud
 

@@ -34,6 +34,8 @@ function impulse.Schema.Boot(name)
         MsgC(Color(255, 0, 0), "[impulse] No map config found!'\n")
 	end
 
+    hook.Run("PostConfigLoad")
+
     impulse.lib.includeDir(SCHEMA.."/schema/scripts")
     impulse.lib.includeDir(SCHEMA.."/schema/scripts/vgui")
     impulse.lib.includeDir(SCHEMA.."/schema/scripts/hooks")

@@ -317,7 +317,13 @@ function PANEL:Paint(w,h)
 	surface.DrawRect(w-540,0,520,380)-- news body
 	impulse.render.glowgo(100,50,337,91)
 
-	draw.SimpleText("beta", "Impulse-SpecialFont", 370, 120, Color(170, 170, 170))
+	local isPreview = GetConVar("impulse_ispreview"):GetBool()
+
+	if isPreview then
+		draw.SimpleText("preview build", "Impulse-SpecialFont", 260, 115, Color(255, 242, 0))
+	else
+		draw.SimpleText("beta", "Impulse-SpecialFont", 370, 120, Color(170, 170, 170))
+	end
 end
 
 vgui.Register("impulseMainMenu", PANEL, "DPanel")

@@ -7,7 +7,7 @@
 GM.Name = "impulse"
 GM.Author = "vin"
 GM.Website = "https://www.vingard.ovh"
-GM.Version = 0.8
+GM.Version = 0.96
 MsgC( Color( 83, 143, 239 ), "[impulse] Starting shared load...\n" )
 IMPULSE = GM
 meta = FindMetaTable("Player")
@@ -73,6 +73,7 @@ end
 file.CreateDir("impulse")
 
 if SERVER then
+	local isPreview = CreateConVar("impulse_ispreview", 0, FCVAR_REPLICATED, "If the current build is in preview mode.")
 	local dbFile = "impulse/database.json"
 
 	impulse.DB = {
@@ -89,6 +90,7 @@ if SERVER then
 		print("[impulse] [database.json] Loaded release database config file!")
 	else
 		print("[impulse] [database.json] Found no file. Assuming development database configuration. If this is a live server please setup this file!")
+		isPreview:SetInt(1) -- assume we're running a preview build then i guess?
 	end
 end
 
