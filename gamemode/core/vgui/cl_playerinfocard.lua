@@ -151,7 +151,9 @@ local quickTools = {
 
 
 function PANEL:Init()
+	self:Hide()
 	timer.Simple(0, function() -- Time to allow SetPlayer to catch up
+		self:Show()
 		self:SetSize(600, 400)
 		self:Center()
 		self:SetTitle("Player Information")
@@ -186,19 +188,24 @@ function PANEL:Init()
 			end
 		end)
 
+		self.profileImage = vgui.Create("AvatarImage", self)
+		self.profileImage:SetSize(70, 70)
+		self.profileImage:SetPos(10, 30)
+		self.profileImage:SetPlayer(self.Player, 64)
+
 		-- Steam name
 		self.oocName = vgui.Create("DLabel", self)
 		self.oocName:SetFont("Impulse-CharacterInfo-NO")
 		self.oocName:SetText(self.Player:SteamName())
 		self.oocName:SizeToContents()
-		self.oocName:SetPos(10,30)
+		self.oocName:SetPos(86,30)
 
 		if LocalPlayer():IsAdmin() then
 			self.rpName = vgui.Create("DLabel", self)
 			self.rpName:SetFont("Impulse-Elements18")
 			self.rpName:SetText(self.Player:Name())
 			self.rpName:SizeToContents()
-			self.rpName:SetPos(self.oocName:GetWide() + 15, 42)
+			self.rpName:SetPos(self.oocName:GetWide() + 88, 42)
 		end
 
 		-- team name
@@ -207,7 +214,7 @@ function PANEL:Init()
 		self.teamName:SetText(team.GetName(self.Player:Team()))
 		self.teamName:SetTextColor(team.GetColor(self.Player:Team()))
 		self.teamName:SizeToContents()
-		self.teamName:SetPos(10,60)
+		self.teamName:SetPos(86,60)
 
 		-- buttons
 		self.profileButton = vgui.Create("DButton", self)
@@ -227,11 +234,11 @@ function PANEL:Init()
 		end
 
 		self.forumButton = vgui.Create("DButton", self)
-		self.forumButton:SetText("Forum Profile")
+		self.forumButton:SetText("Panel Profile")
 		self.forumButton:SetPos(200,105)
 		self.forumButton:SetSize(90,20)
 		self.forumButton.DoClick = function()
-			print("WIP")
+			gui.OpenURL("https://panel.impulse-community.com/index.php?t=user&id="..self.Player:SteamID64())
 		end
 
 		self.whitelistButton = vgui.Create("DButton", self)
@@ -258,7 +265,7 @@ function PANEL:Init()
 		for badgeName, badgeData in pairs(impulse.Badges) do
 			if badgeData[3](self.Player) then
 				local badge = vgui.Create("DImageButton", self)
-				badge:SetPos(10 + xShift, 85)
+				badge:SetPos(86 + xShift, 84)
 				badge:SetSize(16, 16)
 				badge:SetMaterial(badgeData[1])
 				badge.info = badgeData[2]
