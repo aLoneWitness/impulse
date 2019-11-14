@@ -292,7 +292,7 @@ function meta:ClearIllegalInventory(storetype)
 	local inv = self:GetInventory(storetype)
 
 	for v,k in pairs(inv) do
-		local itemData = impulse.Inventory.Items[impulse.Inventory.ClassToNetID(v)]
+		local itemData = impulse.Inventory.Items[k.id]
 
 		if itemData and itemData.Illegal then
 			self:TakeInventoryItem(v)
