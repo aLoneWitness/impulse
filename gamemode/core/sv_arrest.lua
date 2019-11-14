@@ -121,6 +121,10 @@ function meta:Jail(time, jailData)
 	if pos then
 		self:SetPos(impulse.FindEmptyPos(pos, {self}, 150, 30, Vector(16, 16, 64)))
 		self:SetEyeAngles(impulse.Config.PrisonAngle)
+
+		self:ClearIllegalInventory()
+		self:ClearRestrictedInventory()
+
 		self:Notify("You have been imprisoned for "..(time / 60).." minutes.")
 		self:SendJailInfo(time, jailData)
 		self.InJail = cellID

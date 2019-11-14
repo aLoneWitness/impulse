@@ -285,6 +285,21 @@ function meta:ClearRestrictedInventory(storetype)
 	net.Send(self)
 end
 
+function meta:ClearIllegalInventory(storetype)
+	if not self.beenInvSetup then return end
+	local storetype = storetype or 1
+
+	local inv = self:GetInventory(storetype)
+
+	for v,k in pairs(inv) do
+		local itemData = impulse.Inventory.Items[impulse.Inventory.ClassToNetID(v)]
+
+		if itemData and itemData.Illegal then
+			self:TakeInventoryItem(v)
+		end
+	end
+end
+
 function meta:TakeInventoryItemClass(itemclass, storetype, amount)
 	if not self.beenInvSetup then return end
 
