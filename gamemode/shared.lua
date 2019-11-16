@@ -72,8 +72,9 @@ end
 -- Create impulse folder
 file.CreateDir("impulse")
 
+local isPreview = CreateConVar("impulse_ispreview", 0, FCVAR_REPLICATED, "If the current build is in preview mode.")
+
 if SERVER then
-	local isPreview = CreateConVar("impulse_ispreview", 0, FCVAR_REPLICATED, "If the current build is in preview mode.")
 	local dbFile = "impulse/database.json"
 
 	impulse.DB = {
