@@ -543,6 +543,10 @@ function IMPULSE:HUDPaintBackground()
 		surface.DrawTexturedRect(0, 0, ScrW(), ScrH())
 	end
 
+	if impulse.hudEnabled == false then
+		return
+	end
+
 	local lp = LocalPlayer()
 	local realTime = RealTime()
 	local frameTime = FrameTime()
