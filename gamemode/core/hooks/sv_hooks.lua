@@ -232,8 +232,8 @@ function IMPULSE:SetupPlayer(ply, dbData)
 		ply:NetworkSkill(v, xp)
 	end
 
-	if dbData.group and dbData.group != "user" then
-		ply:CoreSetUserGroup(dbData.group)
+	if not GExtension and (dbData.group and dbData.group != "user") then
+		ply:SetUserGroup(dbData.group)
 	end
 
 	ply.defaultModel = dbData.model
