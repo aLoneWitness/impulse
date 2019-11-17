@@ -232,7 +232,7 @@ function IMPULSE:SetupPlayer(ply, dbData)
 		ply:NetworkSkill(v, xp)
 	end
 
-	if dbData.group and dbData.group != "user" then
+	if not GExtension and (dbData.group and dbData.group != "user") then
 		ply:SetUserGroup(dbData.group)
 	end
 
@@ -642,6 +642,10 @@ function IMPULSE:InitPostEntity()
 	    end
 	end
 
+	if impulse.Config.LoadScript then
+		impulse.Config.LoadScript()
+	end
+
 	LoadButtons()
 end
 
@@ -844,7 +848,8 @@ local dupeBannedTools = {
 local donatorTools = {
 	["wire_expression2"] = true,
 	["wire_spu"] = true,
-	["wire_egp"] = true
+	["wire_egp"] = true,
+	["wire_soundemitter"] = true
 }
 
 local adminWorldRemoveWhitelist = {
