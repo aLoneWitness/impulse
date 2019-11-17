@@ -104,3 +104,19 @@ function meta:AddPropCount(ent)
 
     ent:CallOnRemove("GetPropCountUpdate", function(ent, ply) ply:GetPropCount() end, self)
 end
+
+
+local oldSetUserGroup = meta.SetUserGroup
+
+function meta:SetUserGroup(name)
+    local query = mysql:Update("impulse_players")
+    query:Update("group", name)
+    query:Where("steamid", self:SteamID())
+    query:Execute(true)
+
+    oldSetUserGroup(self, name)
+end
+
+function meta:CoreSetUserGroup(name)
+    oldSetUserGroup(name)
+end
