@@ -143,7 +143,9 @@ local quickTools = {
 		icon = "icon16/user_delete.png",
 		onRun = function(ply, sid)
 			Derma_StringRequest("impulse", "Enter the length (in minutes):", "", function(length)
-				LocalPlayer():ConCommand("say /ban "..sid.." "..reason)
+				Derma_StringRequest("impulse", "Enter the reason:", "", function(reason)
+					LocalPlayer():ConCommand("say /ban "..sid.." "..length.." "..reason)
+				end)
 			end)
 		end
 	}

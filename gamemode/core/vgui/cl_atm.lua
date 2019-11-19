@@ -36,13 +36,6 @@ function PANEL:Init()
 		net.Start("impulseATMWithdraw")
 		net.WriteUInt(math.floor(num), 32)
 		net.SendToServer()
-
-		timer.Simple(0.1, function()
-			bankBalance = LocalPlayer():GetSyncVar(SYNC_BANKMONEY, 0)
-			parent.balance:SetText("Balance: "..prefix..bankBalance)
-			parent.balance:SizeToContents()
-			parent.balance:SetPos(100 - (parent.balance:GetWide()/2), 30)
-		end)
 	end
 
 	self.depositInput = vgui.Create("DTextEntry", self)
@@ -65,13 +58,21 @@ function PANEL:Init()
 		net.Start("impulseATMDeposit")
 		net.WriteUInt(math.floor(num), 32)
 		net.SendToServer()
+	end
+end
 
-		timer.Simple(0.2, function()
-			bankBalance = LocalPlayer():GetSyncVar(SYNC_BANKMONEY, 0)
-			parent.balance:SetText("Balance: "..prefix..bankBalance)
-			parent.balance:SizeToContents()
-			parent.balance:SetPos(100 - (parent.balance:GetWide()/2), 30)
-		end)
+function PANEL:SetBalance(m)
+	self.balance:SetText("Balance: "..impulse.Config.CurrencyPrefix..m)
+	self.balance:SizeToContents()
+	self.balance:SetPos(100 - (self.balance:GetWide()/2), 30)
+end
+
+function PANEL:Think()
+	local curMoney = LocalPlayer():GetSyncVar(SYNC_BANKMONEY, 0)
+	self.lastMoney = self.lastMoney or curMoney
+
+	if self.lastMoney != curMoney then
+		self:SetBalance(curMoney)
 	end
 end
 

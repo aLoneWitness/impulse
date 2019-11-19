@@ -303,8 +303,6 @@ function IMPULSE:OnContextMenuOpen()
 			menubar.ParentTo(g_ContextMenu)
 
 			hook.Call("ContextMenuOpened", self)
-
-			chat.AddText("Opened context menu (ALT+C)")
 		end
 	end
 end

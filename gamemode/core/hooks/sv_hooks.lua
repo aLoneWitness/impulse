@@ -817,7 +817,16 @@ function IMPULSE:CanDrive()
 	return false
 end
 
-function IMPULSE:CanProperty()
+local whitelistProp = {
+	["remover"] = true,
+	["collision"] = true
+}
+
+function IMPULSE:CanProperty(ply, prop)
+	if whitelistProp[prop] then
+		return true
+	end
+
 	return false
 end
 

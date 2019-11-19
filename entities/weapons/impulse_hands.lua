@@ -127,6 +127,10 @@ local function RemoveVelocity(ent, normalized)
 
 		SetSubPhysMotionEnabled(ent, false)
 		timer.Simple(0, function()
+			if not IsValid(ent) then
+				return
+			end
+			
 			SetSubPhysMotionEnabled(ent, true)
 		end)
 	else
@@ -139,6 +143,10 @@ local function RemoveVelocity(ent, normalized)
 
 		SetSubPhysMotionEnabled(ent, false)
 		timer.Simple(0, function()
+			if not IsValid(ent) then
+				return
+			end
+
 			SetSubPhysMotionEnabled(ent, true)
 
 			if IsValid(phys) then
