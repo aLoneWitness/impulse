@@ -1238,6 +1238,7 @@ net.Receive("impulseUnRestrain", function(len, ply)
 	ent:Notify("You have been released by"..ply:Name()..".")
 
 	hook.Run("PlayerUnArrested", ent, ply)
+	hook.Run("PlayerUnRestrain", ply, ent)
 end)
 
 net.Receive("impulseInvContainerCodeReply", function(len, ply)

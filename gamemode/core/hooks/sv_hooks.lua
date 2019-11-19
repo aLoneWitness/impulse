@@ -834,7 +834,8 @@ local bannedTools = {
 	["wire_explosive"] = true,
 	["wire_simple_explosive"] = true,
 	["wire_turret"] = true,
-	["wire_user"] = true
+	["wire_user"] = true,
+	["wire_pod"] = true
 }
 
 local dupeBannedTools = {

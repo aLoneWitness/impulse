@@ -64,7 +64,7 @@ if GExtension then
 
             local time = arg[2]
 
-            if not time or not isnumber(time) then
+            if not time or not tonumber(time) then
                 return ply:Notify("No time value supplied.")
             end
 
@@ -115,7 +115,7 @@ if GExtension then
                 ply:Notify("Invalid SteamID.")
             end
 
-            if not time or not isnumber(time) then
+            if not time or not tonumber(time) then
                 return ply:Notify("No time value supplied.")
             end
 
