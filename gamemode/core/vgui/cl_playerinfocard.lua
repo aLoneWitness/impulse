@@ -240,7 +240,7 @@ function PANEL:Init()
 		self.forumButton:SetPos(200,105)
 		self.forumButton:SetSize(90,20)
 		self.forumButton.DoClick = function()
-			gui.OpenURL("https://panel.impulse-community.com/index.php?t=user&id="..self.Player:SteamID64())
+			gui.OpenURL(impulse.Config.PanelURL.."/index.php?t=user&id="..self.Player:SteamID64())
 		end
 
 		self.whitelistButton = vgui.Create("DButton", self)

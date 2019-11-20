@@ -732,7 +732,7 @@ function IMPULSE:PlayerGiveSWEP(ply)
 	return ply:IsSuperAdmin()
 end
 
-function IMPULSE:PlayerSpawnedEffect(ply)
+function IMPULSE:PlayerSpawnEffect(ply)
 	return ply:IsAdmin()
 end
 
