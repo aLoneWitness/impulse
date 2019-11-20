@@ -19,7 +19,7 @@ net.Receive("opsReportMessage", function()
 		LocalPlayer():Notify("Report submitted for review. Thank you for doing your part in keeping the community clean. Report ID: #"..reportId..".")
         LocalPlayer():Notify("If you have any further requests or info for us, just send another report by pressing F3.")
 
-        impulse.Ops.NewLog({Color(50, 205, 50), "(#"..reportId..") Report submitted", color_white, " message: "..impulse_reportMessage or ""}, true)
+        impulse.Ops.NewLog({Color(50, 205, 50), "(#"..reportId..") Report submitted", color_white, " message: "..(impulse_reportMessage or "")}, true)
         impulse.Ops.CurReport = reportId
         uniqueReportKey = uniqueReportKey + 1
 
