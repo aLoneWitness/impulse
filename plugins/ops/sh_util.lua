@@ -99,55 +99,6 @@ if GExtension then
 
     impulse.RegisterChatCommand("/ban", banCommand)
 
-    local banIdCommand = {
-        description = "Bans the specified SteamID from the server. (time in minutes)",
-        requiresArg = true,
-        adminOnly = true,
-        onRun = function(ply, arg, rawText)
-            local steamid = arg[1]
-            local time = arg[2]
-
-            if util.SteamIDTo64(steamid) then
-                steamid = util.SteamIDTo64(steamid)
-            elseif util.SteamIDFrom64(steamid) then
-                steamid = steamid
-            else
-                ply:Notify("Invalid SteamID.")
-            end
-
-            if not time or not tonumber(time) then
-                return ply:Notify("No time value supplied.")
-            end
-
-            time = tonumber(time)
-
-            if time < 0 then
-                return ply:Notify("Negative time values are not allowed.")
-            end
-
-            local reason = ""
-
-            for v,k in pairs(arg) do
-                if v > 2 then
-                    reason = reason.." "..k
-                end
-            end
-
-            reason = string.Trim(reason)
-
-            if steamid then
-                if ply:GE_CanBan(steamid, time) then
-                    GExtension:Ban(steamid, time, reason, ply:SteamID64())
-                    ply:Notify("You have banned "..steamid.." for "..time.." minutes.")
-                else
-                    ply:Notify("This user can not be banned.")
-                end
-            end
-        end
-    }
-
-    impulse.RegisterChatCommand("/banid", banIdCommand)
-
     local warnCommand = {
         description = "Warns the specified player (reason is required).",
         requiresArg = true,
@@ -183,4 +134,14 @@ if GExtension then
     }
 
     impulse.RegisterChatCommand("/warn", warnCommand)
+
+    local warnViewCommand = {
+        description = "Allows you to view your warnings.",
+        onRun = function(ply, arg, rawText)
+            net.Start("GExtension_Net_WarningsPanelShow")
+            net.Send(ply)
+        end
+    }
+
+    impulse.RegisterChatCommand("/warnings", warnViewCommand)
 end
