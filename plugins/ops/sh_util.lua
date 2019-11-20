@@ -86,6 +86,10 @@ if GExtension then
 
             if plyTarget and ply != plyTarget then
                 if ply:GE_CanBan(plyTarget:SteamID64(), time) then
+                    if plyTarget:IsSuperAdmin() then
+                        return ply:Notify("You can not ban this user.")
+                    end
+                    
                     plyTarget:GE_Ban(time, reason, ply:SteamID64())
                     ply:Notify("You have banned "..plyTarget:SteamName().." for "..time.." minutes.")
                 else
