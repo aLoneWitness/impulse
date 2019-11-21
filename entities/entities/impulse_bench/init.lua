@@ -40,6 +40,10 @@ function ENT:Use(activator, caller)
 			return activator:Notify("This workbench is already in use.")
 		end
 
+		if self.Bench.CanUse and not self.Bench.CanUse(self.Bench, ply) then
+			return activator:Notify("You can not use this workbench.")
+		end
+
 		net.Start("impulseBenchUse")
 		net.Send(activator)
 
