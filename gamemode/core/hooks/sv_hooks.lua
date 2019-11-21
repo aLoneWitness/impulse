@@ -45,12 +45,6 @@ function IMPULSE:PlayerInitialSpawn(ply)
 		end
 	end)
 
-	if ply:IsDonator() then
-		ply.OOCLimit = impulse.Config.OOCLimitVIP
-	else
-		ply.OOCLimit = impulse.Config.OOCLimit
-	end
-
 	timer.Create(ply:UserID().."impulseOOCLimit", 1800, 0, function()
 		if IsValid(ply) and ply:IsDonator() then
 			ply.OOCLimit = impulse.Config.OOCLimitVIP

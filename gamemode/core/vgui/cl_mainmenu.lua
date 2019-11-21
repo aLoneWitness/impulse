@@ -232,26 +232,7 @@ function PANEL:Init()
 	newsfeed:SetPos(self:GetWide()-530, 100)
 
 	local testMessage = function()
-		Derma_Message([[Welcome to the impulse test server!
-			Thanks for coming along and helping us test impulse, before we start though
-			let's get some stuff out the way, please take your time to read the text below:
-
-			- This is NOWHERE NEAR A FINAL VERSION of impulse. We still have to add many features 
-			such as the inventory and crafting system.
-			- Bugs, expect lot's of them, this is a test, not a live server.
-			- Roleplay, don't expect much roleplay at this early stage in testing.
-			- Don't go around killing people randomly or prop spamming. This is not testing,
-			it is just making it harder for others to give impulse a go.
-			- Footage and sharing stuff - Sure, you can record and screenshot whatever you
-			like. Just leave the watermark in the image/video.
-
-			- SUPER COOL TESTER BADGE! - We've got a couple of 'SUPER COOL TESTER BADGES' to
-			give out to the best testers, so get testing. 
-
-			REPORT BUGS/FEEDBACK TO: https://github.com/vingard/impulse-issues/issues
-
-			Happy bug hunting!
-			-vin]], "impulse", "Uh huh")
+		
 	end
 
 	timer.Simple(0, function()
