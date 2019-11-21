@@ -12,7 +12,7 @@ function PANEL:Think()
 	end
 
 	if not LocalPlayer():Alive() then
-		return
+		return self:Remove()
 	end
 end
 
