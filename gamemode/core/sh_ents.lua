@@ -38,7 +38,7 @@ function entityMeta:CanBeCarried()
 	return true
 end
 
-local ADJUST_SOUND = SoundDuration("npc/metropolice/pain1.wav") > 0 and "" or "../../hl2/sound/"
+local ADJUST_SOUND = SoundDuration("npc/metropolice/pain1.wav") > 0 and "" or ""
 
 function entityMeta:EmitQueuedSounds(sounds, delay, spacing, volume, pitch)
 	delay = delay or 0

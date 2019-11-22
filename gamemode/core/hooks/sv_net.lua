@@ -100,7 +100,7 @@ net.Receive("impulseCharacterCreate", function(len, ply)
 		local insertQuery = mysql:Insert("impulse_players")
 		insertQuery:Insert("rpname", charName)
 		insertQuery:Insert("steamid", plyID)
-		insertQuery:Insert("group", "vip") -- testing value normal: plyGroup
+		insertQuery:Insert("group", "user")
 		insertQuery:Insert("xp", 0)
 		insertQuery:Insert("money", impulse.Config.StartingMoney)
 		insertQuery:Insert("bankmoney", impulse.Config.StartingBankMoney)
@@ -115,7 +115,7 @@ net.Receive("impulseCharacterCreate", function(len, ply)
 					id = lastID,
 					rpname = charName,
 					steamid = plyID,
-					group = "vip", -- testing value normal: plyGroup
+					group = "user",
 					xp = 0,
 					money = impulse.Config.StartingMoney,
 					bankmoney = impulse.Config.StartingBankMoney,

@@ -130,7 +130,7 @@ function PANEL:SetupVendor()
 		local item = impulse.Inventory.Items[k.id]
 		local class = item.UniqueID
 
-		if self.Vendor.Buy[class] then
+		if self.Vendor.Buy and self.Vendor.Buy[class] then
 			local vendorItem = self.youScroll:Add("impulseVendorItem")
 			vendorItem.Selling = true
 			vendorItem.ItemID = v

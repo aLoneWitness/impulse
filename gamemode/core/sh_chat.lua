@@ -51,7 +51,8 @@ local oocCommand = {
 			return ply:Notify("You have an active OOC timeout that will remain for "..string.NiceTime(timeout - CurTime())..".")
 		end
 
-		local limit = ply.OOCLimit or ((ply:IsDonator() and impulse.Config.OOCLimitVIP) or impulse.Config.OOCLimit)
+		ply.OOCLimit = ply.OOCLimit or ((ply:IsDonator() and impulse.Config.OOCLimitVIP) or impulse.Config.OOCLimit)
+		local limit = ply.OOCLimit
 		local timeLeft = timer.TimeLeft(ply:UserID().."impulseOOCLimit")
 
 		if limit < 1 and not ply:IsAdmin() then
