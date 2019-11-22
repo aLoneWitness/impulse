@@ -40,7 +40,7 @@ function ENT:Use(activator, caller)
 			return activator:Notify("This workbench is already in use.")
 		end
 
-		if self.Bench.CanUse and not self.Bench.CanUse(self.Bench, ply) then
+		if self.Bench.CanUse and not self.Bench.CanUse(self.Bench, activator) then
 			return activator:Notify("You can not use this workbench.")
 		end
 
