@@ -61,7 +61,14 @@ function ENT:MakeLoot()
 
 		self:UpdateUsers()
 
-		self.LootNext = CurTime() + impulse.Config.LootPools[pool].Wait
+		local fullRatio = #player.GetAll() / game.MaxPlayers()
+		fullRatio = math.Clamp(fullRatio, 0 , 1)
+
+		local base = impulse.Config.LootPools[self.LootPool].MaxWait
+		local take = base - impulse.Config.LootPools[self.LootPool].MinWait
+		take = take * fullRatio
+
+		self.LootNext = CurTime() + (base - take)
 	end
 end
 
@@ -186,7 +193,7 @@ function ENT:Think()
 				local take = base - impulse.Config.LootPools[self.LootPool].MinWait
 				take = take * fullRatio
 
-				self.LootNext = CurTime() + base - take
+				self.LootNext = CurTime() + (base - take)
 			end
 		end
 
