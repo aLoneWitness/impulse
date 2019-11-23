@@ -179,7 +179,14 @@ function ENT:Think()
 			if table.Count(self.Inventory) == 0 then
 				self:MakeLoot()
 			else
-				self.LootNext = CurTime() + impulse.Config.LootPools[self.LootPool].Wait
+				local fullRatio = #player.GetAll() / game.MaxPlayers()
+				fullRatio = math.Clamp(fullRatio, 0 , 1)
+
+				local base = impulse.Config.LootPools[self.LootPool].MaxWait
+				local take = base - impulse.Config.LootPools[self.LootPool].MinWait
+				take = take * fullRatio
+
+				self.LootNext = CurTime() + base - take
 			end
 		end
 

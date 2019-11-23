@@ -829,7 +829,7 @@ net.Receive("impulseCharacterEdit", function(len, ply)
 		return
 	end
 
-	local newIsFemale = net.ReadBool()
+	local newIsFemale = false
 	local newModel = net.ReadString()
 	local newSkin = net.ReadUInt(8)
 	local cost = 0
@@ -841,11 +841,17 @@ net.Receive("impulseCharacterEdit", function(len, ply)
 		return
 	end
 
+	if table.HasValue(impulse.Config.DefaultFemaleModels, newModel) then
+		newIsFemale = true
+	end
+
 	local skinBlacklist = impulse.Config.DefaultSkinBlacklist[newModel]
 
 	if skinBlacklist and table.HasValue(skinBlacklist, newSkin) then
 		return
 	end
+
+	print(isCurFemale)
 
 	if newIsFemale != isCurFemale then
 		cost = cost + impulse.Config.CosmeticGenderPrice
@@ -858,6 +864,8 @@ net.Receive("impulseCharacterEdit", function(len, ply)
 	if cost == 0 then
 		return
 	end
+
+	print(cost)
 
 	if ply:CanAfford(cost) then
 		local query = mysql:Update("impulse_players")
@@ -1031,7 +1039,7 @@ net.Receive("impulseMixTry", function(len, ply)
 			ply:GiveInventoryItem(mixClass.Output)
 			ply:Notify("You have crafted a "..item.Name..".")
 
-			local xp = 35 + ((math.Clamp(mixClass.Level, 2, 8)  * 1.5) * 1.9) -- needs balancing
+			local xp = 45 + ((math.Clamp(mixClass.Level, 2, 8)  * 1.5) * 1.9) -- needs balancing
 			ply:AddSkillXP("craft", xp)
 		end
 	end)
@@ -1230,6 +1238,10 @@ net.Receive("impulseUnRestrain", function(len, ply)
 
 	if not ent:IsPlayer() or ent:GetSyncVar(SYNC_ARRESTED, false) == false or not ply:CanArrest(ent) then
 		return
+	end
+
+	if ent.InJail then
+		return ply:Notify("You can't unrestrain someone who is in jail.")
 	end 
 
 	ent:UnArrest()

@@ -36,7 +36,9 @@ function meta:SetTeam(teamID, forced)
 
 	self.DoorGroups = teamData.doorGroup or {}
 
-	hook.Run("OnPlayerChangedTeam", self, self:Team(), teamID)
+	if self:Team() != teamID then
+		hook.Run("OnPlayerChangedTeam", self, self:Team(), teamID)
+	end
 
 	self:SetLocalSyncVar(SYNC_CLASS, nil, true)
 	self:SetLocalSyncVar(SYNC_RANK, nil, true)

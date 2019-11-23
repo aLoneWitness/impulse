@@ -454,6 +454,10 @@ function IMPULSE:PlayerDeath(ply)
 		impulse.SpawnMoney(ply:GetPos(), money)
 	end
 
+	if not ply.beenInvSetup then -- people that havent made char or are not loaded in
+		return
+	end
+
 	ply:UnEquipInventory()
 
 	local inv = ply:GetInventory()
@@ -663,7 +667,9 @@ function IMPULSE:Think()
 		if k:Alive() and k.nextHungerUpdate < CurTime() then
 			k:FeedHunger(-1)
 			if k:GetSyncVar(SYNC_HUNGER, 100) < 1 then
-				k:TakeDamage(1, k, k)
+				if k:Health() > 10 then
+					k:TakeDamage(1, k, k)
+				end
 				k.nextHungerUpdate = CurTime() + 1
 			else
 				k.nextHungerUpdate = CurTime() + impulse.Config.HungerTime

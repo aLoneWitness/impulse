@@ -34,7 +34,6 @@ function PANEL:Init()
 		end
 
 		net.Start("impulseCharacterEdit")
-		net.WriteBool(characterGender)
 		net.WriteString(characterModel)
 		net.WriteUInt(characterSkin, 8)
 		net.SendToServer()

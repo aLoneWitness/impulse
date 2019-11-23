@@ -119,8 +119,8 @@ function meta:Notify(message)
 end
 
 local modelCache = {}
-function eMeta:IsFemale()
-    local model = self:GetModel()
+function eMeta:IsFemale(modelov)
+    local model = modelov or self:GetModel()
 
     if modelCache[model] then
         return modelCache[model]
@@ -128,15 +128,20 @@ function eMeta:IsFemale()
 
     local isFemale = string.find(self:GetModel(), "female")
 
-    modelCache[model] = isFemale
-    return isFemale
+    if isFemale then
+        modelCache[model] = true
+        return true
+    end
+
+    modelCache[model] = false
+    return false
 end
 
 function meta:IsCharacterFemale()
     if SERVER then
-        return string.find(self.defaultModel, "female")
+        return self:IsFemale(self.defaultModel)
     else
-        return string.find(impulse_defaultModel, "female")
+        return self:IsFemale(impulse_defaultModel)
     end
 end
 

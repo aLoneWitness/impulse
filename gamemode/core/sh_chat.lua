@@ -52,10 +52,9 @@ local oocCommand = {
 		end
 
 		ply.OOCLimit = ply.OOCLimit or ((ply:IsDonator() and impulse.Config.OOCLimitVIP) or impulse.Config.OOCLimit)
-		local limit = ply.OOCLimit
 		local timeLeft = timer.TimeLeft(ply:UserID().."impulseOOCLimit")
 
-		if limit < 1 and not ply:IsAdmin() then
+		if ply.OOCLimit < 1 and not ply:IsAdmin() then
 			return ply:Notify("You have ran out of OOC messages. Wait "..string.NiceTime(timeLeft).." for more.")
 		end
 
