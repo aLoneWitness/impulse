@@ -23,9 +23,8 @@ function impulse.Inventory.DBRemoveItem(ownerid, class, storetype, limit)
 	query:Where("ownerid", ownerid)
 	query:Where("uniqueid", class)
 	query:Where("storagetype", storetype or 1)
-	if not limit or isnumber(limit) then
-		query:Limit(limit or 1)
-	end
+	query:Limit(limit or 1)
+
 	query:Execute()
 end
 
@@ -37,15 +36,26 @@ function impulse.Inventory.DBClearInventory(ownerid, storageType)
 end
 
 function impulse.Inventory.DBUpdateStoreType(ownerid, class, limit, oldStorageType, newStorageType)
-	local query = mysql:Update("impulse_inventory")
-	query:Update("storagetype", newStorageType)
-	query:Where("ownerid", ownerid)
-	query:Where("uniqueid", class)
-	query:Where("storagetype", oldStorageType)
-	if not limit or isnumber(limit) then
-		query:Limit(limit or 1)
-	end
-	query:Execute()
+	local queryGet = mysql:Select("impulse_inventory")
+	queryGet:Select("id")
+	queryGet:Select("storagetype")
+	queryGet:Where("ownerid", ownerid)
+	queryGet:Where("uniqueid", class)
+	queryGet:Where("storagetype", oldStorageType)
+	queryGet:Limit(limit or 1)
+	queryGet:Callback(function(result) -- workaround because limit doesnt work for update queries
+		if type(result) == "table" and #result > 0 then
+			for v,k in pairs(result) do
+				local query = mysql:Update("impulse_inventory")
+				query:Update("storagetype", newStorageType)
+				query:Where("id", k.id)
+				query:Where("storagetype", k.storagetype)
+				query:Execute()
+			end
+		end
+	end)
+
+	queryGet:Execute()
 end
 
 function impulse.Inventory.SpawnItem(class, pos)

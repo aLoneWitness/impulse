@@ -88,8 +88,7 @@ function PANEL:Paint(w,h)
 	surface.DrawText(self.requirements)
 
 	 -- team size
-	surface.SetTextPos(w-35,10)
-	surface.DrawText(self.playerCount)
+	draw.SimpleText(self.playerCount, "Impulse-Elements20-Shadow", w-15, 10, nil, TEXT_ALIGN_RIGHT)
 end
 
 vgui.Register("impulseTeamCard", PANEL, "DPanel")

@@ -52,6 +52,11 @@ function IMPULSE:PlayerInitialSpawn(ply)
 			else
 				ply.OOCLimit = impulse.Config.OOCLimit
 			end
+
+			net.Start("impulseUpdateOOCLimit")
+			net.WriteUInt(1800, 16)
+			net.WriteBool(true)
+			net.Send(ply)
 		end
 	end)
 
@@ -703,7 +708,7 @@ function IMPULSE:Think()
 		lastAFKScan = CurTime() + 2
 
 		for v,k in pairs(player.GetAll()) do
-			if k.AFKTimer and k.AFKTimer < CurTime() and not k:IsAFK() then
+			if k.AFKTimer and k.AFKTimer < CurTime() and not k.ArrestedDragger and not k:IsAFK() then
 				k:MakeAFK()
 			end
 		end

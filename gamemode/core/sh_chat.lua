@@ -66,6 +66,7 @@ local oocCommand = {
 
 		net.Start("impulseUpdateOOCLimit")
 		net.WriteUInt(timeLeft, 16)
+		net.WriteBool(false)
 		net.Send(ply)
 
 		hook.Run("ProcessOOCMessage", rawText)

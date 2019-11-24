@@ -237,12 +237,18 @@ end)
 
 net.Receive("impulseUpdateOOCLimit", function()
 	local time = net.ReadUInt(16)
+	local reset = net.ReadBool()
 
 	if LocalPlayer():IsAdmin() then
 		LocalPlayer().OOCLimit = 100
 		return
 	end
 
+	if reset then
+		LocalPlayer().OOCLimit = ((LocalPlayer():IsDonator() and impulse.Config.OOCLimitVIP) or impulse.Config.OOCLimit)
+		return
+	end
+	
 	LocalPlayer().OOCLimit = (LocalPlayer().OOCLimit and LocalPlayer().OOCLimit - 1) or ((LocalPlayer():IsDonator() and impulse.Config.OOCLimitVIP) or impulse.Config.OOCLimit)
 	LocalPlayer():Notify("You have "..LocalPlayer().OOCLimit.." OOC messages left for "..string.NiceTime(time)..".")
 end)

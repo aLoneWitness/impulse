@@ -91,3 +91,26 @@ local forceLockCommand = {
 }
 
 impulse.RegisterChatCommand("/forcelock", forceLockCommand)
+
+local sellDoorCommand = {
+    description = "Sells the door you are looking at.",
+    adminOnly = true,
+    onRun = function(ply, arg, rawText)
+		local door = ply:GetEyeTrace().Entity
+
+		if not door or not IsValid(door) or not door:IsDoor() then
+			return ply:Notify("You are not looking at a door.")
+		end
+
+		local owners = door:GetSyncVar(SYNC_DOOR_OWNERS, nil)
+
+		if not owners then
+			return ply:Notify("No door owners to remove.")
+		end
+
+		ply:RemoveDoorMaster(door)
+		ply:Notify("Door sold.")
+    end
+}
+
+impulse.RegisterChatCommand("/forceselldoor", sellDoorCommand)

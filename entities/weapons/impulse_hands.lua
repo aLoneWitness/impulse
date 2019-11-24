@@ -468,6 +468,10 @@ function SWEP:AllowPickup(target)
 	local phys = target:GetPhysicsObject()
 	local ply = self:GetOwner()
 
+	if IsValid(phys) and IsValid(ply) and target:GetClass() == "func_physbox" then
+		return false
+	end
+
 	return (
 			IsValid(phys) and IsValid(ply) and
 			(not phys:HasGameFlag(FVPHYSICS_NO_PLAYER_PICKUP)) and
