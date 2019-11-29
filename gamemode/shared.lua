@@ -7,7 +7,7 @@
 GM.Name = "impulse"
 GM.Author = "vin"
 GM.Website = "https://www.vingard.ovh"
-GM.Version = 1.02
+GM.Version = 1.03
 MsgC( Color( 83, 143, 239 ), "[impulse] Starting shared load...\n" )
 IMPULSE = GM
 meta = FindMetaTable("Player")

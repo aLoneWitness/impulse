@@ -36,6 +36,15 @@ if SERVER then
 			activator:Notify("You have picked up "..impulse.Config.CurrencyPrefix..self.money..".")
 		end
 	end
+
+	function ENT:OnRemove()
+		local owner = self.Dropper
+
+		if owner and IsValid(owner) and owner.DroppedMoney and self.DropKey then
+			owner.DroppedMoneyC = math.Clamp((owner.DroppedMoneyC or 0) - 1, 0, impulse.Config.DroppedMoneyLimit)
+			owner.DroppedMoney[self.DropKey] = nil
+		end
+	end
 else
 	local valueCol = Color(20, 20, 20, 180)
 
@@ -59,7 +68,6 @@ else
 			draw.DrawText(value, "Impulse-Elements18-Shadow", -wide * 0.5, -10, color_white)
 		cam.End3D2D()
 	end
-
 end
 
 	

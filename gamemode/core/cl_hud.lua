@@ -366,17 +366,11 @@ function IMPULSE:HUDPaint()
 			aboveHUDUsed = true
 
 			surface.SetDrawColor(darkCol)
-			surface.DrawRect(scrW-140, scrH-85, 140, 70)
+			surface.DrawRect(scrW-140, scrH-55, 140, 30)
 
 			surface.SetFont("Impulse-Elements18-Shadow")
-			surface.SetTextPos(scrW-130, scrH-77)
+			surface.SetTextPos(scrW-130, scrH-50)
 			surface.DrawText("Props: "..LocalPlayer():GetSyncVar(SYNC_PROPCOUNT, 0).."/"..((LocalPlayer():IsDonator() and impulse.Config.PropLimitDonator) or impulse.Config.PropLimit))
-
-			surface.SetTextPos(scrW-130, scrH-62)
-			surface.DrawText("Doors: 0/2")
-
-			surface.SetTextPos(scrW-130, scrH-47)
-			surface.DrawText("Chairs: 0/2")
 		end
 	end
 

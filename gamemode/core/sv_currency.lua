@@ -38,9 +38,12 @@ function meta:TakeMoney(amount)
 	return self:SetMoney(self:GetMoney() - amount)
 end
 
-function impulse.SpawnMoney(pos, amount)
+function impulse.SpawnMoney(pos, amount, dropper)
 	local note = ents.Create("impulse_money")
 	note:SetMoney(amount)
 	note:SetPos(pos)
+	note.Dropper = dropper or nil
 	note:Spawn()
+
+	return note
 end

@@ -50,6 +50,10 @@ function meta:CanBecomeTeam(teamID, notify)
 		return false
 	end
 
+	if teamData.donatorOnly and not self:IsDonator() then
+		return false
+	end
+
 	if teamData.xp and teamData.xp > self:GetXP() then
 		if notify then self:Notify("You don't have the XP required to play as this team.") end
 		return false

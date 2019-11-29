@@ -443,7 +443,7 @@ function IMPULSE:DoPlayerDeath(ply)
 	return true
 end
 
-function IMPULSE:PlayerDeath(ply)
+function IMPULSE:PlayerDeath(ply, killer)
 	local wait = impulse.Config.RespawnTime
 
 	if ply:IsDonator() then
@@ -466,7 +466,7 @@ function IMPULSE:PlayerDeath(ply)
 	ply:UnEquipInventory()
 
 	local inv = ply:GetInventory()
-	local pos = ply:GetPos()
+	local pos = ply.LocalToWorld(ply, ply:OBBCenter())
 	local dropped = 0
 
 	for v,k in pairs(inv) do
@@ -484,6 +484,8 @@ function IMPULSE:PlayerDeath(ply)
 			end
 		end
 	end
+
+	hook.Run("PlayerDropDeathItems", ply, killer, pos, dropped, inv)
 
 	ply:ClearInventory(1)
 end
@@ -723,7 +725,16 @@ function IMPULSE:PlayerCanPickupWeapon(ply)
 	return true
 end
 
-function IMPULSE:PlayerSpawnRagdoll(ply)
+local exploitRagBlock = {
+	["models/dpfilms/metropolice/zombie_police.mdl"] = true,
+	["models/dpfilms/metropolice/playermodels/pm_zombie_police.mdl"] = true
+}
+
+function IMPULSE:PlayerSpawnRagdoll(ply, model)
+	if exploitRagBlock[model] then
+		return false
+	end
+
 	return ply:IsAdmin()
 end
 
@@ -792,7 +803,7 @@ function IMPULSE:PlayerSpawnVehicle(ply, model)
 		return false
 	end
 
-	if ply:IsDonator() and model:find("chair") or model:find("seat") or model:find("pod") then
+	if ply:IsDonator() and (model:find("chair") or model:find("seat") or model:find("pod")) then
 		local count = 0
 		ply.SpawnedVehicles = ply.SpawnedVehicles or {}
 
@@ -826,7 +837,8 @@ end
 
 local whitelistProp = {
 	["remover"] = true,
-	["collision"] = true
+	["collision"] = true,
+	["ignite"] = true
 }
 
 function IMPULSE:CanProperty(ply, prop)
@@ -851,7 +863,12 @@ local bannedTools = {
 	["wire_simple_explosive"] = true,
 	["wire_turret"] = true,
 	["wire_user"] = true,
-	["wire_pod"] = true
+	["wire_pod"] = true,
+	["wire_magnet"] = true,
+	["wire_teleporter"] = true,
+	["wire_trail"] = true,
+	["wire_trigger"] = true,
+	["wnpc"] = true
 }
 
 local dupeBannedTools = {
@@ -923,13 +940,20 @@ local bannedDupeEnts = {
 	["gmod_wire_explosive"] = true,
 	["gmod_wire_simple_explosive"] = true,
 	["gmod_wire_turret"] = true,
-	["gmod_wire_user"] = true
+	["gmod_wire_user"] = true,
+	["gmod_wire_realmagnet"] = true,
+	["gmod_wire_teleporter"] = true,
+	["gmod_wire_thruster"] = true,
+	["gmod_wire_trail"] = true,
+	["gmod_wire_trigger"] = true,
+	["gmod_wire_trigger_entity"] = true
 }
 
 local donatorDupeEnts = {
 	["gmod_wire_expression2"] = true,
 	["gmod_wire_spu"] = true,
 	["prop_vehicle_prisoner_pod"] = true,
+	["gmod_wire_soundemitter"] = true,
 	["gmod_wire_epg"] = true
 }
 

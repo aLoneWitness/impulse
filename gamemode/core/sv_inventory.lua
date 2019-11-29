@@ -58,13 +58,22 @@ function impulse.Inventory.DBUpdateStoreType(ownerid, class, limit, oldStorageTy
 	queryGet:Execute()
 end
 
-function impulse.Inventory.SpawnItem(class, pos)
+function impulse.Inventory.SpawnItem(class, pos, banned, killtime)
 	local itemid = impulse.Inventory.ClassToNetID(class)
 	if not itemid then return print("[impulse] Attempting to spawn nil item!") end
 	
 	local item = ents.Create("impulse_item")
 	item:SetItem(itemid)
 	item:SetPos(pos)
+
+	if banned then
+		item.BannedUser = banned
+	end
+
+	if killtime then
+		item.RemoveIn = CurTime() + killtime
+	end
+	
 	item:Spawn()
 
 	return item
@@ -344,6 +353,12 @@ function meta:SetInventoryItemEquipped(itemid, state)
 		return
 	end
 
+	local canEquip = hook.Run("PlayerCanEquipItem", self, itemclass, item)
+
+	if canEquip != nil and not canEquip then
+		return
+	end
+
 	if itemclass.EquipGroup then
 		local equippedItem = self.InventoryEquipGroups[itemclass.EquipGroup]
 		if equippedItem and equippedItem != itemid then
@@ -407,6 +422,7 @@ function meta:DropInventoryItem(itemid)
 
 	self.DroppedItemsC = (self.DroppedItemsC or 0)
 	self.DroppedItems = self.DroppedItems or {}
+	self.DroppedItemsCA = (self.DroppedItemsCA and self.DroppedItemsCA + 1) or 1
 
 	if self.DroppedItemsC >= impulse.Config.DroppedItemsLimit then
 		for v,k in pairs(self.DroppedItems) do
@@ -425,8 +441,8 @@ function meta:DropInventoryItem(itemid)
 	end
 
 	self.DroppedItemsC = self.DroppedItemsC + 1
-	local index = table.insert(self.DroppedItems, ent)
-	ent.DropIndex = index
+	self.DroppedItems[self.DroppedItemsCA] = ent
+	ent.DropIndex = self.DroppedItemsCA
 end
 
 function meta:UseInventoryItem(itemid)

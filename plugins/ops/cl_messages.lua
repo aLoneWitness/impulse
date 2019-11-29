@@ -115,7 +115,7 @@ net.Receive("opsReportUpdate", function()
 		end
 	end
 
-	if impulse.Ops.Reports[reportId] then
+	if impulse.Ops.Reports and impulse.Ops.Reports[reportId] then
 		impulse.Ops.Reports[reportId][2] = impulse.Ops.Reports[reportId][2].." + "..message
 	end
 end)
@@ -134,7 +134,7 @@ net.Receive("opsReportClaimed", function()
 		end
 	end
 
-	if impulse.Ops.Reports[reportId] then
+	if impulse.Ops.Reports and impulse.Ops.Reports[reportId] then
 		impulse.Ops.Reports[reportId][3] = claimer
 	end
 
@@ -149,7 +149,7 @@ net.Receive("opsReportClosed", function()
 
 	if not IsValid(closer) then return end
 	if impulse.GetSetting("admin_onduty") then
-		if impulse.Ops.Reports and (impulse.Ops.Reports[reportId] and not impulse.Ops.Reports[reportId][3] or not IsValid(impulse.Ops.Reports[reportId][3])) then
+		if impulse.Ops.Reports and impulse.Ops.Reports[reportId] and (not impulse.Ops.Reports[reportId][3] or not IsValid(impulse.Ops.Reports[reportId][3])) then
 			chat.AddText(newReportCol, "[REPORT] [#"..reportId.."] closed by "..closer:SteamName())
 		elseif LocalPlayer() and LocalPlayer() == closer then
 			chat.AddText(claimedReportCol, "[REPORT] [#"..reportId.."] closed by "..closer:SteamName())

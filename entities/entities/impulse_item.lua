@@ -54,6 +54,20 @@ if SERVER then
 				net.WriteEntity(self)
 				net.Send(activator)				
 			elseif activator:CanHoldItem(self.Item.UniqueID) then
+				if self.BannedUser and self.BannedUser == activator then
+					return activator:Notify("You are not allowed to pick up this item.")
+				end
+
+				if not activator:Alive() or activator:GetSyncVar(SYNC_ARRESTED, false) then
+					return activator:Notify("You are not allowed to pick up items while arrested.")
+				end
+
+				local canUse = hook.Run("CanUseInventory", activator)
+
+				if canUse != nil and canUse == false then
+					return
+				end
+
 				self:Remove()
 
 				if self.ItemClip then

@@ -8,6 +8,8 @@ function ENT:Initialize()
 	self:SetSolid( SOLID_VPHYSICS )   
 	self:SetUseType( SIMPLE_USE )
 	self:GetPhysicsObject():Wake()
+
+	self.KillTime = CurTime() + 1000
 end
 
 function ENT:Use(ply)
@@ -30,4 +32,11 @@ function ENT:OnRemove()
 	if IsValid(self.playerOwner) and self.playerOwner:IsPlayer() then
 		self.playerOwner.letterCount = self.playerOwner.letterCount - 1
 	end
+end
+
+function ENT:Think()
+	if self.KillTime < CurTime() then
+		self:Remove()
+	end
+	self:NextThink(CurTime() + 5)
 end

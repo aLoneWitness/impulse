@@ -266,7 +266,24 @@ local dropMoneyCommand = {
 				trace.filter = ply
 
 				local tr = util.TraceLine(trace)
-				impulse.SpawnMoney(tr.HitPos, value)
+				local note = impulse.SpawnMoney(tr.HitPos, value, ply)
+
+				ply.DroppedMoneyC = math.Clamp((ply.DroppedMoneyC and ply.DroppedMoneyC + 1) or 1, 0, impulse.Config.DroppedMoneyLimit)
+				ply.DroppedMoney = ply.DroppedMoney or {}
+				ply.DroppedMoneyCA = (ply.DroppedMoneyCA and ply.DroppedMoneyCA + 1) or 1
+
+				ply.DroppedMoney[ply.DroppedMoneyCA] = note
+				note.DropKey = ply.DroppedMoneyCA
+
+				if ply.DroppedMoneyC == impulse.Config.DroppedMoneyLimit then
+					for v,k in pairs(ply.DroppedMoney) do
+						if k and IsValid(k) then
+							k:Remove()
+							break
+						end
+					end
+				end
+
 				hook.Run("PlayerDropMoney")
 				ply:Notify("You have dropped "..impulse.Config.CurrencyPrefix..value..".")
 			else

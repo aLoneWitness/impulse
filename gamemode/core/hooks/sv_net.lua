@@ -1040,6 +1040,11 @@ net.Receive("impulseMixTry", function(len, ply)
 			ply:Notify("You have crafted a "..item.Name..".")
 
 			local xp = 28 + ((math.Clamp(mixClass.Level, 2, 9)  * 1.8) * 2) -- needs balancing
+
+			if mixClass.XPMultiplier then
+				xp = xp * mixClass.XPMultiplier
+			end
+			
 			ply:AddSkillXP("craft", xp)
 		end
 	end)
@@ -1098,6 +1103,37 @@ net.Receive("impulseVendorBuy", function(len, ply)
 		if hasItem and amount >= sellData.Max then
 			return
 		end
+	end
+
+	if sellData.BuyMax then
+		ply.VendorBuyMax = ply.VendorBuyMax or {}
+		local tMax = ply.VendorBuyMax[itemclass]
+		
+		if tMax then
+			if tMax.Cooldown and tMax.Cooldown > CurTime() then
+				local cooldown = tMax.Cooldown
+
+				return ply:Notify("This vendor has no more of this item to give you. Come back in "..string.NiceTime(cooldown - CurTime()).." for more.")
+			elseif tMax.Cooldown then
+				ply.VendorBuyMax[itemclass] = {
+					Count = 0,
+					Cooldown = nil
+				}
+			end
+
+			if tMax.Count > sellData.BuyMax then
+				local cooldown = CurTime() + sellData.TempCooldown
+				ply.VendorBuyMax[itemclass].Cooldown = cooldown
+
+				return ply:Notify("This vendor has no more of this item to give you. Come back in "..string.NiceTime(cooldown - CurTime()).." for more.")
+			end
+		else
+			ply.VendorBuyMax[itemclass] = {
+				Count = 0
+			}
+		end
+
+		ply.VendorBuyMax[itemclass].Count = ((tMax and tMax.Count) or 0) + 1
 	end
 
 	if sellData.Cooldown then
