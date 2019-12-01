@@ -28,14 +28,16 @@ function IMPULSE:PlayerInitialSpawn(ply)
 	query:Callback(function(result)
 		if IsValid(ply) and type(result) == "table" and #result > 0 then -- if player exists in db
 			isNew = false
-			hook.Run("SetupPlayer", ply, result[1])
+			impulse.SetupPlayer(ply, result[1])
 		elseif IsValid(ply) then
 			ply:Freeze(true)
 		end
 
-		net.Start("impulseJoinData")
-		net.WriteBool(isNew)
-		net.Send(ply)
+		if IsValid(ply) then
+			net.Start("impulseJoinData")
+			net.WriteBool(isNew)
+			net.Send(ply)
+		end
 	end)
 	query:Execute()
 
@@ -118,10 +120,9 @@ function IMPULSE:PlayerSpawn(ply)
 
 	if ply.beenSetup then
 		ply:SetTeam(impulse.Config.DefaultTeam)
-		ply:SetLocalSyncVar(SYNC_HUNGER, 100, true)
+		ply:SetHunger(100)
 	end
 
-	ply:SetHunger(100)
 	ply.ArrestedWeapons = nil
 
 	ply.SpawnProtection = true
@@ -212,7 +213,7 @@ function IMPULSE:PlayerLoadout(ply)
 	return true
 end
 
-function IMPULSE:SetupPlayer(ply, dbData)
+function impulse.SetupPlayer(ply, dbData)
 	ply:SetSyncVar(SYNC_RPNAME, dbData.rpname, true)
 	ply:SetSyncVar(SYNC_XP, dbData.xp, true)
 
@@ -715,6 +716,11 @@ function IMPULSE:Think()
 			end
 		end
 	end
+end
+
+function IMPULSE:DatabaseConnectionFailed(errorText)
+	print("[impulse] [SERIOUS FAULT] DB connection failure... Attempting reconnection...")
+	mysql:Connect(impulse.DB.ip, impulse.DB.username, impulse.DB.password, impulse.DB.database, impulse.DB.port)
 end
 
 function IMPULSE:PlayerCanPickupWeapon(ply)

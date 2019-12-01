@@ -62,6 +62,8 @@ util.AddNetworkString("impulseRequestWhitelists")
 util.AddNetworkString("impulseViewWhitelists")
 util.AddNetworkString("impulseUnRestrain")
 
+local AUTH_FAILURE = "Invalid argument (rejoin to continue)"
+
 net.Receive("impulseCharacterCreate", function(len, ply)
 	if (ply.NextCreate or 0) > CurTime() then return end
 	ply.NextCreate = CurTime() + 10
@@ -79,17 +81,17 @@ net.Receive("impulseCharacterCreate", function(len, ply)
 	if canUseName then
 		charName = filteredName
 	else
-		return
+		return ply:Kick(AUTH_FAILURE)
 	end
 
 	if not table.HasValue(impulse.Config.DefaultMaleModels, charModel) and not table.HasValue(impulse.Config.DefaultFemaleModels, charModel) then
-		return
+		return ply:Kick(AUTH_FAILURE)
 	end
 
 	local skinBlacklist = impulse.Config.DefaultSkinBlacklist[charModel]
 
 	if skinBlacklist and table.HasValue(skinBlacklist, charSkin) then
-		return
+		return ply:Kick(AUTH_FAILURE)
 	end
 
 	local query = mysql:Select("impulse_players")
@@ -127,7 +129,7 @@ net.Receive("impulseCharacterCreate", function(len, ply)
 
 				print("[impulse] "..plyID.." has been submitted to the database. RP Name: ".. charName)
 				ply:Freeze(false)
-				hook.Run("SetupPlayer", ply, setupData)
+				impulse.SetupPlayer(ply, setupData)
 
 				ply:AllowScenePVSControl(false) -- stop cutscene
 			end
