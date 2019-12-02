@@ -49,6 +49,11 @@ function PANEL:SetSequence(key, data)
 	remSeq:SetText("Remove")
 	remSeq:SetImage("icon16/delete.png")
 
+	function remSeq:DoClick()
+		impulse.Ops.EventManager.Sequences[key] = nil
+		panel.Dad:ReloadSequences()
+	end
+
 	local saveSeq = vgui.Create("DButton", self.main)
 	saveSeq:SetPos(330, 0)
 	saveSeq:SetSize(100, 20)
@@ -69,6 +74,8 @@ end
 function PANEL:AddEvent(id, eventdata)
 	local event = self.mainList:Add("DPanel")
 	event:Dock(TOP)
+
+	local panel = self
 
 	function event:Paint(w, h)
 		draw.RoundedBox(0, 0, 0, w, h, Color(60, 60, 60, 200))
@@ -95,13 +102,20 @@ function PANEL:AddEvent(id, eventdata)
 	event.edelay:SetValue(eventdata.Delay)
 	event.edelay:SetPos(575, 2)
 	event.edelay:SetSize(40, 18)
+	event.edelay:SetMin(0)
+	event.edelay:SetUpdateOnType(true)
+
+	function event.edelay:OnValueChanged(new)
+		if tonumber(new) then
+			local realNew = math.Clamp(tonumber(new), 0, 9999)
+			impulse.Ops.EventManager.Sequences[panel.Sequence].Events[id].Delay = realNew
+		end
+	end
 
 	event.eremove = vgui.Create("DImageButton", event)
 	event.eremove:SetPos(626, 2)
 	event.eremove:SetImage("icon16/script_delete.png")
 	event.eremove:SizeToContents()
-
-	local panel = self
 
 	function event.eremove:DoClick()
 		table.remove(impulse.Ops.EventManager.Sequences[panel.Sequence].Events, id)
@@ -146,7 +160,9 @@ function PANEL:AddEvent(id, eventdata)
 		end
 
 		panel.Dad.Properties = vgui.Create("impulsePropertyEditor")
-		panel.Dad.Properties:SetTable(impulse.Ops.EventManager.Sequences[panel.Sequence].Events[id].Prop)
+		panel.Dad.Properties:SetTable(impulse.Ops.EventManager.Sequences[panel.Sequence].Events[id].Prop, function(key, val)
+			impulse.Ops.EventManager.Sequences[panel.Sequence].Events[id].Prop[key] = val
+		end)
 		panel.Dad.Properties:SetTitle(impulse.Ops.EventManager.Sequences[panel.Sequence].Events[id].Type.." properties")
 
 		local x, y = panel.Dad:GetPos()
@@ -162,6 +178,19 @@ function PANEL:AddEvent(id, eventdata)
 	event.euid = vgui.Create("DTextEntry", event)
 	event.euid:SetPos(360, 2)
 	event.euid:SetSize(140, 20)
+	event.euid:SetText(impulse.Ops.EventManager.Sequences[panel.Sequence].Events[id].UID or "")
+	event.euid:SetUpdateOnType(true)
+
+	function event.euid:OnValueChange(new)
+		local new = string.Trim(new, " ")
+
+		if new == "" then
+			impulse.Ops.EventManager.Sequences[panel.Sequence].Events[id].UID = nil
+			return
+		end
+
+		impulse.Ops.EventManager.Sequences[panel.Sequence].Events[id].UID = new
+	end
 
 	event.emup = vgui.Create("DImageButton", event)
 	event.emup:SetPos(270, 2)
