@@ -37,10 +37,15 @@ end
 
 local topCol = Color(30, 30, 30, 200)
 local bodyCol = Color(80, 80, 80, 100)
+local bodyColOp = Color(80, 80, 80, 200)
 function SKIN:PaintFrame(panel, w, h)
     impulse.blur( panel, 10, 20, 255 )
 	draw.RoundedBox( 0, 0, 0, w, h, topCol) -- this is the body of the frame
     draw.RoundedBox( 0, 0, 0, w, 25, bodyCol) -- this is the "top bar" of the derma frame
+end
+
+function SKIN:PaintMenuBar(panel, w, h)
+	draw.RoundedBox(0, 0, 0, w, h, bodyColOp)
 end
 
 local btnCol = Color(80, 80, 80, 255)
