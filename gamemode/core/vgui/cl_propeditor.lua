@@ -40,7 +40,17 @@ function PANEL:SetTable(prop, callback)
 			row:SetValue(Vector(k.r / 255, k.g / 255, k.b / 255))
 
 			function row:DataChanged(newVal)
-				callback(v, Color(newVal.x * 255, newVal.y * 255, newVal.z * 255))
+				local vec = string.Split(newVal, " ")
+
+				for v,k in pairs(vec) do
+					if not tonumber(k) then
+						return Vector(0, 0, 0)
+					else
+						vec[v] = tonumber(k)
+					end
+				end
+
+				callback(v, Color(vec[1] * 255, vec[2] * 255, vec[3] * 255))
 			end
 		elseif isvector(k) then
 			local row = self.props:CreateRow("Properties", v)
