@@ -216,7 +216,7 @@ function PANEL:AddEvent(id, eventdata)
 	function event.emdown:DoClick()
 		local me = impulse.Ops.EventManager.Sequences[panel.Sequence].Events[id]
 		local oldId = id
-		local size = table.Count(impulse.Ops.EventManager.Sequences[panel.Sequence].Events) + 1
+		local size = table.Count(impulse.Ops.EventManager.Sequences[panel.Sequence].Events)
 
 		table.remove(impulse.Ops.EventManager.Sequences[panel.Sequence].Events, id)
 		table.insert(impulse.Ops.EventManager.Sequences[panel.Sequence].Events, math.Clamp(oldId + 1, 1, size), me)
