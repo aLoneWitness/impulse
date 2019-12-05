@@ -46,7 +46,7 @@ function PANEL:SetSequence(key, data)
 	local remSeq = vgui.Create("DButton", self.main)
 	remSeq:SetPos(435, 0)
 	remSeq:SetSize(100, 20)
-	remSeq:SetText("Remove")
+	remSeq:SetText("Close")
 	remSeq:SetImage("icon16/delete.png")
 
 	function remSeq:DoClick()
@@ -60,11 +60,28 @@ function PANEL:SetSequence(key, data)
 	saveSeq:SetText("Save")
 	saveSeq:SetImage("icon16/script_save.png")
 
+	function saveSeq:DoClick()
+		if not impulse.Ops.EventManager.Sequences[key].FileName then
+			Derma_StringRequest("impulse", "Enter sequence file name:", nil, function(name)
+				impulse.Ops.EventManager.Sequences[key].FileName = name
+				impulse.Ops.EventManager.SequenceSave(key)
+				LocalPlayer():Notify("Saved sequence: "..key..".")
+			end)
+		else
+			impulse.Ops.EventManager.SequenceSave(key)
+			LocalPlayer():Notify("Saved sequence: "..key..".")
+		end
+	end
+
 	local uploadSeq = vgui.Create("DButton", self.main)
 	uploadSeq:SetPos(225, 0)
 	uploadSeq:SetSize(100, 20)
 	uploadSeq:SetText("Push")
 	uploadSeq:SetImage("icon16/server_connect.png")
+
+	function uploadSeq:DoClick()
+		impulse.Ops.EventManager.SequencePush(key)
+	end
 
 	function self.main:Toggle() -- allowing them to accordion causes bugs
 		return
@@ -80,6 +97,10 @@ function PANEL:AddEvent(id, eventdata)
 	function event:Paint(w, h)
 		draw.RoundedBox(0, 0, 0, w, h, Color(60, 60, 60, 200))
 		draw.RoundedBox(0, 0, h-2, w, 2, Color(100, 100, 100, 150))
+
+		if panel.Sequence == impulse.Ops.EventManager.GetSequence() and impulse.Ops.EventManager.GetEvent() == id then
+			draw.RoundedBox(0, 0, 0, w, h, Color(127, 255, 0, 30))
+		end
 	end
 
 	event.etypeicon = vgui.Create("DImage", event)
@@ -99,11 +120,12 @@ function PANEL:AddEvent(id, eventdata)
 
 	event.edelay = vgui.Create("DNumberWang", event)
 	event.edelay:SetDecimals(0)
-	event.edelay:SetValue(eventdata.Delay)
 	event.edelay:SetPos(575, 2)
 	event.edelay:SetSize(40, 18)
 	event.edelay:SetMin(0)
 	event.edelay:SetUpdateOnType(true)
+	event.edelay:SetMinMax(0, 9999)
+	event.edelay:SetValue(eventdata.Delay)
 
 	function event.edelay:OnValueChanged(new)
 		if tonumber(new) then

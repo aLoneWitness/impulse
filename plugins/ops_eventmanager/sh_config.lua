@@ -78,6 +78,22 @@ impulse.Ops.EventManager.Config.Events = {
 			hook.Remove("SetupSkyboxFog", "opsEMFog")
 		end
 	},
+	["explode"] = {
+		Cat = "effect",
+		Prop = {
+			["pos"] = Vector(0, 0, 0),
+			["magnitude"] = 200
+		},
+		NeedUID = false,
+		Clientside = false,
+		Do = function(prop, uid)
+			local explodeEnt = ents.Create("env_explosion")
+	        explodeEnt:SetPos(prop["pos"])
+	        explodeEnt:Spawn()
+	        explodeEnt:SetKeyValue("iMagnitude", prop["magnitude"])
+	        explodeEnt:Fire("explode", "", 0)
+		end
+	},
 	["chat"] = {
 		Cat = "ui",
 		Prop = {
@@ -262,6 +278,38 @@ impulse.Ops.EventManager.Config.Events = {
 		Clientside = false,
 		Do = function(prop, uid)
 			RunConsoleCommand("changelevel", prop["map"])
+		end
+	},
+	["playnpcscene"] = {
+		Cat = "npc",
+		Prop = {
+			["scene"] = "scenes/breencast/welcome.vcd",
+			["uidissteamid"] = false
+		},
+		NeedUID = true,
+		Clientside = false,
+		Do = function(prop, uid)
+			if prop["uidissteamid"] then
+				local ply = player.GetBySteamID(uid)
+
+				if ply and IsValid(ply) then
+					ply:PlayScene(prop["scene"])
+				end
+			else
+				if OPS_NPCS and OPS_NPCS[uid] and IsValid(OPS_NPCS[uid]) then
+					OPS_NPCS[uid]:PlayScene(prop["scene"])
+				end
+			end
+		end
+	},
+	["playscene"] = {
+		Cat = "scene",
+		Prop = {
+			["scene"] = ""
+		},
+		NeedUID = false,
+		Clientside = false,
+		Do = function(prop, uid)
 		end
 	}
 }

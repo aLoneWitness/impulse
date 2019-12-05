@@ -122,11 +122,12 @@ end
 	 			item:Dock(TOP)
 	 			item:DockMargin(0, 0, 0, 5)
 	 			item.Basic = true
+	 			item.ContainerInv = true
 	 			item.Type = 1
 	 			item:SetItem(k, w)
 	 			item.InvID = k.realKey
 	 			item.InvPanel = self
-	 			item.Disabled = true
+	 			item.Disabled = self.isLoot
 
 	 			self.items[k.id] = item
 	 		end

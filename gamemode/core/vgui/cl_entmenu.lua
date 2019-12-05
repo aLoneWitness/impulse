@@ -175,6 +175,25 @@ function PANEL:SetPlayer(ply)
 	if not self.hasAction then return self:Remove() end
 end
 
+function PANEL:SetContainer(ent)
+	if ent:GetClass() == "impulse_container" and not ent:GetLoot() then
+		if LocalPlayer():IsCP() then
+			self:AddAction("impulse/icons/padlock-2-256.png", "Remove Padlock", function()
+				impulse.MakeWorkbar(15, "Breaking padlock...", function()
+					if not IsValid(ent) then return end
+
+					net.Start("impulseInvContainerRemovePadlock")
+					net.SendToServer()
+				end, true)
+
+				self:Remove()
+			end)
+		end
+	end
+
+	if not self.hasAction then return self:Remove() end
+end
+
 function PANEL:Think()
 	if self.rangeEnt and IsValid(self.rangeEnt) then
 		local dist = self.rangeEnt:GetPos():DistToSqr(LocalPlayer():GetPos())

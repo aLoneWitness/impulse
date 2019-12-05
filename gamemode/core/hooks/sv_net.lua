@@ -37,12 +37,15 @@ util.AddNetworkString("impulseCharacterCreate")
 util.AddNetworkString("impulseInvStorageOpen")
 util.AddNetworkString("impulseInvMove")
 util.AddNetworkString("impulseInvDoMove")
-util.AddNetworkString("impulseInvContainerOpen") -- DO :
+util.AddNetworkString("impulseInvContainerOpen")
 util.AddNetworkString("impulseInvContainerClose")
 util.AddNetworkString("impulseInvContainerUpdate")
 util.AddNetworkString("impulseInvContainerDoMove")
 util.AddNetworkString("impulseInvContainerCodeTry")
-util.AddNetworkString("impulseInvContainerCodeReply") -- END :
+util.AddNetworkString("impulseInvContainerCodeReply")
+util.AddNetworkString("impulseInvContainerRemovePadlock")
+util.AddNetworkString("impulseInvContainerSetCode")
+util.AddNetworkString("impulseInvContainerDoSetCode")
 util.AddNetworkString("impulseRagdollLink")
 util.AddNetworkString("impulseUpdateOOCLimit")
 util.AddNetworkString("impulseChangeRPName")
@@ -1123,7 +1126,7 @@ net.Receive("impulseVendorBuy", function(len, ply)
 				}
 			end
 
-			if tMax.Count > sellData.BuyMax then
+			if tMax.Count >= sellData.BuyMax then
 				local cooldown = CurTime() + sellData.TempCooldown
 				ply.VendorBuyMax[itemclass].Cooldown = cooldown
 
@@ -1136,6 +1139,13 @@ net.Receive("impulseVendorBuy", function(len, ply)
 		end
 
 		ply.VendorBuyMax[itemclass].Count = ((tMax and tMax.Count) or 0) + 1
+
+		if tMax then
+			if ply.VendorBuyMax[itemclass].Count >= sellData.BuyMax then
+				local cooldown = CurTime() + sellData.TempCooldown
+				ply.VendorBuyMax[itemclass].Cooldown = cooldown
+			end 
+		end
 	end
 
 	if sellData.Cooldown then
@@ -1385,7 +1395,8 @@ net.Receive("impulseInvContainerDoMove", function(len, ply)
 	end
 
 	if from == 2 then
-		if not impulse.Inventory.Items[itemid] then
+		local item = impulse.Inventory.Items[itemid]
+		if not item then
 			return
 		end
 
@@ -1399,8 +1410,85 @@ net.Receive("impulseInvContainerDoMove", function(len, ply)
 			return ply:Notify("Item is too heavy to hold.")
 		end
 
+		if item.Illegal and ply:IsCP() then
+			container:TakeItem(itemclass)
+			return ply:Notify(item.Name.." (illegal item) destroyed.")
+		end
+
 		container:TakeItem(itemclass, 1, true)
 		ply:GiveInventoryItem(itemclass)
 		container:UpdateUsers()
+	elseif from == 1 then
+		local hasItem, item = ply:HasInventoryItemSpecific(itemid, 1)
+
+		if not hasItem then
+			return
+		end
+
+		if item.restricted then
+			return ply:Notify("You cannot store a restricted item.")
+		end
+
+		if not container:CanHoldItem(item.class) then
+			return ply:Notify("Item is too heavy to store.")
+		end
+
+		ply:TakeInventoryItem(itemid)
+		container:AddItem(item.class)
 	end
+end)
+
+net.Receive("impulseInvContainerRemovePadlock", function(len, ply)
+	if (ply.nextPadlockBreak or 0) > CurTime() then return end
+	ply.nextPadlockBreak = CurTime() + 6
+
+	if not ply:IsCP() then
+		return
+	end
+
+	local trace = {}
+	trace.start = ply:EyePos()
+	trace.endpos = trace.start + ply:GetAimVector() * 85
+	trace.filter = ply
+
+	local tr = util.TraceLine(trace)
+	local ent = tr.Entity
+
+	if not ent or not IsValid(ent) then
+		return
+	end
+
+	if ent:GetClass() != "impulse_container" then
+		return
+	end
+
+	ent:SetCode(nil)
+	ply:Notify("Padlock removed from container.")
+end)
+
+net.Receive("impulseInvContainerDoSetCode", function(len, ply)
+	if (ply.nextSetContCode or 0) > CurTime() then return end
+	ply.nextSetContCode = CurTime() + 2
+
+	if not ply.ContainerCodeSet or not IsValid(ply.ContainerCodeSet) then
+		return
+	end
+
+	local container = ply.ContainerCodeSet
+
+	if container:GetCPPIOwner() != ply then
+		return
+	end
+
+	local passcode = net.ReadUInt(16)
+	passcode = math.floor(passcode)
+
+	if passcode < 1000 or passcode > 9999 then
+		return
+	end
+
+	container:SetCode(passcode)
+	ply.ContainerCodeSet = nil
+
+	ply:Notify("You have set the containers passcode to "..passcode..".")
 end)

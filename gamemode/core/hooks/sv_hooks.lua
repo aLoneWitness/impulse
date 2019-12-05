@@ -467,12 +467,17 @@ function IMPULSE:PlayerDeath(ply, killer)
 	ply:UnEquipInventory()
 
 	local inv = ply:GetInventory()
+	local restorePoint = {}
 	local pos = ply.LocalToWorld(ply, ply:OBBCenter())
 	local dropped = 0
 
 	for v,k in pairs(inv) do
 		local itemclass = impulse.Inventory.ClassToNetID(k.class)
 		local item = impulse.Inventory.Items[itemclass]
+
+		if not k.restricted then
+			table.insert(restorePoint, k.class)
+		end
 
 		if item.DropOnDeath and not k.restricted then
 			local ent = impulse.Inventory.SpawnItem(k.class, pos)
@@ -489,6 +494,7 @@ function IMPULSE:PlayerDeath(ply, killer)
 	hook.Run("PlayerDropDeathItems", ply, killer, pos, dropped, inv)
 
 	ply:ClearInventory(1)
+	ply.InventoryRestorePoint = restorePoint
 end
 
 function IMPULSE:PlayerSilentDeath(ply)
@@ -843,12 +849,15 @@ end
 
 local whitelistProp = {
 	["remover"] = true,
-	["collision"] = true,
-	["ignite"] = true
+	["collision"] = true
 }
 
 function IMPULSE:CanProperty(ply, prop)
 	if whitelistProp[prop] then
+		return true
+	end
+
+	if ply:IsAdmin() and (prop == "ignite" or prop == "extinguish") then
 		return true
 	end
 

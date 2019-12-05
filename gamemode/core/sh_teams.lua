@@ -75,7 +75,7 @@ function meta:CanBecomeTeam(teamID, notify)
 				return false
 			end
 		else
-			if not self:IsDonator() and teamData.limit >= teamPlayers then
+			if not self:IsDonator() and teamPlayers >= teamData.limit then
 				if notify then self:Notify(teamData.name .. " is full.") end
 				return false
 			end
@@ -115,7 +115,7 @@ function meta:CanBecomeTeamClass(classID, notify)
 				return false
 			end
 		else
-			if classData.limit <= classPlayers then
+			if classPlayers >= classData.limit then
 				if notify then self:Notify(classData.name .. " is full.") end
 				return false
 			end
@@ -160,7 +160,7 @@ function meta:CanBecomeTeamRank(rankID, notify)
 				return false
 			end
 		else
-			if rankData.limit <= rankPlayers then
+			if rankPlayers >= rankData.limit then
 				if notify then self:Notify(rankData.name .. " is full.") end
 				return false
 			end

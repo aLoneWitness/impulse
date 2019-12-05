@@ -75,6 +75,10 @@ function meta:SetDoorMaster(door)
 
 	self.OwnedDoors = self.OwnedDoors or {}
 	self.OwnedDoors[door] = true
+
+	door:CallOnRemove("impulseDoorSyncRemove", function(ent)
+		ent:SyncRemove()
+	end)
 end
 
 function meta:RemoveDoorMaster(door, noUnlock)

@@ -10,7 +10,7 @@ function IMPULSE:StartCommand(ply, cmd)
 	if SERVER then
 		local dragger = ply.ArrestedDragger
 
-		if isValid(dragger) and ply == dragger.ArrestedDragging and ply:Alive() then
+		if isValid(dragger) and ply == dragger.ArrestedDragging and ply:Alive() and dragger:Alive() then
 			cmd:ClearMovement()
 			cmd:ClearButtons()
 

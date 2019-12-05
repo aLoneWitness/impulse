@@ -108,6 +108,24 @@ function ENT:TakeItem(itemclass, amount, noUpdate)
 	end
 end
 
+function ENT:GetStorageWeight()
+	local weight = 0
+
+	for v,k in pairs(self.Inventory) do
+		local item = impulse.Inventory.Items[impulse.Inventory.ClassToNetID(v)]
+		weight = weight + ((item.Weight or 0) * k)
+	end
+
+	return weight
+end
+
+function ENT:CanHoldItem(itemclass)
+	local item = impulse.Inventory.Items[impulse.Inventory.ClassToNetID(itemclass)]
+	local weight = (item.Weight or 0) * (amount or 1)
+
+	return self:GetStorageWeight() + weight <= self:GetCapacity()
+end
+
 function ENT:AddAuthorised(ply)
 	self.Authorised[ply] = true
 end

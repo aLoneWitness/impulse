@@ -134,7 +134,7 @@ function PANEL:OnMousePressed(keycode)
 		return
 	end
 
-	if self.ContainerType then
+	if self.ContainerType or self.ContainerInv then
 		local itemid
 
 		if self.Type == 1 then

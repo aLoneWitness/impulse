@@ -38,6 +38,10 @@ function IMPULSE:Think()
 					impulse.entityMenu = vgui.Create("impulseEntityMenu")
 					impulse.entityMenu:SetRangeEnt(traceEnt)
 					impulse.entityMenu:SetPlayer(traceEnt)
+				elseif traceEnt:GetClass() == "impulse_container" then
+					impulse.entityMenu = vgui.Create("impulseEntityMenu")
+					impulse.entityMenu:SetRangeEnt(traceEnt)
+					impulse.entityMenu:SetContainer(traceEnt)
 				end
 			end
 		end

@@ -78,3 +78,35 @@ local viewInvCommand = {
 }
 
 impulse.RegisterChatCommand("/viewinv", viewInvCommand)
+
+local restoreInvCommand = {
+    description = "Restores a players inventory to the last state before death. (SteamID only)",
+    requiresArg = true,
+    adminOnly = true,
+    onRun = function(ply, arg, rawText)
+        local name = arg[1]
+		local plyTarget = player.GetBySteamID(name)
+
+		if plyTarget then
+			if plyTarget.InventoryRestorePoint then
+				plyTarget:ClearInventory(1)
+
+				for v,k in pairs(plyTarget.InventoryRestorePoint) do
+					plyTarget:GiveInventoryItem(k)
+				end
+
+				plyTarget.InventoryRestorePoint = nil
+
+				plyTarget:Notify("Your inventory has been restored to its last state by a game moderator.")
+				ply:Notify("You have restored "..plyTarget:Nick().."'s inventory to the last state.")
+
+			else
+				return ply:Notify("No restore point found for this player.")
+			end
+		else
+			return ply:Notify("Could not find player: "..tostring(name).." (needs SteamID value)")
+		end
+    end
+}
+
+impulse.RegisterChatCommand("/restoreinv", restoreInvCommand)

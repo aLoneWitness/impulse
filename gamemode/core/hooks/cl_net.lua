@@ -413,3 +413,24 @@ net.Receive("impulseInvContainerUpdate", function()
 		surface.PlaySound("physics/wood/wood_crate_impact_hard2.wav")
 	end
 end)
+
+net.Receive("impulseInvContainerDoSetCode", function()
+	Derma_StringRequest("impulse", 
+		"Enter new container passcode:",
+		nil, function(text)
+			if not tonumber(text) then
+				return LocalPlayer():Notify("Passcode must be a number.")
+			end
+
+			local passcode = tonumber(text)
+			passcode = math.floor(passcode)
+
+			if passcode < 1000 or passcode > 9999 then
+				return LocalPlayer():Notify("Passcode must have 4 digits.")
+			end
+
+			net.Start("impulseInvContainerDoSetCode")
+			net.WriteUInt(passcode, 16)
+			net.SendToServer()
+		end, nil, "Set Passcode")
+end)

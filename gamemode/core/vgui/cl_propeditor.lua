@@ -10,6 +10,8 @@ function PANEL:SetTable(prop, callback)
 	self.props:Dock(FILL)
 
 	for v,k in pairs(prop) do
+		print(v)
+		print(IsColor(k))
 		if isbool(k) then
 			local row = self.props:CreateRow("Properties", v)
 			row:Setup("Boolean")
@@ -34,7 +36,7 @@ function PANEL:SetTable(prop, callback)
 			function row:DataChanged(newVal)
 				callback(v, newVal)
 			end
-		elseif IsColor(k) then
+		elseif IsColor(k) or (istable(k) and k.r and k.g and k.b) then
 			local row = self.props:CreateRow("Properties", v)
 			row:Setup("VectorColor")
 			row:SetValue(Vector(k.r / 255, k.g / 255, k.b / 255))

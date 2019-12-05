@@ -59,6 +59,7 @@ function meta:SetTeamClass(classID, skipLoadout)
 	local classData = teamData.classes[classID]
 	local classPlayers = 0
 
+	print("classcall")
 	if classData.model then
 		self:SetModel(classData.model)
 	else
@@ -163,6 +164,10 @@ function meta:SetTeamRank(rankID)
 
 	if rankData.model then
 		self:SetModel(rankData.model)
+	else
+		if classData.model and self:GetModel() != classData.model then
+			self:SetModel(classData.model)
+		end
 	end
 
 	self:SetupHands()

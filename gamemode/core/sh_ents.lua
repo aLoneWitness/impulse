@@ -1,7 +1,22 @@
 local entityMeta = FindMetaTable("Entity")
 
+
+local propDoors = {
+	["models/props_doors/doorklab01.mdl"] = true,
+	["models/props_lab/elevatordoor.mdl"] = true,
+	["models/props_combine/combine_door01.mdl"] = true
+}
+
 function entityMeta:IsDoor()
 	return self:GetClass():find("door")
+end
+
+function entityMeta:IsPropDoor()
+	if propDoors[self:GetModel()] then
+		return true
+	end
+
+	return false
 end
 
 function entityMeta:IsButton()
