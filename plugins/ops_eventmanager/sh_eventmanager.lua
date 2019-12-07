@@ -3,7 +3,13 @@ function impulse.Ops.EventManager.GetEventMode()
 end
 
 function impulse.Ops.EventManager.GetSequence()
-    return GetGlobalBool("opsEventMode", false)
+	local val = GetGlobalString("opsEventSequence", "")
+
+	if val == "" then
+		return
+	end
+
+    return val
 end
 
 function impulse.Ops.EventManager.SetEventMode(val)
@@ -14,10 +20,22 @@ function impulse.Ops.EventManager.SetSequence(val)
 	return SetGlobalString("opsEventSequence", val)
 end
 
-function impulse.Ops.EventManager.GetEvent()
-	return impulse_OpsEM_CurEvent
+function impulse.Ops.EventManager.GetCurEvents()
+	return impulse_OpsEM_CurEvents
 end
 
 function meta:IsEventAdmin()
 	return self:IsSuperAdmin() or (self:IsAdmin() and impulse.Ops.EventManager.GetEventMode())
+end
+
+if SERVER then
+	concommand.Add("impulse_ops_eventmode", function(ply, cmd, args)
+		if args[1] == "1" then
+			impulse.Ops.EventManager.SetEventMode(true)
+			ply:Notify("Activated event mode.")
+		else
+			impulse.Ops.EventManager.SetEventMode(false)
+			ply:Notify("Deactivated event mode.")
+		end
+	end)
 end

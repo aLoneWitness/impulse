@@ -27,11 +27,7 @@ function IMPULSE:Think()
 			local traceEnt = util.TraceLine(trace).Entity
 
 			if (not impulse.entityMenu or not IsValid(impulse.entityMenu)) and IsValid(traceEnt) then
-				if traceEnt:IsDoor() then
-					local doorOwners = traceEnt:GetSyncVar(SYNC_DOOR_OWNERS, nil) 
-					local doorGroup =  traceEnt:GetSyncVar(SYNC_DOOR_GROUP, nil)
-					local doorBuyable = traceEnt:GetSyncVar(SYNC_DOOR_BUYABLE, true)
-
+				if traceEnt:IsDoor() or traceEnt:IsPropDoor() then
 					impulse.entityMenu = vgui.Create("impulseEntityMenu")
 					impulse.entityMenu:SetDoor(traceEnt)
 				elseif traceEnt:IsPlayer() then

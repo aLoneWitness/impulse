@@ -59,7 +59,6 @@ function meta:SetTeamClass(classID, skipLoadout)
 	local classData = teamData.classes[classID]
 	local classPlayers = 0
 
-	print("classcall")
 	if classData.model then
 		self:SetModel(classData.model)
 	else

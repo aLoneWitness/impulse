@@ -856,8 +856,6 @@ net.Receive("impulseCharacterEdit", function(len, ply)
 		return
 	end
 
-	print(isCurFemale)
-
 	if newIsFemale != isCurFemale then
 		cost = cost + impulse.Config.CosmeticGenderPrice
 	end
@@ -869,8 +867,6 @@ net.Receive("impulseCharacterEdit", function(len, ply)
 	if cost == 0 then
 		return
 	end
-
-	print(cost)
 
 	if ply:CanAfford(cost) then
 		local query = mysql:Update("impulse_players")
@@ -1476,7 +1472,7 @@ net.Receive("impulseInvContainerDoSetCode", function(len, ply)
 
 	local container = ply.ContainerCodeSet
 
-	if container:GetCPPIOwner() != ply then
+	if container:CPPIGetOwner() != ply then
 		return
 	end
 
@@ -1491,4 +1487,6 @@ net.Receive("impulseInvContainerDoSetCode", function(len, ply)
 	ply.ContainerCodeSet = nil
 
 	ply:Notify("You have set the containers passcode to "..passcode..".")
+
+	hook.Run("ContainerPasscodeSet", ply, container)
 end)

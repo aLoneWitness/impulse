@@ -52,7 +52,9 @@ impulse.Ops.EventManager.Config.Events = {
 				render.FogStart(prop["start"])
 				render.FogEnd(prop["end"])
 				render.FogMaxDensity(prop["density"])
-				render.FogColor(prop["colour"])
+
+				local col = prop["colour"]
+				render.FogColor(col.r, col.g, col.b)
 
 				return true
 			end)
@@ -62,7 +64,9 @@ impulse.Ops.EventManager.Config.Events = {
 				render.FogStart(prop["start"] * scale)
 				render.FogEnd(prop["end"] * scale)
 				render.FogMaxDensity(prop["density"])
-				render.FogColor(prop["colour"])
+
+				local col = prop["colour"]
+				render.FogColor(col.r, col.g, col.b)
 
 				return true
 			end)
@@ -72,7 +76,7 @@ impulse.Ops.EventManager.Config.Events = {
 		Cat = "effect",
 		Prop = {},
 		NeedUID = false,
-		Clienside = true,
+		Clientside = true,
 		Do = function(prop, uid)
 			hook.Remove("SetupWorldFog", "opsEMFog")
 			hook.Remove("SetupSkyboxFog", "opsEMFog")
@@ -134,38 +138,63 @@ impulse.Ops.EventManager.Config.Events = {
 			end
 		end
 	},
+	["hudoff"] = {
+		Cat = "ui",
+		Prop = {},
+		NeedUID = false,
+		Clientside = true,
+		Do = function(prop, uid)
+			impulse.hudEnabled = false
+		end
+	},
+	["hudon"] = {
+		Cat = "ui",
+		Prop = {},
+		NeedUID = false,
+		Clientside = true,
+		Do = function(prop, uid)
+			impulse.hudEnabled = true
+		end
+	},
 	["spawnent"] = {
 		Cat = "ent",
 		Prop = {
 			["model"] = "mdl here",
 			["skin"] = 0,
 			["pos"] = Vector(0, 0, 0),
-			["ang"] = Angle(0, 0, 0),
+			["ang"] = Vector(0, 0, 0),
 			["ignite"] = false,
 			["physics"] = false
 		},
 		NeedUID = true,
 		Clientside = false,
 		Do = function(prop, uid)
-			local ent = vgui.Create("prop_physics")
+			OPS_ENTS = OPS_ENTS or {}
+
+			if OPS_ENTS and OPS_ENTS[uid] and IsValid(OPS_ENTS[uid]) then
+				OPS_ENTS[uid]:Remove()
+			end
+
+			local ent = ents.Create("prop_physics")
 			ent:SetModel(prop["model"])
 			ent:SetSkin(prop["skin"])
 			ent:SetPos(prop["pos"])
-			ent:SetAngles(prop["ang"])
+			ent:SetAngles(Angle(prop["ang"].x, prop["ang"].y, prop["ang"].z))
 			ent:Spawn()
 			ent:Activate()
 
 			local phys = ent:GetPhysicsObject()
 
 			if phys and phys:IsValid() and prop["physics"] then
+				phys:EnableMotion(true)
+			elseif phys and phys:IsValid() then
 				phys:EnableMotion(false)
 			end
 
 			if prop["ignite"] then
-				ent:Ignite()
+				ent:Ignite(120)
 			end
 
-			OPS_ENTS = OPS_ENTS or {}
 			OPS_ENTS[uid] = ent
 		end
 	},
@@ -193,6 +222,20 @@ impulse.Ops.EventManager.Config.Events = {
 			end
 		end
 	},
+	["scaleent"] = {
+		Cat = "ent",
+		Prop = {
+			["newscale"] = 2,
+			["time"] = 0
+		},
+		NeedUID = true,
+		Clientside = false,
+		Do = function(prop, uid)
+			if OPS_ENTS and OPS_ENTS[uid] and IsValid(OPS_ENTS[uid]) then
+				OPS_ENTS[uid]:SetModelScale(prop["newscale"], prop["time"])
+			end
+		end
+	},
 	["soundplay"] = {
 		Cat = "sound",
 		Prop = {
@@ -204,6 +247,56 @@ impulse.Ops.EventManager.Config.Events = {
 		Clientside = true,
 		Do = function(prop, uid)
 			LocalPlayer():EmitSound(prop["sound"], prop["level"], nil, prop["volume"])
+		end
+	},
+	["advsoundplay"] = {
+		Cat = "sound",
+		Prop = {
+			["sound"] = "",
+			["level"] = 75,
+			["volume"] = 1,
+			["volumetime"] = 0
+		},
+		NeedUID = true,
+		Clientside = true,
+		Do = function(prop, uid)
+			OPS_SOUNDS = OPS_SOUNDS or {}
+
+			if OPS_SOUNDS[uid] then
+				OPS_SOUNDS[uid]:Stop()
+				OPS_SOUNDS[uid] = nil
+			end
+
+			OPS_SOUNDS[uid] = CreateSound(LocalPlayer(), prop["sound"])
+			OPS_SOUNDS[uid]:SetSoundLevel(prop["level"])
+			OPS_SOUNDS[uid]:ChangeVolume(prop["volume"])
+			OPS_SOUNDS[uid]:Play()
+		end
+	},
+	["advsoundsetvolume"] = {
+		Cat = "sound",
+		Prop = {
+			["newvolume"] = 1,
+			["time"] = 0
+		},
+		NeedUID = true,
+		Clientside = true,
+		Do = function(prop, uid)
+			if OPS_SOUNDS and OPS_SOUNDS[uid] and OPS_SOUNDS[uid] and OPS_SOUNDS[uid]:IsPlaying() then
+				OPS_SOUNDS[uid]:ChangeVolume(prop["newvolume"], prop["time"])
+			end
+		end
+	},
+	["advsoundstop"] = {
+		Cat = "sound",
+		Prop = {},
+		NeedUID = true,
+		Clientside = true,
+		Do = function(prop, uid)
+			if OPS_SOUNDS and OPS_SOUNDS[uid] and OPS_SOUNDS[uid] and OPS_SOUNDS[uid]:IsPlaying() then
+				OPS_SOUNDS[uid]:Stop()
+				OPS_SOUNDS[uid] = nil
+			end
 		end
 	},
 	["emitsound"] = {
@@ -240,19 +333,26 @@ impulse.Ops.EventManager.Config.Events = {
 			local mediaclip = service:load(prop["url"])
 
 			OPS_MUSIC = OPS_MUSIC or {}
+
+			if OPS_MUSIC[uid] then
+				OPS_MUSIC[uid]:stop()
+				OPS_MUSIC[uid] = nil
+			end
+
 			OPS_MUSIC[uid] = mediaclip
 
-			mediaclip:Play()
+			mediaclip:play()
 		end
 	},
 	["urlmusic_stop"] = {
 		Cat = "music",
 		Prop = {},
 		NeedUID = true,
-		Clienside = true,
+		Clientside = true,
 		Do = function(prop, uid)
 			if OPS_MUSIC and OPS_MUSIC[uid] then
 				OPS_MUSIC[uid]:stop()
+				OPS_MUSIC[uid] = nil
 			end
 		end
 	},

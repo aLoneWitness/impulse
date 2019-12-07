@@ -52,101 +52,103 @@ function PANEL:SetDoor(door)
 
 	local customCanEditDoor = hook.Run("CanEditDoor", LocalPlayer(), door)
 
-	if LocalPlayer():CanLockUnlockDoor(doorOwners, doorGroup) then
-		self:AddAction("impulse/icons/padlock-2-256.png", "Unlock", function()
-			net.Start("impulseDoorUnlock")
-			net.SendToServer()
+	if door:IsDoor() then
+		if LocalPlayer():CanLockUnlockDoor(doorOwners, doorGroup) then
+			self:AddAction("impulse/icons/padlock-2-256.png", "Unlock", function()
+				net.Start("impulseDoorUnlock")
+				net.SendToServer()
 
-			panel:Remove()
-		end)
-		self:AddAction("impulse/icons/padlock-256.png", "Lock", function()
-			net.Start("impulseDoorLock")
-			net.SendToServer()
+				panel:Remove()
+			end)
+			self:AddAction("impulse/icons/padlock-256.png", "Lock", function()
+				net.Start("impulseDoorLock")
+				net.SendToServer()
 
-			panel:Remove()
-		end)
-	end
+				panel:Remove()
+			end)
+		end
 
-	if LocalPlayer():CanBuyDoor(doorOwners, doorBuyable) and (customCanEditDoor or customCanEditDoor == nil) then
-		self:AddAction("impulse/icons/banknotes-256.png", "Buy", function()
-			net.Start("impulseDoorBuy")
-			net.SendToServer()
+		if LocalPlayer():CanBuyDoor(doorOwners, doorBuyable) and (customCanEditDoor or customCanEditDoor == nil) then
+			self:AddAction("impulse/icons/banknotes-256.png", "Buy", function()
+				net.Start("impulseDoorBuy")
+				net.SendToServer()
 
-			panel:Remove()
-		end)
-	end
+				panel:Remove()
+			end)
+		end
 
-	if LocalPlayer():IsDoorOwner(doorOwners) and isDoorMaster and (customCanEditDoor or customCanEditDoor == nil) then
-		self:AddAction("impulse/icons/group-256.png", "Permissions", function()
-			doorOwners = door:GetSyncVar(SYNC_DOOR_OWNERS, nil) 
+		if LocalPlayer():IsDoorOwner(doorOwners) and isDoorMaster and (customCanEditDoor or customCanEditDoor == nil) then
+			self:AddAction("impulse/icons/group-256.png", "Permissions", function()
+				doorOwners = door:GetSyncVar(SYNC_DOOR_OWNERS, nil) 
 
-			local perm = DermaMenu()
+				local perm = DermaMenu()
 
-			local addMenu, x = perm:AddSubMenu("Add")
-			x:SetIcon("icon16/add.png")
-			local removeMenu, x = perm:AddSubMenu("Remove")
-			x:SetIcon("icon16/delete.png")
+				local addMenu, x = perm:AddSubMenu("Add")
+				x:SetIcon("icon16/add.png")
+				local removeMenu, x = perm:AddSubMenu("Remove")
+				x:SetIcon("icon16/delete.png")
 
-			local exclude = {}
+				local exclude = {}
 
-			for v,k in pairs(doorOwners) do
-				k = Entity(k)
+				for v,k in pairs(doorOwners) do
+					k = Entity(k)
 
-				exclude[k] = true
+					exclude[k] = true
 
-				if not IsValid(k) or not k:IsPlayer() or k == LocalPlayer() then
-					continue
-				end
-
-				local name = k:Nick()
-
-				if k:GetFriendStatus() == "friend" then
-					name = "(FRIEND) "..name
-				end
-
-				local x = removeMenu:AddOption(name, function()
-					if IsValid(k) then
-						net.Start("impulseDoorRemove")
-						net.WriteEntity(k)
-						net.SendToServer()
-					else
-						LocalPlayer():Notify("Player has disconnected.")
+					if not IsValid(k) or not k:IsPlayer() or k == LocalPlayer() then
+						continue
 					end
-				end)
-				x:SetIcon("icon16/user_delete.png")
-			end
 
-			for v,k in pairs(player.GetAll()) do
-				if exclude[k] or k == LocalPlayer() then 
-					continue 
-				end
+					local name = k:Nick()
 
-				local name = k:Nick()
-
-				if k:GetFriendStatus() == "friend" then
-					name = "(FRIEND) "..name
-				end
-
-				local x = addMenu:AddOption(name, function()
-					if IsValid(k) then
-						net.Start("impulseDoorAdd")
-						net.WriteEntity(k)
-						net.SendToServer()
-					else
-						LocalPlayer():Notify("Player has disconnected.")
+					if k:GetFriendStatus() == "friend" then
+						name = "(FRIEND) "..name
 					end
-				end)
-				x:SetIcon("icon16/user_add.png")
-			end
 
-			perm:Open()
-		end)
-		self:AddAction("impulse/icons/banknotes-256.png", "Sell", function()
-			net.Start("impulseDoorSell")
-			net.SendToServer()
+					local x = removeMenu:AddOption(name, function()
+						if IsValid(k) then
+							net.Start("impulseDoorRemove")
+							net.WriteEntity(k)
+							net.SendToServer()
+						else
+							LocalPlayer():Notify("Player has disconnected.")
+						end
+					end)
+					x:SetIcon("icon16/user_delete.png")
+				end
 
-			panel:Remove()
-		end)
+				for v,k in pairs(player.GetAll()) do
+					if exclude[k] or k == LocalPlayer() then 
+						continue 
+					end
+
+					local name = k:Nick()
+
+					if k:GetFriendStatus() == "friend" then
+						name = "(FRIEND) "..name
+					end
+
+					local x = addMenu:AddOption(name, function()
+						if IsValid(k) then
+							net.Start("impulseDoorAdd")
+							net.WriteEntity(k)
+							net.SendToServer()
+						else
+							LocalPlayer():Notify("Player has disconnected.")
+						end
+					end)
+					x:SetIcon("icon16/user_add.png")
+				end
+
+				perm:Open()
+			end)
+			self:AddAction("impulse/icons/banknotes-256.png", "Sell", function()
+				net.Start("impulseDoorSell")
+				net.SendToServer()
+
+				panel:Remove()
+			end)
+		end
 	end
 
 	hook.Run("DoorMenuAddOptions", self, door, doorOwners, doorGroup, doorBuyable)

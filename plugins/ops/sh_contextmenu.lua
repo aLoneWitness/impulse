@@ -21,7 +21,7 @@ properties.Add( "ops_copysteamid", {
 } )
 
 properties.Add( "ops_openplayercard", {
-	MenuLabel = "[ops] Copy player card", -- Name to display on the context menu
+	MenuLabel = "[ops] Open player card", -- Name to display on the context menu
 	Order = 1006, -- The order to display this property relative to other properties
 	MenuIcon = "icon16/shield.png", -- The icon to display next to the property
 
@@ -37,7 +37,6 @@ properties.Add( "ops_openplayercard", {
 		return true
 	end,
 	Action = function( self, ent ) -- The action to perform upon using the property ( Clientside )
-		print(ent)
 		local badges = {}
 
 		for v,k in pairs(impulse.Badges) do

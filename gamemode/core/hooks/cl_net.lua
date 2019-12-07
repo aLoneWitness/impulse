@@ -414,7 +414,7 @@ net.Receive("impulseInvContainerUpdate", function()
 	end
 end)
 
-net.Receive("impulseInvContainerDoSetCode", function()
+net.Receive("impulseInvContainerSetCode", function()
 	Derma_StringRequest("impulse", 
 		"Enter new container passcode:",
 		nil, function(text)

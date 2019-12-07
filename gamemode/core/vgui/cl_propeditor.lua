@@ -10,8 +10,6 @@ function PANEL:SetTable(prop, callback)
 	self.props:Dock(FILL)
 
 	for v,k in pairs(prop) do
-		print(v)
-		print(IsColor(k))
 		if isbool(k) then
 			local row = self.props:CreateRow("Properties", v)
 			row:Setup("Boolean")
@@ -22,11 +20,13 @@ function PANEL:SetTable(prop, callback)
 			end
 		elseif isnumber(k) then
 			local row = self.props:CreateRow("Properties", v)
-			row:Setup("Float", {min = -5, max = 120})
+			row:Setup("Float", {min = -10000, max = 10000})
 			row:SetValue(k)
 
 			function row:DataChanged(newVal)
-				callback(v, newVal)
+				if tonumber(newVal) then
+					callback(v, newVal)
+				end
 			end
 		elseif isstring(k) then
 			local row = self.props:CreateRow("Properties", v)

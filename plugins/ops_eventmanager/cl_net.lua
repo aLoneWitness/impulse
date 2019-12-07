@@ -15,7 +15,31 @@ net.Receive("impulseOpsEMMenu", function()
 end)
 
 net.Receive("impulseOpsEMUpdateEvent", function()
-	local event = net.ReadUInt(16)
+	local event = net.ReadUInt(10)
 
-	impulse_OpsEM_CurEvent = event
+	impulse_OpsEM_CurEvents = impulse_OpsEM_CurEvents or {}
+	impulse_OpsEM_CurEvents[event] = CurTime()
+end)
+
+net.Receive("impulseOpsEMClientsideEvent", function()
+	local event = net.ReadString()
+	local uid = net.ReadString()
+	local len = net.ReadUInt(16)
+	local prop = pon.decode(net.ReadData(len))
+
+	if not impulse.Ops.EventManager then
+		return
+	end
+
+	local sequenceData = impulse.Ops.EventManager.Config.Events[event]
+
+	if not sequenceData then
+		return
+	end
+
+	if not uid or uid == "" then
+		uid = nil
+	end
+
+	sequenceData.Do(prop or {}, uid)
 end)

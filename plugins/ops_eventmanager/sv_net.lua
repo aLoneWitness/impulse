@@ -1,6 +1,9 @@
 util.AddNetworkString("impulseOpsEMMenu")
 util.AddNetworkString("impulseOpsEMPushSequence")
 util.AddNetworkString("impulseOpsEMUpdateEvent")
+util.AddNetworkString("impulseOpsEMPlaySequence")
+util.AddNetworkString("impulseOpsEMStopSequence")
+util.AddNetworkString("impulseOpsEMClientsideEvent")
 
 net.Receive("impulseOpsEMPushSequence", function(len, ply)
 	if (ply.nextOpsEMPush or 0) > CurTime() then return end
@@ -31,4 +34,52 @@ net.Receive("impulseOpsEMPushSequence", function(len, ply)
 	if IsValid(ply) then
 		ply:Notify("Push completed.")
 	end
+end)
+
+net.Receive("impulseOpsEMPlaySequence", function(len, ply)
+	if (ply.nextOpsEMPlay or 0) > CurTime() then return end
+	ply.nextOpsEMPlay = CurTime() + 1
+
+	if not ply:IsEventAdmin() then
+		return
+	end
+
+	local seqName = net.ReadString()
+
+	if not impulse.Ops.EventManager.Sequences[seqName] then
+		return ply:Notify("Sequence does not exist on server (push first).")
+	end
+
+	if impulse.Ops.EventManager.GetSequence() == seqName then
+		return ply:Notify("Sequence already playing.")
+	end
+
+	impulse.Ops.EventManager.PlaySequence(seqName)
+
+	print("[ops-em] Playing sequence "..seqName.." (by "..ply:SteamName()..").")
+	ply:Notify("Playing sequence "..seqName..".")
+end)
+
+net.Receive("impulseOpsEMStopSequence", function(len, ply)
+	if (ply.nextOpsEMStop or 0) > CurTime() then return end
+	ply.nextOpsEMStop = CurTime() + 1
+
+	if not ply:IsEventAdmin() then
+		return
+	end
+
+	local seqName = net.ReadString()
+
+	if not impulse.Ops.EventManager.Sequences[seqName] then
+		return ply:Notify("Sequence does not exist on server (push first).")
+	end
+
+	if impulse.Ops.EventManager.GetSequence() != seqName then
+		return ply:Notify("Sequence not playing.")
+	end
+
+	impulse.Ops.EventManager.StopSequence(seqName)
+
+	print("[ops-em] Stopping sequence "..seqName.." (by "..ply:SteamName()..").")
+	ply:Notify("Stopped sequence "..seqName..".")
 end)

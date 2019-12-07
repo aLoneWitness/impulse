@@ -35,10 +35,12 @@ function PANEL:SetSequence(key, data)
 	function newSeq:DoClick()
 		local id = table.insert(impulse.Ops.EventManager.Sequences[key].Events, {
 			Type = "chat",
-			Prop = impulse.Ops.EventManager.Config.Events["chat"].Prop,
+			Prop = {},
 			UID = nil,
 			Delay = 0
 		})
+
+		table.Merge(impulse.Ops.EventManager.Sequences[key].Events[id].Prop, impulse.Ops.EventManager.Config.Events["chat"].Prop)
 
 		panel:AddEvent(id, impulse.Ops.EventManager.Sequences[key].Events[id])
 	end
@@ -98,9 +100,30 @@ function PANEL:AddEvent(id, eventdata)
 		draw.RoundedBox(0, 0, 0, w, h, Color(60, 60, 60, 200))
 		draw.RoundedBox(0, 0, h-2, w, 2, Color(100, 100, 100, 150))
 
-		if panel.Sequence == impulse.Ops.EventManager.GetSequence() and impulse.Ops.EventManager.GetEvent() == id then
-			draw.RoundedBox(0, 0, 0, w, h, Color(127, 255, 0, 30))
+		local curEvents = impulse.Ops.EventManager.GetCurEvents()
+
+		if not curEvents then
+			return
 		end
+
+		local curEvent = curEvents[id]
+
+		if not curEvent then
+			return
+		end
+
+		if not curEvents[id + 1] and (impulse.Ops.EventManager.GetSequence() and panel.Sequence == impulse.Ops.EventManager.GetSequence()) then
+			impulse_OpsEM_CurEvents[id] = CurTime()
+		end
+
+		local perc = math.Clamp((curEvent - CurTime()) / (curEvent - (curEvent + 1)), 0, 1)
+		perc = 1 - perc
+
+		if perc == 0 then
+			impulse_OpsEM_CurEvents[id] = nil
+		end
+
+		draw.RoundedBox(0, 0, 0, w, h, Color(127, 255, 0, (perc * 30)))
 	end
 
 	event.etypeicon = vgui.Create("DImage", event)
@@ -110,7 +133,7 @@ function PANEL:AddEvent(id, eventdata)
 
 	event.etype = vgui.Create("DLabel", event)
 	event.etype:SetPos(20, 2)
-	event.etype:SetText("Event: "..eventdata.Type)
+	event.etype:SetText("Event: "..eventdata.Type.." ("..id..")")
 	event.etype:SizeToContents()
 
 	local delay = vgui.Create("DLabel", event)
@@ -119,7 +142,7 @@ function PANEL:AddEvent(id, eventdata)
 	delay:SizeToContents()
 
 	event.edelay = vgui.Create("DNumberWang", event)
-	event.edelay:SetDecimals(0)
+	event.edelay:SetDecimals(2)
 	event.edelay:SetPos(575, 2)
 	event.edelay:SetSize(40, 18)
 	event.edelay:SetMin(0)
@@ -163,7 +186,8 @@ function PANEL:AddEvent(id, eventdata)
 			local parent = cats[k.Cat]
 			parent:AddOption(v, function()
 				impulse.Ops.EventManager.Sequences[panel.Sequence].Events[id].Type = v
-				impulse.Ops.EventManager.Sequences[panel.Sequence].Events[id].Prop = impulse.Ops.EventManager.Config.Events[v].Prop
+				impulse.Ops.EventManager.Sequences[panel.Sequence].Events[id].Prop = {}
+				table.Merge(impulse.Ops.EventManager.Sequences[panel.Sequence].Events[id].Prop, impulse.Ops.EventManager.Config.Events[v].Prop)
 				panel.Dad:ReloadSequences()
 			end)
 		end
@@ -185,7 +209,7 @@ function PANEL:AddEvent(id, eventdata)
 		panel.Dad.Properties:SetTable(impulse.Ops.EventManager.Sequences[panel.Sequence].Events[id].Prop, function(key, val)
 			impulse.Ops.EventManager.Sequences[panel.Sequence].Events[id].Prop[key] = val
 		end)
-		panel.Dad.Properties:SetTitle(impulse.Ops.EventManager.Sequences[panel.Sequence].Events[id].Type.." properties")
+		panel.Dad.Properties:SetTitle(impulse.Ops.EventManager.Sequences[panel.Sequence].Events[id].Type.."("..id..") properties")
 
 		local x, y = panel.Dad:GetPos()
 		panel.Dad.Properties:SetPos(x + panel.Dad:GetWide() + 10, y)
@@ -212,6 +236,12 @@ function PANEL:AddEvent(id, eventdata)
 		end
 
 		impulse.Ops.EventManager.Sequences[panel.Sequence].Events[id].UID = new
+	end
+
+	function event.euid:PaintOver(w, h)
+		if impulse.Ops.EventManager.Config.Events[eventdata.Type].NeedUID and not self:IsEditing() and string.Trim(self:GetText(), " ") == "" then
+			draw.SimpleText("Requires UID value", "DermaDefaultBold", 5, 2, Color(255, 0, 0))
+		end
 	end
 
 	event.emup = vgui.Create("DImageButton", event)

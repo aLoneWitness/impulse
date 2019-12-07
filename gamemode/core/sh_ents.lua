@@ -4,7 +4,9 @@ local entityMeta = FindMetaTable("Entity")
 local propDoors = {
 	["models/props_doors/doorklab01.mdl"] = true,
 	["models/props_lab/elevatordoor.mdl"] = true,
-	["models/props_combine/combine_door01.mdl"] = true
+	["models/props_combine/combine_door01.mdl"] = true,
+	["models/combine_gate_vehicle.mdl"] = true,
+	["models/combine_gate_citizen.mdl"] = true
 }
 
 function entityMeta:IsDoor()
@@ -12,7 +14,7 @@ function entityMeta:IsDoor()
 end
 
 function entityMeta:IsPropDoor()
-	if propDoors[self:GetModel()] then
+	if self:CPPIGetOwner() and IsValid(self:CPPIGetOwner()) and self:CPPIGetOwner():IsPlayer() and propDoors[self:GetModel()] then
 		return true
 	end
 

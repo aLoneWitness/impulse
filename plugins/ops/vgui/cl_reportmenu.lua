@@ -125,6 +125,29 @@ function PANEL:ReloadReports()
 			LocalPlayer():ConCommand("say /rgoto")
 		end
 
+		local cardBtn = vgui.Create("DButton", report)
+		cardBtn:SetPos(260, 0)
+		cardBtn:SetSize(40, 23)
+		cardBtn:SetText("Card")
+
+		function cardBtn:DoClick()
+			local ent = report.data[1]
+			local badges = {}
+
+			if not ent or not IsValid(ent) or not ent:IsPlayer() then
+				return LocalPlayer():Notify("User left the game.")
+			end
+
+			for v,k in pairs(impulse.Badges) do
+				if k[3](ent) then
+					badges[v] = k
+				end 	
+			end
+
+			impulse_infoCard = vgui.Create("impulsePlayerInfoCard")
+			impulse_infoCard:SetPlayer(ent, badges)
+		end
+
 		local ownsReport = true
 		if not report.data[3] or not IsValid(report.data[3]) or report.data[3] != LocalPlayer() then
 			gotoBtn:SetDisabled(true)

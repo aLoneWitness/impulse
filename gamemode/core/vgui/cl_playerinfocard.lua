@@ -202,13 +202,12 @@ function PANEL:Init()
 		self.oocName:SizeToContents()
 		self.oocName:SetPos(86,30)
 
-		if LocalPlayer():IsAdmin() then
-			self.rpName = vgui.Create("DLabel", self)
-			self.rpName:SetFont("Impulse-Elements18")
-			self.rpName:SetText(self.Player:Name())
-			self.rpName:SizeToContents()
-			self.rpName:SetPos(self.oocName:GetWide() + 88, 42)
-		end
+
+		self.rpName = vgui.Create("DLabel", self)
+		self.rpName:SetFont("Impulse-Elements18")
+		self.rpName:SetText(self.Player:Name())
+		self.rpName:SizeToContents()
+		self.rpName:SetPos(self.oocName:GetWide() + 88, 42)
 
 		-- team name
 		self.teamName = vgui.Create("DLabel", self)
@@ -233,6 +232,7 @@ function PANEL:Init()
 		self.sidButton:SetSize(90,20)
 		self.sidButton.DoClick = function()
 			SetClipboardText(self.Player:SteamID())
+			LocalPlayer():Notify("Copied SteamID.")
 		end
 
 		self.forumButton = vgui.Create("DButton", self)

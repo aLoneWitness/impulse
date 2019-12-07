@@ -118,7 +118,7 @@ function PANEL:SetupPlayer(sequences)
 		function sequence:Paint(w, h)
 			draw.RoundedBox(0, 0, 0, w, h, normal)
 
-			if impulse.Ops.EventManager.GetSequence() == self:GetText() then
+			if impulse.Ops.EventManager.GetSequence() and impulse.Ops.EventManager.GetSequence() == k then
 				draw.SimpleText("LIVE", "ChatFont", 6, 16, Color(255, 0, 0))
 			end
 		end
@@ -132,6 +132,39 @@ function PANEL:SetupPlayer(sequences)
 		play:SetPos(500, 0)
 		play:SetSize(150, 35)
 		play:SetText("PLAY")
+
+		function play:Think()
+			if impulse.Ops.EventManager.GetSequence() and impulse.Ops.EventManager.GetSequence() == k then
+				self:SetDisabled(true)
+			else
+				self:SetDisabled(false)
+			end
+		end
+
+		function play:DoClick()
+			net.Start("impulseOpsEMPlaySequence")
+			net.WriteString(k)
+			net.SendToServer()
+		end
+
+		local stop = vgui.Create("DButton", sequence)
+		stop:SetPos(350, 0)
+		stop:SetSize(150, 35)
+		stop:SetText("STOP")
+
+		function stop:Think()
+			if impulse.Ops.EventManager.GetSequence() and impulse.Ops.EventManager.GetSequence() == k then
+				self:SetDisabled(false)
+			else
+				self:SetDisabled(true)
+			end
+		end
+
+		function stop:DoClick()
+			net.Start("impulseOpsEMStopSequence")
+			net.WriteString(k)
+			net.SendToServer()
+		end
 	end
 end
 
