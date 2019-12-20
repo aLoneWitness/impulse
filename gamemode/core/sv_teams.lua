@@ -261,6 +261,8 @@ function meta:SetTeamRank(rankID)
 
 	self:SetLocalSyncVar(SYNC_RANK, rankID, true)
 
+	hook.Run("PlayerChangeRank", self, rankID, rankData.name)
+
 	return true
 end
 
