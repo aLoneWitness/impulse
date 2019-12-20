@@ -70,3 +70,14 @@ local cleanupAllCommand = {
 }
 
 impulse.RegisterChatCommand("/cleanupall", cleanupAllCommand)
+
+local clearDecalsCommand = {
+    description = "Removes all the props of the specified player.",
+    adminOnly = true,
+    onRun = function(ply, arg, rawText)
+        impulse.Ops.ClearDecals()
+        ply:Notify("You have cleared all the decals on the map.")
+    end
+}
+
+impulse.RegisterChatCommand("/cleardecals", clearDecalsCommand)

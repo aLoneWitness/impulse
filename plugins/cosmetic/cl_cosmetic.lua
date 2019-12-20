@@ -12,7 +12,15 @@ function MakeCosmetic(ply, id, bone, data, slot)
 		ply.Cosmetics[slot]:SetBodyGroups(data.bodygroups)
 	end
 
-	if ply:IsFemale() and data.femaleScale then
+	local t = LocalPlayer():Team()
+
+	if ply:IsPlayer() then
+		t = ply:Team()
+	end
+
+	if data.teamCustomScale and data.teamCustomScale[t] then
+		ply.Cosmetics[slot]:SetModelScale(ply.Cosmetics[slot]:GetModelScale() * data.teamCustomScale[t])
+	elseif ply:IsFemale() and data.femaleScale then
 		ply.Cosmetics[slot]:SetModelScale(ply.Cosmetics[slot]:GetModelScale() * data.femaleScale)
 	else
 		ply.Cosmetics[slot]:SetModelScale(ply.Cosmetics[slot]:GetModelScale() * data.scale)
@@ -56,8 +64,17 @@ hook.Add("PostPlayerDraw", "impulseCosmeticDraw", function(k)
 			local u = ang:Up()
 			local r = ang:Right()
 			local isFemale = k:IsFemale()
+			local teamCustom = b.drawdata.teamCustomPos
 
-			if isFemale and b.drawdata.femalePos then
+			local t = LocalPlayer():Team()
+
+			if k:IsPlayer() then
+				t = k:Team()
+			end
+
+			if teamCustom and teamCustom[t] then
+				pos = pos + (r * teamCustom[t].x) + (f * teamCustom[t].y) + (u * teamCustom[t].z)
+			elseif isFemale and b.drawdata.femalePos then
 				pos = pos + (r * b.drawdata.femalePos.x) + (f * b.drawdata.femalePos.y) + (u * b.drawdata.femalePos.z)
 			else
 				pos = pos + (r * b.drawdata.pos.x) + (f * b.drawdata.pos.y) + (u * b.drawdata.pos.z)
@@ -142,8 +159,13 @@ hook.Add("SetupInventoryModel", "impulseDrawCosmetics", function(panel)
 				local u = ang:Up()
 				local r = ang:Right()
 				local isFemale = k:IsFemale()
+				local teamCustom = b.drawdata.teamCustomPos
 
-				if isFemale and b.drawdata.femalePos then
+				local t = LocalPlayer():Team()
+
+				if teamCustom and teamCustom[t] then
+					pos = pos + (r * teamCustom[t].x) + (f * teamCustom[t].y) + (u * teamCustom[t].z)
+				elseif isFemale and b.drawdata.femalePos then
 					pos = pos + (r * b.drawdata.femalePos.x) + (f * b.drawdata.femalePos.y) + (u * b.drawdata.femalePos.z)
 				else
 					pos = pos + (r * b.drawdata.pos.x) + (f * b.drawdata.pos.y) + (u * b.drawdata.pos.z)

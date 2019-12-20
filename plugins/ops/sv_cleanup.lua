@@ -21,3 +21,9 @@ function impulse.Ops.CleanupAll()
 		end
 	end
 end
+
+function impulse.Ops.ClearDecals()
+	for v,k in pairs(player.GetAll()) do
+		k:ConCommand("r_cleardecals")
+	end
+end

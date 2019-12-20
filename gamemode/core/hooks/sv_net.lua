@@ -733,11 +733,6 @@ net.Receive("impulseInvDoMove", function(len, ply)
 		return
 	end
 
-	if (ply.NextStorage or 0) > CurTime() then
-		ply.nextInvMove = CurTime() + 2
-		return ply:Notify("Because you were recently in combat you must wait "..string.NiceTime(ply.NextStorage - CurTime()).." before using your storage.") 
-	end
-
 	if not ply.currentStorage:CanPlayerUse(ply) then
 		return
 	end
@@ -752,6 +747,11 @@ net.Receive("impulseInvDoMove", function(len, ply)
 
 	if from == 1 then
 		to = 2
+	end
+
+	if to == 2 and (ply.NextStorage or 0) > CurTime() then
+		ply.nextInvMove = CurTime() + 2
+		return ply:Notify("Because you were recently in combat you must wait "..string.NiceTime(ply.NextStorage - CurTime()).." before depositing items into your storage.") 
 	end
 
 	local hasItem, item = ply:HasInventoryItemSpecific(itemid, from)

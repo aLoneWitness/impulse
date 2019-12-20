@@ -120,7 +120,12 @@ function IMPULSE:PlayerSpawn(ply)
 
 	if ply.beenSetup then
 		ply:SetTeam(impulse.Config.DefaultTeam)
-		ply:SetHunger(100)
+
+		if ply.HasDied then
+			ply:SetHunger(70)
+		else
+			ply:SetHunger(100)
+		end
 	end
 
 	ply.ArrestedWeapons = nil
@@ -495,6 +500,7 @@ function IMPULSE:PlayerDeath(ply, killer)
 
 	ply:ClearInventory(1)
 	ply.InventoryRestorePoint = restorePoint
+	ply.HasDied = true
 end
 
 function IMPULSE:PlayerSilentDeath(ply)
@@ -767,7 +773,7 @@ function IMPULSE:PlayerSpawnEffect(ply)
 end
 
 function IMPULSE:PlayerSpawnNPC(ply)
-	return ply:IsAdmin()
+	return ply:IsSuperAdmin() or (ply:IsAdmin() and impulse.Ops.EventManager.GetEventMode())
 end
 
 function IMPULSE:PlayerSpawnProp(ply, model)
@@ -868,8 +874,8 @@ local bannedTools = {
 	["duplicator"] = true,
 	["physprop"] = true,
 	["dynamite"] = true,
-	["eyeposer"] = true,
-	["faceposer"] = true,
+	--["eyeposer"] = true,
+	--["faceposer"] = true,
 	["fingerposer"] = true,
 	["inflator"] = true,
 	["trails"] = true,
@@ -1058,9 +1064,12 @@ function IMPULSE:PlayerShouldTakeDamage(ply, attacker)
 		return false
 	end
 
-	if attacker and IsValid(attacker) and attacker:IsPlayer() then
-		ply.NextStorage = CurTime() + 30
-		attacker.NextStorage = CurTime() + 60
+	if attacker and IsValid(attacker) and attacker:IsPlayer() and attacker != Entity(0) and attacker != ply then
+		if (ply.NextStorage or 0) < CurTime() then
+			ply.NextStorage = CurTime() + 60
+		end
+
+		attacker.NextStorage = CurTime() + 180
 	end
 
 	return true
