@@ -8,6 +8,10 @@ function impulse.Ops.NewLog(msg, isMe)
 		isMe = isMe or false,
 		time = CurTime()
 	})
+
+	if not isMe then
+		OPS_LASTMSG_CLOSE = false
+	end
 end
 
 local uniqueReportKey = 0
@@ -34,9 +38,21 @@ net.Receive("opsReportMessage", function()
 				end
         	end
         end)
+
+        timer.Simple(1, function()
+        	if impulse.Ops.CurReport then
+        		impulse.Ops.DaleRead(impulse_reportMessage or "")
+        	end
+        end)
     elseif msgId == 2 then
     	LocalPlayer():Notify("Your report has been updated. Thank you for keeping us informed. Report ID: #"..reportId..".")
     	impulse.Ops.NewLog({"(#"..reportId..") Report updated: "..impulse_reportMessage or ""}, true)
+
+        timer.Simple(1, function()
+        	if impulse.Ops.CurReport then
+        		impulse.Ops.DaleRead(impulse_reportMessage or "")
+        	end
+        end)
     elseif msgId == 3 then
     	local claimer = net.ReadEntity()
 
@@ -147,12 +163,17 @@ net.Receive("opsReportClosed", function()
 	local closer = net.ReadEntity()
 	local reportId = net.ReadUInt(16)
 
-	if not IsValid(closer) then return end
-	if impulse.GetSetting("admin_onduty") then
+	if not IsValid(closer) or closer == Entity(0) then
 		if impulse.Ops.Reports and impulse.Ops.Reports[reportId] and (not impulse.Ops.Reports[reportId][3] or not IsValid(impulse.Ops.Reports[reportId][3])) then
-			chat.AddText(newReportCol, "[REPORT] [#"..reportId.."] closed by "..closer:SteamName())
-		elseif LocalPlayer() and LocalPlayer() == closer then
-			chat.AddText(claimedReportCol, "[REPORT] [#"..reportId.."] closed by "..closer:SteamName())
+			chat.AddText(newReportCol, "[REPORT] [#"..reportId.."] closed by Dale")
+		end
+	else
+		if impulse.GetSetting("admin_onduty") then
+			if impulse.Ops.Reports and impulse.Ops.Reports[reportId] and (not impulse.Ops.Reports[reportId][3] or not IsValid(impulse.Ops.Reports[reportId][3])) then
+				chat.AddText(newReportCol, "[REPORT] [#"..reportId.."] closed by "..closer:SteamName())
+			elseif LocalPlayer() and LocalPlayer() == closer then
+				chat.AddText(claimedReportCol, "[REPORT] [#"..reportId.."] closed by "..closer:SteamName())
+			end
 		end
 	end
 
@@ -161,4 +182,20 @@ net.Receive("opsReportClosed", function()
     if impulse_reportMenu and IsValid(impulse_reportMenu) then
     	impulse_reportMenu:ReloadReports()
     end
+end)
+
+net.Receive("opsReportDaleReplied", function()
+	local reportId = net.ReadUInt(8)
+
+	if impulse.Ops.Reports and impulse.Ops.Reports[reportId] then
+		impulse.Ops.Reports[reportId][4] = true
+	end
+
+    if impulse_reportMenu and IsValid(impulse_reportMenu) then
+    	impulse_reportMenu:ReloadReports()
+    end
+end)
+
+net.Receive("opsReportSync", function()
+	impulse.Ops.Reports = net.ReadTable() or {}
 end)

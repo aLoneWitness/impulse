@@ -53,17 +53,3 @@ function IMPULSE:Move(ply, mvData)
 		mvData:SetSideSpeed(sideRatio * speed)
 	end
 end
-
-function IMPULSE:OnPlayerHitGround(ply) -- anti bhop
-	local vel = ply:GetVelocity()
-
-	if vel.x > 300 or vel.y > 300 or vel.z > 300 then
-		return
-	end
-
-	if vel.x < -300 or vel.y < -300 or vel.z < -300 then
-		return
-	end
-
-	ply:SetVelocity(-ply:GetVelocity() / 2)
-end

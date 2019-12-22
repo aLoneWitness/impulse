@@ -299,6 +299,12 @@ function impulse.SetupPlayer(ply, dbData)
 
 	ply:SetupWhitelists()
 
+	local rankCol = impulse.Config.RankColours[ply:GetUserGroup()]
+
+	if rankCol then
+		ply:SetWeaponColor(Vector(rankCol.r / 255, rankCol.g / 255, rankCol.b / 255))
+	end
+
 	ply.beenSetup = true
 	hook.Run("PostSetupPlayer", ply)
 end
@@ -745,7 +751,8 @@ end
 
 local exploitRagBlock = {
 	["models/dpfilms/metropolice/zombie_police.mdl"] = true,
-	["models/dpfilms/metropolice/playermodels/pm_zombie_police.mdl"] = true
+	["models/dpfilms/metropolice/playermodels/pm_zombie_police.mdl"] = true,
+	["models/zombie/zmanims.mdl"] = true
 }
 
 function IMPULSE:PlayerSpawnRagdoll(ply, model)
@@ -952,10 +959,27 @@ function IMPULSE:CanTool(ply, tr, tool)
     			return false
     		end
     	end
+
+    	if string.sub(ent:GetClass(), 1, 8) == "impulse_" then
+    		if tool != "remover" and not ply:IsSuperAdmin() then
+    			return false
+    		end
+    	end
 	end
 
 	return true
 end
+
+--function IMPULSE:PhysgunPickup(ply, ent)
+--	if ply:IsAdmin() and not ply:IsSuperAdmin() then
+--		local owner = ent:CPPIGetOwner()
+--
+--		if not owner and not adminWorldRemoveWhitelist[ent:GetClass()] then
+--			print("h")
+--			return false
+--		end
+--	end
+--end
 
 local bannedDupeEnts = {
 	["gmod_wire_explosive"] = true,

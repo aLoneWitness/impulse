@@ -13,6 +13,10 @@ util.AddNetworkString("opsReportUpdate")
 util.AddNetworkString("opsReportClaimed")
 util.AddNetworkString("opsReportClosed")
 util.AddNetworkString("opsReportAdminMessage")
+util.AddNetworkString("opsReportSync")
+util.AddNetworkString("opsReportDaleRepliedDo")
+util.AddNetworkString("opsReportDaleReplied")
+util.AddNetworkString("opsReportDaleClose")
 
 function impulse.Ops.ReportNew(ply, arg, rawText)
 	if ply.nextReport and ply.nextReport > CurTime() then
@@ -192,8 +196,6 @@ function impulse.Ops.ReportClose(ply, arg, rawText)
 		    end
 	    end
 
-        opsDiscordLog(":closed_book: **[REPORT CLOSED]** [#"..reportId.."] closed by "..ply:SteamName().." ("..ply:SteamID()..")")
-
         if not isDc then
             net.Start("opsReportMessage")
             net.WriteUInt(reportId, 16)
@@ -270,3 +272,72 @@ function impulse.Ops.ReportMsg(ply, arg, rawText)
         ply:Notify("Reply sent to "..reporter:Nick()..".")
     end
 end
+
+hook.Add("PostSetupPlayer", "impulseOpsReportSync", function(ply)
+    if not ply:IsAdmin() then
+        return
+    end
+
+    if table.Count(impulse.Ops.Reports) < 1 then
+        return
+    end
+
+    local reports = {}
+    reports = table.Merge(reports, impulse.Ops.Reports)
+
+    for v,k in pairs(reports) do
+        impulse.Ops.Reports[5] = nil -- clients dont need this
+        impulse.Ops.Reports[6] = nil
+    end
+
+    net.Start("opsReportSync")
+    net.WriteTable(reports)
+    net.Send(ply)
+end)
+
+net.Receive("opsReportDaleRepliedDo", function(len, ply)
+    if (ply.nextDaleDoReply or 0) > CurTime() then
+        return
+    end
+
+    ply.nextDaleDoReply = CurTime() + 10
+
+    for id, data in pairs(impulse.Ops.Reports) do
+        if data[1] == ply then
+            if data[6] then
+                return
+            end
+
+            impulse.Ops.Reports[id][6] = true
+            for v,k in pairs(player.GetAll()) do
+                if k:IsAdmin() then
+                    net.Start("opsReportDaleReplied")
+                    net.WriteUInt(id, 8)
+                    net.Send(k)
+                end
+            end
+            
+            break
+        end
+    end
+end)
+
+net.Receive("opsReportDaleClose", function(len, ply)
+    if (ply.nextDaleClose or 0) > CurTime() then
+        return
+    end
+
+    ply.nextDaleClose = CurTime() + 10
+
+    for id, data in pairs(impulse.Ops.Reports) do
+        if data[1] == ply then
+            if not data[6] then
+                return
+            end
+
+            impulse.Ops.ReportClose(Entity(0), {id})
+            
+            break
+        end
+    end
+end)

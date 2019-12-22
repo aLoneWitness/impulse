@@ -195,7 +195,11 @@ function PANEL:ReloadReports()
 
 				draw.SimpleText("Claimed by: "..claimerName, "Impulse-Elements16", 25, 4, col)
 			else
-				draw.SimpleText("Unclaimed", "Impulse-Elements17", 25, 3, newReportCol)
+				if self.data[4] then
+					draw.SimpleText("Unclaimed (Dale replied)", "Impulse-Elements17", 25, 3, newReportCol)
+				else
+					draw.SimpleText("Unclaimed", "Impulse-Elements17", 25, 3, newReportCol)
+				end
 			end
 
 			local reporteeName = "disconnected"

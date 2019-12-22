@@ -416,11 +416,7 @@ if CLIENT then
 	local acCol = Color(0, 235, 0, 255)
 	local eventCol = Color(255, 69, 0)
 	local fallbackRankCol = Color(211, 211, 211)
-	local rankCols = {}
-	rankCols["superadmin"] = Color(201, 15, 12)
-	rankCols["admin"] = Color(34, 88, 216)
-	rankCols["moderator"] = Color(34, 88, 216)
-	rankCols["donator"] = Color(212, 185, 9)
+	local rankCols = impulse.Config.RankColours
 
 	impulse.RegisterChatClass(1, function(message, speaker)
 		message = hook.Run("ProcessICChatMessage", speaker, message) or message
