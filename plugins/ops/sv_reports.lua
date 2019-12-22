@@ -286,6 +286,7 @@ hook.Add("PostSetupPlayer", "impulseOpsReportSync", function(ply)
     reports = table.Merge(reports, impulse.Ops.Reports)
 
     for v,k in pairs(reports) do
+        impulse.Ops.Reports[4] = nil
         impulse.Ops.Reports[5] = nil -- clients dont need this
         impulse.Ops.Reports[6] = nil
     end
