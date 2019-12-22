@@ -33,6 +33,7 @@ function meta:UnArrest()
 
 	self:SetRunSpeed(impulse.Config.JogSpeed)
 	self:SetWalkSpeed(impulse.Config.WalkSpeed)
+	self:SelectWeapon("impulse_hands")
 	--self:SetJumpPower(160)
 	self:StopDrag()
 end

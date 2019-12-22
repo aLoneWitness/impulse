@@ -14,7 +14,23 @@ function entityMeta:IsDoor()
 end
 
 function entityMeta:IsPropDoor()
-	if self:CPPIGetOwner() and IsValid(self:CPPIGetOwner()) and self:CPPIGetOwner():IsPlayer() and propDoors[self:GetModel()] then
+	if not self.GetModel or not propDoors[self:GetModel()] then
+		return false
+	end
+
+	if (self:CPPIGetOwner() and IsValid(self:CPPIGetOwner())) and self:CPPIGetOwner():IsPlayer() then
+		return true
+	end
+
+	if (self:CPPIGetOwner() and IsValid(self:CPPIGetOwner())) and self:CPPIGetOwner() == Entity(0) then
+		if SERVER then
+			if self:MapCreationID() == -1 then
+				return true
+			else
+				return false
+			end
+		end
+
 		return true
 	end
 
