@@ -100,7 +100,7 @@ function meta:CanHoldItem(itemclass, amount)
 	local item = impulse.Inventory.Items[impulse.Inventory.ClassToNetID(itemclass)]
 	local weight = (item.Weight or 0) * (amount or 1)
 
-	return self.InventoryWeight + item.Weight <= impulse.Config.InventoryMaxWeight
+	return self.InventoryWeight + weight <= impulse.Config.InventoryMaxWeight
 end
 
 function meta:CanHoldItemStorage(itemclass, amount)

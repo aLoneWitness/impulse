@@ -1122,7 +1122,7 @@ net.Receive("impulseVendorBuy", function(len, ply)
 				}
 			end
 
-			if tMax.Count >= sellData.BuyMax then
+			if ply.VendorBuyMax[itemclass].Count >= sellData.BuyMax then
 				local cooldown = CurTime() + sellData.TempCooldown
 				ply.VendorBuyMax[itemclass].Cooldown = cooldown
 
@@ -1133,6 +1133,8 @@ net.Receive("impulseVendorBuy", function(len, ply)
 				Count = 0
 			}
 		end
+
+		tMax = ply.VendorBuyMax[itemclass]
 
 		ply.VendorBuyMax[itemclass].Count = ((tMax and tMax.Count) or 0) + 1
 

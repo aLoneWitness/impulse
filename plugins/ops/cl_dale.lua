@@ -40,6 +40,7 @@ function impulse.Ops.DaleRead(message)
 		if k.Specific then
 			for a,term in pairs(k.Terms) do
 				if term == msg then
+					if k.Command then LocalPlayer():ConCommand(k.Command) end
 					return impulse.Ops.DaleSay(k.Reply, k.RequestClose or false)
 				end
 			end
@@ -66,10 +67,12 @@ function impulse.Ops.DaleRead(message)
 				continue
 			end
 
+			if k.Command then LocalPlayer():ConCommand(k.Command) end
 			return impulse.Ops.DaleSay(k.Reply, k.RequestClose or false)
 		else
 			for a,term in pairs(k.Terms) do
 				if string.find(msg, term, nil, true) then
+					if k.Command then LocalPlayer():ConCommand(k.Command) end
 					return impulse.Ops.DaleSay(k.Reply, k.RequestClose or false)
 				end
 			end

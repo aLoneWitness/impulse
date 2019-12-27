@@ -732,6 +732,8 @@ function IMPULSE:Think()
 			if k.AFKTimer and k.AFKTimer < CurTime() and not k.ArrestedDragger and not k:IsAFK() then
 				k:MakeAFK()
 			end
+
+			k.LastKnownPos = k.GetPos(k)
 		end
 	end
 end

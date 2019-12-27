@@ -254,6 +254,11 @@ hook.Add("Think", "impulseReportMenuFastOpen", function()
 			end
 		end
 	end
+
+	if input.IsKeyDown(KEY_F2) and CUR_SNAPSHOT then
+		impulse.Ops.ClearSnapshot()
+		LocalPlayer():Notify("Snapshot closed.")
+	end
 end)
 
 vgui.Register("impulseReportMenu", PANEL, "DFrame")

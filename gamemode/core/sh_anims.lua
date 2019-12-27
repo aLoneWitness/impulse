@@ -172,9 +172,9 @@ impulse.Anim.metrocop = {
 }
 impulse.Anim.overwatch = {
 	normal = {
-		[ACT_MP_STAND_IDLE] = {"idle_unarmed", ACT_IDLE_ANGRY},
+		[ACT_MP_STAND_IDLE] = {"idle_unarmed", "idle_unarmed"},
 		[ACT_MP_CROUCH_IDLE] = {ACT_CROUCHIDLE, ACT_CROUCHIDLE},
-		[ACT_MP_WALK] = {"walkunarmed_all", ACT_WALK_RIFLE},
+		[ACT_MP_WALK] = {"walkunarmed_all", "walkunarmed_all"},
 		[ACT_MP_CROUCHWALK] = {ACT_WALK_CROUCH_RIFLE, ACT_WALK_CROUCH_RIFLE},
 		[ACT_MP_RUN] = {ACT_RUN_AIM_RIFLE, ACT_RUN_AIM_RIFLE}
 	},

@@ -36,10 +36,6 @@ function ENT:Use(activator, caller)
 			return activator:Notify("You cannot access this due to your team.")
 		end
 
-		if self.InUse then
-			return activator:Notify("This workbench is already in use.")
-		end
-
 		if self.Bench.CanUse and not self.Bench.CanUse(self.Bench, activator) then
 			return activator:Notify("You can not use this workbench.")
 		end

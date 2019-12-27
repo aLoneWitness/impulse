@@ -14,6 +14,10 @@ function entityMeta:IsDoor()
 end
 
 function entityMeta:IsPropDoor()
+	if not IsValid(self) then
+		return
+	end
+	
 	if not self.GetModel or not propDoors[self:GetModel()] then
 		return false
 	end

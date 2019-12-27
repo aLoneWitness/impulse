@@ -40,6 +40,10 @@ if SERVER then
 		if owner and IsValid(owner) then
 			self.ItemOwner = owner
 		end
+
+		if item.Mass and IsValid(self:GetPhysicsObject()) then
+			self:GetPhysicsObject():SetMass(item.Mass)
+		end
 	end
 
 	function ENT:Use(activator)

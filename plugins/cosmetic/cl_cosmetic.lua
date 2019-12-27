@@ -5,7 +5,7 @@ function MakeCosmetic(ply, id, bone, data, slot)
 
 	SafeRemoveEntity(ply.Cosmetics[slot])
 
-	ply.Cosmetics[slot] = ClientsideModel(data.model, RENDERGROUP_OPAQUE)
+	ply.Cosmetics[slot] = ClientsideModel(data.model, RENDERGROUP_BOTH)
 	ply.Cosmetics[slot]:SetNoDraw(true)
 
 	if data.bodygroups then

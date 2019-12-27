@@ -1,6 +1,17 @@
 local red = Color(255, 0, 0, 255)
 local green = Color(0, 240, 0, 255)
 local col = Color(255,255,255,120)
+local hitgroups = {
+	[HITGROUP_GENERIC] = "generic",
+	[HITGROUP_HEAD] = "head",
+	[HITGROUP_CHEST] = "chest",
+	[HITGROUP_STOMACH] = "stomach",
+	[HITGROUP_LEFTARM] = "leftarm",
+	[HITGROUP_RIGHTARM] = "rightarm",
+	[HITGROUP_LEFTLEG] = "leftleg",
+	[HITGROUP_RIGHTLEG] = "rightleg",
+	[HITGROUP_GEAR] = "belt"
+}
 
 hook.Add("HUDPaint", "impulseOpsHUD", function()
 	if not impulse.hudEnabled then return end
@@ -37,7 +48,12 @@ hook.Add("HUDPaint", "impulseOpsHUD", function()
 			draw.SimpleText("ENTCOUNT: "..#ents.GetAll(), "Impulse-Elements16-Shadow", 20, 100, col)
 			draw.SimpleText("PLAYERCOUNT: "..#player.GetAll(), "Impulse-Elements16-Shadow", 20, 120, col)
 
-			local y = 140
+			if impulse.Dispatch then
+				local ccode = impulse.Dispatch.CityCodes[impulse.Dispatch.GetCityCode()]
+				draw.SimpleText("CITYCODE: "..ccode[1], "Impulse-Elements16-Shadow", 20, 140, ccode[2])
+			end
+
+			local y = 160
 
 			for v,k in pairs(impulse.Teams.Data) do
 				draw.SimpleText(team.GetName(v)..": "..#team.GetPlayers(v), "Impulse-Elements16-Shadow", 20, y, col)
@@ -55,6 +71,29 @@ hook.Add("HUDPaint", "impulseOpsHUD", function()
 
 				if k:GetTeamClass() != 0 then
 					draw.SimpleText(k:GetTeamClassName().." - "..k:GetTeamRankName(), "Impulse-Elements14-Shadow", pos.x + 20, pos.y, col, TEXT_ALIGN_CENTER)
+				end
+			end
+		end
+
+		if CUR_SNAPSHOT then
+			local snapData = impulse.Ops.Snapshots[CUR_SNAPSHOT]
+			impulse.Ops.Snapshots[CUR_SNAPSHOT].VictimNeatName = impulse.Ops.Snapshots[CUR_SNAPSHOT].VictimNeatName or ((IsValid(snapData.Victim) and snapData.Victim:IsPlayer()) and (snapData.VictimNick.." ("..snapData.Victim:SteamName()..")") or snapData.VictimID)
+			impulse.Ops.Snapshots[CUR_SNAPSHOT].InflictorNeatName = impulse.Ops.Snapshots[CUR_SNAPSHOT].InflictorNeatName or ((IsValid(snapData.Inflictor) and snapData.Inflictor:IsPlayer()) and (snapData.InflictorNick.." ("..snapData.Inflictor:SteamName()..")") or snapData.InflictorID)
+
+			draw.SimpleText("VIEWING SNAPSHOT #"..CUR_SNAPSHOT.." (CLOSE WITH F2)", "Impulse-Elements16-Shadow", 250, 100, col)
+			draw.SimpleText("VICTIM: "..snapData.VictimNeatName.." ["..snapData.VictimID.."]", "Impulse-Elements16-Shadow", 250, 120, Color(255, 0, 0))
+			draw.SimpleText("ATTACKER: "..snapData.InflictorNeatName.." ["..snapData.InflictorID.."]", "Impulse-Elements16-Shadow", 250, 140, Color(0, 255, 0))
+
+			for v,k in pairs(impulse.Ops.SnapshotEnts) do
+				local pos = (k:GetPos() + k:OBBCenter()):ToScreen()
+				local col = k:GetColor()
+
+				draw.SimpleText(k.IsVictim and snapData.VictimNeatName or snapData.InflictorNeatName, "Impulse-Elements18-Shadow", pos.x, pos.y, col, TEXT_ALIGN_CENTER)
+
+				if not k.IsVictim then
+					draw.SimpleText("WEP: "..snapData.AttackerClass, "Impulse-Elements18-Shadow", pos.x, pos.y + 20, col, TEXT_ALIGN_CENTER)
+				else
+					draw.SimpleText("HITGROUP: "..hitgroups[snapData.VictimHitGroup], "Impulse-Elements18-Shadow", pos.x, pos.y + 20, col, TEXT_ALIGN_CENTER)
 				end
 			end
 		end

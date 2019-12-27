@@ -5,6 +5,10 @@ end)
 net.Receive("impulseNotify", function(len)
 	local message = net.ReadString()
 
+	if not LocalPlayer() or not LocalPlayer().Notify then
+		return
+	end
+	
 	LocalPlayer():Notify(message)
 end)
 
