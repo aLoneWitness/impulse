@@ -77,6 +77,30 @@ function PANEL:Init()
 	local button = vgui.Create("DButton", self)
 	button:SetPos(100,280)
 	button:SetFont("Impulse-Elements32")
+	button:SetText("Achievements")
+	button:SizeToContents()
+
+	local normalCol = button:GetColor()
+	function button:Paint()
+		if self:IsHovered() then
+			self:SetColor(highlightCol)
+		else
+			self:SetColor(color_white)
+		end
+	end
+
+	function button:OnCursorEntered()
+		surface.PlaySound("ui/buttonrollover.wav")
+	end
+
+	function button:DoClick()
+		surface.PlaySound("ui/buttonclick.wav")
+		vgui.Create("impulseAchievements", selfPanel)
+	end
+
+	local button = vgui.Create("DButton", self)
+	button:SetPos(100,310)
+	button:SetFont("Impulse-Elements32")
 	button:SetText("Community")
 	button:SizeToContents()
 
@@ -100,7 +124,7 @@ function PANEL:Init()
 	end
 
 	local button = vgui.Create("DButton", self)
-	button:SetPos(100,310)
+	button:SetPos(100,340)
 	button:SetFont("Impulse-Elements32")
 	button:SetText("Donate")
 	button:SizeToContents()

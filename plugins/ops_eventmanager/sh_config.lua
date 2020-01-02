@@ -156,6 +156,35 @@ impulse.Ops.EventManager.Config.Events = {
 			impulse.hudEnabled = true
 		end
 	},
+	["webvideo"] = {
+		Cat = "ui",
+		Prop = {
+			["url"] = ".mp4 plz"
+		},
+		NeedUID = true,
+		Clientside = true,
+		Do = function(prop, uid)
+			local service = medialib.load("media").guessService(prop["url"])
+			local mediaclip = service:load(prop["url"])
+
+			OPS_VIDS = OPS_VIDS or {}
+
+			if OPS_VIDS[uid] then
+				OPS_VIDS[uid]:stop()
+				OPS_VIDS[uid] = nil
+			end
+
+			OPS_VIDS[uid] = mediaclip
+
+			mediaclip:play()
+
+			hook.Add("HUDPaint", "opsEMVideo", function()
+				if OPS_VIDS[uid] then
+					OPS_VIDS[uid]:draw(0, 0, w, h)
+				end
+			end)
+		end
+	},
 	["spawnent"] = {
 		Cat = "ent",
 		Prop = {
@@ -378,6 +407,19 @@ impulse.Ops.EventManager.Config.Events = {
 		Clientside = false,
 		Do = function(prop, uid)
 			RunConsoleCommand("changelevel", prop["map"])
+		end
+	},
+	["achievementgive"] = {
+		Cat = "server",
+		Prop = {
+			["achievementid"] = ""
+		},
+		NeedUID = false,
+		Clientside = false,
+		Do = function(prop, uid)
+			for v,k in pairs(player.GetAll()) do
+				k:AchievementGive(prop["achievementid"])
+			end
 		end
 	},
 	["playnpcscene"] = {

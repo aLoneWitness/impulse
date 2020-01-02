@@ -27,6 +27,10 @@ function impulse.Schema.Boot(name)
         if impulse.Config.MapWorkshopID then
             resource.AddWorkshop(impulse.Config.MapWorkshopID)
         end
+
+        if impulse.Config.MapContentWorkshopID then
+            resource.AddWorkshop(impulse.Config.MapContentWorkshopID)
+        end
     elseif CLIENT then
         include(mapPath)
         AddCSLuaFile(mapPath) 

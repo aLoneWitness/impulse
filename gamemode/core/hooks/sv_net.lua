@@ -64,6 +64,8 @@ util.AddNetworkString("impulseVendorSell")
 util.AddNetworkString("impulseRequestWhitelists")
 util.AddNetworkString("impulseViewWhitelists")
 util.AddNetworkString("impulseUnRestrain")
+util.AddNetworkString("impulseAchievementGet")
+util.AddNetworkString("impulseAchievementSync")
 
 local AUTH_FAILURE = "Invalid argument (rejoin to continue)"
 

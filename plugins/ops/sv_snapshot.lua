@@ -16,6 +16,11 @@ hook.Add("PlayerDeath", "opsDeathSnapshot", function(victim, attacker, inflictor
 	snapshot.VictimEyeAng = victim:EyeAngles()
 	snapshot.VictimModel = victim:GetModel()
 	snapshot.VictimHitGroup = victim:LastHitGroup()
+	snapshot.VictimBodygroups = {}
+
+	for v,k in pairs(victim:GetBodyGroups()) do
+		snapshot.VictimBodygroups[k[1]] = victim:GetBodygroup(k[1])
+	end
 
 	snapshot.Inflictor = inflictor
 	snapshot.InflictorID = inflictor:SteamID()
@@ -26,6 +31,12 @@ hook.Add("PlayerDeath", "opsDeathSnapshot", function(victim, attacker, inflictor
 	snapshot.InflictorEyePos = inflictor:EyePos()
 	snapshot.InflictorEyeAng = inflictor:EyeAngles()
 	snapshot.InflictorModel = inflictor:GetModel()
+	snapshot.InflictorHealth = inflictor:Health()
+	snapshot.InflictorBodygroups = {}
+
+	for v,k in pairs(inflictor:GetBodyGroups()) do
+		snapshot.InflictorBodygroups[k[1]] = inflictor:GetBodygroup(k[1])
+	end
 
 	if attacker:IsPlayer() then
 		snapshot.AttackerClass = IsValid(attacker:GetActiveWeapon()) and attacker:GetActiveWeapon():GetClass() or 'unknown'

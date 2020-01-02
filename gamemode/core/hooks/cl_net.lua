@@ -438,3 +438,28 @@ net.Receive("impulseInvContainerSetCode", function()
 			net.SendToServer()
 		end, nil, "Set Passcode")
 end)
+
+net.Receive("impulseAchievementGet", function()
+	local achievementCode = net.ReadString()
+
+	if not impulse.Achievements then
+		return
+	end
+
+	local get = vgui.Create("impulseAchievementNotify")
+	get:SetAchivement(achievementCode)
+
+	impulse.Achievements[achievementCode] = math.floor(os.time())
+end)
+
+net.Receive("impulseAchievementSync", function()
+	impulse.Achievements = {}
+	local count = net.ReadUInt(8)
+
+	for i=1, count do
+		local id = net.ReadString()
+		local time = net.ReadUInt(32)
+
+		impulse.Achievements[id] = time
+	end
+end)

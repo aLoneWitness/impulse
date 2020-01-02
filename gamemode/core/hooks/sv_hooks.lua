@@ -230,6 +230,22 @@ function impulse.SetupPlayer(ply, dbData)
 	ply.impulseData = data
 	ply.impulseID = dbData.id
 
+	if ply.impulseData and ply.impulseData.Achievements then
+		local count = table.Count(ply.impulseData.Achievements)
+
+		if count > 0 then
+			net.Start("impulseAchievementSync")
+			net.WriteUInt(count, 8)
+
+			for v,k in pairs(ply.impulseData.Achievements) do
+				net.WriteString(v)
+				net.WriteUInt(k, 32)
+			end
+
+			net.Send(ply)
+		end
+	end
+
 	local skills = util.JSONToTable(dbData.skills) or {}
 
 	ply.impulseSkills = skills

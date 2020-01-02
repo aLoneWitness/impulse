@@ -21,12 +21,20 @@ function impulse.Ops.StartSnapshot(id)
 	victim:SetColor(Color(255, 0, 0))
 	victim.IsVictim = true
 
+	for v,k in pairs(data.VictimBodygroups) do
+		victim:SetBodygroup(v, k)
+	end
+
 	table.insert(impulse.Ops.SnapshotEnts, victim)
 
 	local attacker = ClientsideModel(data.InflictorModel, RENDERGROUP_OPAQUE)
 	attacker:SetPos(data.InflictorPos)
 	attacker:SetAngles(data.InflictorAng)
 	attacker:SetColor(Color(0, 255, 0))
+
+	for v,k in pairs(data.InflictorBodygroups) do
+		attacker:SetBodygroup(v, k)
+	end
 
 	table.insert(impulse.Ops.SnapshotEnts, attacker)
 end

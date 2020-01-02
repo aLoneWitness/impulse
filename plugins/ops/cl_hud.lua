@@ -92,6 +92,7 @@ hook.Add("HUDPaint", "impulseOpsHUD", function()
 
 				if not k.IsVictim then
 					draw.SimpleText("WEP: "..snapData.AttackerClass, "Impulse-Elements18-Shadow", pos.x, pos.y + 20, col, TEXT_ALIGN_CENTER)
+					draw.SimpleText("HP: "..snapData.InflictorHealth, "Impulse-Elements18-Shadow", pos.x, pos.y + 40, col, TEXT_ALIGN_CENTER)
 				else
 					draw.SimpleText("HITGROUP: "..hitgroups[snapData.VictimHitGroup], "Impulse-Elements18-Shadow", pos.x, pos.y + 20, col, TEXT_ALIGN_CENTER)
 				end
