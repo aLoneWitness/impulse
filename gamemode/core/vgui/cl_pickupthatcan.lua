@@ -117,6 +117,7 @@ function PANEL:GameOver(win)
 	title:Dock(TOP)
 	if win then
 		title:SetText("YOU WIN!!!!")
+		hook.Run("PickUpThatCanWin")
 	else
 		title:SetText("GAME OVER")
 	end
@@ -220,14 +221,14 @@ function PANEL:SpawnBin()
 
 	function self.bin:Think()
 		local x, y = self:GetPos()
-		local s = 300
+		local s = 360
 
 		self:MoveToFront()
 
 		if input.IsKeyDown(KEY_LEFT) then
 			self:SetPos(math.Clamp(x - (FrameTime() * s), 0, 400), y)
 		elseif input.IsKeyDown(KEY_RIGHT) then
-			self:SetPos(math.Clamp(x + (FrameTime() * 600), 0, 400), y) -- idk why but right is slow af lol
+			self:SetPos(math.Clamp(x + (FrameTime() * 630), 0, 400), y) -- idk why but right is slow af lol
 		end
 	end
 	

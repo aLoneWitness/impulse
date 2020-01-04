@@ -5,6 +5,7 @@ function PANEL:Init()
 	self:SetSize(520, 120)
 	self:CenterHorizontal()
 	self:CenterVertical(0.85)
+	self:MoveToFront()
 
 	self:AlphaTo(255, 3, 0, function() self:AlphaTo(0, 3, 4, function() self:Remove() end) end)
 	surface.PlaySound("buttons/blip1.wav")

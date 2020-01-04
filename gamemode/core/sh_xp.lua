@@ -19,6 +19,8 @@ if SERVER then
 		local setAmount = self:GetXP() + amount
 
 		self:SetXP(setAmount)
+
+		hook.Run("PlayerGetXP", self, amount)
 	end
 
 	function meta:GiveTimedXP()

@@ -129,7 +129,8 @@ net.Receive("impulseCharacterCreate", function(len, ply)
 					model = charModel,
 					data = "[]",
 					skills = "[]",
-					skin = charSkin
+					skin = charSkin,
+					firstjoin = timestamp
 				}
 
 				print("[impulse] "..plyID.." has been submitted to the database. RP Name: ".. charName)
@@ -521,6 +522,8 @@ net.Receive("impulseDoorAdd", function(len, ply)
 		target:SetDoorUser(traceEnt)
 
 		ply:Notify("You have added "..target:Nick().." to this door for "..impulse.Config.CurrencyPrefix..cost..".")
+
+		hook.Run("PlayerAddUserToDoor", ply, owners)
 	end
 end)
 
@@ -1049,6 +1052,8 @@ net.Receive("impulseMixTry", function(len, ply)
 			end
 			
 			ply:AddSkillXP("craft", xp)
+
+			hook.Run("PlayerCraftItem", ply, mixClass.Output)
 		end
 	end)
 

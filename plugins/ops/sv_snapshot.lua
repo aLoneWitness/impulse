@@ -19,7 +19,7 @@ hook.Add("PlayerDeath", "opsDeathSnapshot", function(victim, attacker, inflictor
 	snapshot.VictimBodygroups = {}
 
 	for v,k in pairs(victim:GetBodyGroups()) do
-		snapshot.VictimBodygroups[k[1]] = victim:GetBodygroup(k[1])
+		snapshot.VictimBodygroups[k.id] = victim:GetBodygroup(k.id)
 	end
 
 	snapshot.Inflictor = inflictor
@@ -35,7 +35,7 @@ hook.Add("PlayerDeath", "opsDeathSnapshot", function(victim, attacker, inflictor
 	snapshot.InflictorBodygroups = {}
 
 	for v,k in pairs(inflictor:GetBodyGroups()) do
-		snapshot.InflictorBodygroups[k[1]] = inflictor:GetBodygroup(k[1])
+		snapshot.InflictorBodygroups[k.id] = inflictor:GetBodygroup(k.id)
 	end
 
 	if attacker:IsPlayer() then

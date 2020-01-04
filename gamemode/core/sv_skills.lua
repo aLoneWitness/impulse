@@ -44,5 +44,6 @@ function meta:AddSkillXP(name, value)
 
 	if cur != new then
 		self:SetSkillXP(name, new)
+		hook.Run("PlayerAddSkillXP", self, new, name)
 	end
 end

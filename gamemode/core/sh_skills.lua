@@ -48,6 +48,6 @@ function meta:GetSkillLevel(name)
 end
 
 impulse.Skills.Define("craft", "Crafting")
-impulse.Skills.Define("medicine", "Medicine")
+--impulse.Skills.Define("medicine", "Medicine")
 impulse.Skills.Define("strength", "Strength")
 impulse.Skills.Define("lockpick", "Lockpicking")

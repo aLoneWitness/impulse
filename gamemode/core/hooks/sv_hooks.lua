@@ -24,6 +24,7 @@ function IMPULSE:PlayerInitialSpawn(ply)
 	query:Select("skin")
 	query:Select("data")
 	query:Select("skills")
+	query:Select("firstjoin")
 	query:Where("steamid", ply:SteamID())
 	query:Callback(function(result)
 		if IsValid(ply) and type(result) == "table" and #result > 0 then -- if player exists in db
@@ -259,6 +260,8 @@ function impulse.SetupPlayer(ply, dbData)
 		ply:SetUserGroup(dbData.group)
 	end
 
+	ply.impulseFirstJoin = dbData.firstjoin
+
 	ply.defaultModel = dbData.model
 	ply.defaultSkin = dbData.skin
 	ply.defaultRPName = dbData.rpname
@@ -323,6 +326,14 @@ function impulse.SetupPlayer(ply, dbData)
 
 	ply.beenSetup = true
 	hook.Run("PostSetupPlayer", ply)
+end
+
+function IMPULSE:PostSetupPlayer(ply)
+	ply.impulseData.Achievements = ply.impulseData.Achievements or {}
+
+	for v,k in pairs(impulse.Config.Achievements) do
+		ply:AchievementCheck(v)
+	end
 end
 
 function IMPULSE:ShowHelp()
