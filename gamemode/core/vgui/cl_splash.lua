@@ -22,12 +22,19 @@ function PANEL:OnKeyCodeReleased()
 
 	hook.Run("PostReloadToolsMenu")
 
-	if impulse_isNewPlayer then
+	if impulse_isNewPlayer or (cookie.GetString("impulse_em_do_intro") or "") == "true" then
+		if (cookie.GetString("impulse_em_do_intro") or "") == "true" then
+			cookie.Delete("impulse_em_do_intro")	
+		end
+
 		impulse.Scenes.PlaySet(impulse.Config.IntroScenes, impulse.Config.IntroMusic, function()
 			local mainMenu = vgui.Create("impulseMainMenu")
 			mainMenu:SetAlpha(0)
 			mainMenu:AlphaTo(255, 1)
 		end)
+
+		net.Start("impulseOpsEMIntroCookie")
+		net.SendToServer()
 	else
 		vgui.Create("impulseMainMenu")
 	end

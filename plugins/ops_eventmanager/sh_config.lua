@@ -6,7 +6,8 @@ impulse.Ops.EventManager.Config.CategoryIcons = {
 	["server"] = "icon16/server.png",
 	["scene"] = "icon16/film.png",
 	["npc"] = "icon16/user.png",
-	["ent"] = "icon16/brick.png"
+	["ent"] = "icon16/brick.png",
+	["cookies"] = "icon16/database.png"
 }
 
 impulse.Ops.EventManager.Config.Events = {
@@ -422,6 +423,18 @@ impulse.Ops.EventManager.Config.Events = {
 			end
 		end
 	},
+	["setcookie"] = {
+		Cat = "cookies",
+		Prop = {
+			["name"] = "do_intro",
+			["value"] = ""
+		},
+		NeedUID = false,
+		Clientside = true,
+		Do = function(prop, uid)
+			cookie.Set("impulse_em_"..prop["name"], prop["value"])
+		end
+	},
 	["playnpcscene"] = {
 		Cat = "npc",
 		Prop = {
@@ -442,6 +455,64 @@ impulse.Ops.EventManager.Config.Events = {
 					OPS_NPCS[uid]:PlayScene(prop["scene"])
 				end
 			end
+		end
+	},
+	["headcrabcanister"] = {
+		Cat = "npc",
+		Prop = {
+			["pos"] = Vector(0, 0, 0),
+			["ang"] = Vector(-20.139978, 28.500559, 0),
+			["headcrabtype"] = 0,
+			["count"] = 4,
+			["speed"] = 3000,
+			["time"] = 5,
+			["damage"] = 50,
+			["radius"] = 750,
+			["duration"] = 30,
+			["smoke"] = 0
+ 		},
+ 		NeedUID = true,
+ 		Clientside = false,
+ 		Do = function(prop, uid)
+ 			OPS_NPCS = OPS_NPCS or {}
+
+ 			if OPS_NPCS[uid] and IsValid(OPS_NPCS[uid]) then
+ 				OPS_NPCS[uid]:Remove()
+ 			end
+
+ 			OPS_NPCS[uid] = MakeHeadcrabCanister(
+ 				"models/props_combine/headcrabcannister01b.mdl",
+ 				prop["pos"],
+ 				Angle(prop["ang"].x, prop["ang"].y, prop["ang"].z),
+ 				nil,
+ 				nil,
+ 				nil,
+ 				nil,
+ 				prop["headcrabtype"],
+ 				prop["count"],
+ 				prop["speed"],
+ 				prop["time"],
+ 				nil,
+ 				prop["damage"],
+ 				prop["radius"],
+ 				prop["duration"],
+ 				nil,
+ 				prop["smoke"]
+ 			)
+
+ 			OPS_NPCS[uid]:Fire("FireCanister")
+ 		end
+	},
+	["citycodeset"] = {
+		Cat = "server",
+		Prop = {
+			["code"] = 1
+		},
+		NeedUID = false,
+		Clientside = false,
+		Do = function(prop, uid)
+			impulse.Dispatch.SetCityCode(prop["code"])
+			impulse.Dispatch.SetupCityCode(prop["code"])
 		end
 	},
 	["playscene"] = {

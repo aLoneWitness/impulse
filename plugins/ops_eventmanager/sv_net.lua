@@ -4,6 +4,7 @@ util.AddNetworkString("impulseOpsEMUpdateEvent")
 util.AddNetworkString("impulseOpsEMPlaySequence")
 util.AddNetworkString("impulseOpsEMStopSequence")
 util.AddNetworkString("impulseOpsEMClientsideEvent")
+util.AddNetworkString("impulseOpsEMIntroCookie")
 
 net.Receive("impulseOpsEMPushSequence", function(len, ply)
 	if (ply.nextOpsEMPush or 0) > CurTime() then return end
@@ -82,4 +83,20 @@ net.Receive("impulseOpsEMStopSequence", function(len, ply)
 
 	print("[ops-em] Stopping sequence "..seqName.." (by "..ply:SteamName()..").")
 	ply:Notify("Stopped sequence "..seqName..".")
+end)
+
+net.Receive("impulseOpsEMIntroCookie", function(len, ply)
+	if ply.usedIntroCookie or not impulse.Ops.EventManager.GetEventMode() then
+		return
+	end
+	
+	ply.usedIntroCookie = true
+
+	ply:AllowScenePVSControl(true)
+
+	timer.Simple(900, function()
+		if IsValid(ply) then
+			ply:AllowScenePVSControl(false)
+		end
+	end)
 end)
