@@ -54,6 +54,12 @@ function meta:CanBecomeTeam(teamID, notify)
 		return false
 	end
 
+	local canSwitch = hook.Run("CanPlayerChangeTeam", ply, teamID)
+
+	if canSwitch != nil and canSwitch == false then
+		return false
+	end
+
 	if teamData.xp and teamData.xp > self:GetXP() then
 		if notify then self:Notify("You don't have the XP required to play as this team.") end
 		return false

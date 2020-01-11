@@ -442,7 +442,12 @@ function meta:DropInventoryItem(itemid)
 
 	self.DroppedItemsC = self.DroppedItemsC + 1
 	self.DroppedItems[self.DroppedItemsCA] = ent
+	self.NextItemDrop = CurTime() + 2
 	ent.DropIndex = self.DroppedItemsCA
+
+	if self.DroppedItemsC > 5 and ((self.NextItemDrop or 0) > CurTime() or self.DroppedItemsC > 14) then -- prevents lag
+		ent:SetCollisionGroup(COLLISION_GROUP_WORLD)
+	end
 end
 
 function meta:UseInventoryItem(itemid)

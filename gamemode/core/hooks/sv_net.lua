@@ -1300,7 +1300,7 @@ net.Receive("impulseUnRestrain", function(len, ply)
 	ent:UnArrest()
 
 	ply:Notify("You have released "..ent:Name()..".")
-	ent:Notify("You have been released by"..ply:Name()..".")
+	ent:Notify("You have been released by "..ply:Name()..".")
 
 	hook.Run("PlayerUnArrested", ent, ply)
 	hook.Run("PlayerUnRestrain", ply, ent)

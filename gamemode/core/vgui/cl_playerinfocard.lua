@@ -59,10 +59,12 @@ local quickTools = {
 		end
 	},
 	{
-		name = "View record",
-		icon = "icon16/folder_magnify.png",
+		name = "Combine Ban",
+		icon = "icon16/group_delete.png",
 		onRun = function(ply, sid)
-			LocalPlayer():ConCommand("say /viewrecord "..sid)
+			Derma_StringRequest("impulse", "Enter the length (in minutes) (1 WEEK MAX):", "", function(length)
+				LocalPlayer():ConCommand("say /viewrecord "..sid.." "..length)
+			end)
 		end
 	},
 	{

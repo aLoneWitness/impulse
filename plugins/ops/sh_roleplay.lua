@@ -92,6 +92,27 @@ local forceLockCommand = {
 
 impulse.RegisterChatCommand("/forcelock", forceLockCommand)
 
+local removeDoorCommand = {
+    description = "Removed a bugged door spawned with the door tool.",
+    adminOnly = true,
+    onRun = function(ply, arg, rawText)
+		local door = ply:GetEyeTrace().Entity
+
+		if not door or not IsValid(door) or (not door:IsDoor() and not door:IsPropDoor()) then
+			return ply:Notify("You are not looking at a door.")
+		end
+
+		if door:MapCreationID() != -1 then
+			return ply:Notify("This is a map door, you can not remove it.")
+		end
+
+		door:Remove()
+		ply:Notify("Door removed.")
+    end
+}
+
+impulse.RegisterChatCommand("/removebuggeddoor", removeDoorCommand)
+
 local sellDoorCommand = {
     description = "Sells the door you are looking at.",
     adminOnly = true,

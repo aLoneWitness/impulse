@@ -20,6 +20,8 @@ function IMPULSE:StartCommand(ply, cmd)
 
 			cmd:SetViewAngles((dragger:GetShootPos() - ply:GetShootPos()):GetNormalized():Angle())
 		end
+	else
+		cmd:RemoveKey(IN_ZOOM)
 	end
 end
 
