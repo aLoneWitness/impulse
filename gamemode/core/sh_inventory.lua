@@ -21,11 +21,15 @@ function impulse.RegisterItem(item)
 	local class = item.WeaponClass
 
 	if class then
-		function item:OnEquip(ply)
+		function item:OnEquip(ply, itemclass, uid)
 			local wep = ply:Give(class)
 
 			if wep and IsValid(wep) then
-				wep:SetClip1(self.clip or 0)
+				wep:SetClip1(item.WeaponOverrideClip or self.clip or 0)
+
+				if item.WeaponOverrideClip then
+					wep.PairedItem = uid
+				end
 			end
 		end
 

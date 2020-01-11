@@ -63,7 +63,7 @@ local quickTools = {
 		icon = "icon16/group_delete.png",
 		onRun = function(ply, sid)
 			Derma_StringRequest("impulse", "Enter the length (in minutes) (1 WEEK MAX):", "", function(length)
-				LocalPlayer():ConCommand("say /viewrecord "..sid.." "..length)
+				LocalPlayer():ConCommand("say /combineban "..sid.." "..length)
 			end)
 		end
 	},

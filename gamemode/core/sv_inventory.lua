@@ -370,13 +370,13 @@ function meta:SetInventoryItemEquipped(itemid, state)
 		if itemclass.EquipGroup then
 			self.InventoryEquipGroups[itemclass.EquipGroup] = itemid
 		end
-		onEquip(item, self, itemclass)
+		onEquip(item, self, itemclass, itemid)
 		self:EmitBudgetSound("impulse/equip.wav", 900)
 	elseif unEquip then
 		if itemclass.EquipGroup then
 			self.InventoryEquipGroups[itemclass.EquipGroup] = nil
 		end
-		unEquip(item, self, itemclass)
+		unEquip(item, self, itemclass, itemid)
 		self:EmitBudgetSound("impulse/unequip.wav", 900)
 	end
 

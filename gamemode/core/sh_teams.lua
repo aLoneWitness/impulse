@@ -54,7 +54,7 @@ function meta:CanBecomeTeam(teamID, notify)
 		return false
 	end
 
-	local canSwitch = hook.Run("CanPlayerChangeTeam", ply, teamID)
+	local canSwitch = hook.Run("CanPlayerChangeTeam", self, teamID)
 
 	if canSwitch != nil and canSwitch == false then
 		return false
