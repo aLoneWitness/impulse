@@ -1113,6 +1113,25 @@ net.Receive("impulseVendorBuy", function(len, ply)
 		end
 	end
 
+	if sellData.CanBuy and sellData.CanBuy(ply) == false then
+		return
+	end
+
+	if not ply:CanHoldItem(itemclass) then
+		return ply:Notify("You don't have enough inventory space to hold this item.")
+	end
+
+	if sellData.Cooldown then
+		ply.VendorCooldowns = ply.VendorCooldowns or {}
+		local cooldown = ply.VendorCooldowns[itemclass]
+
+		if cooldown and cooldown > CurTime() then
+			return ply:Notify("Please wait "..string.NiceTime(cooldown - CurTime()).." before attempting to purchase this item again.")
+		else
+			ply.VendorCooldowns[itemclass] = CurTime() + sellData.Cooldown
+		end
+	end
+
 	if sellData.BuyMax then
 		ply.VendorBuyMax = ply.VendorBuyMax or {}
 		local tMax = ply.VendorBuyMax[itemclass]
@@ -1151,25 +1170,6 @@ net.Receive("impulseVendorBuy", function(len, ply)
 				ply.VendorBuyMax[itemclass].Cooldown = cooldown
 			end 
 		end
-	end
-
-	if sellData.Cooldown then
-		ply.VendorCooldowns = ply.VendorCooldowns or {}
-		local cooldown = ply.VendorCooldowns[itemclass]
-
-		if cooldown and cooldown > CurTime() then
-			return ply:Notify("Please wait "..string.NiceTime(cooldown - CurTime()).." before attempting to purchase this item again.")
-		else
-			ply.VendorCooldowns[itemclass] = CurTime() + sellData.Cooldown
-		end
-	end
-
-	if sellData.CanBuy and sellData.CanBuy(ply) == false then
-		return
-	end
-
-	if not ply:CanHoldItem(itemclass) then
-		return ply:Notify("You don't have enough inventory space to hold this item.")
 	end
 
 	local item = impulse.Inventory.Items[impulse.Inventory.ClassToNetID(itemclass)]
