@@ -220,7 +220,18 @@ function IMPULSE:PlayerLoadout(ply)
 end
 
 function impulse.SetupPlayer(ply, dbData)
-	if not ply:IsDonator() and player.GetCount() >= (impulse.Config.UserSlots or 9999) then
+	local totalCount = player.GetCount()
+	local donorCount = 0
+
+	for v,k in pairs(player.GetAll()) do
+		if k:IsDonator() then
+			donorCount = donorCount + 1
+		end
+	end
+
+	local userCount = totalCount - donorCount
+
+	if not ply:IsDonator() and userCount >= (impulse.Config.UserSlots or 9999) then
 		ply:Kick("The server is currently at full user capacity. Donate at panel.impulse-community.com to access additional donator slots")
 		return
 	end
