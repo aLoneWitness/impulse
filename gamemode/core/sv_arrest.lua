@@ -142,7 +142,8 @@ function meta:UnJail()
 	impulse.Arrest.Prison[self.InJail][self:EntIndex()] = nil
 	self.InJail = nil
 
-	if not self.JailEscaped then
+	if self.JailEscaped then
+		self.JailEscaped = false
 		return
 	end
 
