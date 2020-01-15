@@ -2,6 +2,11 @@
 
 local PANEL = {}
 
+local otaModels = {
+	["models/combine_soldier.mdl"] = true,
+	["models/combine_soldier_prisonguard.mdl"] = true,
+	["models/combine_super_soldier.mdl"] = true
+}
 function PANEL:Init()
 	self.OldSetModel = self.SetModel
 	self.SetModel = function(self, model, skin, hidden)
@@ -15,7 +20,7 @@ function PANEL:Init()
 
 		local sequence = entity:SelectWeightedSequence(ACT_IDLE)
 
-		if (sequence <= 0) then
+		if otaModels[model] or (sequence <= 0) then
 			sequence = entity:LookupSequence("idle_unarmed")
 		end
 

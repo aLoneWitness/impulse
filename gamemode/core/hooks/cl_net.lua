@@ -153,7 +153,12 @@ net.Receive("impulseInvMove", function()
 		local invStorageScroll = impulse_storage.invStorageScroll:GetVBar():GetScroll()
 
 		impulse_storage:SetupItems(invScroll, invStorageScroll)
-		surface.PlaySound("physics/wood/wood_crate_impact_hard2.wav")
+
+		if (NEXT_MOVENOISE or 0) < CurTime() then -- to stop ear rape when mass moving items
+			surface.PlaySound("physics/wood/wood_crate_impact_hard2.wav")
+		end
+
+		NEXT_MOVENOISE = CurTime() + 0.2
 	end
 end)
 

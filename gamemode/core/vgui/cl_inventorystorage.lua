@@ -54,45 +54,37 @@ function PANEL:Init()
   	local realInvStorage = impulse.Inventory.Data[0][2]
  	local localInvStorage = table.Copy(impulse.Inventory.Data[0][2]) or {}
  	local reccurTemp = {}
+  	local sortMethod = impulse.GetSetting("inv_sortweight", "Inventory only")
+ 	local invertSort = true
 
  	for v,k in pairs(localInv) do -- fix for fucking table.sort desyncing client/server itemids!!!!!!!
  		k.realKey = v
 
- 		reccurTemp[k.id] = (reccurTemp[k.id] or 0) + (impulse.Inventory.Items[k.id].Weight or 0)
- 		k.sortWeight = reccurTemp[k.id]
+ 		if sortMethod == "Always" or sortMethod == "Containers only" then
+ 			reccurTemp[k.id] = (reccurTemp[k.id] or 0) + (impulse.Inventory.Items[k.id].Weight or 0)
+ 			k.sortWeight = reccurTemp[k.id]
+ 		else
+ 			k.sortWeight = impulse.Inventory.Items[k.id].Name
+ 			invertSort = false
+ 		end
  	end
-
- 	-- if impulse.GetSetting("inv_sortbyweight") then -- super messy sorting systems for the tables below
- 	-- 	table.sort(localInv, function(a, b)
- 	-- 		if not a or not b then -- worst sorting system ever gives fucking errors for no reason what the fuck so i added this
- 	-- 			return	
- 	-- 		end
-
- 	-- 		return a.sortWeight > b.sortWeight
- 	-- 	end)
- 	-- end
 
  	local reccurTemp = {}
 
  	for v,k in pairs(localInvStorage) do
  		k.realKey = v
 
- 		reccurTemp[k.id] = (reccurTemp[k.id] or 0) + (impulse.Inventory.Items[k.id].Weight or 0)
- 		k.sortWeight = reccurTemp[k.id]
+ 		if sortMethod == "Always" or sortMethod == "Containers only" then
+ 			reccurTemp[k.id] = (reccurTemp[k.id] or 0) + (impulse.Inventory.Items[k.id].Weight or 0)
+ 			k.sortWeight = reccurTemp[k.id]
+ 		else
+ 			k.sortWeight = impulse.Inventory.Items[k.id].Name
+ 			invertSort = false
+ 		end
  	end
 
- 	-- if impulse.GetSetting("inv_sortbyweight") then
- 	-- 	table.sort(localInvStorage, function(a, b)
- 	-- 		if not a or not b then
- 	-- 			return	
- 	-- 		end
-
- 	-- 		return a.sortWeight > b.sortWeight
- 	-- 	end)
- 	-- end
-
  	if localInv and table.Count(localInv) > 0 then
-	 	for v,k in SortedPairsByMemberValue(localInv, "sortWeight", true) do
+	 	for v,k in SortedPairsByMemberValue(localInv, "sortWeight", invertSort) do
 	 		local otherItem = self.items[k.id]
 	 		local itemX = impulse.Inventory.Items[k.id]
 
@@ -121,7 +113,7 @@ function PANEL:Init()
 	end
 
 	if localInvStorage and table.Count(localInvStorage) > 0 then
-	  	for v,k in SortedPairsByMemberValue(localInvStorage, "sortWeight", true) do
+	  	for v,k in SortedPairsByMemberValue(localInvStorage, "sortWeight", invertSort) do
 	 		local otherItem = self.itemsStorage[k.id]
 	 		local itemX = impulse.Inventory.Items[k.id]
 

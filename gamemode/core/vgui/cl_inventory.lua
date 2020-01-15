@@ -87,6 +87,10 @@ end
 function PANEL:SetupItems()
 	local w, h = self:GetSize()
 
+	if self.tabs and IsValid(self.tabs) then
+		self.tabs:Remove()
+	end
+
  	self.tabs = vgui.Create("DPropertySheet", self)
  	self.tabs:SetPos(270, 40)
  	self.tabs:SetSize(w - 270, h - 42)
@@ -114,17 +118,24 @@ function PANEL:SetupItems()
  	local equipTemp = {}
 
  	local shouldSortEq = impulse.GetSetting("inv_sortequippablesattop", true)
+ 	local sortMethod = impulse.GetSetting("inv_sortweight", "Inventory only")
+ 	local invertSort = true
 
  	for v,k in pairs(localInv) do -- fix for fucking table.sort desyncing client/server itemids!!!!!!!
  		k.realKey = v
 
- 		reccurTemp[k.id] = (reccurTemp[k.id] or 0) + (impulse.Inventory.Items[k.id].Weight or 0)
- 		k.sortWeight = reccurTemp[k.id]
+ 		if sortMethod == "Always" or sortMethod == "Inventory only" then
+ 			reccurTemp[k.id] = (reccurTemp[k.id] or 0) + (impulse.Inventory.Items[k.id].Weight or 0)
+ 			k.sortWeight = reccurTemp[k.id]
+ 		else
+ 			k.sortWeight = impulse.Inventory.Items[k.id].Name
+ 			invertSort = false
+ 		end
  	end
 
  	if localInv and table.Count(localInv) > 0 then
  		if shouldSortEq then
-	 		for v,k in SortedPairsByMemberValue(localInv, "sortWeight", true) do
+	 		for v,k in SortedPairsByMemberValue(localInv, "sortWeight", invertSort) do
 	 			if not k.equipped then continue end
 	 			local itemX = impulse.Inventory.Items[k.id]
 
@@ -141,7 +152,7 @@ function PANEL:SetupItems()
 	 		end
 	 	end
  		
-	 	for v,k in SortedPairsByMemberValue(localInv, "sortWeight", true) do -- 01 is player 0 (localplayer) and storage 1 (local inv)
+	 	for v,k in SortedPairsByMemberValue(localInv, "sortWeight", invertSort) do -- 01 is player 0 (localplayer) and storage 1 (local inv)
 	 		if shouldSortEq and k.equipped then continue end
 	 		local otherItem = self.items[k.id]
 	 		local itemX = impulse.Inventory.Items[k.id]

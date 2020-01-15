@@ -47,6 +47,10 @@ function PANEL:SetItem(netitem, wide)
 		panel:OnMousePressed()
 	end
 
+	function self.model:DoRightClick()
+		panel:OnMousePressed(MOUSE_RIGHT)
+	end
+
 	local camPos = self.model.Entity:GetPos()
 	camPos:Add(Vector(0, 25, 25))
 
@@ -153,13 +157,62 @@ function PANEL:OnMousePressed(keycode)
 
 	if self.Basic then
 		local invid = self.InvID
+		local count = self.Count
 
-		net.Start("impulseInvDoMove")
-		net.WriteUInt(invid, 10)
-		net.WriteUInt(self.Type, 4)
-		net.SendToServer()
+		if keycode == MOUSE_RIGHT and count > 1 then
+			local m = DermaMenu(self)
+			local opt
 
-		return
+			local function moveItems(panel)
+				if not IsValid(self) then
+					return
+				end
+
+				local amount = panel.Moving or 2
+
+				if self.Count < amount then
+					return
+				end 
+
+				net.Start("impulseInvDoMoveMass")
+				net.WriteUInt(impulse.Inventory.ClassToNetID(self.Item.UniqueID), 10)
+				net.WriteUInt(amount, 8)
+				net.WriteUInt(self.Type, 4)
+				net.SendToServer()
+			end
+
+			if count >= 2 then
+				opt = m:AddOption("Move 2", moveItems)
+				opt.Moving = 2
+				opt:SetIcon("icon16/arrow_right.png")
+			end
+			if count >= 5 then
+				opt = m:AddOption("Move 5", moveItems)
+				opt.Moving = 5
+				opt:SetIcon("icon16/arrow_right.png")
+			end
+			if count >= 10 then
+				opt = m:AddOption("Move 10", moveItems)
+				opt.Moving = 10
+				opt:SetIcon("icon16/arrow_right.png")
+			end
+			if count >= 15 then
+				opt = m:AddOption("Move 15", moveItems)
+				opt.Moving = 15
+				opt:SetIcon("icon16/arrow_right.png")
+			end
+
+			m:Open()
+
+			return
+		else
+			net.Start("impulseInvDoMove")
+			net.WriteUInt(invid, 10)
+			net.WriteUInt(self.Type, 4)
+			net.SendToServer()
+
+			return
+		end
 	end
 
 	local popup = DermaMenu(self)

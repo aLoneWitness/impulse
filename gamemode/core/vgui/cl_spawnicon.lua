@@ -32,6 +32,7 @@ function PANEL:Init()
 
 		if (sequence > 0) then
 			entity:ResetSequence(sequence)
+			entity:SetPlaybackRate(0)
 		else
 			local found = false
 
@@ -86,7 +87,7 @@ function PANEL:SetHidden(hidden)
 	end
 end
 
-function PANEL:LayoutEntity()
+function PANEL:LayoutEntity(ent)
 	self:RunAnimation()
 end
 

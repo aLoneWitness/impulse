@@ -198,6 +198,7 @@ function IMPULSE:HUDPaint()
 		end
 
 		fde = math.Clamp(fde + ft * .2, 0, 1)
+		painFde = 0.7
 
 		surface.SetDrawColor(0, 0, 0, math.ceil(fde * 255))
 		surface.DrawRect(-1, -1, ScrW() +2, ScrH() +2)

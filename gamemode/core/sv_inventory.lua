@@ -132,6 +132,24 @@ function meta:HasInventoryItem(itemclass, amount)
 	return false
 end
 
+function meta:HasInventoryItemStorage(itemclass, amount)
+	local has = self.InventoryStorageRegister[itemclass]
+
+	if amount then
+		if has and has >= amount then
+			return true, has
+		else
+			return false, has
+		end
+	end
+
+	if has then
+		return true, has
+	end
+
+	return false
+end
+
 function meta:HasInventoryItemSpecific(id, storetype)
 	if not self.beenInvSetup then return false end
 	local storetype = storetype or 1
@@ -208,6 +226,7 @@ function meta:GiveInventoryItem(itemclass, storetype, restricted, isLoaded, movi
 		self.InventoryRegister[itemclass] = (self.InventoryRegister[itemclass] or 0) + 1 -- use a register that copies the actions of the real inv for search efficiency
 	elseif storetype == 2 then
 		self.InventoryWeightStorage = self.InventoryWeightStorage + weight
+		self.InventoryStorageRegister[itemclass] = (self.InventoryStorageRegister[itemclass] or 0) + 1 -- use a register that copies the actions of the real inv for search efficiency
 	end
 
 	if not moving then
@@ -248,6 +267,13 @@ function meta:TakeInventoryItem(invid, storetype, moving)
 
 		if self.InventoryRegister[item.class] < 1 then -- any negative values to be removed
 			self.InventoryRegister[item.class] = nil
+		end
+	elseif storetype == 2 then
+		local regvalue = self.InventoryStorageRegister[item.class]
+		self.InventoryStorageRegister[item.class] = regvalue - 1
+
+		if self.InventoryStorageRegister[item.class] < 1 then -- any negative values to be removed
+			self.InventoryStorageRegister[item.class] = nil
 		end
 	end
 
@@ -493,6 +519,31 @@ function meta:MoveInventoryItem(itemid, from, to)
 	net.WriteUInt(from, 4)
 	net.WriteUInt(to, 4)
 	net.Send(self)
+end
+
+function meta:MoveInventoryItemMass(itemclass, from, to, amount)
+	impulse.Inventory.DBUpdateStoreType(self.impulseID, itemclass, amount, from, to)
+
+	local takes = 0
+	for v,k in pairs(self:GetInventory(from)) do
+		if not k.restricted and k.class == itemclass then
+			takes = takes + 1
+
+			local itemclip = self:TakeInventoryItem(v, from, true)
+			local newinvid = self:GiveInventoryItem(itemclass, to, false, nil, true, (itemclip or nil))
+
+			net.Start("impulseInvMove")
+			net.WriteUInt(v, 10)
+			net.WriteUInt(newinvid, 10)
+			net.WriteUInt(from, 4)
+			net.WriteUInt(to, 4)
+			net.Send(self)
+
+			if takes >= amount then
+				return
+			end
+		end
+	end
 end
 
 function meta:CanMakeMix(mixClass)

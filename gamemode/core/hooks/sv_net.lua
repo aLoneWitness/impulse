@@ -37,6 +37,7 @@ util.AddNetworkString("impulseCharacterCreate")
 util.AddNetworkString("impulseInvStorageOpen")
 util.AddNetworkString("impulseInvMove")
 util.AddNetworkString("impulseInvDoMove")
+util.AddNetworkString("impulseInvDoMoveMass")
 util.AddNetworkString("impulseInvContainerOpen")
 util.AddNetworkString("impulseInvContainerClose")
 util.AddNetworkString("impulseInvContainerUpdate")
@@ -790,6 +791,95 @@ net.Receive("impulseInvDoMove", function(len, ply)
 	end
 
 	ply:MoveInventoryItem(itemid, from, to)
+end)
+
+net.Receive("impulseInvDoMoveMass", function(len, ply)
+	if (ply.nextInvMove or 0) > CurTime() then return end
+	ply.nextInvMove = CurTime() + 0.8
+
+	if not ply.currentStorage or not IsValid(ply.currentStorage) then return end
+	if ply.currentStorage:GetPos():DistToSqr(ply:GetPos()) > (100 ^ 2) then return end
+	if ply:IsCP() then return end
+	if ply:GetSyncVar(SYNC_ARRESTED, false) or not ply:Alive() then return end
+
+	local canUse = hook.Run("CanUseInventory", ply)
+
+	if canUse != nil and canUse == false then
+		return
+	end
+
+	if not ply.currentStorage:CanPlayerUse(ply) then
+		return
+	end
+
+	local itemclassid = net.ReadUInt(10)
+	local amount = net.ReadUInt(8)
+	local from = net.ReadUInt(4)
+	local to = 1
+
+	if from != 1 and from != 2 then
+		return
+	end
+
+	if from == 1 then
+		to = 2
+	end
+
+	amount = math.Clamp(amount, 0, 15)
+
+	if to == 2 and (ply.NextStorage or 0) > CurTime() then
+		ply.nextInvMove = CurTime() + 2
+		return ply:Notify("Because you were recently in combat you must wait "..string.NiceTime(ply.NextStorage - CurTime()).." before depositing items into your storage.") 
+	end
+
+	if not impulse.Inventory.Items[itemclassid] then
+		return
+	end
+
+	local item = impulse.Inventory.Items[itemclassid]
+	local itemclass = item.UniqueID
+	local hasItem
+
+	if from == 1 then
+		hasItem = ply:HasInventoryItem(itemclass, amount)
+	else
+		hasItem = ply:HasInventoryItemStorage(itemclass, amount)
+	end
+
+	if not hasItem then
+		return
+	end
+
+	if ply.currentStorage:GetClass() == "impulse_storage_public" then
+		if item.Illegal then
+			return ply:Notify("You may not access or store illegal items at public storage lockers.")
+		end
+	end
+
+	local runs = 0
+	for v,k in pairs(ply:GetInventory(from)) do
+		runs = runs + 1
+
+		if k.class == itemclass then -- id pls
+			if k.restricted then -- get out
+				return ply:Notify("You cannot store a restricted item.")
+			end
+		end
+
+		if runs >= amount then -- youve passed :D
+			break
+		end
+	end
+
+	if from == 2 and not ply:CanHoldItem(itemclass, amount) then
+		return ply:Notify("Items are too heavy to hold.")
+	end
+
+	if from == 1 and not ply:CanHoldItemStorage(itemclass, amount) then
+		return ply:Notify("Items are too heavy to store.")
+	end
+
+	ply:MoveInventoryItemMass(itemclass, from, to, amount)
 end)
 
 net.Receive("impulseChangeRPName", function(len, ply)

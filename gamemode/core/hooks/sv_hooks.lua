@@ -295,6 +295,7 @@ function impulse.SetupPlayer(ply, dbData)
 	ply.InventoryWeight = 0
 	ply.InventoryWeightStorage = 0
 	ply.InventoryRegister = {}
+	ply.InventoryStorageRegister = {}
 	ply.InventoryEquipGroups = {}
 
 	hook.Run("PreEarlyInventorySetup", ply)

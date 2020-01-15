@@ -95,23 +95,36 @@ end
  	local localInv = table.Copy(impulse.Inventory.Data[0][1]) or {}
 	local storageWeight = 0
  	local reccurTemp = {}
+   	local sortMethod = impulse.GetSetting("inv_sortweight", "Inventory only")
+ 	local invertSort = true
 
  	for v,k in pairs(localInv) do -- fix for fucking table.sort desyncing client/server itemids!!!!!!!
  		k.realKey = v
 
- 		reccurTemp[k.id] = (reccurTemp[k.id] or 0) + (impulse.Inventory.Items[k.id].Weight or 0)
- 		k.sortWeight = reccurTemp[k.id]
+ 		if sortMethod == "Always" or sortMethod == "Containers only" then
+ 			reccurTemp[k.id] = (reccurTemp[k.id] or 0) + (impulse.Inventory.Items[k.id].Weight or 0)
+ 			k.sortWeight = reccurTemp[k.id]
+ 		else
+ 			k.sortWeight = impulse.Inventory.Items[k.id].Name
+ 			invertSort = false
+ 		end
  	end
 
  	local reccurTemp = {}
 
  	for v,k in pairs(containerInv) do
  		k.realKey = v
- 		k.sortWeight = (impulse.Inventory.Items[v].Weight or 0) * k.amount
+
+ 	 	if sortMethod == "Always" or sortMethod == "Containers only" then
+ 			k.sortWeight = (impulse.Inventory.Items[v].Weight or 0) * k.amount
+ 		else
+ 			k.sortWeight = impulse.Inventory.Items[v].Name
+ 			invertSort = false
+ 		end
  	end
 
  	if localInv and table.Count(localInv) > 0 then
-	 	for v,k in SortedPairsByMemberValue(localInv, "sortWeight", true) do
+	 	for v,k in SortedPairsByMemberValue(localInv, "sortWeight", invertSort) do
 	 		local otherItem = self.items[k.id]
 	 		local itemX = impulse.Inventory.Items[k.id]
 
@@ -143,7 +156,7 @@ end
 	end
 
 	if table.Count(containerInv) > 0 then
-	  	for v,k in SortedPairsByMemberValue(containerInv, "sortWeight", true) do
+	  	for v,k in SortedPairsByMemberValue(containerInv, "sortWeight", invertSort) do
 	 		local itemX = impulse.Inventory.Items[k.realKey]
 
 	 		local item = self.invStorageScroll:Add("impulseInventoryItem")

@@ -71,6 +71,11 @@ function impulse.chatBox.buildBox()
 
 			timer.Simple(0.001, function() impulse.chatBox.entry:RequestFocus() end)
 
+		elseif code == KEY_UP then
+			if self.LastMessage then
+				self:SetText(self.LastMessage)
+				self:SetCaretPos(self.LastMessage:len())
+			end
 		elseif code == KEY_ENTER then
 			-- Replicate the client pressing enter
 			
@@ -79,10 +84,14 @@ function impulse.chatBox.buildBox()
 					net.Start("impulseChatMessage")
 					net.WriteString("/r "..self:GetText())
 					net.SendToServer()
+
+					self.LastMessage = "/r "..self:GetText()
 				else
 					net.Start("impulseChatMessage")
 					net.WriteString(self:GetText())
 					net.SendToServer()
+
+					self.LastMessage = self:GetText()
 				end
 			end
 
