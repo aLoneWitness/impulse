@@ -263,6 +263,10 @@ function PANEL:Init()
 		if impulse.MainMenu.popup then return end
 		hook.Run("DisplayMenuMessages", self)
 
+		if REFUND_MSG then
+			Derma_Message(REFUND_MSG, "impulse", "Claim Refund")
+		end
+
 		if not steamworks.IsSubscribed("1651398810") then
 			Derma_Query("You are not subscribed to the impulse framework content!\nIf you do not subscribe you will experience missing textures and errors.\nAfter subscribing, rejoin the server.",
 				"impulse",

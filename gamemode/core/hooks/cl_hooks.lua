@@ -8,6 +8,10 @@ function IMPULSE:OnSchemaLoaded()
 	end
 end
 
+local lastServerData1
+local lastServerData2
+local nextCrashThink = 0
+
 function IMPULSE:Think()
 	if LocalPlayer():Team() != 0 and not vgui.CursorVisible() and not impulse_ActiveWorkbar then
 		if input.IsKeyDown(KEY_F1) and (not IsValid(impulse.MainMenu) or not impulse.MainMenu:IsVisible()) then
@@ -77,6 +81,21 @@ function IMPULSE:Think()
 		end
 
 		nextLoopThink = CurTime() + 0.5
+	end
+
+	if (nextCrashThink or 0) < CurTime() then
+		nextCrashThink = CurTime() + 0.66
+
+		local a, b = engine.ServerFrameTime()
+
+		if a == (lastServerData1 or 0) and b == (lastServerData2 or 0) then
+			SERVER_DOWN = true
+		else
+			SERVER_DOWN = false
+		end
+
+		lastServerData1 = a
+		lastServerData2 = b
 	end
 end
 

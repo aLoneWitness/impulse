@@ -468,3 +468,22 @@ net.Receive("impulseAchievementSync", function()
 		impulse.Achievements[id] = time
 	end
 end)
+
+net.Receive("impulseGetRefund", function()
+	local messageTop = "You have been refunded for a server crash/restart.\nThe funds will be deposited into your bank.\n\nDetails:"
+	local details = ""
+
+	local count = net.ReadUInt(8)
+	local amount = net.ReadUInt(16)
+
+	for i = 1, count do
+		local name = net.ReadString()
+		local amount = net.ReadUInt(8)
+
+		details = details.."\n"..amount.."x".." "..name
+	end
+
+	details = details.."\nTOTAL REFUND: "..impulse.Config.CurrencyPrefix..amount
+
+	REFUND_MSG = messageTop..details
+end)

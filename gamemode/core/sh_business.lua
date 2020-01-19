@@ -11,6 +11,7 @@ local busID = 0
 
 function impulse.Business.Define(name, buyableData)
 	busID = busID + 1
+	buyableData.key = name
     impulse.Business.Data[name] = buyableData
     impulse.Business.DataRef[busID] = name
 end
@@ -61,6 +62,16 @@ function impulse.SpawnBuyable(pos, ang, buyable, owner)
 	spawnedBuyable.BuyableOwner = owner
 	spawnedBuyable:CPPISetOwner(owner)
 	spawnedBuyable.IsBuyable = true
+
+	if buyable.refund then
+		local class = "buy_"..buyable.key
+		local sid = owner:SteamID()
+		impulse.Refunds.Add(sid, class)
+
+		spawnedBuyable:CallOnRemove("RefundDestroy", function(ent)
+			impulse.Refunds.Remove(sid, class)
+		end, class, sid)
+	end
 
 	return spawnedBuyable
 end

@@ -210,6 +210,8 @@ function IMPULSE:PlayerDisconnected(ply)
 			k.RemoveIn = CurTime() + impulse.Config.InventoryItemDeSpawnTime
 		end
 	end
+
+	impulse.Refunds.RemoveAll(steamID)
 end
 
 function IMPULSE:PlayerLoadout(ply)
@@ -340,6 +342,52 @@ function impulse.SetupPlayer(ply, dbData)
 	if rankCol then
 		ply:SetWeaponColor(Vector(rankCol.r / 255, rankCol.g / 255, rankCol.b / 255))
 	end
+
+	local query = mysql:Select("impulse_refunds")
+	query:Select("item")
+	query:Where("steamid", ply:SteamID())
+	query:Callback(function(result)
+		if IsValid(ply) and type(result) == "table" and #result > 0 then
+			local sid = ply:SteamID()
+			local money = 0
+			local names = {}
+
+			for v,k in pairs(result) do
+				if string.sub(k.item, 1, 4) == "buy_" then
+					local class = string.sub(k.item, 5)
+					local buyable = impulse.Business.Data[class]
+
+					impulse.Refunds.Remove(sid, k.item)
+
+					if not buyable then
+						continue
+					end
+
+					names[class] = (names[class] or 0) + 1
+					money = money + (buyable.price or 0) + (buyable.refundAdd or 0)
+				end
+			end
+
+			if money == 0 then
+				return
+			end
+
+			ply:GiveBankMoney(money)
+			
+			net.Start("impulseGetRefund")
+			net.WriteUInt(table.Count(names), 8)
+			net.WriteUInt(money, 16)
+
+			for v,k in pairs(names) do
+				net.WriteString(v)
+				net.WriteUInt(k, 8)
+			end
+
+			net.Send(ply)
+		end
+	end)
+
+	query:Execute()
 
 	ply.beenSetup = true
 	hook.Run("PostSetupPlayer", ply)

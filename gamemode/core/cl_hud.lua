@@ -182,6 +182,14 @@ function IMPULSE:HUDPaint()
 	local aboveHUDUsed = false
 	local deathSoundPlayed
 
+	if SERVER_DOWN then
+		local w = scrW * 0.3
+		local h = scrH * 0.3
+		draw.SimpleText(":( Connection lost", "Impulse-Elements72-Shadow", w, h)
+		draw.SimpleText("The server has gone offline. Try reconnecting in a few minutes.", "Impulse-Elements22-Shadow", w, h + 70)
+		draw.SimpleText("You will be refunded automatically.", "Impulse-Elements19-Shadow", w, h + 90)
+	end
+
 	if not lp:Alive() then
 		local ft = FrameTime()
 

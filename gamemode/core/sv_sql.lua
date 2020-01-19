@@ -50,6 +50,14 @@ function IMPULSE:DatabaseConnected()
         sqlQuery:Create("level", "int(11) unsigned NOT NULL")
         sqlQuery:PrimaryKey("id")
     sqlQuery:Execute()
+
+    local sqlQuery = mysql:Create("impulse_refunds")
+        sqlQuery:Create("id", "int unsigned NOT NULL AUTO_INCREMENT")
+        sqlQuery:Create("steamid", "varchar(25) NOT NULL")
+        sqlQuery:Create("item", "varchar(75) NOT NULL")
+        sqlQuery:Create("date", "int(11) unsigned NOT NULL")
+        sqlQuery:PrimaryKey("id")
+    sqlQuery:Execute()
 end
 
 timer.Create("impulsedb.Think", 1, 0, function()
