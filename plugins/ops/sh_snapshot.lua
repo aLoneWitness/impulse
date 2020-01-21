@@ -1,5 +1,37 @@
 impulse.Ops = impulse.Ops or {}
+impulse.Ops.Snapshot = impulse.Ops.Snapshot or {}
 impulse.Ops.Snapshots = impulse.Ops.Snapshots or {}
+impulse.Ops.Snapshot.Playback = impulse.Ops.Snapshot.Playback or {}
+
+SNAP_TICKRATE = 0.66 -- delay between snapcaps
+SNAP_PACKETSIZE = 128 -- snapcaps per packet
+SNAP_MAXTICKS = 3600 -- 40 minutes long
+SNAP_SPEED = 1
+
+function impulse.Ops.Snapshot.Playback.VirtualFrameTime()
+	local snapshot = 0
+	local cur = impulse.Ops.Snapshot.Playback.CurTick
+	local frame = snapshot.Data[cur]
+	local pStart = snapshot.PlaybackStart
+	
+	return math.Clamp(CurTime() - pStart, 0, 1)
+end
+
+function impulse.Ops.Snapshot.Playback.TimeSinceStart()
+	local snapshot = 0
+	local cur = impulse.Ops.Snapshot.Playback.CurTick
+	local frame = snapshot.Data[cur]
+	local tickSinceStart = frame.TicksSinceStart
+
+	return (1 / tickSinceStart) + impulse.Ops.Snapshot.Playback.VirtualFrameTime()
+end
+
+function impulse.Ops.Snapshot.Playback.Length()
+	local snapshot = 0
+	local ticks = impulse.Ops.Snapshot.Playback.Ticks
+	
+	return (1 / ticks)
+end
 
 local snapshotCommand = {
     description = "Plays the snapshot specified by the snapshot ID.",
