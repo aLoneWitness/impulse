@@ -12,6 +12,7 @@ function IMPULSE:DatabaseConnected()
         sqlQuery:Create("steamid", "varchar(25) NOT NULL") -- steamid
         sqlQuery:Create("group", "varchar(70) NOT NULL") -- usergroup
         sqlQuery:Create("rpgroup", "int(11) unsigned NOT NULL") -- rpgroup
+        sqlQuery:Create("rpgrouprank", "varchar(255) NOT NULL") -- rpgroup rank string
         sqlQuery:Create("xp", "int(11) unsigned DEFAULT NULL") -- xp
         sqlQuery:Create("money", "int(11) unsigned DEFAULT NULL") -- money
         sqlQuery:Create("bankmoney", "int(11) unsigned DEFAULT NULL") -- banked money
@@ -56,6 +57,18 @@ function IMPULSE:DatabaseConnected()
         sqlQuery:Create("steamid", "varchar(25) NOT NULL")
         sqlQuery:Create("item", "varchar(75) NOT NULL")
         sqlQuery:Create("date", "int(11) unsigned NOT NULL")
+        sqlQuery:PrimaryKey("id")
+    sqlQuery:Execute()
+
+    local sqlQuery = mysql:Create("impulse_rpgroups")
+        sqlQuery:Create("id", "int unsigned NOT NULL AUTO_INCREMENT")
+        sqlQuery:Create("ownerid", "int(11) unsigned DEFAULT NULL") -- owner db id
+        sqlQuery:Create("name", "varchar(255) NOT NULL")
+        sqlQuery:Create("type", "int(11) unsigned NOT NULL")
+        sqlQuery:Create("maxsize", "int(11) unsigned NOT NULL")
+        sqlQuery:Create("maxstorage", "int(11) unsigned NOT NULL")
+        sqlQuery:Create("ranks", "longtext")
+        sqlQuery:Create("data", "longtext")
         sqlQuery:PrimaryKey("id")
     sqlQuery:Execute()
 end
