@@ -11,6 +11,8 @@ end
 local lastServerData1
 local lastServerData2
 local nextCrashThink = 0
+local nextCrashAnalysis
+local crashAnalysisAttempts = 0
 
 function IMPULSE:Think()
 	if LocalPlayer():Team() != 0 and not vgui.CursorVisible() and not impulse_ActiveWorkbar then
@@ -83,15 +85,44 @@ function IMPULSE:Think()
 		nextLoopThink = CurTime() + 0.5
 	end
 
+	if not SERVER_DOWN and nextCrashAnalysis and nextCrashAnalysis < CurTime() then
+		nextCrashAnalysis = CurTime() + 0.05
+
+		local a, b = engine.ServerFrameTime()
+
+		if crashAnalysisAttempts <= 15 then
+			if a != (lastServerData1 or 0) or b != (lastServerData2 or 0) then
+				nextCrashAnalysis = nil
+				crashAnalysisAttempts = 0
+				return
+			end
+
+			crashAnalysisAttempts = crashAnalysisAttempts + 1
+
+			if crashAnalysisAttempts == 15 then
+				nextCrashAnalysis = nil
+				crashAnalysisAttempts = 0
+				SERVER_DOWN = true
+			end
+		else
+			nextCrashAnalysis = nil
+			crashAnalysisAttempts = 0
+		end
+
+		lastServerData1 = a
+		lastServerData2 = b
+	end
+
 	if (nextCrashThink or 0) < CurTime() then
 		nextCrashThink = CurTime() + 0.66
 
 		local a, b = engine.ServerFrameTime()
 
 		if a == (lastServerData1 or 0) and b == (lastServerData2 or 0) then
-			SERVER_DOWN = true
+			nextCrashAnalysis = CurTime()
 		else
 			SERVER_DOWN = false
+			nextCrashAnalysis = nil
 		end
 
 		lastServerData1 = a
