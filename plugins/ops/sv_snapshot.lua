@@ -52,7 +52,6 @@ hook.Add("PlayerDeath", "opsDeathSnapshot", function(victim, attacker, inflictor
 end)
 
 local SNAP_TICKRATE = 0.66
-local SNAP_PACKETSIZE = 128
 -- heavy optimizations
 local ctime = CurTime
 hook.Add("PlayerPostThink", "opsSnapshotCaptureSys", function(ply)
@@ -70,26 +69,6 @@ hook.Add("PlayerPostThink", "opsSnapshotCaptureSys", function(ply)
 		}
 	end
 end)
-
-
-function impulse.Snapshot.NetSplit(snapshot)
-	local start
-	local splits = 1
-	local splitSnapshot = {}
-	
-	for v,k in pairs(snapshot) do
-		start = start or v
-		
-		splitSnapshot[splits] = splitSnapshot[splits] or {}
-		splitSnapshot[splits][v] = k
-		
-		if v >= (start + SNAP_PACKETSIZE) then
-			splits = splits + 1
-		end
-	end
-	
-	return splitSnapshot
-end
 
 function meta:GetSnapData(length)
 	local cur = ply.SnapTick
