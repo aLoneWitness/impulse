@@ -94,7 +94,7 @@ function PANEL:SetItem(netitem, wide)
 	self.count:SetText("")
 	self.count:SetTextColor(impulse.Config.MainColour)
 	self.count:SetFont("Impulse-Elements19-Shadow")
-	self.count:SetSize(30, 20)
+	self.count:SetSize(36, 20)
 
 	function self.count:Think()
 		if panel.Count > 1 and panel.Count != self.lastCount then
@@ -104,7 +104,9 @@ function PANEL:SetItem(netitem, wide)
 
 			local wShift = 0
 
-			if panel.Count > 9 then
+			if panel.Count > 99 then
+				wShift = -16
+			elseif panel.Count > 9 then
 				wShift = -8
 			end
 

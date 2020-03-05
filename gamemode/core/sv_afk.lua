@@ -1,8 +1,8 @@
 function meta:MakeAFK()
 	self.AFKState = true
 
-	local playercount = #player.GetAll()
-	local maxcount = game.MaxPlayers()
+	local playercount = player.GetCount()
+	local maxcount = impulse.Config.UserSlots or game.MaxPlayers()
 	local limit = impulse.Config.AFKKickRatio * maxcount
 
 	if playercount >= limit and not self:IsDonator() then
