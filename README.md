@@ -15,7 +15,7 @@ impulse will eventually be released as open source software. The bullet point li
 * Debug V2 - advanced console logging, command to auto upload logs to pastebin
 * impulse developer discord - works with impulse global API
 * Modularify the credit system
-* CAMI support
+* CAMI support (ops on/off toggle)
 * CPPI testing
 * The un-hardcodening
 * First time setup UI
