@@ -22,7 +22,7 @@ impulse will eventually be released as open source software. The bullet point li
 * Create simple skeleton schema
 * Further work on dev tools to make impulse more attractive
 * Switch JSON config formats to INI as it is simpler. https://github.com/Dynodzzo/Lua_INI_Parser
-* Config object rework. Assume config lua files as default values and use INI file as a overriding merge. Create ingame UI to edit this too. This will let server owners change configs without changing config default values.
+* Config object rework. Assume config lua files as default values and use INI file as a overriding merge. Create ingame UI to edit this too. This will let server owners change configs without changing config default values. (this may have to be pon-based to allow for more data type compatability as INI only supports num, string and bool)
 
 ## Working with impulse
 If your working with impulse I reccomend you read the wiki first, feel free to DM me on discord if you have any questions.
