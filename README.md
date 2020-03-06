@@ -21,6 +21,7 @@ impulse will eventually be released as open source software. The bullet point li
 * First time setup UI
 * Create simple skeleton schema
 * Further work on dev tools to make impulse more attractive
+* Switch JSON config formats to INI as it is simpler. https://github.com/Dynodzzo/Lua_INI_Parser
 
 ## Working with impulse
 If your working with impulse I reccomend you read the wiki first, feel free to DM me on discord if you have any questions.
