@@ -9,7 +9,7 @@ impulse will eventually be released as open source software. The bullet point li
 * Hookify the framework
 * Plugin V2 with names, descriptions, access levels and authors
 * Auto update checker
-* impulse global API (used to share some achievements and scoreboard badges across servers)
+* impulse global API (used to share some achievements and scoreboard badges across servers | server registry | impulse donators get global tag on all impulse running servers)
 * Documentation
 * Create a automatic plugin installer system
 * Debug V2 - advanced console logging, command to auto upload logs to pastebin
