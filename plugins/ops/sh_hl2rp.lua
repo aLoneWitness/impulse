@@ -1,3 +1,7 @@
+if SERVER then
+    util.AddNetworkString("opsGiveCombineBan")
+end
+
 local combineBanCommand = {
     description = "Gives the player a combine ban for the time specified (max of 1 week).",
     requiresArg = true,
@@ -30,6 +34,10 @@ local combineBanCommand = {
 
 			ply:Notify("You have combine banned "..plyTarget:Nick().." for "..howLong..".")
 			plyTarget:Notify("You have been banned from the combine faction for "..howLong.." by a game moderator ("..ply:SteamName()..").")
+
+			net.Start("opsGiveCombineBan")
+			net.WriteUInt(time, 16)
+			net.Send(plyTarget)
 		else
 			return ply:Notify("Could not find player: "..tostring(name))
 		end

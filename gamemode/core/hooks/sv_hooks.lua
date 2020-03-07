@@ -69,6 +69,10 @@ function IMPULSE:PlayerInitialSpawn(ply)
 			timer.Remove(ply:UserID().."impulseFullLoad")
 		end
 	end)
+
+	if ply.Warns and ply.Bans then
+		-- do disipline net message
+	end
 end
 
 function IMPULSE:PlayerInitialSpawnLoaded(ply) -- called once player is full loaded

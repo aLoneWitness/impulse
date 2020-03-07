@@ -208,7 +208,7 @@ function PANEL:Init()
 	end
 
 	local button = vgui.Create("DImageButton", self)
-	button:SetPos(self:GetWide() - 30 - 53, 385)
+	button:SetPos(self:GetWide() - 30 - 53, 10)
 	button:SetImage("impulse/icons/social/discord.png")
 	button:SetSize(62, 55)
 
@@ -311,6 +311,10 @@ function PANEL:OnKeyCodePressed(key)
 end
 
 function PANEL:OnChildAdded(child)
+	if self.AddingMsgs then
+		return
+	end
+
 	if IsValid(self.openElement) then
 		self.openElement:Remove()
 	end

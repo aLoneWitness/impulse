@@ -199,3 +199,50 @@ end)
 net.Receive("opsReportSync", function()
 	impulse.Ops.Reports = net.ReadTable() or {}
 end)
+
+net.Receive("opsGiveWarn", function()
+	local reason = net.ReadString()
+	local template = "You have received a warning from a Game Moderator for a violation of the server rules.\nReason: "..reason.."\nPlease read the server rules again before continuing. Repeated offences will be punished by a ban."
+	local id = "warn_"..os.time()
+
+	impulse.MenuMessage.Add(id, "Warning Notice", template, Color(238, 210, 2), "https://panel.impulse-community.com/index.php?t=violations", "View more details")
+	impulse.MenuMessage.Save(id)
+end)
+
+net.Receive("opsGiveCombineBan", function()
+	local time = net.ReadUInt(16)
+	local endDate = os.date("%H:%M:%S - %d/%m/%Y", os.time() + time)
+	local template = "You have an active combine ban for a violation of the server rules.\nExpiry time: "..endDate
+	local id = "combineban_"..endDate
+
+	impulse.MenuMessage.Add(id, "Combine Ban Notice", template, Color(179, 58, 58), impulse.Config.RulesURL, "Read the rules")
+	impulse.MenuMessage.Save(id)
+end)
+
+net.Receive("opsGetRecord", function()
+	local warns = net.ReadUInt(8)
+	local bans = net.ReadUInt(8)
+	local curScore = cookie.GetNumber("ops-record-badsportscore", 0)
+	local score = 0
+
+	score = score + (bans * 2)
+	score = score + warns
+
+	if warns > 3 then
+		score = score + 1
+	end
+
+	local col = Color(238, 210, 2)
+	if score > 9 then
+		col = Color(179, 58, 58)
+	end
+
+	local template = "You have a poor disciplinary record that consists of "..warns.." warnings and "..bans.." bans.\nPlease take time to read the server rules before continuing as further violations will result in a long-term or possibly permanent suspension."
+
+	if curScore != score and score > 3 then
+		impulse.MenuMessage.Remove("badsport")
+		impulse.MenuMessage.Add("badsport", "Poor Disciplinary Record Notice", template, col, "https://panel.impulse-community.com/index.php?t=violations", "View more details")
+	end
+
+	cookie.Set("ops-record-badsportscore", score)
+end)

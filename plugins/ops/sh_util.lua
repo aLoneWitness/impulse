@@ -1,3 +1,9 @@
+if SERVER then
+    util.AddNetworkString("opsGiveWarn")
+    util.AddNetworkString("opsGetRecord")
+end
+
+
 local setHealthCommand = {
     description = "Sets health of the specified player.",
     requiresArg = true,
@@ -131,6 +137,10 @@ if GExtension then
                 
                 GExtension:Warn(plyTarget:SteamID64(), reason, ply:SteamID64())
                 ply:Notify("You have warned "..plyTarget:SteamName().." for "..reason..".")
+
+                net.Start("opsGiveWarn")
+                net.WriteString(reason)
+                net.Send(plyTarget)
             else
                 return ply:Notify("Could not find player: "..tostring(name))
             end

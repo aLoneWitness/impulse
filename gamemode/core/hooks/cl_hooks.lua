@@ -6,6 +6,19 @@ function IMPULSE:OnSchemaLoaded()
 			system.FlashWindow()
 		end
 	end
+
+	local dir = "impulse/menumsgs/"
+	for v,k in ipairs(file.Find(dir.."*.dat", "DATA")) do
+		local f = file.Read(dir..k, "DATA")
+		local data = util.JSONToTable(f)
+
+		if not data then
+			print("[impulse] Error loading menu message "..v.."!")
+			continue
+		end
+
+		impulse.MenuMessage.Data[data.type] = data
+	end
 end
 
 local lastServerData1
@@ -22,6 +35,8 @@ function IMPULSE:Think()
 			mainMenu:SetAlpha(0)
 			mainMenu:AlphaTo(255, .3)
 			mainMenu.popup = true
+
+			hook.Run("DisplayMenuMessages", mainMenu)
 		elseif input.IsKeyDown(KEY_F4) and not IsValid(impulse.playerMenu) and LocalPlayer():Alive() then
 			impulse.playerMenu = vgui.Create("impulsePlayerMenu")
 		elseif input.IsKeyDown(KEY_F2) and LocalPlayer():Alive() then
@@ -416,6 +431,45 @@ function IMPULSE:SpawnMenuOpen()
 		return false
 	else
 		return true
+	end
+end
+
+function IMPULSE:DisplayMenuMessages(menu)
+	menu.Messages = menu.Messages or {}
+
+	for v,k in pairs(menu.Messages) do
+		k:Remove()
+	end
+
+	for v,k in pairs(impulse.MenuMessage.Data) do
+		menu.AddingMsgs = true
+		local msg = vgui.Create("impulseMenuMessage", menu)
+		local w = menu:GetWide() - 1100
+
+		if w < 300 then
+			msg:SetSize(520, 180)
+			msg:SetPos(menu:GetWide() - 540, 390)
+		else
+			msg:SetSize(w, 120)
+			msg:SetPos(520, 30)
+		end
+
+		msg:SetMessage(v)
+
+		msg.OnClosed = function()
+			impulse.MenuMessage.Remove(v)
+
+			if IsValid(menu) then
+				hook.Run("DisplayMenuMessages", menu)
+			end
+
+			surface.PlaySound("buttons/button14.wav")
+		end
+
+		table.insert(menu.Messages, msg)
+		menu.AddingMsgs = false
+
+		break
 	end
 end
 
