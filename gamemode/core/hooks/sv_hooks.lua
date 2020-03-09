@@ -267,6 +267,8 @@ function impulse.SetupPlayer(ply, dbData)
 
 			net.Send(ply)
 		end
+
+		ply:CalculateAchievementPoints()
 	end
 
 	local skills = util.JSONToTable(dbData.skills) or {}
@@ -748,7 +750,9 @@ function IMPULSE:InitPostEntity()
 		end
 	end
 
-	LoadSaveEnts()
+	if impulse.Config.LoadScript then
+		impulse.Config.LoadScript()
+	end
 
 	for v,k in pairs(impulse.Config.Zones) do
 		local zone = ents.Create("impulse_zone")
@@ -764,11 +768,10 @@ function IMPULSE:InitPostEntity()
 	    end
 	end
 
-	if impulse.Config.LoadScript then
-		impulse.Config.LoadScript()
-	end
-
+	LoadSaveEnts()
 	LoadButtons()
+
+	hook.Run("PostInitPostEntity")
 end
 
 LoadButtons()

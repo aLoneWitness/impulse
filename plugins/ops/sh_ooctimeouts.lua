@@ -1,5 +1,9 @@
 local infoCol = Color(135, 206, 250)
 
+if SERVER then
+	util.AddNetworkString("opsGiveOOCBan")
+end
+
 impulse.OOCTimeouts = impulse.OOCTimeouts or {}
 
 local timeoutCommand = {
@@ -42,6 +46,10 @@ local timeoutCommand = {
 			for v,k in pairs(player.GetAll()) do
 				k:AddChatText(infoCol, plyTarget:SteamName().." has been given an OOC timeout for "..t.." minutes by a game moderator.")
 			end
+
+			net.Start("opsGiveOOCBan")
+			net.WriteUInt(os.time() + time, 16)
+			net.Send(plyTarget)
 		else
 			return ply:Notify("Could not find player: "..tostring(name))
 		end

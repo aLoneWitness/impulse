@@ -1,7 +1,7 @@
 impulse.Achievements = impulse.Achievements or {}
 
 if SERVER then
-	function meta:AchievementGive(name)
+	function meta:AchievementGive(name, skipPoints)
 		if not self.impulseData then
 			return
 		end
@@ -17,6 +17,10 @@ if SERVER then
 		net.Start("impulseAchievementGet")
 		net.WriteString(name)
 		net.Send(self)
+
+		if not skipPoints then
+			self:CalculateAchievementPoints()
+		end
 	end
 
 	function meta:AchievementTake(name)
@@ -54,5 +58,19 @@ if SERVER then
 		if ach.OnJoin and ach.Check and not self:AchievementHas(name) and ach.Check(self) then
 			self:AchievementGive(name)
 		end
+	end
+
+	function meta:CalculateAchievementPoints()
+		if not self.impulseData then
+			return 0
+		end
+
+		local val = 0
+
+		for v,k in pairs(self.impulseData.Achievements) do
+			val = val + 60
+		end
+
+		self:SetSyncVar(SYNC_TROPHYPOINTS, val, true)
 	end
 end

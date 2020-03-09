@@ -3,7 +3,7 @@ file.CreateDir("impulse/menumsgs")
 impulse.MenuMessage = impulse.MenuMessage or {}
 impulse.MenuMessage.Data = impulse.MenuMessage.Data or {}
 
-function impulse.MenuMessage.Add(uid, title, xmessage, xcol, url, urlText, scheduled, scheduledTime)
+function impulse.MenuMessage.Add(uid, title, xmessage, xcol, url, urlText, expiry)
 	if impulse.MenuMessage.Data[uid] then
 		return
 	end
@@ -15,8 +15,7 @@ function impulse.MenuMessage.Add(uid, title, xmessage, xcol, url, urlText, sched
 		colour = xcol or impulse.Config.MainColour,
 		url = url or nil,
 		urlText = urlText or nil,
-		scheduled = scheduled or false,
-		scheduledTime = scheduledTime or 0
+		expiry = expiry or nil
 	}
 end
 

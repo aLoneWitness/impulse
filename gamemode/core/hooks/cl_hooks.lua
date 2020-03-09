@@ -441,7 +441,16 @@ function IMPULSE:DisplayMenuMessages(menu)
 		k:Remove()
 	end
 
+	hook.Run("CreateMenuMessages")
+
+	local time = os.time()
+
 	for v,k in pairs(impulse.MenuMessage.Data) do
+		if k.expiry and k.expiry < time then
+			impulse.MenuMessage.Remove(v)
+			continue
+		end
+
 		menu.AddingMsgs = true
 		local msg = vgui.Create("impulseMenuMessage", menu)
 		local w = menu:GetWide() - 1100

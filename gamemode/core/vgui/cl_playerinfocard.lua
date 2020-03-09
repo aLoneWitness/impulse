@@ -282,19 +282,19 @@ function PANEL:Init()
 	  		end
 		end 
 
-		-- usergroup
-		self.rank = vgui.Create("DLabel", self)
-		self.rank:SetFont("Impulse-Elements18-Shadow")
-		self.rank:SetText("Usergroup: "..self.Player:GetUserGroup())
-		self.rank:SizeToContents()
-		self.rank:SetPos(10,130)
-
 		-- xp/playtime
 		self.playtime = vgui.Create("DLabel", self)
 		self.playtime:SetFont("Impulse-Elements18-Shadow")
 		self.playtime:SetText("XP: "..self.Player:GetXP())
 		self.playtime:SizeToContents()
-		self.playtime:SetPos(10,150)
+		self.playtime:SetPos(10,130)
+
+		-- tp
+		self.tp = vgui.Create("DLabel", self)
+		self.tp:SetFont("Impulse-Elements18-Shadow")
+		self.tp:SetText("Achievement Points: "..self.Player:GetSyncVar(SYNC_TROPHYPOINTS, 0))
+		self.tp:SizeToContents()
+		self.tp:SetPos(10,150)
 
 		-- admin stuff
 		if LocalPlayer():IsAdmin() then

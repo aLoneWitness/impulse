@@ -211,11 +211,23 @@ end)
 
 net.Receive("opsGiveCombineBan", function()
 	local time = net.ReadUInt(16)
-	local endDate = os.date("%H:%M:%S - %d/%m/%Y", os.time() + time)
+	local endTime =  os.time() + time
+	local endDate = os.date("%H:%M:%S - %d/%m/%Y", endTime)
 	local template = "You have an active combine ban for a violation of the server rules.\nExpiry time: "..endDate
 	local id = "combineban_"..endDate
 
-	impulse.MenuMessage.Add(id, "Combine Ban Notice", template, Color(179, 58, 58), impulse.Config.RulesURL, "Read the rules")
+	impulse.MenuMessage.Add(id, "Combine Ban Notice", template, Color(179, 58, 58), impulse.Config.RulesURL, "Read the rules", endTime)
+	impulse.MenuMessage.Save(id)
+end)
+
+net.Receive("opsGiveOOCBan", function()
+	local time = net.ReadUInt(16)
+	local endTime =  os.time() + time
+	local endDate = os.date("%H:%M:%S - %d/%m/%Y", endTime)
+	local template = "You have an active OOC communication timeout for a violation of the server rules.\nExpiry time: "..endDate
+	local id = "oocban_"..endDate
+
+	impulse.MenuMessage.Add(id, "OOC Timeout Notice", template, Color(179, 58, 58), impulse.Config.RulesURL, "Read the rules", endTime)
 	impulse.MenuMessage.Save(id)
 end)
 
@@ -245,4 +257,10 @@ net.Receive("opsGetRecord", function()
 	end
 
 	cookie.Set("ops-record-badsportscore", score)
+end)
+
+net.Receive("opsUnderInvestigation", function()
+	local template = "You are currently under investigation for possible cheating.\nOur automated systems have flagged you as a suspected cheater and your account is now under review. If you were not cheating, you don't need to worry and you can just ignore this message. You will not be informed of the outcome of this investigation when it is complete."
+	impulse.MenuMessage.Add("cheater", "Cheating Investigation Notice", template, Color(238, 210, 2))
+	impulse.MenuMessage.Save("cheater")
 end)
