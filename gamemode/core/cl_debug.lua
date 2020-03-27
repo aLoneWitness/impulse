@@ -82,3 +82,26 @@ concommand.Add("impulse_debug_wtl", function(ply)
 	impulse_DebugTargAng = traceEnt:GetAngles()
 	chat.AddText("Target entity selected as "..tostring(traceEnt)..". Please run the command looking at the child entity for output.")
 end)
+
+concommand.Add("impulse_debug_dump", function(ply, cmd, arg)
+	if arg[1] == "" then
+		return print("Please provide a memory target.")
+	end
+
+	local route = string.Split(arg[1], ".")
+	local c
+
+	for v,k in pairs(route) do
+		c = (c or impulse)[k]
+
+		if not c then
+			return print("Memory target invalid. (must be a path in the impulse.X data structure)")
+		end
+	end
+
+	local output = c
+
+	print("Start dump for table "..arg[1])
+	PrintTable(output)
+	print("End dump for table "..arg[1])
+end)
