@@ -369,9 +369,9 @@ function IMPULSE:HUDPaint()
 			surface.SetTextPos(scrW-60, scrH-40)
 			surface.DrawText(weapon:Clip1().."/"..LocalPlayer():GetAmmoCount(weapon:GetPrimaryAmmoType()))
 		elseif weapon:GetClass() == "weapon_physgun" or weapon:GetClass() == "gmod_tool" then
-			draw.DrawText("Make sure you dont have this weapon out in RP. You may be punished.", "Impulse-Elements16", 35, y-30, color_white, TEXT_ALIGN_LEFT)
+			draw.DrawText("Don't have this weapon out in RP.\nYou may be punished for this.", "Impulse-Elements16", 35, y-40, color_white, TEXT_ALIGN_LEFT)
 			surface.SetMaterial(warningIcon)
-			surface.DrawTexturedRect(10, y-30, 18, 18)
+			surface.DrawTexturedRect(10, y-32, 18, 18)
 			aboveHUDUsed = true
 
 			surface.SetDrawColor(darkCol)
@@ -385,6 +385,10 @@ function IMPULSE:HUDPaint()
 
 	if not aboveHUDUsed then
 		if impulse.ShowZone then
+			if IsValid(zoneLbl) then
+				zoneLbl:Remove()	
+			end
+
 			zoneLbl = vgui.Create("impulseZoneLabel")
 			zoneLbl:SetPos(30, y - 25)
 			zoneLbl.Zone = lp:GetZoneName()

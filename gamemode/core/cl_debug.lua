@@ -94,7 +94,7 @@ concommand.Add("impulse_debug_dump", function(ply, cmd, arg)
 	for v,k in pairs(route) do
 		c = (c or impulse)[k]
 
-		if not c then
+		if not c or type(c) != "table" then
 			return print("Memory target invalid. (must be a path in the impulse.X data structure)")
 		end
 	end
