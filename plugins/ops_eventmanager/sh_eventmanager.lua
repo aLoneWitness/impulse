@@ -30,12 +30,14 @@ end
 
 if SERVER then
 	concommand.Add("impulse_ops_eventmode", function(ply, cmd, args)
+		if IsValid(ply) then
+			return
+		end
+
 		if args[1] == "1" then
 			impulse.Ops.EventManager.SetEventMode(true)
-			ply:Notify("Activated event mode.")
 		else
 			impulse.Ops.EventManager.SetEventMode(false)
-			ply:Notify("Deactivated event mode.")
 		end
 	end)
 end
