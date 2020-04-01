@@ -423,6 +423,23 @@ impulse.Ops.EventManager.Config.Events = {
 			end
 		end
 	},
+	["fire"] = {
+		Cat = "server",
+		Prop = {
+			["pos"] = Vector(0, 0, 0),
+			["class"] = "func_button",
+			["arg"] = "Use"
+		},
+		NeedUID = false,
+		Clientside = false,
+		Do = function(prop, uid)
+			for v,k in pairs(ents.GetAll()) do
+				if k:GetClass() == prop["class"] and k:GetPos() == prop["pos"] then
+					k:Fire(prop["arg"])
+				end
+			end
+		end
+	},
 	["setcookie"] = {
 		Cat = "cookies",
 		Prop = {
@@ -442,6 +459,7 @@ impulse.Ops.EventManager.Config.Events = {
 			["weapon"] = "",
 			["pos"] = Vector(0, 0, 0),
 			["ang"] = Vector(0, 0, 0),
+			["cpsarefriendly"] = false
 		},
 		NeedUID = true,
 		Clientside = false,
@@ -460,6 +478,14 @@ impulse.Ops.EventManager.Config.Events = {
 
  			if prop["weapon"] != "" then
  				OPS_NPCS[uid]:Give(prop["weapon"])
+ 			end
+
+ 			if prop["cpsarefriendly"] then
+ 				for v,k in pairs(player.GetAll()) do
+ 					if k:IsCP() then
+ 						OPS_NPCS[uid]:AddEntityRelationship(k, D_LI, 99)
+ 					end
+ 				end
  			end
 		end
 	},
@@ -507,25 +533,42 @@ impulse.Ops.EventManager.Config.Events = {
  			end
 		end
 	},
-	["dropship_startpos"] = {
+	["npc_movetotrack"] = {
 		Cat = "npc",
 		Prop = {
-			["pos"] = Vector(0, 0, 0),
-			["ang"] = Vector(0, 0, 0)
+			["pos"] = Vector(0, 0, 0)
 		},
-		NeedUID = false,
+		NeedUID = true,
 		Clientside = false,
 		Do = function(prop, uid)
- 			OPS_DROPSHIP_STARTPOS = prop["pos"]
- 			OPS_DROPSHIP_STARTANG = Angle(prop["ang"].x, prop["ang"].y, prop["ang"].z)
+ 			OPS_NPCS = OPS_NPCS or {}
+ 			OPS_TRACKS = OPS_TRACKS or {}
+
+ 			if OPS_NPCS[uid] and IsValid(OPS_NPCS[uid]) then
+ 				local npc = OPS_NPCS[uid]
+
+ 				if OPS_TRACKS[uid] and IsValid(OPS_TRACKS[uid]) then
+ 					OPS_TRACKS[uid]:Remove()
+ 				end
+
+ 				OPS_TRACKS[uid] = ents.Create("path_track")
+ 				OPS_TRACKS[uid]:SetName(uid.."Track5555")
+ 				OPS_TRACKS[uid]:SetPos(prop["pos"])
+
+ 				npc:Fire("flytospecifictrackviapath", uid.."Track5555")
+ 			end
 		end
 	},
 	["dropship_spawn"] = {
 		Cat = "npc",
 		Prop = {
+			["start_pos"] = Vector(0, 0, 0),
+			["start_ang"] = Vector(0, 0, 0),
+			["second_pos"] = Vector(0, 0, 0),
 			["land_pos"] = Vector(0, 0, 0),
+			["god"] = true,
 			["soldier_smg"] = 3,
-			["soldier_ar2"] = 1,
+			["soldier_ar2"] = 2,
 			["soldier_shotgun"] = 1,
 			["soldier_elite"] = 0
 		},
@@ -538,7 +581,36 @@ impulse.Ops.EventManager.Config.Events = {
  				OPS_NPCS[uid]:Remove()
  			end
 
- 			MakeDropship()
+ 			local secondPos = prop["second_pos"]
+
+ 			if secondPos.x == 0 and secondPos.y == 0 and secondPos.z == 0 then
+ 				secondPos = nil
+ 			end
+
+ 			OPS_NPCS[uid] = MakeDropship(uid, prop["start_pos"], Angle(prop["start_ang"].x, prop["start_ang"].y, prop["start_ang"].z), secondPos, prop["land_pos"], prop["god"], prop["soldier_smg"], prop["soldier_ar2"], prop["soldier_shotgun"], prop["soldier_elite"])
+		end
+	},
+	["dropship_remove"] = {
+		Cat = "npc",
+		Prop = {},
+		NeedUID = true,
+		Clientside = false,
+		Do = function(prop, uid)
+ 			OPS_NPCS = OPS_NPCS or {}
+
+ 			if OPS_NPCS[uid] and IsValid(OPS_NPCS[uid]) then
+ 				OPS_NPCS[uid]:Remove()
+ 			end
+
+ 			if DROPSHIP_TROOPS[uid] then
+ 				for v,k in pairs(DROPSHIP_TROOPS[uid]) do
+ 					if IsValid(k) then
+ 						k:Remove()
+ 					end
+ 				end
+
+ 				DROPSHIP_TROOPS[uid] = nil
+ 			end
 		end
 	},
 	["headcrabcanister"] = {
