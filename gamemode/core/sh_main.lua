@@ -57,7 +57,25 @@ end
 
 function meta:IsDonator()
     return (self:IsUserGroup("donator") or self:IsAdmin())
-end 
+end
+
+
+local adminGroups = {
+    ["admin"] = true,
+    ["leadadmin"] = true
+}
+
+function meta:IsAdmin()
+    if self.IsSuperAdmin(self) then
+        return true
+    end
+    
+    if adminGroups[self.GetUserGroup(self)] then
+        return true
+    end
+
+    return false
+end
 
 function meta:InSpawn()
     return self:GetPos():WithinAABox(impulse.Config.SpawnPos1, impulse.Config.SpawnPos2)

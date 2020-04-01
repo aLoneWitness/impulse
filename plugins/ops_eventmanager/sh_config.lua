@@ -435,26 +435,110 @@ impulse.Ops.EventManager.Config.Events = {
 			cookie.Set("impulse_em_"..prop["name"], prop["value"])
 		end
 	},
-	["playnpcscene"] = {
+	["npc_spawn"] = {
 		Cat = "npc",
 		Prop = {
-			["scene"] = "scenes/breencast/welcome.vcd",
-			["uidissteamid"] = false
+			["class"] = "npc_combine_s",
+			["weapon"] = "",
+			["pos"] = Vector(0, 0, 0),
+			["ang"] = Vector(0, 0, 0),
 		},
 		NeedUID = true,
 		Clientside = false,
 		Do = function(prop, uid)
-			if prop["uidissteamid"] then
-				local ply = player.GetBySteamID(uid)
+ 			OPS_NPCS = OPS_NPCS or {}
 
-				if ply and IsValid(ply) then
-					ply:PlayScene(prop["scene"])
-				end
-			else
-				if OPS_NPCS and OPS_NPCS[uid] and IsValid(OPS_NPCS[uid]) then
-					OPS_NPCS[uid]:PlayScene(prop["scene"])
-				end
-			end
+ 			if OPS_NPCS[uid] and IsValid(OPS_NPCS[uid]) then
+ 				OPS_NPCS[uid]:Remove()
+ 			end
+
+ 			OPS_NPCS[uid] = ents.Create(prop["class"])
+ 			OPS_NPCS[uid]:SetPos(prop["pos"])
+ 			OPS_NPCS[uid]:SetAngles(Angle(prop["ang"].x, prop["ang"].y, prop["ang"].z))
+ 			OPS_NPCS[uid]:Spawn()
+ 			OPS_NPCS[uid]:Activate()
+
+ 			if prop["weapon"] != "" then
+ 				OPS_NPCS[uid]:Give(prop["weapon"])
+ 			end
+		end
+	},
+	["npc_remove"] = {
+		Cat = "npc",
+		Prop = {},
+		NeedUID = true,
+		Clientside = false,
+		Do = function(prop, uid)
+ 			OPS_NPCS = OPS_NPCS or {}
+
+ 			if OPS_NPCS[uid] and IsValid(OPS_NPCS[uid]) then
+ 				OPS_NPCS[uid]:Remove()
+ 			end
+		end
+	},
+	["npc_sethp"] = {
+		Cat = "npc",
+		Prop = {
+			["health"] = 100
+		},
+		NeedUID = true,
+		Clientside = false,
+		Do = function(prop, uid)
+ 			OPS_NPCS = OPS_NPCS or {}
+
+ 			if OPS_NPCS[uid] and IsValid(OPS_NPCS[uid]) then
+ 				OPS_NPCS[uid]:SetHealth(prop["health"])
+ 			end
+		end
+	},
+	["npc_movetopos"] = {
+		Cat = "npc",
+		Prop = {
+			["pos"] = Vector(0, 0, 0)
+		},
+		NeedUID = true,
+		Clientside = false,
+		Do = function(prop, uid)
+ 			OPS_NPCS = OPS_NPCS or {}
+
+ 			if OPS_NPCS[uid] and IsValid(OPS_NPCS[uid]) then
+ 				OPS_NPCS[uid]:SetLastPosition(prop["pos"])
+ 				OPS_NPCS[uid]:SetSchedule(SCHED_FORCED_GO_RUN)
+ 			end
+		end
+	},
+	["dropship_startpos"] = {
+		Cat = "npc",
+		Prop = {
+			["pos"] = Vector(0, 0, 0),
+			["ang"] = Vector(0, 0, 0)
+		},
+		NeedUID = false,
+		Clientside = false,
+		Do = function(prop, uid)
+ 			OPS_DROPSHIP_STARTPOS = prop["pos"]
+ 			OPS_DROPSHIP_STARTANG = Angle(prop["ang"].x, prop["ang"].y, prop["ang"].z)
+		end
+	},
+	["dropship_spawn"] = {
+		Cat = "npc",
+		Prop = {
+			["land_pos"] = Vector(0, 0, 0),
+			["soldier_smg"] = 3,
+			["soldier_ar2"] = 1,
+			["soldier_shotgun"] = 1,
+			["soldier_elite"] = 0
+		},
+		NeedUID = true,
+		Clientside = false,
+		Do = function(prop, uid)
+ 			OPS_NPCS = OPS_NPCS or {}
+
+ 			if OPS_NPCS[uid] and IsValid(OPS_NPCS[uid]) then
+ 				OPS_NPCS[uid]:Remove()
+ 			end
+
+ 			MakeDropship()
 		end
 	},
 	["headcrabcanister"] = {
