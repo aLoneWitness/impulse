@@ -21,6 +21,8 @@ local mappers = {
 	["STEAM_0:0:24607430"] = true -- stranger
 }
 
+local eventTeam = {}
+
 local winners = {}
 
 
@@ -33,7 +35,8 @@ impulse.Badges = {
 	vin = {Material("impulse/vin.png"), "Hi, it's me vin! The creator of impulse.", function(ply) return (ply:SteamID() == "STEAM_0:1:95921723") end},
 	supertester = {Material("icon16/bug.png"), "This player made large contributions to the testing of impulse.", function(ply) return (superTesters[ply:SteamID()] or false) end},
 	competition = {Material("icon16/rosette.png"), "This player has won a competition.", function(ply) return winners[ply:SteamID()] end},
-	mapper = {Material("icon16/map.png"), "This player is a mapper that has collaborated with impulse.", function(ply) return mappers[ply:SteamID()] end}
+	mapper = {Material("icon16/map.png"), "This player is a mapper that has collaborated with impulse.", function(ply) return mappers[ply:SteamID()] end},
+	eventteam = {Material("icon16/controller.png"), "This player is a member of the event team.", function(ply) return eventTeam[ply:SteamID()] end}
 }
 
 local cheapBlur = Color(0, 0, 0, 205)

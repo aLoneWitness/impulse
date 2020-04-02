@@ -1,6 +1,7 @@
 local red = Color(255, 0, 0, 255)
 local green = Color(0, 240, 0, 255)
 local col = Color(255,255,255,120)
+local dotToggleTime = 0
 local hitgroups = {
 	[HITGROUP_GENERIC] = "generic",
 	[HITGROUP_HEAD] = "head",
@@ -97,6 +98,20 @@ hook.Add("HUDPaint", "impulseOpsHUD", function()
 					draw.SimpleText("HITGROUP: "..hitgroups[snapData.VictimHitGroup], "Impulse-Elements18-Shadow", pos.x, pos.y + 20, col, TEXT_ALIGN_CENTER)
 				end
 			end
+		end
+
+		if impulse.Ops.EventManager and impulse.Ops.EventManager.GetEventMode() and impulse.Ops.EventManager.GetSequence() then
+			local symb = "•"
+
+			if dotToggleTime < CurTime() then
+				symb = ""
+
+				if dotToggleTime + 1 < CurTime() then
+					dotToggleTime = CurTime() + 1
+				end
+			end
+
+			draw.SimpleText(symb.." LIVE (CURRENT SEQUENCE: "..impulse.Ops.EventManager.GetSequence()..")", "Impulse-Elements18-Shadow", ScrW() - 20, 20, red, TEXT_ALIGN_RIGHT)
 		end
 	end
 end)

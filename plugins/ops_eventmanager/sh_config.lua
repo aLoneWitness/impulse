@@ -205,7 +205,7 @@ impulse.Ops.EventManager.Config.Events = {
 				OPS_ENTS[uid]:Remove()
 			end
 
-			local ent = ents.Create("prop_physics")
+			local ent = ents.Create(prop["physics"] and "prop_physics" or "prop_dynamic")
 			ent:SetModel(prop["model"])
 			ent:SetSkin(prop["skin"])
 			ent:SetPos(prop["pos"])
@@ -263,6 +263,19 @@ impulse.Ops.EventManager.Config.Events = {
 		Do = function(prop, uid)
 			if OPS_ENTS and OPS_ENTS[uid] and IsValid(OPS_ENTS[uid]) then
 				OPS_ENTS[uid]:SetModelScale(prop["newscale"], prop["time"])
+			end
+		end
+	},
+	["animent"] = {
+		Cat = "ent",
+		Prop = {
+			["sequence"] = "idle"
+		},
+		NeedUID = true,
+		Clientside = false,
+		Do = function(prop, uid)
+			if OPS_ENTS and OPS_ENTS[uid] and IsValid(OPS_ENTS[uid]) then
+				OPS_ENTS[uid]:ResetSequence(prop["sequence"])
 			end
 		end
 	},

@@ -388,7 +388,7 @@ impulse.RegisterChatCommand("/invsearch", searchCommand)
 
 local eventCommand = {
 	description = "Sends a global chat message to all players. Only for use in events.",
-	adminOnly = true,
+	superAdminOnly = true,
 	requiresArg = true,
 	onRun = function(ply, arg, rawText)
 		for v,k in pairs(player.GetAll()) do
@@ -398,8 +398,6 @@ local eventCommand = {
 }
 
 impulse.RegisterChatCommand("/event", eventCommand)
-
-
 
 if CLIENT then
 	local talkCol = Color(255, 255, 100)
