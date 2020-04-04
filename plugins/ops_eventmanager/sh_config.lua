@@ -186,6 +186,25 @@ impulse.Ops.EventManager.Config.Events = {
 			end)
 		end
 	},
+	["text"] = {
+		Cat = "ui",
+		Prop = {
+			["message"] = "Sample Text",
+			["pos_x"] = 0.5,
+			["pos_y"] = 0.5,
+			["message_fadein"] = 3,
+			["message_fadeout"] = 3,
+			["message_hold"] = 5,
+			["message_colour"] = Color(255, 255, 255, 255),
+			["message_align"] = TEXT_ALIGN_CENTER
+		},
+		NeedUID = false,
+		Clientside = true,
+		Do = function(prop, uid)
+			local text = vgui.Create("impulseFadeText")
+			text:Setup(prop["message"], prop["pos_x"], prop["pos_y"], prop["message_fadein"], prop["message_fadeout"], prop["message_hold"], prop["message_colour"], prop["message_align"])
+		end
+	},
 	["spawnent"] = {
 		Cat = "ent",
 		Prop = {

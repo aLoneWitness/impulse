@@ -423,11 +423,11 @@ if CLIENT then
 	end)
 
 	impulse.RegisterChatClass(2, function(message, speaker)
-		chat.AddText(oocTagCol, "[OOC] ", (rankCols[speaker:GetUserGroup()] or fallbackRankCol), speaker:SteamName(), oocCol, ": ", message)
+		chat.AddText(oocTagCol, "[OOC] ", (rankCols[speaker:IsIncognito() and "user" or speaker:GetUserGroup()] or fallbackRankCol), speaker:SteamName(), oocCol, ": ", message)
 	end)
 
 	impulse.RegisterChatClass(3, function(message, speaker)
-		chat.AddText(oocTagCol, "[LOOC] ", (rankCols[speaker:GetUserGroup()] or fallbackRankCol), speaker:SteamName(), (team.GetColor(speaker:Team())), " (", speaker:Name(), ")", oocCol, ": ",  message)
+		chat.AddText(oocTagCol, "[LOOC] ", (rankCols[speaker:IsIncognito() and "user" or speaker:GetUserGroup()] or fallbackRankCol), speaker:SteamName(), (team.GetColor(speaker:Team())), " (", speaker:Name(), ")", oocCol, ": ",  message)
 	end)
 
 	impulse.RegisterChatClass(4, function(message, speaker)

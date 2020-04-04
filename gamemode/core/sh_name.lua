@@ -66,7 +66,11 @@ function impulse.CanUseName(name)
 	return true, name
 end
 
-meta.SteamName = meta.SteamName or meta.Name
+meta.steamName = meta.steamName or meta.Name
+function meta:SteamName()
+	return self.steamName(self)
+end
+
 function meta:Name()
     return self:GetSyncVar(SYNC_RPNAME, self:SteamName())
 end

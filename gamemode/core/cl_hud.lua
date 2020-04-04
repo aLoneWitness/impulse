@@ -369,7 +369,7 @@ function IMPULSE:HUDPaint()
 			surface.SetTextPos(scrW-60, scrH-40)
 			surface.DrawText(weapon:Clip1().."/"..LocalPlayer():GetAmmoCount(weapon:GetPrimaryAmmoType()))
 		elseif weapon:GetClass() == "weapon_physgun" or weapon:GetClass() == "gmod_tool" then
-			draw.DrawText("Don't have this weapon out in RP.\nYou may be punished for this.", "Impulse-Elements16", 35, y-40, color_white, TEXT_ALIGN_LEFT)
+			draw.DrawText("Don't have this weapon out in RP.\nYou may be punished for this.", "Impulse-Elements16", 35, y-35, color_white, TEXT_ALIGN_LEFT)
 			surface.SetMaterial(warningIcon)
 			surface.DrawTexturedRect(10, y-32, 18, 18)
 			aboveHUDUsed = true
