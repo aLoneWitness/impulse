@@ -12,6 +12,10 @@ function MakeCosmetic(ply, id, bone, data, slot)
 		ply.Cosmetics[slot]:SetBodyGroups(data.bodygroups)
 	end
 
+	if data.skin then
+		ply.Cosmetics[slot]:SetSkin(data.skin)
+	end
+
 	local t = LocalPlayer():Team()
 
 	if ply:IsPlayer() then

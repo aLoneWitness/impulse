@@ -83,6 +83,13 @@ function IMPULSE:PlayerInitialSpawnLoaded(ply) -- called once player is full loa
 		ply:Jail(jailTime)
 		impulse.Arrest.DCRemember[ply:SteamID()] = nil
 	end
+
+	if ply.Warnings and ply.Bans then
+		net.Start("opsGetRecord")
+		net.WriteUInt(table.Count(ply.Warnings), 8)
+		net.WriteUInt(table.Count(ply.Bans), 8)
+		net.Send(ply)
+	end
 end
 
 function IMPULSE:PlayerSpawn(ply)
