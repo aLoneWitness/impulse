@@ -442,8 +442,13 @@ function IMPULSE:PlayerSay(ply, text, teamChat, newChat)
 				return ""
 			end
 
+			if command.leadAdminOnly == true and (ply:GetUserGroup() != "leadadmin" and not ply:IsSuperAdmin()) then
+				ply:Notify("You must be a lead admin to use this command.")
+				return ""
+			end
+
 			if command.superAdminOnly == true and ply:IsSuperAdmin() == false then
-				ply:Notify("You must be an super admin to use this command.")
+				ply:Notify("You must be a super admin to use this command.")
 				return ""
 			end
 

@@ -84,36 +84,6 @@ local quickTools = {
 		end
 	},
 	{
-		name = "Screengrab",
-		icon = "icon16/camera.png",
-		onRun = function(ply, id)
-			if nextSG > CurTime() then
-				ply:Notify("Slow down!")
-				return
-			end
-
-			nextSG = CurTime() + 10
-
-			OpenSGMenu()
-
-			LocalPlayer().parts = nil
-			LocalPlayer().len = nil
-			LocalPlayer().StartTime = nil
-			LocalPlayer().gfname = nil
-			LocalPlayer().sgtable = nil
-
-			ScreengrabProgressReset()
-
-			timer.Simple(0.1, function()
-				net.Start("ScreengrabRequest")
-					net.WriteEntity(ply)
-					net.WriteUInt(40, 32)
-				net.SendToServer()
-				LocalPlayer().InProgress = true
-			end)
-		end
-	},
-	{
 		name = "Cleanup Props",
 		icon = "icon16/building_delete.png",
 		onRun = function(ply, sid)

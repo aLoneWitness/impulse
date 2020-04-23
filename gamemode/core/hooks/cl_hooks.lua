@@ -482,6 +482,10 @@ function IMPULSE:DisplayMenuMessages(menu)
 	end
 end
 
+function IMPULSE:OnAchievementAchieved() -- disable steam achievement chat messages
+	return
+end
+
 concommand.Add("impulse_togglethirdperson", function() -- ease of use command for binds
 	impulse.SetSetting("view_thirdperson", (!impulse.GetSetting("view_thirdperson")))
 end)

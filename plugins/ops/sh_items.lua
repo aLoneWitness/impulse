@@ -81,9 +81,9 @@ end
 
 
 local giveItemCommand = {
-    description = "(SA only) Gives a player the specified item. Use /itemspawner instead.",
+    description = "Gives a player the specified item. Use /itemspawner instead.",
     requiresArg = true,
-    adminOnly = true,
+    superAdminOnly = true,
     onRun = function(ply, arg, rawText)
         if not ply:IsSuperAdmin() then
             return
@@ -136,8 +136,8 @@ local giveItemCommand = {
 impulse.RegisterChatCommand("/giveitem", giveItemCommand)
 
 local itemSpawnerCommand = {
-    description = "(SA only) Opens the item spawner.",
-    adminOnly = true,
+    description = "Opens the item spawner.",
+    superAdminOnly = true,
     onRun = function(ply, arg, rawText)
         if not ply:IsSuperAdmin() then
             return

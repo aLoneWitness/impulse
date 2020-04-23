@@ -136,25 +136,46 @@ function impulse.chatBox.buildBox()
 				end
 
 				local i = 0
+				local showing = 0
+				local isAdmin = LocalPlayer():IsAdmin()
+				local isLeadAdmin = LocalPlayer():IsUserGroup("leadadmin")
+				local isSuperAdmin = LocalPlayer():IsSuperAdmin()
 
  				for k, v in pairs(impulse.chatCommands) do
  					if (strFind(k, command)) then
  						local c = impulse.Config.MainColour
  						
- 						if v.adminOnly == true and LocalPlayer():IsAdmin() == false then 
- 							continue 
- 						elseif v.adminOnly == true then
- 							c = impulse.Config.InteractColour
+ 						if v.adminOnly then
+ 							if isAdmin then
+ 								c = impulse.Config.InteractColour
+ 							else
+ 								continue 
+ 							end
+ 						end
+
+   						if v.leadAdminOnly then
+ 							if isLeadAdmin or isSuperAdmin then
+ 								c = Color(128, 0, 128)
+ 							else
+ 								continue
+ 							end
  						end
  						
- 						if v.superAdminOnly == true and LocalPlayer():IsSuperAdmin() == false then 
- 							continue 
- 						elseif v.superAdminOnly == true then
- 							c = Color(255, 0, 0, 255)
+  						if v.superAdminOnly then
+ 							if isSuperAdmin then
+ 								c = Color(255, 0, 0, 255)
+ 							else
+ 								continue 
+ 							end
  						end
  
 						draw.DrawText(k.." - "..v.description, "Impulse-ChatMedium", 10, 10 + i, c, TEXT_ALIGN_LEFT)
 						i = i + 15
+						showing = showing + 1
+
+						if showing > 24 then
+							break
+						end
  					end
  				end
 			end

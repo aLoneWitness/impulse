@@ -4,6 +4,7 @@ impulse.chatClasses = impulse.chatClasses or {}
 
 function impulse.RegisterChatCommand(name, cmdData)
 	if not cmdData.adminOnly then cmdData.adminOnly = false end
+	if not cmdData.leadAdminOnly then cmdData.leadAdminOnly = false end
 	if not cmdData.superAdminOnly then cmdData.superAdminOnly = false end
 	if not cmdData.description then cmdData.description = "" end
 	if not cmdData.requiresArg then cmdData.requiresArg = false end
