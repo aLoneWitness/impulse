@@ -1,3 +1,6 @@
+--- Allows interactions with the players inventory
+-- @module Inventory
+
 impulse.Inventory = impulse.Inventory or {}
 impulse.Inventory.Data = impulse.Inventory.Data or {}
 impulse.Inventory.Data[0] = impulse.Inventory.Data[0] or {}
@@ -17,6 +20,10 @@ end
 local count = 1
 local countX = 1
 
+--- Registers a new inventory item
+-- @realm shared
+-- @param itemData Item data
+-- @internal
 function impulse.RegisterItem(item)
 	local class = item.WeaponClass
 
@@ -59,6 +66,10 @@ function impulse.RegisterItem(item)
 	count = count + 1
 end
 
+--- Registers a new workbench
+-- @realm shared
+-- @param benchData Bench data
+-- @internal
 function impulse.RegisterBench(bench)
 	local class = bench.Class
 
@@ -66,6 +77,10 @@ function impulse.RegisterBench(bench)
 	impulse.Inventory.Mixtures[class] = {}
 end
 
+--- Registers a new mixture
+-- @realm shared
+-- @param mixData Mixture data
+-- @internal
 function impulse.RegisterMixture(mix)
 	local class = mix.Class
 	local bench = mix.Bench
@@ -77,10 +92,19 @@ function impulse.RegisterMixture(mix)
 	countX = countX + 1
 end
 
+--- Used to convert the class to the item's NetID (or table ref)
+-- @realm shared
+-- @string class Item class name
+-- @treturn int Item net ID
 function impulse.Inventory.ClassToNetID(class)
 	return impulse.Inventory.ItemsRef[class]
 end
 
+--- Used to get the crafting time and the sounds to play
+-- @realm shared
+-- @string class Item class name
+-- @treturn int Time
+-- @treturn table Table of sounds
 function impulse.Inventory.GetCraftingTime(mix)
 	local items = mix.Input
 	local time = 0
@@ -103,6 +127,9 @@ function impulse.Inventory.GetCraftingTime(mix)
 	return time, sounds
 end
 
+--- A collection of crafting types, each uses a different set of sounds
+-- @realm client
+-- @table CraftingTypes
 local sounds = {
 	["chemical"] = 3,
 	["electronics"] = 3,
@@ -119,6 +146,11 @@ local sounds = {
 	["wood"] = 6
 }
 
+--- Used to pick a random crafting sound for the correct crafting type
+-- @realm shared
+-- @string[opt=generic] craftType Crafting type
+-- @see CraftingTypes
+-- @treturn string The random crafting sound based on the crafting type (eg: if type is wood then return wood2.wav)
 function impulse.Inventory.PickRandomCraftSound(crafttype)
 	local max = sounds[crafttype]
 
@@ -129,6 +161,9 @@ function impulse.Inventory.PickRandomCraftSound(crafttype)
 	return "impulse/craft/"..crafttype.."/"..math.random(1, max)..".wav"
 end
 
+--- Returns the max capacity of the players storage box
+-- @realm shared
+-- @treturn int Capacity (in kg)
 function meta:GetMaxInventoryStorage()
 	if self:IsDonator() then
 		return impulse.Config.InventoryStorageMaxWeightVIP
@@ -138,6 +173,12 @@ function meta:GetMaxInventoryStorage()
 end
 
 if CLIENT then
+	--- Returns if a client has an inventory item and how much they have
+	-- @realm client
+	-- @int itemId Item Network ID (use impulse.Inventory.ClassToNetID)
+	-- @see impulse.Inventory.ClassToNetID
+	-- @treturn bool Has item
+	-- @treturn int Amount
 	function meta:HasInventoryItem(id)
 		if self:Team() == 0 then
 			return false

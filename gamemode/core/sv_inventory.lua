@@ -1,7 +1,5 @@
-/*
-** Copyright (c) 2017 Jake Green (TheVingard)
-** This file is private and may not be shared, downloaded, used or sold.
-*/
+--- Allows interactions with the players inventory
+-- @module Inventory
 
 INV_CONFISCATED = 0
 INV_PLAYER = 1
@@ -10,6 +8,11 @@ INV_STORAGE = 2
 impulse.Inventory = impulse.Inventory or {}
 impulse.Inventory.Data = impulse.Inventory.Data or {}
 
+--- Inserts an inventory item into the database. This can be used to control the inventory of offline users
+-- @realm server
+-- @int ownerid OwnerID number
+-- @string class Class name of the item to add
+-- @int[opt=1] storageType Storage type (1 is player inventory, 2 is storage)
 function impulse.Inventory.DBAddItem(ownerid, class, storageType)
 	local query = mysql:Insert("impulse_inventory")
 	query:Insert("uniqueid", class)
@@ -18,6 +21,12 @@ function impulse.Inventory.DBAddItem(ownerid, class, storageType)
 	query:Execute()
 end
 
+--- Deletes an inventory item from the database. This can be used to control the inventory of offline users
+-- @realm server
+-- @int ownerid OwnerID number
+-- @string class Class name of the item to remove
+-- @int[opt=1] storageType Storage type (1 is player inventory, 2 is storage)
+-- @int[opt=1] limit The amount of items to remove
 function impulse.Inventory.DBRemoveItem(ownerid, class, storetype, limit)
 	local query = mysql:Delete("impulse_inventory")
 	query:Where("ownerid", ownerid)
@@ -28,6 +37,10 @@ function impulse.Inventory.DBRemoveItem(ownerid, class, storetype, limit)
 	query:Execute()
 end
 
+--- Clears a players inventory. This can be used to control the inventory of offline users
+-- @realm server
+-- @int ownerid OwnerID number
+-- @int[opt=1] storageType Storage type (1 is player inventory, 2 is storage)
 function impulse.Inventory.DBClearInventory(ownerid, storageType)
 	local query = mysql:Delete("impulse_inventory")
 	query:Where("ownerid", ownerid)
@@ -35,6 +48,13 @@ function impulse.Inventory.DBClearInventory(ownerid, storageType)
 	query:Execute()
 end
 
+--- Updates the storage type for an existing item. This can be used to control the inventory of offline users
+-- @realm server
+-- @int ownerid OwnerID number
+-- @string classname Class name of the item to update
+-- @int[opt=1] limit The amount of items to update
+-- @int oldStorageType Old storage type (1 is player inventory, 2 is storage)
+-- @int newStorageType New storage type (1 is player inventory, 2 is storage)
 function impulse.Inventory.DBUpdateStoreType(ownerid, class, limit, oldStorageType, newStorageType)
 	local queryGet = mysql:Select("impulse_inventory")
 	queryGet:Select("id")
@@ -58,6 +78,13 @@ function impulse.Inventory.DBUpdateStoreType(ownerid, class, limit, oldStorageTy
 	queryGet:Execute()
 end
 
+--- Spawns an inventory item as an Entity
+-- @realm server
+-- @string class Class name of the item to spawn
+-- @vector pos limit The spawn position
+-- @player[opt] bannedPlayer Player to ban from picking up 
+-- @int[opt] killTime Time until the item is removed automatically
+-- @treturn entity Spawned item
 function impulse.Inventory.SpawnItem(class, pos, banned, killtime)
 	local itemid = impulse.Inventory.ClassToNetID(class)
 	if not itemid then return print("[impulse] Attempting to spawn nil item!") end
@@ -79,6 +106,12 @@ function impulse.Inventory.SpawnItem(class, pos, banned, killtime)
 	return item
 end
 
+--- Spawns a workbench
+-- @realm server
+-- @string class Class name of the workbench
+-- @vector pos limit The spawn position
+-- @angle ang The spawn angle
+-- @treturn entity Spawned workbench
 function impulse.Inventory.SpawnBench(class, pos, ang)
 	local benchClass = impulse.Inventory.Benches[class]
 	if not benchClass then return print("[impulse] Attempting to spawn nil bench!") end
@@ -92,10 +125,19 @@ function impulse.Inventory.SpawnBench(class, pos, ang)
 	return bench
 end
 
+--- Gets a players inventory table
+-- @realm server
+-- @int[opt=1] storageType Storage type (1 is player inventory, 2 is storage)
+-- @treturn table Inventory
 function meta:GetInventory(storage)
 	return impulse.Inventory.Data[self.impulseID][storage or 1]
 end
 
+--- Returns if a player can hold an item in their local inventory
+-- @realm server
+-- @string class Item class name
+-- @int[opt=1] amount Amount of the item
+-- @treturn bool Can hold item
 function meta:CanHoldItem(itemclass, amount)
 	local item = impulse.Inventory.Items[impulse.Inventory.ClassToNetID(itemclass)]
 	local weight = (item.Weight or 0) * (amount or 1)
@@ -103,6 +145,11 @@ function meta:CanHoldItem(itemclass, amount)
 	return self.InventoryWeight + weight <= impulse.Config.InventoryMaxWeight
 end
 
+--- Returns if a player can hold an item in their storage chest
+-- @realm server
+-- @string class Item class name
+-- @int[opt=1] amount Amount of the item
+-- @treturn bool Can hold item
 function meta:CanHoldItemStorage(itemclass, amount)
 	local item = impulse.Inventory.Items[impulse.Inventory.ClassToNetID(itemclass)]
 	local weight = (item.Weight or 0) * (amount or 1)
@@ -114,6 +161,11 @@ function meta:CanHoldItemStorage(itemclass, amount)
 	end
 end
 
+--- Returns if a player has an item in their local inventory
+-- @realm server
+-- @string class Item class name
+-- @int[opt=1] amount Amount of the item
+-- @treturn bool Has item
 function meta:HasInventoryItem(itemclass, amount)
 	local has = self.InventoryRegister[itemclass]
 
@@ -132,6 +184,11 @@ function meta:HasInventoryItem(itemclass, amount)
 	return false
 end
 
+--- Returns if a player has an item in their storage chest
+-- @realm server
+-- @string class Item class name
+-- @int[opt=1] amount Amount of the item
+-- @treturn bool Has item
 function meta:HasInventoryItemStorage(itemclass, amount)
 	local has = self.InventoryStorageRegister[itemclass]
 
@@ -150,6 +207,11 @@ function meta:HasInventoryItemStorage(itemclass, amount)
 	return false
 end
 
+--- Returns if a player has an specific item. This is used to check if they have the exact item, not just an item of the class specified
+-- @realm server
+-- @int itemID Item ID
+-- @int[opt=1] storageType Storage type (1 is player inventory, 2 is storage)
+-- @treturn bool Has item
 function meta:HasInventoryItemSpecific(id, storetype)
 	if not self.beenInvSetup then return false end
 	local storetype = storetype or 1
@@ -162,6 +224,11 @@ function meta:HasInventoryItemSpecific(id, storetype)
 	return false
 end
 
+--- Returns if a player has an illegal inventory item
+-- @realm server
+-- @int[opt=1] storageType Storage type (1 is player inventory, 2 is storage)
+-- @treturn bool Has illegal item
+-- @treturn int Item ID of illegal item
 function meta:HasIllegalInventoryItem(storetype)
 	if not self.beenInvSetup then return false end
 	local storetype = storetype or 1
@@ -179,6 +246,11 @@ function meta:HasIllegalInventoryItem(storetype)
 	return false
 end
 
+--- Returns if a specific inventory item is restricted
+-- @realm server
+-- @int itemID Item ID
+-- @int[opt=1] storageType Storage type (1 is player inventory, 2 is storage)
+-- @treturn bool Is restricted
 function meta:IsInventoryItemRestricted(id, storetype)
 	if not self.beenInvSetup then return false end
 	local storetype = storetype or 1
@@ -191,6 +263,15 @@ function meta:IsInventoryItemRestricted(id, storetype)
 	return false
 end
 
+--- Gives an inventory item to a player
+-- @realm server
+-- @string itemclass Item class name
+-- @int[opt=1] storageType Storage type (1 is player inventory, 2 is storage)
+-- @bool[opt=false] restricted Is item restricted
+-- @bool[opt=false] isLoaded (INTERNAL) Used for first time setup when player connects
+-- @bool[opt=false] moving (INTERNAL) Is item just being moved? (stops database requests)
+-- @int[opt] clip (INTERNAL) (Only used for weapons) Item clip
+-- @treturn int ItemID
 function meta:GiveInventoryItem(itemclass, storetype, restricted, isLoaded, moving, clip) -- isLoaded is a internal arg used for first time item setup, when they are already half loaded
 	if not self.beenInvSetup and not isLoaded then return end
 
@@ -241,6 +322,12 @@ function meta:GiveInventoryItem(itemclass, storetype, restricted, isLoaded, movi
 	return invid
 end
 
+--- Takes an inventory item from a player
+-- @realm server
+-- @int itemID Item ID
+-- @int[opt=1] storageType Storage type (1 is player inventory, 2 is storage)
+-- @bool[opt=false] moving (INTERNAL) Is item just being moved? (stops database requests)
+-- @treturn int Clip
 function meta:TakeInventoryItem(invid, storetype, moving)
 	if not self.beenInvSetup then return end
 
@@ -296,6 +383,9 @@ function meta:TakeInventoryItem(invid, storetype, moving)
 	return clip
 end
 
+--- Clears a players inventory
+-- @realm server
+-- @int[opt=1] storageType Storage type (1 is player inventory, 2 is storage)
 function meta:ClearInventory(storetype)
 	if not self.beenInvSetup then return end
 	local storetype = storetype or 1
@@ -313,6 +403,9 @@ function meta:ClearInventory(storetype)
 	net.Send(self)
 end
 
+--- Clears restricted items from a players inventory
+-- @realm server
+-- @int[opt=1] storageType Storage type (1 is player inventory, 2 is storage)
 function meta:ClearRestrictedInventory(storetype)
 	if not self.beenInvSetup then return end
 	local storetype = storetype or 1
@@ -330,6 +423,9 @@ function meta:ClearRestrictedInventory(storetype)
 	net.Send(self)
 end
 
+--- Clears illegal items from a players inventory
+-- @realm server
+-- @int[opt=1] storageType Storage type (1 is player inventory, 2 is storage)
 function meta:ClearIllegalInventory(storetype)
 	if not self.beenInvSetup then return end
 	local storetype = storetype or 1
@@ -345,6 +441,11 @@ function meta:ClearIllegalInventory(storetype)
 	end
 end
 
+--- Takes an item from a players inventory by class name
+-- @realm server
+-- @string class Item class name
+-- @int[opt=1] storageType Storage type (1 is player inventory, 2 is storage)
+-- @int[opt=1] amount Amount to take
 function meta:TakeInventoryItemClass(itemclass, storetype, amount)
 	if not self.beenInvSetup then return end
 
@@ -365,6 +466,10 @@ function meta:TakeInventoryItemClass(itemclass, storetype, amount)
 	end
 end
 
+--- Sets a specific inventory item as equipped or not
+-- @realm server
+-- @int itemID Item ID
+-- @bool state Is equipped
 function meta:SetInventoryItemEquipped(itemid, state)
 	if not self:Alive() then return end
 	
@@ -414,6 +519,8 @@ function meta:SetInventoryItemEquipped(itemid, state)
 	net.Send(self)
 end
 
+--- Un equips all iventory items for a player
+-- @realm server
 function meta:UnEquipInventory()
 	if not self.beenInvSetup then return end
 
@@ -426,6 +533,9 @@ function meta:UnEquipInventory()
 	end
 end
 
+--- Drops a specific inventory item
+-- @realm server
+-- @int itemid Item ID
 function meta:DropInventoryItem(itemid)
 	local trace = {}
 	trace.start = self:EyePos()
@@ -476,6 +586,9 @@ function meta:DropInventoryItem(itemid)
 	end
 end
 
+--- Uses a specific inventory item
+-- @realm server
+-- @int itemid Item ID
 function meta:UseInventoryItem(itemid)
 	local itemclass = impulse.Inventory.Data[self.impulseID][1][itemid].class
 	local itemnetid = impulse.Inventory.ClassToNetID(itemclass)
@@ -503,6 +616,11 @@ function meta:UseInventoryItem(itemid)
 	end
 end
 
+--- Moves a specific inventory item across storages (to move several of the same items use MoveInventoryItemMass as it is faster)
+-- @realm server
+-- @int itemid Item ID
+-- @int from Old storage type
+-- @int to New storage type
 function meta:MoveInventoryItem(itemid, from, to)
 	if self:IsInventoryItemRestricted(itemid, from) then return end
 	local item = impulse.Inventory.Data[self.impulseID][from][itemid]
@@ -521,6 +639,12 @@ function meta:MoveInventoryItem(itemid, from, to)
 	net.Send(self)
 end
 
+--- Moves a collection of the same items across storages
+-- @realm server
+-- @string class Item class name
+-- @int from Old storage type
+-- @int to New storage type
+-- @int amount Amount to move
 function meta:MoveInventoryItemMass(itemclass, from, to, amount)
 	impulse.Inventory.DBUpdateStoreType(self.impulseID, itemclass, amount, from, to)
 
@@ -546,6 +670,10 @@ function meta:MoveInventoryItemMass(itemclass, from, to, amount)
 	end
 end
 
+--- Returns if a player can make a mix
+-- @realm server
+-- @string class Mixture class name
+-- @treturn bool Can make mixture
 function meta:CanMakeMix(mixClass)
 	local skill = self:GetSkillLevel("craft")
 

@@ -1,5 +1,7 @@
-local entityMeta = FindMetaTable("Entity")
+--- Physical object in the game world
+-- @classmod Entity
 
+local entityMeta = FindMetaTable("Entity")
 
 local propDoors = {
 	["models/props_doors/doorklab01.mdl"] = true,
@@ -9,10 +11,16 @@ local propDoors = {
 	["models/combine_gate_citizen.mdl"] = true
 }
 
+--- Returns if the entity is a door
+-- @realm shared
+-- @treturn bool Is door
 function entityMeta:IsDoor()
 	return self:GetClass():find("door")
 end
 
+--- Helper function that can detect if the door is a players prop door
+-- @realm shared
+-- @treturn bool Is player prop door
 function entityMeta:IsPropDoor()
 	if not IsValid(self) then
 		return
@@ -41,10 +49,16 @@ function entityMeta:IsPropDoor()
 	return false
 end
 
+--- Returns if entity is a button
+-- @realm shared
+-- @treturn bool Is button
 function entityMeta:IsButton()
 	return (self:GetClass():find("button") or self:GetClass() == ("class C_BaseEntity"))
 end
 
+--- Returns if a door is locked
+-- @realm shared
+-- @treturn bool Is locked
 function entityMeta:IsDoorLocked()
 	return self:GetSaveTable().m_bLocked
 end
@@ -57,10 +71,16 @@ for k, v in pairs(list.Get("Vehicles")) do
 	end
 end
 
+--- Returns if a entity is a chair
+-- @realm shared
+-- @treturn bool Is chair
 function entityMeta:IsChair()
 	return chairs[self.GetModel(self)]
 end
 
+--- Returns if a entity can be carried
+-- @realm shared
+-- @treturn bool Can be carried
 function entityMeta:CanBeCarried()
 	local phys = self:GetPhysicsObject()
 
@@ -77,6 +97,14 @@ end
 
 local ADJUST_SOUND = SoundDuration("npc/metropolice/pain1.wav") > 0 and "" or ""
 
+--- Emits queued sounds on an entity one by one
+-- @realm shared
+-- @param sounds A table of all the sounds
+-- @int[opt=0] delay The delay between each sound
+-- @int[opt=0.1] spacing The spacing between each sound
+-- @int[opt=1] volume The volume of each sound
+-- @int[opt=100] pitch The pitch of each sound
+-- @treturn int How long it will take to emit all the sounds
 function entityMeta:EmitQueuedSounds(sounds, delay, spacing, volume, pitch)
 	delay = delay or 0
 	spacing = spacing or 0.1
@@ -107,6 +135,13 @@ end
 if SERVER then
 	util.AddNetworkString("impulseBudgetSound")
 	util.AddNetworkString("impulseBudgetSoundExtra")
+
+	--- Emits a that is only networked to nearby players
+	-- @realm server
+	-- @string sound Sound path
+	-- @int[opt=660] range Radius in Source units to network the sound to
+	-- @int[opt=1] volume Volume of the sound
+	-- @int[opt=100] pitch Pitch of the sound
 	function entityMeta:EmitBudgetSound(sound, range, level, pitch)
 		local range = range or 600
 		local pos = self:GetPos()

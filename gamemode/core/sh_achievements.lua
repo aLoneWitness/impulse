@@ -1,6 +1,13 @@
+--- Helper functions to control the achievement system
+-- @module Achievement
+
 impulse.Achievements = impulse.Achievements or {}
 
 if SERVER then
+	--- Gives an achievement to a player
+	-- @realm server
+	-- @string class Achievement class
+	-- @bool[opt=false] skipPoints Wether to skip calculating the points from this achievement
 	function meta:AchievementGive(name, skipPoints)
 		if not self.impulseData then
 			return
@@ -23,6 +30,9 @@ if SERVER then
 		end
 	end
 
+	--- Takes an achievement from a player
+	-- @realm server
+	-- @string class Achievement class
 	function meta:AchievementTake(name)
 		if not self.impulseData then
 			return
@@ -33,6 +43,10 @@ if SERVER then
 		self:SaveData()
 	end
 
+	--- Returns if a player has an achievement
+	-- @realm server
+	-- @string class Achievement class
+	-- @treturn bool Has achievement
 	function meta:AchievementHas(name)
 		if not self.impulseData then
 			return false
@@ -47,6 +61,9 @@ if SERVER then
 		return false
 	end
 
+	--- Runs the achievement's check function and if it returns true, awards the achievement
+	-- @realm server
+	-- @string class Achievement class
 	function meta:AchievementCheck(name)
 		if not self.impulseData then
 			return
@@ -60,6 +77,9 @@ if SERVER then
 		end
 	end
 
+	--- Calculates the achievement points and stores them in the SYNC_TROPHYPOINTS SyncVar on the player
+	-- @realm server
+	-- @treturn int Achievement points
 	function meta:CalculateAchievementPoints()
 		if not self.impulseData then
 			return 0
@@ -72,5 +92,6 @@ if SERVER then
 		end
 
 		self:SetSyncVar(SYNC_TROPHYPOINTS, val, true)
+		return val
 	end
 end
