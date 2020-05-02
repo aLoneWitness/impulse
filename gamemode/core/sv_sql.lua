@@ -17,6 +17,7 @@ function IMPULSE:DatabaseConnected()
         sqlQuery:Create("money", "int(11) unsigned DEFAULT NULL") -- money
         sqlQuery:Create("bankmoney", "int(11) unsigned DEFAULT NULL") -- banked money
         sqlQuery:Create("skills", "longtext") -- json skill data seperated from data to avoid corrruption
+        sqlQuery:Create("ammo", "text")
         sqlQuery:Create("model", "varchar(160) NOT NULL") -- model
         sqlQuery:Create("skin", "tinyint") -- skin
         sqlQuery:Create("cosmetic", "longtext") -- cosmetic extra data

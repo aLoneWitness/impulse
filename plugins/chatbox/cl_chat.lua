@@ -2,6 +2,10 @@
 -- Author: vin, Exho (obviously), Tomelyr, LuaTenshi
 -- Version: 4/12/15
 
+if IsValid(impulse.chatBox.frame) then
+	impulse.chatBox.frame:Remove()
+end
+
 impulse.chatBox = {}
 
 impulse.DefineSetting("chat_fadetime", {name="Chatbox fade time", category="Chatbox", type="slider", default=12, minValue=4, maxValue=120})

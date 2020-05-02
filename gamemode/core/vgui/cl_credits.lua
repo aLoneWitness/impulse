@@ -22,6 +22,7 @@ function PANEL:Init()
 		Kyle Smith - UTF-8 module
 		rebel1234 and Chessnut - animations base
 		wyozi - medialib
+		Dominic Letz - yaml parser
 		Falco - CPPI</font>
 
 		Powered by
@@ -30,7 +31,7 @@ function PANEL:Init()
 		Wordpress - Wordpress API</font>
 
 		Inspired by
-		<font=Impulse-Elements23>Aerolite, Apex-Rolplay and Cookie-Network</font>
+		<font=Impulse-Elements23>Aerolite, Apex-Roleplay and Cookie-Network</font>
 
 
 		Testing team

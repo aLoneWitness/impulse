@@ -1,3 +1,6 @@
+--- Functions to control a player's animations. Based heavily on nutscript's Anim system
+-- @module Anim
+
 -- this animation system is HEAVILY based on nutscripts system with partial recodes or changes to suit impulse.
 -- i claim no credit for this
 -- check out NS at https://github.com/rebel1324/NutScript/
@@ -290,9 +293,26 @@ impulse.Anim.fastZombie = {
 	[ACT_MP_RUN] = ACT_HL2MP_RUN_ZOMBIE_FAST
 }
 
+--- A collection of default animation classes
+-- @realm shared
+-- @field citizen_male
+-- @field citizen_female
+-- @field metrocop
+-- @field overwatch
+-- @field vort
+-- @field player
+-- @field zombie
+-- @field fastZombie
+-- @table DefaultAnimClasses
+
 
 local translations = translations or {}
 
+--- Sets the animation class of a specific model
+-- @realm shared
+-- @string model The model to set
+-- @string class The animation class
+-- @see DefaultAnimClasses
 function impulse.Anim.SetModelClass(model, class)
 	if not impulse.Anim[class] then
 		error("'"..tostring(class).."' is not a valid animation class!")
@@ -305,6 +325,10 @@ end
 local stringLower = string.lower
 local stringFind = string.find
 
+--- Gets the animation class of a specific model
+-- @realm shared
+-- @string model The model
+-- @treturn string Animation class
 function impulse.Anim.GetModelClass(model)
 	model = stringLower(model)
 	local class = translations[model]
@@ -337,6 +361,12 @@ ALWAYS_RAISED["weapon_physgun"] = true
 ALWAYS_RAISED["gmod_tool"] = true
 
 do
+	--- Plays an animation sequence on a player
+	-- @realm server
+    -- @string sequence The sequence name
+    -- @func[opt] callback Called when the animation is completed
+    -- @int[opt] time How long until we force the sequence to stop
+    -- @bool[opt=false] noFreeze If the player should not freeze when the sequence is playing
 	function meta:ForceSequence(sequence, callback, time, noFreeze)
 		hook.Run("OnPlayerEnterSequence", self, sequence, callback, time, noFreeze)
 

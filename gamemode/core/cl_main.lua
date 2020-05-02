@@ -1,3 +1,6 @@
+--- A generic module that holds anything that doesnt fit elsewhere
+-- @module Misc
+
 /*
 ** Copyright (c) 2017 Jake Green (TheVingard)
 ** This file is private and may not be shared, downloaded, used or sold.
@@ -40,6 +43,13 @@ impulse.Badges = {
 }
 
 local cheapBlur = Color(0, 0, 0, 205)
+
+--- Renders a blur effect on a panel. Call this inside PANEL:Paint
+-- @realm client
+-- @panel panel The panel to blur
+-- @int layers Unknown
+-- @int density Density
+-- @color alpha Alpha
 function impulse.blur(panel, layers, density, alpha)
 	local x, y = panel:LocalToScreen(0, 0)
 
@@ -61,6 +71,12 @@ function impulse.blur(panel, layers, density, alpha)
 	end
 end
 
+--- Creates a work bar on the players screen
+-- @realm client
+-- @int time The time it will take to complete the bar
+-- @string[opt] text Text to display on the bar
+-- @func[opt] onDone Called when bar is complete
+-- @bool[opt=false] popup If the bar should stop player input
 function impulse.MakeWorkbar(time, text, onDone, popup)
 	local bar = vgui.Create("impulseWorkbar")
 	bar:SetEndTime(CurTime() + time)

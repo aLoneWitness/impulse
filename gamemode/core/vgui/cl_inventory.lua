@@ -57,23 +57,25 @@ function PANEL:Init()
 		ent:SetAngles(Angle(-1, 45, 0))
 		ent:SetPos(Vector(0, 0, 2.5))
 		self:RunAnimation()
-	end
 
- 	timer.Simple(0, function()
-		if not IsValid(self.modelPreview) then
-			return
-		end
-
-		local ent = self.modelPreview.Entity
-
-		if IsValid(ent) then
+		if not self.setup then
 			for v,k in pairs(LocalPlayer():GetBodyGroups()) do
 				ent:SetBodygroup(k.id, LocalPlayer():GetBodygroup(k.id))
 			end
 
-			hook.Run("SetupInventoryModel", self.modelPreview, ent)
+			for v,k in pairs(LocalPlayer():GetMaterials()) do
+				local mat = LocalPlayer():GetSubMaterial(v - 1)
+
+				if mat != k then
+					ent:SetSubMaterial(v - 1, mat)
+				end
+			end
+
+			hook.Run("SetupInventoryModel", self, ent)
+
+			self.setup = true
 		end
-	end)
+	end
 
  	--self.invName = vgui.Create("DLabel", self)
  	--self.invName:SetPos(270, 35)

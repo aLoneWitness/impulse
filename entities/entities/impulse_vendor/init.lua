@@ -21,6 +21,10 @@ function ENT:Initialize()
         if self.Vendor.Bodygroups then
             self:SetBodyGroups(self.Vendor.Bodygroups)
         end
+
+        if self.Vendor.Sequence then
+            self:SetIdleSequence(self.Vendor.Sequence)
+        end
     else
         self:SetModel("models/Humans/Group01/male_02.mdl")
     end
@@ -39,7 +43,7 @@ function ENT:Initialize()
 
     timer.Simple(1, function()
         if IsValid(self) then
-            self:DoAnimation()
+            self:DoAnimation(self.Vendor.Sequence)
         end
     end)
 

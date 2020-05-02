@@ -211,9 +211,23 @@ local idleCPVO = {
     "checkformiscount.wav"
 }
 
+local idleFishVO = {
+    "fish_cough01.wav",
+    "fish_cough02.wav",
+    "fish_crabpot01.wav",
+    "fish_likeleeches.wav",
+    "fish_myback.wav",
+    "fish_oldleg.wav",
+    "fish_resumetalk02.wav",
+    "fish_stayoutwater.wav",
+    "fish_wipeouttown01.wav"
+}
+
 function impulse.GetRandomAmbientVO(gender)
     if gender == "male" then
         return "vo/npc/male01/"..idleVO[math.random(1, #idleVO)]
+    elseif gender == "fisherman" then
+        return "lostcoast/vo/fisherman/"..idleFishVO[math.random(1, #idleFishVO)]
     elseif gender == "cp" then
         return "npc/metropolice/vo/"..idleCPVO[math.random(1, #idleCPVO)]
     else

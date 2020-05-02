@@ -10,9 +10,14 @@ ENT.HUDDesc = "This vendor has no VendorType set. Use the key/value save system 
 
 function ENT:SetupDataTables()
 	self:NetworkVar("String", 0, "Vendor")
+	self:NetworkVar("String", 1, "IdleSequence")
 end
 
-function ENT:DoAnimation()
+function ENT:DoAnimation(custom)
+	if custom then
+		return self:ResetSequence(custom)
+	end
+
 	for k,v in ipairs(self:GetSequenceList()) do
 		if (v:lower():find("idle") and v != "idlenoise") then
 			return self:ResetSequence(k)

@@ -19,18 +19,22 @@ function PANEL:SetTextRaw(text, draw)
 	end
 end
 
+local setTextPos = surface.SetTextPos
+local setTextCol = surface.SetTextColor
+local setTextFont = surface.SetFont
+local drawText = surface.DrawText
 local function OnDrawText(text, font, x, y, color, alignX, alignY, alpha)
 	alpha = alpha or 255
 
-	surface.SetTextPos(x+1, y+1)
-	surface.SetTextColor(0, 0, 0, alpha)
-	surface.SetFont(font)
-	surface.DrawText(text)
+	setTextPos(x+1, y+1)
+	setTextCol(0, 0, 0, alpha)
+	setTextFont(font)
+	drawText(text)
 
-	surface.SetTextPos(x, y)
-	surface.SetTextColor(color.r, color.g, color.b, alpha)
-	surface.SetFont(font)
-	surface.DrawText(text)
+	setTextPos(x, y)
+	setTextCol(color.r, color.g, color.b, alpha)
+	setTextFont(font)
+	drawText(text)
 end
 
 function PANEL:SetScrollBarVisible(visible)
@@ -107,16 +111,28 @@ function PANEL:AddText(...)
 
 	textElement:SetTall(mrkup:GetHeight())
 	textElement.Paint = function(self, w, h)
+		if self.sleeping then
+			return
+		end
+
 		mrkup:Draw(0, 0)
 	end
 
 	textElement.start = CurTime() + impulse.GetSetting("chat_fadetime")
 	textElement.finish = textElement.start + 10
+
+	local setAlpha = textElement.SetAlpha
 	textElement.Think = function(this)
 		if self.active then
-			this:SetAlpha(255)
-		else
-			this:SetAlpha((1 - math.TimeFraction(this.start, this.finish, CurTime())) * 255)
+			this.sleeping = false
+			setAlpha(this, 255)
+		elseif not this.sleeping then
+			local alpha = (1 - math.TimeFraction(this.start, this.finish, CurTime())) * 255
+			setAlpha(this, alpha)
+
+			if alpha <= 0 then
+				this.sleeping = true
+			end
 		end
 	end
 

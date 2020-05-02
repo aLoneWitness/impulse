@@ -6,7 +6,7 @@
 -- Define gamemode information.
 GM.Name = "impulse"
 GM.Author = "vin"
-GM.Website = "https://www.vingard.ovh"
+GM.Website = "https://www.jakegreen.me"
 GM.Version = 1.2
 MsgC( Color( 83, 143, 239 ), "[impulse] Starting shared load...\n" )
 IMPULSE = GM
@@ -69,13 +69,18 @@ function impulse.lib.includeDir(directory, fromLua)
 	end
 end
 
+-- Loading 3rd party libs
+impulse.lib.includeDir("impulse/gamemode/libs")
+-- Load config
+impulse.Config = impulse.Config or {}
+
 -- Create impulse folder
 file.CreateDir("impulse")
 
 local isPreview = CreateConVar("impulse_ispreview", 0, FCVAR_REPLICATED, "If the current build is in preview mode.")
 
 if SERVER then
-	local dbFile = "impulse/database.json"
+	local dbFile = "impulse/config.yml"
 
 	impulse.DB = {
 		ip = "localhost",
@@ -85,20 +90,30 @@ if SERVER then
 		port = 3306
 	}
 
+	local dbConfLoaded = false
+
 	if file.Exists(dbFile, "DATA") then
-		local dbConf = util.JSONToTable(file.Read(dbFile, "DATA"))
-		table.Merge(impulse.DB, dbConf)
-		print("[impulse] [database.json] Loaded release database config file!")
-	else
-		print("[impulse] [database.json] Found no file. Assuming development database configuration. If this is a live server please setup this file!")
+		local dbConf = impulse.Yaml.Read("data/"..dbFile)
+
+		if dbConf and type(dbConf) == "table" and dbConf.db and type(dbConf.db) == "table" then
+			table.Merge(impulse.DB, dbConf.db)
+			print("[impulse] [config.yml] Loaded release database config file!")
+			dbConfLoaded = true
+
+			if dbConf.dev and type(dbConf.dev) == "table" then
+				if dbConf.dev.preview then
+					isPreview:SetInt(1)
+				end
+			end
+		end
+	end
+
+	if not dbConfLoaded then
+		print("[impulse] [config.yml] Found no file. Assuming development database configuration. If this is a live server please setup this file!")
 		isPreview:SetInt(1) -- assume we're running a preview build then i guess?
 	end
 end
 
--- Loading 3rd party libs
-impulse.lib.includeDir("impulse/gamemode/libs")
--- Load config
-impulse.Config = impulse.Config or {}
 -- Load DB
 if SERVER then
 	mysql:Connect(impulse.DB.ip, impulse.DB.username, impulse.DB.password, impulse.DB.database, impulse.DB.port)

@@ -104,3 +104,15 @@ function meta:AddPropCount(ent)
 
     ent:CallOnRemove("GetPropCountUpdate", function(ent, ply) ply:GetPropCount() end, self)
 end
+
+function meta:ResetSubMaterials()
+    if not self.SetSubMats then
+        return
+    end
+    
+    for v,k in pairs(self.SetSubMats) do
+        self:SetSubMaterial(v - 1, nil)
+    end
+
+    self.SetSubMats = nil
+end

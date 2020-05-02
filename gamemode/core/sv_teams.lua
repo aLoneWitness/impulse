@@ -23,6 +23,7 @@ function meta:SetTeam(teamID, forced)
 		self:SetBodyGroups("0000000")
 	end
 
+	self:ResetSubMaterials()
 	self:StripWeapons()
 	self:StripAmmo()
 	self:UnEquipInventory()
@@ -185,6 +186,17 @@ function meta:SetTeamRank(rankID)
 		end
 	else
 		self:SetBodyGroups("0000000")
+	end
+
+	if rankData.subMaterial then
+		for v,k in pairs(rankData.subMaterial) do
+			self:SetSubMaterial(v - 1, k)
+
+			self.SetSubMats = self.SetSubMats or {}
+			self.SetSubMats[v] = true
+		end
+	elseif self.SetSubMats then
+		self:ResetSubMaterials()
 	end
 
 	self:StripWeapons()

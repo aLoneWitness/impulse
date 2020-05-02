@@ -24,6 +24,7 @@ function IMPULSE:PlayerInitialSpawn(ply)
 	query:Select("skin")
 	query:Select("data")
 	query:Select("skills")
+	query:Select("ammo")
 	query:Select("firstjoin")
 	query:Where("steamid", ply:SteamID())
 	query:Callback(function(result)
@@ -69,14 +70,20 @@ function IMPULSE:PlayerInitialSpawn(ply)
 			timer.Remove(ply:UserID().."impulseFullLoad")
 		end
 	end)
-
-	if ply.Warns and ply.Bans then
-		-- do disipline net message
-	end
 end
 
 function IMPULSE:PlayerInitialSpawnLoaded(ply) -- called once player is full loaded
 	local jailTime = impulse.Arrest.DCRemember[ply:SteamID()]
+
+	if ply.ammoToGive then
+		for v,k in pairs(ply.ammoToGive) do
+			if game.GetAmmoID(v) != -1 then
+				ply:GiveAmmo(k, v)
+			end
+		end
+
+		ply.ammoToGive = nil
+	end
 
 	if jailTime then
 		ply:Arrest()
@@ -197,6 +204,13 @@ function IMPULSE:PlayerDisconnected(ply)
 
 	if ply.impulseID then
 		impulse.Inventory.Data[ply.impulseID] = nil
+
+		if not ply:IsCP() then
+			local query = mysql:Update("impulse_players")
+			query:Update("ammo", util.TableToJSON(ply:GetAmmo()))
+			query:Where("steamid", steamID)
+			query:Execute()
+		end
 	end
 
 	if ply.OwnedDoors then
@@ -286,6 +300,24 @@ function impulse.SetupPlayer(ply, dbData)
 		local xp = ply:GetSkillXP(v)
 		ply:NetworkSkill(v, xp)
 	end
+
+	local ammo = util.JSONToTable(dbData.ammo) or {}
+	local give = {}
+
+	for v,k in pairs(ammo) do
+		local ammoName = game.GetAmmoName(v)
+
+		if impulse.Config.SaveableAmmo[ammoName] then
+			give[ammoName] = k
+		end
+	end
+
+	ply.ammoToGive = give
+
+	local query = mysql:Update("impulse_players")
+	query:Update("ammo", "{}")
+	query:Where("steamid", ply:SteamID())
+	query:Execute()
 
 	if not GExtension and (dbData.group and dbData.group != "user") then
 		ply:SetUserGroup(dbData.group)
