@@ -17,6 +17,8 @@ function IMPULSE:PlayerInitialSpawn(ply)
 	query:Select("id")
 	query:Select("rpname")
 	query:Select("group")
+	query:Select("rpgroup")
+	query:Select("rpgrouprank")
 	query:Select("xp")
 	query:Select("money")
 	query:Select("bankmoney")
@@ -301,6 +303,11 @@ function impulse.SetupPlayer(ply, dbData)
 		ply:NetworkSkill(v, xp)
 	end
 
+	local query = mysql:Update("impulse_players")
+	query:Update("ammo", "{}")
+	query:Where("steamid", ply:SteamID())
+	query:Execute()
+
 	local ammo = util.JSONToTable(dbData.ammo) or {}
 	local give = {}
 
@@ -313,11 +320,6 @@ function impulse.SetupPlayer(ply, dbData)
 	end
 
 	ply.ammoToGive = give
-
-	local query = mysql:Update("impulse_players")
-	query:Update("ammo", "{}")
-	query:Where("steamid", ply:SteamID())
-	query:Execute()
 
 	if not GExtension and (dbData.group and dbData.group != "user") then
 		ply:SetUserGroup(dbData.group)
@@ -433,6 +435,10 @@ function impulse.SetupPlayer(ply, dbData)
 	end)
 
 	query:Execute()
+
+	if dbData.rpgroup then
+		ply:GroupLoad(dbData.rpgroup, dbData.rpgrouprank or nil)
+	end
 
 	ply.beenSetup = true
 	hook.Run("PostSetupPlayer", ply)

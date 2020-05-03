@@ -61,7 +61,8 @@ function impulse.Ops.ReportNew(ply, arg, rawText)
             opsSlackLog(":warning: *[NEW REPORT]* [#"..reportId.."] ".. ply:SteamName().. " (".. ply:Name().. ") ("..ply:SteamID().."): ```"..rawText.."```")
             return
         else
-            ply:Notify("Unfortunatley, no game moderators are currently availble to review your report. Please goto impulse-community.com and submit a ban request.")
+            ply:Notify("Unfortunatley, no game moderators are currently available to review your report. Please goto impulse-community.com and submit a ban request.")
+            opsSlackLog(":exclamation: *A user is requesting help but no moderators are online!* Report: ```".. rawText.."```")
         end
     else
         if string.len(impulse.Ops.Reports[reportId][2]) > 3000 then

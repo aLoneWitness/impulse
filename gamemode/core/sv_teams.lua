@@ -25,7 +25,11 @@ function meta:SetTeam(teamID, forced)
 
 	self:ResetSubMaterials()
 	self:StripWeapons()
-	self:StripAmmo()
+
+	if self:IsCP() or teamData.cp then
+		self:StripAmmo()
+	end
+	
 	self:UnEquipInventory()
 	self:ClearRestrictedInventory()
 	

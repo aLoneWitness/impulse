@@ -114,9 +114,9 @@ local pmCommand = {
 
 		if plyTarget and ply != plyTarget then
 			plyTarget:SendChatClassMessage(4, message, ply)
+			plyTarget.PMReply = ply
+
 			ply:SendChatClassMessage(5, message, ply)
-			plyTarget:SurfacePlaySound("buttons/blip1.wav")
-			ply:SurfacePlaySound("buttons/blip1.wav")
 		else
 			return ply:Notify("Could not find player: "..tostring(name))
 		end
@@ -124,6 +124,33 @@ local pmCommand = {
 }
 
 impulse.RegisterChatCommand("/pm", pmCommand)
+
+local replyCommand = {
+	description = "Replies to the last player who directly messaged you.",
+	requiresArg = true,
+	onRun = function(ply, arg, rawText)
+		local message = rawText
+
+		if not message or message == "" then
+			return ply:Notify("Invalid argument.")
+		end
+
+		if not ply.PMReply or not IsValid(ply.PMReply) then
+			return ply:Notify("Target not found.")
+		end
+
+		local plyTarget = ply.PMReply
+
+		if plyTarget and ply != plyTarget then
+			plyTarget:SendChatClassMessage(4, message, ply)
+			plyTarget.PMReply = ply
+
+			ply:SendChatClassMessage(5, message, ply)
+		end
+	end
+}
+
+impulse.RegisterChatCommand("/reply", replyCommand)
 
 local yellCommand = {
 	description = "Yell in character.",
@@ -432,10 +459,12 @@ if CLIENT then
 	end)
 
 	impulse.RegisterChatClass(4, function(message, speaker)
+		surface.PlaySound("buttons/blip1.wav")
 		chat.AddText(pmCol, "[PM] ", speaker:SteamName(), (team.GetColor(speaker:Team())), " (", speaker:Name(), ")", pmCol, ": ", message)
 	end)
 
 	impulse.RegisterChatClass(5, function(message, speaker)
+		surface.PlaySound("buttons/blip1.wav")
 		chat.AddText(pmCol, "[PM SENT] ", speaker:SteamName(), (team.GetColor(speaker:Team())), " (", speaker:Name(), ")", pmCol, ": ", message)
 	end)
 
