@@ -58,7 +58,7 @@ function impulse.Ops.ReportNew(ply, arg, rawText)
             net.WriteUInt(1, 4)
             net.Send(ply)
 
-            opsDiscordLog(":warning: **[NEW REPORT]** [#"..reportId.."] ".. ply:SteamName().. " (".. ply:Name().. ") ("..ply:SteamID().."): ```"..rawText.."```")
+            opsSlackLog(":warning: *[NEW REPORT]* [#"..reportId.."] ".. ply:SteamName().. " (".. ply:Name().. ") ("..ply:SteamID().."): ```"..rawText.."```")
             return
         else
             ply:Notify("Unfortunatley, no game moderators are currently availble to review your report. Please goto impulse-community.com and submit a ban request.")
@@ -81,7 +81,7 @@ function impulse.Ops.ReportNew(ply, arg, rawText)
         end
 
         impulse.Ops.Reports[reportId][2] = impulse.Ops.Reports[reportId][2].." + "..rawText
-        opsDiscordLog(":speech_left: **[REPORT UPDATE]** [#"..reportId.."] ".. ply:SteamName().. " (".. ply:Name().. ") ("..ply:SteamID().."): ```".. rawText.."```")
+        opsSlackLog(":speech_balloon: *[REPORT UPDATE]* [#"..reportId.."] ".. ply:SteamName().. " (".. ply:Name().. ") ("..ply:SteamID().."): ```".. rawText.."```")
 
         net.Start("opsReportMessage")
         net.WriteUInt(reportId, 16)
@@ -132,7 +132,7 @@ function impulse.Ops.ReportClaim(ply, arg, rawText)
                 net.Send(k)
             end
         end
-        opsDiscordLog(":passport_control: **[REPORT CLAIMED]** [#"..reportId.."] claimed by "..ply:SteamName().." ("..ply:SteamID()..")")
+        opsSlackLog(":passport_control: *[REPORT CLAIMED]* [#"..reportId.."] claimed by "..ply:SteamName().." ("..ply:SteamID()..")")
 
         net.Start("opsReportMessage")
         net.WriteUInt(reportId, 16)
@@ -203,6 +203,8 @@ function impulse.Ops.ReportClose(ply, arg, rawText)
             net.WriteEntity(ply)
             net.Send(reporter)
         end
+
+        opsSlackLog(":no_entry: *[REPORT CLOSED]* [#"..reportId.."] closed by "..ply:SteamName().." ("..ply:SteamID()..")")
     else
         ply:AddChatText(claimedReportCol, "Report #"..reportId.." does not exist.")
     end

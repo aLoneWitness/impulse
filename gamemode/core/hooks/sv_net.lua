@@ -791,6 +791,12 @@ net.Receive("impulseInvDoMove", function(len, ply)
 		return ply:Notify("Item is too heavy to store.")
 	end
 
+	local canStore = hook.Run("CanStoreItem", ply, ply.currentStorage, item.class) or false
+
+	if not canStore then
+		return
+	end
+
 	ply:MoveInventoryItem(itemid, from, to)
 end)
 

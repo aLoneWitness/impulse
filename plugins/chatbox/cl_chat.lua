@@ -2,7 +2,7 @@
 -- Author: vin, Exho (obviously), Tomelyr, LuaTenshi
 -- Version: 4/12/15
 
-if IsValid(impulse.chatBox.frame) then
+if impulse.chatBox and IsValid(impulse.chatBox.frame) then
 	impulse.chatBox.frame:Remove()
 end
 

@@ -26,40 +26,45 @@ local lastServerData2
 local nextCrashThink = 0
 local nextCrashAnalysis
 local crashAnalysisAttempts = 0
+local groupEditor = groupEditor or nil
 
 function IMPULSE:Think()
 	if LocalPlayer():Team() != 0 and not vgui.CursorVisible() and not impulse_ActiveWorkbar then
-		if input.IsKeyDown(KEY_F1) and (not IsValid(impulse.MainMenu) or not impulse.MainMenu:IsVisible()) then
-			local mainMenu = impulse.MainMenu or vgui.Create("impulseMainMenu")
-			mainMenu:SetVisible(true)
-			mainMenu:SetAlpha(0)
-			mainMenu:AlphaTo(255, .3)
-			mainMenu.popup = true
+		if not IsValid(impulse.MainMenu) or not impulse.MainMenu:IsVisible() then
+			if input.IsKeyDown(KEY_F1) then
+				local mainMenu = impulse.MainMenu or vgui.Create("impulseMainMenu")
+				mainMenu:SetVisible(true)
+				mainMenu:SetAlpha(0)
+				mainMenu:AlphaTo(255, .3)
+				mainMenu.popup = true
 
-			hook.Run("DisplayMenuMessages", mainMenu)
-		elseif input.IsKeyDown(KEY_F4) and not IsValid(impulse.playerMenu) and LocalPlayer():Alive() then
-			impulse.playerMenu = vgui.Create("impulsePlayerMenu")
-		elseif input.IsKeyDown(KEY_F2) and LocalPlayer():Alive() then
-			local trace = {}
-			trace.start = LocalPlayer():EyePos()
-			trace.endpos = trace.start + LocalPlayer():GetAimVector() * 85
-			trace.filter = LocalPlayer()
+				hook.Run("DisplayMenuMessages", mainMenu)
+			elseif input.IsKeyDown(KEY_F4) and not IsValid(impulse.playerMenu) and LocalPlayer():Alive() then
+				impulse.playerMenu = vgui.Create("impulsePlayerMenu")
+			elseif input.IsKeyDown(KEY_F2) and LocalPlayer():Alive() then
+				local trace = {}
+				trace.start = LocalPlayer():EyePos()
+				trace.endpos = trace.start + LocalPlayer():GetAimVector() * 85
+				trace.filter = LocalPlayer()
 
-			local traceEnt = util.TraceLine(trace).Entity
+				local traceEnt = util.TraceLine(trace).Entity
 
-			if (not impulse.entityMenu or not IsValid(impulse.entityMenu)) and IsValid(traceEnt) then
-				if traceEnt:IsDoor() or traceEnt:IsPropDoor() then
-					impulse.entityMenu = vgui.Create("impulseEntityMenu")
-					impulse.entityMenu:SetDoor(traceEnt)
-				elseif traceEnt:IsPlayer() then
-					impulse.entityMenu = vgui.Create("impulseEntityMenu")
-					impulse.entityMenu:SetRangeEnt(traceEnt)
-					impulse.entityMenu:SetPlayer(traceEnt)
-				elseif traceEnt:GetClass() == "impulse_container" then
-					impulse.entityMenu = vgui.Create("impulseEntityMenu")
-					impulse.entityMenu:SetRangeEnt(traceEnt)
-					impulse.entityMenu:SetContainer(traceEnt)
+				if (not impulse.entityMenu or not IsValid(impulse.entityMenu)) and IsValid(traceEnt) then
+					if traceEnt:IsDoor() or traceEnt:IsPropDoor() then
+						impulse.entityMenu = vgui.Create("impulseEntityMenu")
+						impulse.entityMenu:SetDoor(traceEnt)
+					elseif traceEnt:IsPlayer() then
+						impulse.entityMenu = vgui.Create("impulseEntityMenu")
+						impulse.entityMenu:SetRangeEnt(traceEnt)
+						impulse.entityMenu:SetPlayer(traceEnt)
+					elseif traceEnt:GetClass() == "impulse_container" then
+						impulse.entityMenu = vgui.Create("impulseEntityMenu")
+						impulse.entityMenu:SetRangeEnt(traceEnt)
+						impulse.entityMenu:SetContainer(traceEnt)
+					end
 				end
+			elseif input.IsKeyDown(KEY_F6) and not IsValid(groupEditor) then
+				groupEditor = vgui.Create("impulseGroupEditor")
 			end
 		end
 	end
