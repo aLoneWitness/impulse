@@ -18,13 +18,15 @@ function PANEL:Init()
 	end)
 	
 	for v,k in pairs(playerList) do
-		if k:IsAdmin() and not k:GetSyncVar(SYNC_INCOGNITO, false) then
-			local playerCard = self.scrollPanel:Add("impulseScoreboardCard")
-			playerCard:SetPlayer(k)
-			playerCard:SetHeight(60)
-			playerCard:Dock(TOP)
-			playerCard:DockMargin(0,0,0,0)
+		if k:IsAdmin() and k:GetSyncVar(SYNC_INCOGNITO, false) then
+			continue
 		end
+
+		local playerCard = self.scrollPanel:Add("impulseScoreboardCard")
+		playerCard:SetPlayer(k)
+		playerCard:SetHeight(60)
+		playerCard:Dock(TOP)
+		playerCard:DockMargin(0,0,0,0)
 	end
 
 end
