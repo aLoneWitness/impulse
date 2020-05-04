@@ -68,6 +68,9 @@ util.AddNetworkString("impulseUnRestrain")
 util.AddNetworkString("impulseAchievementGet")
 util.AddNetworkString("impulseAchievementSync")
 util.AddNetworkString("impulseGetRefund")
+util.AddNetworkString("impulseGroupMember")
+util.AddNetworkString("impulseGroupRanks")
+util.AddNetworkString("impulseGroupMemberRemove")
 
 local AUTH_FAILURE = "Invalid argument (rejoin to continue)"
 
@@ -791,9 +794,9 @@ net.Receive("impulseInvDoMove", function(len, ply)
 		return ply:Notify("Item is too heavy to store.")
 	end
 
-	local canStore = hook.Run("CanStoreItem", ply, ply.currentStorage, item.class) or false
+	local canStore = hook.Run("CanStoreItem", ply, ply.currentStorage, item.class, from)
 
-	if not canStore then
+	if canStore != nil and canStore == false then
 		return
 	end
 
@@ -884,6 +887,12 @@ net.Receive("impulseInvDoMoveMass", function(len, ply)
 
 	if from == 1 and not ply:CanHoldItemStorage(itemclass, amount) then
 		return ply:Notify("Items are too heavy to store.")
+	end
+
+	local canStore = hook.Run("CanStoreItem", ply, ply.currentStorage, itemclass, from)
+
+	if canStore != nil and canStore == false then
+		return
 	end
 
 	ply:MoveInventoryItemMass(itemclass, from, to, amount)

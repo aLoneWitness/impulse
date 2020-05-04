@@ -31,6 +31,10 @@ function PANEL:SetItem(netitem, wide)
 	self.model:SetSkin(item.Skin or 0)
 	self.model:SetFOV(item.FOV or 35)
 
+	if self.Item.ItemColour then
+		self.model:SetColor(self.Item.ItemColour)
+	end
+
 	function self.model:LayoutEntity(ent)
 		ent:SetAngles(Angle(0, 90, 0))
 

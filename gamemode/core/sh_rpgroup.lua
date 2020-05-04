@@ -24,6 +24,10 @@ function meta:GroupHasPermission(act)
 
 	local groupData = impulse.Group.Groups[group]
 
+	if CLIENT then
+		groupData = impulse.Group.Groups[1]
+	end
+
 	if not groupData then
 		return false
 	end

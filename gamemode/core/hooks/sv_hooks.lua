@@ -308,18 +308,20 @@ function impulse.SetupPlayer(ply, dbData)
 	query:Where("steamid", ply:SteamID())
 	query:Execute()
 
-	local ammo = util.JSONToTable(dbData.ammo) or {}
-	local give = {}
+	if ammo then
+		local ammo = util.JSONToTable(dbData.ammo) or {}
+		local give = {}
 
-	for v,k in pairs(ammo) do
-		local ammoName = game.GetAmmoName(v)
+		for v,k in pairs(ammo) do
+			local ammoName = game.GetAmmoName(v)
 
-		if impulse.Config.SaveableAmmo[ammoName] then
-			give[ammoName] = k
+			if impulse.Config.SaveableAmmo[ammoName] then
+				give[ammoName] = k
+			end
 		end
 	end
 
-	ply.ammoToGive = give
+	ply.ammoToGive = give or {}
 
 	if not GExtension and (dbData.group and dbData.group != "user") then
 		ply:SetUserGroup(dbData.group)

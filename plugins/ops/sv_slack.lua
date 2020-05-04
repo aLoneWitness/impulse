@@ -1,6 +1,6 @@
 -- This file contains private info, do NOT publicise.
 
-function opsSlackLog(type, message)
+function opsSlackLog(message)
 	local isPreview = GetConVar("impulse_ispreview"):GetBool()
 
 	if isPreview then

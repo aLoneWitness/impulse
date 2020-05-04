@@ -16,6 +16,14 @@ function MakeCosmetic(ply, id, bone, data, slot)
 		ply.Cosmetics[slot]:SetSkin(data.skin)
 	end
 
+	if data.onEntLoad then
+		if ply:GetClass() == "class C_BaseFlex" then -- ui support
+			data.onEntLoad(LocalPlayer(), ply.Cosmetics[slot])
+		else
+			data.onEntLoad(ply, ply.Cosmetics[slot])
+		end
+	end
+
 	local t = LocalPlayer():Team()
 
 	if ply:IsPlayer() then

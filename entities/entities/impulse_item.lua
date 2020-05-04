@@ -37,6 +37,10 @@ if SERVER then
 			self:SetMaterial(item.Material)
 		end
 
+		if item.ItemColour then
+			self:SetColor(item.ItemColour)
+		end
+
 		if owner and IsValid(owner) then
 			self.ItemOwner = owner
 		end

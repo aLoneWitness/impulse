@@ -487,3 +487,31 @@ net.Receive("impulseGetRefund", function()
 
 	REFUND_MSG = messageTop..details
 end)
+
+net.Receive("impulseGroupMember", function()
+	local sid = net.ReadString()
+	local name = net.ReadString()
+	local rank = net.ReadString()
+
+	impulse.Group.Groups[1] = impulse.Group.Groups[1] or {}
+	impulse.Group.Groups[1].Members = impulse.Group.Groups[1].Members or {}
+
+	impulse.Group.Groups[1].Members[sid] = {Name = name, Rank = rank}
+end)
+
+net.Receive("impulseGroupRanks", function()
+	local len = net.ReadUInt(32)
+	local ranks = pon.decode(net.ReadData(len))
+
+	impulse.Group.Groups[1] = impulse.Group.Groups[1] or {}
+	impulse.Group.Groups[1].Ranks = ranks
+end)
+
+net.Receive("impulseGroupMemberRemove", function()
+	local sid = net.ReadString()
+
+	impulse.Group.Groups[1] = impulse.Group.Groups[1] or {}
+	impulse.Group.Groups[1].Members = impulse.Group.Groups[1].Members or {}
+
+	impulse.Group.Groups[1].Members[sid] = nil
+end)
