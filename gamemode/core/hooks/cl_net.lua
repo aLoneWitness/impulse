@@ -338,6 +338,24 @@ net.Receive("impulseVendorUse", function()
 	impulse_vendor:SetupVendor()
 end)
 
+net.Receive("impulseVendorUseDownload", function()
+	local vendor = net.ReadString()
+	local buyLen = net.ReadUInt(32)
+	local buy = pon.decode(net.ReadData(buyLen))
+	local sellLen = net.ReadUInt(32)
+	local sell = pon.decode(net.ReadData(sellLen))
+
+	impulse.Vendor.Data[vendor].Buy = buy
+	impulse.Vendor.Data[vendor].Sell = sell
+
+	if impulse_vendor and IsValid(impulse_vendor) then
+		return
+	end
+
+	impulse_vendor = vgui.Create("impulseVendorMenu")
+	impulse_vendor:SetupVendor()
+end)
+
 net.Receive("impulseViewWhitelists", function()
 	local targ = impulse_WhitelistReqTarg
 

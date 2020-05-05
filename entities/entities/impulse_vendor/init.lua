@@ -71,6 +71,9 @@ function ENT:SpawnFunction(ply, trace, class)
 end
 
 function ENT:Use(activator, caller)
+    if (activator.nextVendorUse or 0) > CurTime() then return end
+    activator.nextVendorUse = CurTime() + 1
+
     if self.Vendor.CanUse and self.Vendor.CanUse(self, activator) == false then
         return activator:Notify("You can not use this vendor.")    
     end
@@ -79,8 +82,21 @@ function ENT:Use(activator, caller)
         return
     end
 
-    net.Start("impulseVendorUse")
-    net.Send(activator)
+    if self.Vendor.DownloadTrades then
+        local dBuy = pon.encode(self.Vendor.Buy)
+        local dSell = pon.encode(self.Vendor.Sell)
+
+        net.Start("impulseVendorUseDownload")
+        net.WriteString(self.Vendor.UniqueID)
+        net.WriteUInt(#dBuy, 32)
+        net.WriteData(dBuy, #dBuy)
+        net.WriteUInt(#dSell, 32)
+        net.WriteData(dSell, #dSell)
+        net.Send(activator)
+    else
+        net.Start("impulseVendorUse")
+        net.Send(activator)
+    end
 
     activator.currentVendor = self
 end

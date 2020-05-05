@@ -133,12 +133,19 @@ function PANEL:ShowGroup()
 	for v,k in SortedPairsByMemberValue(group.Members, "Rank") do
 		local line = members:AddLine(k.Name, k.Rank)
 		line.SteamID = v
+		line.Name = k.Name
 	end
 
 	function members:OnRowSelected(index, row)
 		local sid = row.SteamID
 
 		local m = DermaMenu()
+
+		m:AddOption("View Steam profile", function()
+			local sid64 = util.SteamIDTo64(sid)
+
+			gui.OpenURL("https://steamcommunity.com/profiles/"..sid64)
+		end)
 
 		if LocalPlayer():GroupHasPermission(5) then
 			local sRank = m:AddOption("Set rank")
@@ -151,7 +158,15 @@ function PANEL:ShowGroup()
 		end
 
 		if LocalPlayer():GroupHasPermission(4) then
-			local sRmv = m:AddOption("Remove")
+			local sRmv = m:AddOption("Remove", function()
+				Derma_Query("Are you sure you wish to remove "..row.Name.."?",
+					"impulse",
+					"Yes",
+					function()
+						print("ok")
+					end,
+					"No")
+			end)
 			sRmv:SetIcon("icon16/user_delete.png")
 		end
 
@@ -160,6 +175,10 @@ function PANEL:ShowGroup()
 
 	if LocalPlayer():GroupHasPermission(6) then
 		self:ShowRanks()
+	end
+
+	if LocalPlayer():GroupHasPermission(99) then
+		self:ShowAdmin()
 	end
 end
 
@@ -227,9 +246,13 @@ function PANEL:ShowRanks()
 		del:SetText("Remove rank")
 		del:DockMargin(0, 10, 0, 0)
 		del:Dock(TOP)
+
+		if not removable then
+			del:SetDisabled(true)
+		end
 	end
 
-	local addRank = addGroup(self.ranks, "New group...")
+	local addRank = addGroup(self.ranks, "New rank...")
 
 	local scroll = vgui.Create("DScrollPanel", addRank)
 	scroll:Dock(FILL)
@@ -240,7 +263,7 @@ function PANEL:ShowRanks()
 	lbl:Dock(TOP)
 
 	local name = vgui.Create("DTextEntry", scroll)
-	name:SetValue("Group name")
+	name:SetValue("Rank name")
 	name:Dock(TOP)
 	name:DockMargin(0, 0, 0, 5)
 
@@ -261,5 +284,27 @@ function PANEL:ShowRanks()
 	create:Dock(TOP)
 end
 
+
+function PANEL:ShowAdmin()
+	local group = impulse.Group.Groups[1]
+	local name = LocalPlayer():GetSyncVar(SYNC_GROUP_NAME, "ERROR")
+	local sheet = self:AddSheet("Admin", "icon16/shield.png")
+
+	local del = vgui.Create("DButton", sheet)
+	del:SetText("Close group (this can not be undone)")
+	del:SetTextColor(Color(255, 0, 0))
+	del:Dock(TOP)
+
+	function del:DoClick()
+		Derma_StringRequest("impulse", 
+			"Closing this group will delete it forever. You will have to pay to make another group.\nPlease type '"..name.."' below to confirm the deletion:",
+			"",
+			function(text)
+				if text != name then
+					return LocalPlayer():Notify("Name does not match.")
+				end
+			end, nil, "Delete forever")
+	end
+end
 
 vgui.Register("impulseGroupEditor", PANEL, "DFrame")

@@ -212,15 +212,15 @@ local idleCPVO = {
 }
 
 local idleFishVO = {
-    "fish_cough01.wav",
-    "fish_cough02.wav",
     "fish_crabpot01.wav",
     "fish_likeleeches.wav",
-    "fish_myback.wav",
     "fish_oldleg.wav",
     "fish_resumetalk02.wav",
     "fish_stayoutwater.wav",
-    "fish_wipeouttown01.wav"
+    "fish_wipeouttown01.wav",
+    "fish_resumetalk01.wav",
+    "fish_resumetalk02.wav",
+    "fish_resumetalk03.wav"
 }
 
 function impulse.GetRandomAmbientVO(gender)

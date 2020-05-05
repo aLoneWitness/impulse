@@ -1,5 +1,6 @@
 impulse.Loot = impulse.Loot or {}
 
+local ANTICRASH_ATTEMPTS = 0
 function impulse.Loot.GenerateFromPool(pool)
 	local lootPool = impulse.Config.LootPools[pool]
 	local count = 0
@@ -28,7 +29,15 @@ function impulse.Loot.GenerateFromPool(pool)
 	end
 
 	if count == 0 then -- warning this might get stuck?!
+		ANTICRASH_ATTEMPTS = ANTICRASH_ATTEMPTS + 1
+
+		if ANTICRASH_ATTEMPTS > 3 then
+			print("HIGH LOOT GENERATION ATTEMPTS WARNING!!!!!!!!")	
+		end
+
 		return impulse.Loot.GenerateFromPool(pool)
+	else
+		ANTICRASH_ATTEMPTS = 0
 	end
 
 	return loot

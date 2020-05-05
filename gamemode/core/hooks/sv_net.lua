@@ -60,6 +60,7 @@ util.AddNetworkString("impulseBenchUse")
 util.AddNetworkString("impulseMixTry")
 util.AddNetworkString("impulseMixDo")
 util.AddNetworkString("impulseVendorUse")
+util.AddNetworkString("impulseVendorUseDownload")
 util.AddNetworkString("impulseVendorBuy")
 util.AddNetworkString("impulseVendorSell")
 util.AddNetworkString("impulseRequestWhitelists")
@@ -1289,6 +1290,10 @@ net.Receive("impulseVendorBuy", function(len, ply)
 	
 	ply:GiveInventoryItem(itemclass, 1, sellData.Restricted or false)
 
+	if vendor.Vendor.OnItemPurchased then
+		vendor.Vendor.OnItemPurchased(vendor, itemclass, ply)
+	end
+
 	hook.Run("PlayerVendorBuy", ply, vendor, itemclass, sellData.Cost or 0)
 end)
 
@@ -1320,6 +1325,10 @@ net.Receive("impulseVendorSell", function(len, ply)
 		return
 	end
 
+	if vendor.Vendor.MaxBuys and (vendor.Buys or 0) >= vendor.Vendor.MaxBuys then
+		return ply:Notify("This vendor can not afford to purchase this item.")
+	end
+
 	local itemid = net.ReadUInt(10)
 	local hasItem, itemData = ply:HasInventoryItemSpecific(itemid)
 
@@ -1342,6 +1351,10 @@ net.Receive("impulseVendorSell", function(len, ply)
 
 	if buyData.CanBuy and buyData.CanBuy(ply) == false then
 		return
+	end
+
+	if vendor.Vendor.MaxBuys then
+		vendor.Buys = (vendor.Buys or 0) + 1
 	end
 
 	ply:TakeInventoryItem(itemid)

@@ -54,6 +54,13 @@ function impulse.Group.DBRemovePlayer(steamid, groupid)
 	query:Execute()
 end
 
+function impulse.Group.DBUpdatePlayerRank(steamid, rank)
+	local query = mysql:Update("impulse_players")
+	query:Update("rpgrouprank", rank)
+	query:Where("steamid", steamid)
+	query:Execute()
+end
+
 function impulse.Group.ComputeMembers(name, callback)
 	local id = impulse.Group.Groups[name].ID
 
@@ -83,6 +90,22 @@ function impulse.Group.ComputeMembers(name, callback)
 	end)
 
 	query:Execute()
+end
+
+function impulse.Group.RankShift(ply, name, from, to)
+	local group = impulse.Group.Groups[name]
+
+	for v,k in pairs(group.Members) do
+		if k.Rank == from then
+			local ply = player.GetBySteamID(v)
+
+			if IsValid(ply) then
+				ply:GroupAdd(name, to)
+			else
+				impulse.Group.DBUpdatePlayerRank(ply:SteamID(), to)
+			end
+		end
+	end
 end
 
 function impulse.Group.GetDefaultRank(name)
@@ -151,6 +174,27 @@ function impulse.Group.NetworkAllMembers(to, name)
 	end
 end
 
+function impulse.Group.NetworkRanksToOnline(name)
+	local ranks = impulse.Group.Groups[name].Ranks
+	local data = pon.encode(ranks)
+	local rf = RecipientFilter()
+
+	for v,k in pairs(player.GetAll()) do
+		local x = k:GetSyncVar(SYNC_GROUP_NAME, nil)
+
+		if x and x == name then
+			if k:GroupHasPermission(5) or k:GroupHasPermission(6) then
+				rf:AddPlayer(k)
+			end
+		end
+	end
+
+	net.Start("impulseGroupRanks")
+	net.WriteUInt(#data, 32)
+	net.WriteData(data, #data)
+	net.Send(rf)
+end
+
 function impulse.Group.NetworkRanks(to, name)
 	local ranks = impulse.Group.Groups[name].Ranks
 	local data = pon.encode(ranks)
@@ -183,8 +227,11 @@ end
 
 function meta:GroupRemove(name)
 	local id = impulse.Group.Groups[name].ID
-	impulse.Group.DBRemovePlayer(self:SteamID())
+	local sid = self:SteamID()
+
+	impulse.Group.DBRemovePlayer(sid)
 	impulse.Group.ComputeMembers(name)
+	impulse.Group.NetworkMemberRemoveToOnline(name, sid)
 
 	self:SetSyncVar(SYNC_GROUP_NAME, nil, true)
 	self:SetSyncVar(SYNC_GROUP_RANK, nil, true)

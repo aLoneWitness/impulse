@@ -16,6 +16,10 @@ local setHealthCommand = {
             return
         end
 
+        if not ply:IsSuperAdmin() and not ply:IsUserGroup("leadadmin") then
+            hp = math.Clamp(hp, 1, 100)
+        end
+
         if targ and IsValid(targ) then
             targ:SetHealth(hp)
             ply:Notify("You have set "..targ:Nick().."'s health to "..hp..".")
