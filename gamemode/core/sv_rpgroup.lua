@@ -61,6 +61,14 @@ function impulse.Group.DBUpdatePlayerRank(steamid, rank)
 	query:Execute()
 end
 
+function impulse.Group.DBPlayerRankShift(groupid, rank, newrank)
+	local query = mysql:Update("impulse_players")
+	query:Update("rpgrouprank", newrank)
+	query:Where("rpgroup", groupid)
+	query:Where("rpgrouprank", rank)
+	query:Execute()
+end
+
 function impulse.Group.ComputeMembers(name, callback)
 	local id = impulse.Group.Groups[name].ID
 
@@ -95,14 +103,14 @@ end
 function impulse.Group.RankShift(ply, name, from, to)
 	local group = impulse.Group.Groups[name]
 
+	impulse.Group.DBPlayerRankShift(group.ID, from, to)
+
 	for v,k in pairs(group.Members) do
 		if k.Rank == from then
 			local ply = player.GetBySteamID(v)
 
 			if IsValid(ply) then
-				ply:GroupAdd(name, to)
-			else
-				impulse.Group.DBUpdatePlayerRank(ply:SteamID(), to)
+				ply:GroupAdd(name, to, true)
 			end
 		end
 	end
@@ -205,23 +213,34 @@ function impulse.Group.NetworkRanks(to, name)
 	net.Send(to)
 end
 
-function meta:GroupAdd(name, rank)
-	local id = impulse.Group.Groups[name].ID
-	impulse.Group.DBAddPlayer(self:SteamID(), id, rank or impulse.Group.GetDefaultRank())
-	impulse.Group.ComputeMembers(name, function()
-		if not IsValid(self) then
-			return
-		end
+local function postCompute(self, name, rank, skipDb)
+	if not IsValid(self) then
+		return
+	end
 
-		impulse.Group.NetworkMemberToOnline(name, self:SteamID())
+	impulse.Group.NetworkMemberToOnline(name, self:SteamID())
 
-		self:SetSyncVar(SYNC_GROUP_NAME, name, true)
-		self:SetSyncVar(SYNC_GROUP_RANK, rank, true)
+	self:SetSyncVar(SYNC_GROUP_NAME, name, true)
+	self:SetSyncVar(SYNC_GROUP_RANK, rank, true)
+
+	if not skipDb then
 		impulse.Group.NetworkAllMembers(self, name)
+	end
 
-		if self:HasGroupPermission(5) or self:HasGroupPermission(6) then
-			impulse.Group.NetworkRanks(self, name)
-		end
+	if self:HasGroupPermission(5) or self:HasGroupPermission(6) then
+		impulse.Group.NetworkRanks(self, name)
+	end
+end
+
+function meta:GroupAdd(name, rank, skipDb)
+	local id = impulse.Group.Groups[name].ID
+
+	if not skipDb then
+		impulse.Group.DBAddPlayer(self:SteamID(), id, rank or impulse.Group.GetDefaultRank())
+	end
+
+	impulse.Group.ComputeMembers(name, function()
+		postCompute(self, name, rank, skipDb)
 	end)
 end
 

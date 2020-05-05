@@ -837,25 +837,42 @@ function IMPULSE:GetFallDamage(ply, speed)
 end
 
 local lastAFKScan
+local curTime = CurTime
 function IMPULSE:Think()
-	for v,k in pairs(player.GetAll()) do
-		if not k.nextHungerUpdate then k.nextHungerUpdate = CurTime() + impulse.Config.HungerTime end
+	local ctime = curTime()
+	local allPlayers = player.GetAll()
 
-		if k:Alive() and k.nextHungerUpdate < CurTime() then
-			k:FeedHunger(-1)
-			if k:GetSyncVar(SYNC_HUNGER, 100) < 1 then
-				if k:Health() > 10 then
-					k:TakeDamage(1, k, k)
+	for v,k in pairs(allPlayers) do
+		if not k.nextHungerUpdate then k.nextHungerUpdate = ctime + impulse.Config.HungerTime end
+
+		if k:Alive() then
+			if k.nextHungerUpdate < ctime then
+				k:FeedHunger(-1)
+				if k:GetSyncVar(SYNC_HUNGER, 100) < 1 then
+					if k:Health() > 10 then
+						k:TakeDamage(1, k, k)
+					end
+					k.nextHungerUpdate = ctime + 1
+				else
+					k.nextHungerUpdate = ctime + impulse.Config.HungerTime
 				end
-				k.nextHungerUpdate = CurTime() + 1
-			else
-				k.nextHungerUpdate = CurTime() + impulse.Config.HungerTime
+			end
+
+			if (k.nextHungerHeal or 0) < ctime then
+				local hunger = k:GetSyncVar(SYNC_HUNGER, 10)
+
+				if hunger >= 90 and k:Health() < 75 then
+					k:SetHealth(math.Clamp(k:Health() + 1, 0, 75))
+					k.nextHungerHeal = ctime + impulse.Config.HungerHealTime
+				else
+					k.nextHungerHeal = ctime + 2
+				end
 			end
 		end
 
 		if not k.nextHearUpdate or k.nextHearUpdate < CurTime() then -- optimized version of canhear hook based upon darkrp
 			canHearCheck(k)
-			k.nextHearUpdate = CurTime() + 0.65
+			k.nextHearUpdate = ctime + 0.65
 		end
 	end
 
@@ -876,11 +893,11 @@ function IMPULSE:Think()
 		end
 	end
 
-	if (lastAFKScan or 0) < CurTime() then
-		lastAFKScan = CurTime() + 2
+	if (lastAFKScan or 0) < ctime then
+		lastAFKScan = ctime + 2
 
-		for v,k in pairs(player.GetAll()) do
-			if k.AFKTimer and k.AFKTimer < CurTime() and not k.ArrestedDragger and not k:IsAFK() then
+		for v,k in pairs(allPlayers) do
+			if k.AFKTimer and k.AFKTimer < ctime and not k.ArrestedDragger and not k:IsAFK() then
 				k:MakeAFK()
 			end
 
