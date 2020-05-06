@@ -1,9 +1,9 @@
 impulse.Group = impulse.Group or {}
 impulse.Group.Groups = impulse.Group.Groups or {}
+impulse.Group.Invites = impulse.Group.Invites or {}
 
 RPGROUP_PERMISSIONS = {
 	[0] = "Is default group",
-	[1] = "See group chat",
 	[2] = "Post to group chat",
 	[3] = "Can add members",
 	[4] = "Can remove members",
@@ -29,6 +29,10 @@ function meta:GroupHasPermission(act)
 	end
 
 	if not groupData then
+		return false
+	end
+
+	if not groupData.Ranks then
 		return false
 	end
 	

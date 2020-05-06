@@ -271,6 +271,17 @@ impulse.Ops.EventManager.Config.Events = {
 			end
 		end
 	},
+	["getplayer"] = {
+		Cat = "ent",
+		Prop = {
+			["steamid"] = "steam_0:XXXX"
+		},
+		NeedUID = true,
+		Clientside = false,
+		Do = function(prop, uid)
+			OPS_ENTS[uid] = player.GetBySteamID(prop["steamid"])
+		end
+	},
 	["scaleent"] = {
 		Cat = "ent",
 		Prop = {

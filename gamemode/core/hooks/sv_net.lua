@@ -71,7 +71,18 @@ util.AddNetworkString("impulseAchievementSync")
 util.AddNetworkString("impulseGetRefund")
 util.AddNetworkString("impulseGroupMember")
 util.AddNetworkString("impulseGroupRanks")
+util.AddNetworkString("impulseGroupRank")
 util.AddNetworkString("impulseGroupMemberRemove")
+util.AddNetworkString("impulseGroupInvite")
+util.AddNetworkString("impulseGroupDoRankAdd")
+util.AddNetworkString("impulseGroupDoRankRemove")
+util.AddNetworkString("impulseGroupDoInvite")
+util.AddNetworkString("impulseGroupDoInviteAccept")
+util.AddNetworkString("impulseGroupDoSetRank")
+util.AddNetworkString("impulseGroupDoRemove")
+util.AddNetworkString("impulseGroupDoCreate")
+util.AddNetworkString("impulseGroupDoDelete")
+util.AddNetworkString("impulseGroupDoLeave")
 
 local AUTH_FAILURE = "Invalid argument (rejoin to continue)"
 
@@ -1617,4 +1628,500 @@ net.Receive("impulseInvContainerDoSetCode", function(len, ply)
 	ply:Notify("You have set the containers passcode to "..passcode..".")
 
 	hook.Run("ContainerPasscodeSet", ply, container)
+end)
+
+local NCHANGE_ANTISPAM = NCHANGE_ANTISPAM or {}
+net.Receive("impulseGroupDoRankAdd", function(len, ply)
+	if (ply.nextRPGroupRankEdit or 0) > CurTime() then return end
+	ply.nextRPGroupRankEdit = CurTime() + 2
+
+	if ply:IsCP() then
+		return
+	end
+
+	local name = ply:GetSyncVar(SYNC_GROUP_NAME, nil)
+	local rank = ply:GetSyncVar(SYNC_GROUP_RANK, nil)
+
+	if not name or not rank then
+		return
+	end
+
+	local groupData = impulse.Group.Groups[name]
+
+	if not groupData then
+		return
+	end
+
+	if not ply:GroupHasPermission(6) then
+		return
+	end
+
+	local rankName = net.ReadString()
+	local nChange = net.ReadBool()
+	local newName
+	if nChange then
+		if NCHANGE_ANTISPAM[name] and NCHANGE_ANTISPAM[name] > CurTime() then
+			return ply:Notify("Wait a few seconds before changing a ranks name...")
+		else
+			NCHANGE_ANTISPAM[name] = CurTime() + 7
+		end
+
+		newName = string.sub(net.ReadString(), 1, 32)
+
+		if string.Trim(newName, " ") == "" then
+			return ply:Notify("Invalid rank name.")
+		end
+	end
+
+	local permissions = {}
+	local isDefault = false
+	local isOwner = false
+
+	local r = groupData.Ranks[rankName]
+	if r then
+		if r[99] then
+			isOwner = true
+		end
+
+		if r[0] then
+			isDefault = true
+		end
+	else
+		if table.Count(groupData.Ranks) > 12 then
+			return ply:Notify("Max ranks reached.")
+		end
+
+		rankName = string.sub(rankName, 1, 32)
+
+		if string.Trim(rankName, " ") == "" then
+			return ply:Notify("Invalid rank name.")
+		end
+	end
+
+	for v,k in pairs(RPGROUP_PERMISSIONS) do
+		local permId = net.ReadUInt(8)
+		local enabled = net.ReadBool()
+
+		-- protected permissions that can not be changed
+		if not isOwner and permId == 99 then
+			continue
+		end
+
+		if not isDefault and permId == 0 then
+			continue
+		end
+
+		if enabled then
+			permissions[permId] = true
+		end
+	end
+
+	if nChange then
+		impulse.Group.Groups[name].Ranks[rankName] = nil
+	end
+
+	impulse.Group.Groups[name].Ranks[newName or rankName] = permissions
+
+	if nChange then
+		impulse.Group.RankShift(name, rankName, newName)
+	end
+
+	impulse.Group.NetworkRanksToOnline(name)
+	impulse.Group.DBUpdateRanks(groupData.ID, impulse.Group.Groups[name].Ranks)
+end)
+
+local INVITE_ANTISPAM = INVITE_ANTISPAM or {}
+net.Receive("impulseGroupDoInvite", function(len, ply)
+	if (ply.nextRPGroupRankInv or 0) > CurTime() then return end
+	ply.nextRPGroupRankInv = CurTime() + 1
+
+	if ply:IsCP() then
+		return
+	end
+
+	local name = ply:GetSyncVar(SYNC_GROUP_NAME, nil)
+	local rank = ply:GetSyncVar(SYNC_GROUP_RANK, nil)
+
+	if not name or not rank then
+		return
+	end
+
+	local groupData = impulse.Group.Groups[name]
+
+	if not groupData then
+		return
+	end
+
+	if not ply:GroupHasPermission(3) then
+		return
+	end
+
+	local targ = net.ReadEntity()
+
+	if not IsValid(targ) or not targ:IsPlayer() or not targ.beenSetup or targ:GetSyncVar(SYNC_GROUP_NAME, nil) then
+		return
+	end
+
+	if targ.GroupInvites and targ.GroupInvites[name] then
+		return ply:Notify("This player already has a pending invite for this group.")
+	end
+
+	if groupData.MemberCount >= groupData.MaxSize then
+		return ply:Notify("This group is full.")
+	end
+
+	if INVITE_ANTISPAM[name] and INVITE_ANTISPAM[name].Amount > 8 then
+		if INVITE_ANTISPAM[name].Expire > CurTime() then
+			return ply:Notify("Please wait a while before sending more invites.")
+		end
+		
+		INVITE_ANTISPAM[name].Amount = 0
+	end
+
+	INVITE_ANTISPAM[name] = INVITE_ANTISPAM[name] or {}
+
+	INVITE_ANTISPAM[name].Amount = (INVITE_ANTISPAM[name].Amount or 0) + 1
+	INVITE_ANTISPAM[name].Expire = CurTime() + 360
+
+	targ.GroupInvites = targ.GroupInvites or {}
+	targ.GroupInvites[name] = true
+
+	net.Start("impulseGroupInvite")
+	net.WriteString(name)
+	net.WriteString(ply:Nick())
+	net.Send(targ)
+
+	ply:Notify("You invited "..targ:Nick().." to your group.")
+end)
+
+net.Receive("impulseGroupDoInviteAccept", function(len, ply)
+	if (ply.nextRPGroupRankAccept or 0) > CurTime() then return end
+	ply.nextRPGroupRankAccept = CurTime() + 6
+
+	if ply:IsCP() then
+		return
+	end
+
+	local name = ply:GetSyncVar(SYNC_GROUP_NAME, nil)
+	local rank = ply:GetSyncVar(SYNC_GROUP_RANK, nil)
+
+	if name or rank then
+		return
+	end
+
+	local name = net.ReadString()
+
+	local groupData = impulse.Group.Groups[name]
+
+	if not groupData then
+		return
+	end
+
+	if not ply.GroupInvites or not ply.GroupInvites[name] then
+		return
+	end
+
+	if groupData.MemberCount >= groupData.MaxSize then
+		return ply:Notify("This group is full.")
+	end
+
+	ply.GroupInvites[name] = nil
+
+	ply:GroupAdd(name)
+	ply:Notify("You have joined the "..name.." group.")
+end)
+
+net.Receive("impulseGroupDoRankRemove", function(len, ply)
+	if (ply.nextRPGroupRankEdit or 0) > CurTime() then return end
+	ply.nextRPGroupRankEdit = CurTime() + 2
+
+	if ply:IsCP() then
+		return
+	end
+
+	local name = ply:GetSyncVar(SYNC_GROUP_NAME, nil)
+	local rank = ply:GetSyncVar(SYNC_GROUP_RANK, nil)
+
+	if not name or not rank then
+		return
+	end
+
+	local groupData = impulse.Group.Groups[name]
+
+	if not groupData then
+		return
+	end
+
+	if not ply:GroupHasPermission(6) then
+		return
+	end
+
+	local rankName = net.ReadString()
+	local r = groupData.Ranks[rankName]
+
+	if not r then
+		return
+	end
+
+	if r[99] or r[0] then
+		return
+	end
+
+	impulse.Group.RankShift(name, rankName, impulse.Group.GetDefaultRank(name))
+	impulse.Group.Groups[name].Ranks[rankName] = nil
+	impulse.Group.NetworkRanksToOnline(name)
+	impulse.Group.DBUpdateRanks(groupData.ID, impulse.Group.Groups[name].Ranks)
+end)
+
+net.Receive("impulseGroupDoSetRank", function(len, ply)
+	if (ply.nextRPGroupRankSet or 0) > CurTime() then return end
+	ply.nextRPGroupRankSet = CurTime() + 1.5
+
+	if ply:IsCP() then
+		return
+	end
+
+	local name = ply:GetSyncVar(SYNC_GROUP_NAME, nil)
+	local rank = ply:GetSyncVar(SYNC_GROUP_RANK, nil)
+
+	if not name or not rank then
+		return
+	end
+
+	local groupData = impulse.Group.Groups[name]
+
+	if not groupData then
+		return
+	end
+
+	if not ply:GroupHasPermission(5) then
+		return
+	end
+
+	local targ = net.ReadString()
+
+	if not targ or not groupData.Members[targ] then
+		return
+	end
+	
+	local memberData = groupData.Members[targ]
+
+	if groupData.Ranks[memberData.Rank][99] then -- its the owner!!!
+		return ply:Notify("You can not change the rank of the group owner.")
+	end
+
+	local targEnt = player.GetBySteamID(targ)
+	local rankName = net.ReadString()
+	local r = groupData.Ranks[rankName]
+
+	if not r then
+		return
+	end
+
+	if r[99] then
+		return
+	end
+
+	local n = targ
+
+	if IsValid(targEnt) then
+		targEnt:GroupAdd(name, rankName)
+		targEnt:Notify(ply:Nick().." set your group rank to "..rankName..".")
+		n = targEnt:Nick()
+	else
+		impulse.Group.DBUpdatePlayerRank(targ, rankName)
+		impulse.Group.Groups[name].Members[targ].Rank = rankName
+		impulse.Group.NetworkMemberToOnline(name, targ)
+	end
+
+	ply:Notify("You set the group rank of "..n.." to "..rankName..".")
+end)
+
+net.Receive("impulseGroupDoRemove", function(len, ply)
+	if (ply.nextRPGroupRankSet or 0) > CurTime() then return end
+	ply.nextRPGroupRankSet = CurTime() + 1
+
+	if ply:IsCP() then
+		return
+	end
+
+	local name = ply:GetSyncVar(SYNC_GROUP_NAME, nil)
+	local rank = ply:GetSyncVar(SYNC_GROUP_RANK, nil)
+
+	if not name or not rank then
+		return
+	end
+
+	local groupData = impulse.Group.Groups[name]
+
+	if not groupData then
+		return
+	end
+
+	if not ply:GroupHasPermission(4) then
+		return
+	end
+
+	local targ = net.ReadString()
+
+	if not targ or not groupData.Members[targ] then
+		return
+	end
+	
+	local memberData = groupData.Members[targ]
+
+	if groupData.Ranks[memberData.Rank][99] then -- its the owner!!!
+		return ply:Notify("You can not remove the group owner.")
+	end
+
+	if targ == ply:SteamID() then
+		return ply:Notify("You can not remove yourself.")
+	end
+
+	local targEnt = player.GetBySteamID(targ)
+	local n = targ
+
+	if IsValid(targEnt) then
+		targEnt:GroupRemove(name)
+		targEnt:Notify(ply:Nick().." has removed you from the "..name.." group.")
+		n = targEnt:Nick()
+	else
+		impulse.Group.DBRemovePlayer(targ, groupData.ID)
+		impulse.Group.Groups[name].Members[targ] = nil
+		impulse.Group.NetworkMemberRemoveToOnline(name, targ)
+	end
+
+	ply:Notify("You removed "..n.." from the group.")
+end)
+
+net.Receive("impulseGroupDoCreate", function(len, ply)
+	if (ply.nextRPGroupCreate or 0) > CurTime() then return end
+	ply.nextRPGroupCreate = CurTime() + 4
+
+	if not ply.impulseID then
+		return
+	end
+
+	if ply:IsCP() then
+		return
+	end
+
+	if ply:GetXP() < impulse.Config.GroupXPRequirement then
+		return
+	end
+
+	if not ply:CanAfford(impulse.Config.GroupMakeCost) then
+		return
+	end
+
+	local curName = ply:GetSyncVar(SYNC_GROUP_NAME, nil)
+	local rank = ply:GetSyncVar(SYNC_GROUP_RANK, nil)
+
+	if name or curName then
+		return
+	end
+
+	local name = string.sub(net.ReadString(), 1, 32)
+
+	if string.Trim(name, " ") == "" then
+		return ply:Notify("Invalid group name.")
+	end
+
+	if impulse.Group.Groups[name] then
+		return ply:Notify("This group name is already in use.")
+	end
+
+	local slots = ply:IsDonator() and impulse.Config.GroupMaxMembersVIP or impulse.Config.GroupMaxMembers
+
+	impulse.Group.DBCreate(name, ply.impulseID, slots, 30, nil, function(groupid)
+		if not IsValid(ply) then
+			return
+		end
+
+		if not groupid then
+			return ply:Notify("This group name is already in use.")
+		end
+
+		ply:TakeMoney(impulse.Config.GroupMakeCost)
+
+		impulse.Group.DBAddPlayer(ply:SteamID(), groupid, "Owner", function()
+			if not IsValid(ply) then
+				return
+			end
+
+			ply:GroupLoad(groupid, "Owner")
+			ply:Notify("You have created a new group called "..name..".")
+		end)
+	end)
+end)
+
+net.Receive("impulseGroupDoDelete", function(len, ply)
+	if (ply.nextRPGroupDelete or 0) > CurTime() then return end
+	ply.nextRPGroupDelete = CurTime() + 3
+
+	if ply:IsCP() then
+		return
+	end
+
+	local name = ply:GetSyncVar(SYNC_GROUP_NAME, nil)
+	local rank = ply:GetSyncVar(SYNC_GROUP_RANK, nil)
+
+	if not name or not rank then
+		return
+	end
+
+	local groupData = impulse.Group.Groups[name]
+
+	if not groupData or not groupData.ID then
+		return
+	end
+
+	if not ply:GroupHasPermission(99) then
+		return
+	end
+
+	for v,k in pairs(groupData.Members) do
+		local targEnt = player.GetBySteamID(v)
+
+		if IsValid(targEnt) then
+			targEnt:SetSyncVar(SYNC_GROUP_NAME, nil, true)
+			targEnt:SetSyncVar(SYNC_GROUP_RANK, nil, true)
+			targEnt:Notify("You were removed from the "..name.." group as it has been deleted by the owner.")
+		end
+	end
+
+	impulse.Group.Groups[name] = nil
+	impulse.Group.DBRemove(groupData.ID)
+	impulse.Group.DBRemovePlayerMass(groupData.ID)
+
+	ply:Notify("You deleted the "..name.." group.")
+end)
+
+net.Receive("impulseGroupDoLeave", function(len, ply)
+	if (ply.nextRPGroupDelete or 0) > CurTime() then return end
+	ply.nextRPGroupDelete = CurTime() + 3
+
+	if ply:IsCP() then
+		return
+	end
+
+	local name = ply:GetSyncVar(SYNC_GROUP_NAME, nil)
+	local rank = ply:GetSyncVar(SYNC_GROUP_RANK, nil)
+
+	if not name or not rank then
+		return
+	end
+
+	local groupData = impulse.Group.Groups[name]
+
+	if not groupData then
+		return
+	end
+
+	if ply:GroupHasPermission(99) then
+		return
+	end
+
+	ply:GroupRemove(name)
+	ply:Notify("You have left the "..name.." group.")
 end)

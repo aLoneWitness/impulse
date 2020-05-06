@@ -34,15 +34,28 @@ function impulse.Group.DBCreate(name, ownerid, maxsize, maxstorage, ranks, callb
 			end)
 
 			query:Execute()
+		else
+			callback()
 		end
 	end)
 end
 
-function impulse.Group.DBAddPlayer(steamid, groupid, rank)
+function impulse.Group.DBRemove(groupid)
+	local query = mysql:Delete("impulse_rpgroups")
+	query:Where("id", groupid)
+	query:Execute()
+end
+
+function impulse.Group.DBAddPlayer(steamid, groupid, rank, callback)
 	local query = mysql:Update("impulse_players")
 	query:Update("rpgroup", groupid)
-	query:Update("rpgrouprank", rank or impulse.Group.GetDefaultRank(name, groupid))
+	query:Update("rpgrouprank", rank or impulse.Group.GetDefaultRank(name))
 	query:Where("steamid", steamid)
+	query:Callback(function()
+		if callback then
+			callback()
+		end
+	end)
 	query:Execute()
 end
 
@@ -51,6 +64,14 @@ function impulse.Group.DBRemovePlayer(steamid, groupid)
 	query:Update("rpgroup", nil)
 	query:Update("rpgrouprank", "")
 	query:Where("steamid", steamid)
+	query:Execute()
+end
+
+function impulse.Group.DBRemovePlayerMass(groupid)
+	local query = mysql:Update("impulse_players")
+	query:Update("rpgroup", nil)
+	query:Update("rpgrouprank", "")
+	query:Where("rpgroup", groupid)
 	query:Execute()
 end
 
@@ -66,6 +87,20 @@ function impulse.Group.DBPlayerRankShift(groupid, rank, newrank)
 	query:Update("rpgrouprank", newrank)
 	query:Where("rpgroup", groupid)
 	query:Where("rpgrouprank", rank)
+	query:Execute()
+end
+
+function impulse.Group.DBUpdateRanks(groupid, ranks)
+	local query = mysql:Update("impulse_rpgroups")
+	query:Update("ranks", pon.encode(ranks))
+	query:Where("id", groupid)
+	query:Execute()
+end
+
+function impulse.Group.DBUpdateMaxMembers(groupid, max)
+	local query = mysql:Update("impulse_rpgroups")
+	query:Update("maxsize", max)
+	query:Where("id", groupid)
 	query:Execute()
 end
 
@@ -100,7 +135,7 @@ function impulse.Group.ComputeMembers(name, callback)
 	query:Execute()
 end
 
-function impulse.Group.RankShift(ply, name, from, to)
+function impulse.Group.RankShift(name, from, to)
 	local group = impulse.Group.Groups[name]
 
 	impulse.Group.DBPlayerRankShift(group.ID, from, to)
@@ -109,11 +144,17 @@ function impulse.Group.RankShift(ply, name, from, to)
 		if k.Rank == from then
 			local ply = player.GetBySteamID(v)
 
+			impulse.Group.Groups[name].Members[v].Rank = to
+
 			if IsValid(ply) then
 				ply:GroupAdd(name, to, true)
+			else
+				impulse.Group.NetworkMemberToOnline(name, v)
 			end
 		end
 	end
+
+	impulse.Group.NetworkRankToOnline(name, to)
 end
 
 function impulse.Group.GetDefaultRank(name)
@@ -203,6 +244,42 @@ function impulse.Group.NetworkRanksToOnline(name)
 	net.Send(rf)
 end
 
+function impulse.Group.NetworkRank(name, to, rankName)
+	local rank = impulse.Group.Groups[name].Ranks[rankName]
+	local data = pon.encode(rank)
+
+	net.Start("impulseGroupRank")
+	net.WriteString(rankName)
+	net.WriteUInt(#data, 32)
+	net.WriteData(data, #data)
+	net.Send(to)
+end
+
+function impulse.Group.NetworkRankToOnline(name, rankName)
+	local rank = impulse.Group.Groups[name].Ranks[rankName]
+	local data = pon.encode(rank)
+	local rf = RecipientFilter()
+
+	for v,k in pairs(player.GetAll()) do
+		local x = k:GetSyncVar(SYNC_GROUP_NAME, nil)
+		local r = k:GetSyncVar(SYNC_GROUP_RANK, nil)
+
+		if x and x == name and r == rank then
+			if k:GroupHasPermission(5) or k:GroupHasPermission(6) then
+				continue
+			end
+
+			rf:AddPlayer(k)
+		end
+	end
+
+	net.Start("impulseGroupRank")
+	net.WriteString(rankName)
+	net.WriteUInt(#data, 32)
+	net.WriteData(data, #data)
+	net.Send(rf)
+end
+
 function impulse.Group.NetworkRanks(to, name)
 	local ranks = impulse.Group.Groups[name].Ranks
 	local data = pon.encode(ranks)
@@ -227,16 +304,19 @@ local function postCompute(self, name, rank, skipDb)
 		impulse.Group.NetworkAllMembers(self, name)
 	end
 
-	if self:HasGroupPermission(5) or self:HasGroupPermission(6) then
+	if self:GroupHasPermission(5) or self:GroupHasPermission(6) then
 		impulse.Group.NetworkRanks(self, name)
+	else
+		impulse.Group.NetworkRank(name, self, rank)
 	end
 end
 
 function meta:GroupAdd(name, rank, skipDb)
 	local id = impulse.Group.Groups[name].ID
+	local rank = rank or impulse.Group.GetDefaultRank(name)
 
 	if not skipDb then
-		impulse.Group.DBAddPlayer(self:SteamID(), id, rank or impulse.Group.GetDefaultRank())
+		impulse.Group.DBAddPlayer(self:SteamID(), id, rank)
 	end
 
 	impulse.Group.ComputeMembers(name, function()
@@ -277,12 +357,21 @@ function meta:GroupLoad(groupid, rank)
 		if rank then
 			if not impulse.Group.Groups[name].Ranks[rank] then
 				rank = impulse.Group.GetDefaultRank(name)
+				impulse.Group.DBUpdatePlayerRank(self:SteamID(), rank)
 			end
 		end
 
 		rank = rank or impulse.Group.GetDefaultRank(name)
+
 		self:SetSyncVar(SYNC_GROUP_NAME, name, true)
 		self:SetSyncVar(SYNC_GROUP_RANK, rank, true)
+
+		impulse.Group.NetworkRank(name, self, rank)
+
+		if self:IsDonator() and self:GroupHasPermission(99) and impulse.Group.Groups[name].MaxSize < impulse.Config.GroupMaxMembersVIP then
+			impulse.Group.DBUpdateMaxMembers(groupid, impulse.Config.GroupMaxMembersVIP)
+			impulse.Group.Groups[name].MaxSize = impulse.Config.GroupMaxMembersVIP
+		end
 	end)
 end
 

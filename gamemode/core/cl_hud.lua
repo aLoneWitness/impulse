@@ -97,6 +97,7 @@ local painFt
 local painFde = 1
 
 local bleedFlash = false
+local hotPink = Color(148, 0, 211)
 
 local function DrawOverheadInfo(target, alpha)
 	local pos = target:EyePos()
@@ -105,7 +106,16 @@ local function DrawOverheadInfo(target, alpha)
 	pos = pos:ToScreen()
 	pos.y = pos.y - 50
 
-	draw.DrawText(target:KnownName(), "Impulse-Elements18-Shadow", pos.x, pos.y, ColorAlpha(team.GetColor(target:Team()), alpha), 1)
+	local myGroup = LocalPlayer():GetSyncVar(SYNC_GROUP_NAME, nil)
+	local group = target:GetSyncVar(SYNC_GROUP_NAME, nil)
+	local rank = target:GetSyncVar(SYNC_GROUP_RANK, nil)
+	local col = ColorAlpha(team.GetColor(target:Team()), alpha)
+
+	if myGroup and not LocalPlayer():IsCP() and not target:IsCP() and group and rank and group == myGroup then
+		draw.DrawText(group.." - "..rank, "Impulse-Elements16-Shadow", pos.x, pos.y - 15, ColorAlpha(hotPink, alpha), 1)
+	end
+
+	draw.DrawText(target:KnownName(), "Impulse-Elements18-Shadow", pos.x, pos.y, col, 1)
 	if target:GetSyncVar(SYNC_TYPING, false) then
 		draw.DrawText("Typing...", "Impulse-Elements16-Shadow", pos.x, pos.y + 15, ColorAlpha(color_white, alpha), 1)
 	elseif target:GetSyncVar(SYNC_ARRESTED, false) and LocalPlayer():CanArrest(target) then

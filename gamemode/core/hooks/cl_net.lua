@@ -515,6 +515,10 @@ net.Receive("impulseGroupMember", function()
 	impulse.Group.Groups[1].Members = impulse.Group.Groups[1].Members or {}
 
 	impulse.Group.Groups[1].Members[sid] = {Name = name, Rank = rank}
+
+	if IsValid(impulse.groupEditor) then
+		impulse.groupEditor:Refresh()
+	end
 end)
 
 net.Receive("impulseGroupRanks", function()
@@ -523,6 +527,34 @@ net.Receive("impulseGroupRanks", function()
 
 	impulse.Group.Groups[1] = impulse.Group.Groups[1] or {}
 	impulse.Group.Groups[1].Ranks = ranks
+
+	if IsValid(impulse.groupEditor) then
+		impulse.groupEditor:Refresh()
+	end
+end)
+
+net.Receive("impulseGroupRank", function()
+	local name = net.ReadString()
+	local len = net.ReadUInt(32)
+	local rank = pon.decode(net.ReadData(len))
+
+	if name then
+		return
+	end
+
+	if not impulse.Group.Groups[1] then
+		impulse.Group.Groups[1] = {}
+	end
+
+	if not impulse.Group.Groups[1].Ranks then
+		impulse.Group.Groups[1].Ranks = {}
+	end
+
+	impulse.Group.Groups[1].Ranks[name] = rank
+
+	if IsValid(impulse.groupEditor) then
+		impulse.groupEditor:Refresh()
+	end
 end)
 
 net.Receive("impulseGroupMemberRemove", function()
@@ -532,4 +564,22 @@ net.Receive("impulseGroupMemberRemove", function()
 	impulse.Group.Groups[1].Members = impulse.Group.Groups[1].Members or {}
 
 	impulse.Group.Groups[1].Members[sid] = nil
+
+	if IsValid(impulse.groupEditor) then
+		impulse.groupEditor:Refresh()
+	end
+end)
+
+net.Receive("impulseGroupInvite", function()
+	local groupName = net.ReadString()
+	local inviterName = net.ReadString()
+
+	impulse.Group.Groups[1] = {}
+	impulse.Group.Invites[groupName] = inviterName
+
+	if IsValid(impulse.groupEditor) then
+		impulse.groupEditor:Refresh()
+	end
+
+	LocalPlayer():Notify("You have been invited to a group. Press F6 to accept it.")
 end)

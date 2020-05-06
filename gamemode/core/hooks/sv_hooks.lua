@@ -93,10 +93,15 @@ function IMPULSE:PlayerInitialSpawnLoaded(ply) -- called once player is full loa
 		impulse.Arrest.DCRemember[ply:SteamID()] = nil
 	end
 
-	if ply.Warnings and ply.Bans then
+	local s64 = ply:SteamID64()
+
+	if GExtension and GExtension.Warnings[s64] then
+		local bans = GExtension:GetBans(s64)
+		local warns = GExtension.Warnings[s64]
+
 		net.Start("opsGetRecord")
-		net.WriteUInt(table.Count(ply.Warnings), 8)
-		net.WriteUInt(table.Count(ply.Bans), 8)
+		net.WriteUInt(table.Count(warns), 8)
+		net.WriteUInt(table.Count(bans), 8)
 		net.Send(ply)
 	end
 end
@@ -847,7 +852,12 @@ function IMPULSE:Think()
 
 		if k:Alive() then
 			if k.nextHungerUpdate < ctime then
-				k:FeedHunger(-1)
+				local shouldTakeHunger = hook.Run("PlayerShouldGetHungry", k)
+
+				if shouldTakeHunger == nil or shouldTakeHunger then
+					k:FeedHunger(-1)
+				end
+
 				if k:GetSyncVar(SYNC_HUNGER, 100) < 1 then
 					if k:Health() > 10 then
 						k:TakeDamage(1, k, k)
@@ -897,7 +907,7 @@ function IMPULSE:Think()
 		lastAFKScan = ctime + 2
 
 		for v,k in pairs(allPlayers) do
-			if k.AFKTimer and k.AFKTimer < ctime and not k.ArrestedDragger and not k:IsAFK() then
+			if k.AFKTimer and k.AFKTimer < ctime and not impulse.Arrest.Dragged[k] and not k:IsAFK() then
 				k:MakeAFK()
 			end
 
@@ -1161,7 +1171,8 @@ local bannedDupeEnts = {
 	["gmod_wire_thruster"] = true,
 	["gmod_wire_trail"] = true,
 	["gmod_wire_trigger"] = true,
-	["gmod_wire_trigger_entity"] = true
+	["gmod_wire_trigger_entity"] = true,
+	["gmod_wire_rtcam"] = true
 }
 
 local donatorDupeEnts = {

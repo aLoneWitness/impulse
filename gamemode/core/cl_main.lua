@@ -17,7 +17,8 @@ local superTesters = {
 	["STEAM_0:1:75156459"] = true, -- jamsu
 	["STEAM_0:1:83204982"] = true, -- oscar
 	["STEAM_0:1:199354868"] = true,  -- enigma
-	["STEAM_0:1:43061896"] = true -- jim wakelin
+	["STEAM_0:1:43061896"] = true, -- jim wakelin
+	["STEAM_0:0:24607430"] = true -- stranger
 }
 
 local mappers = {

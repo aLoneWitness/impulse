@@ -26,7 +26,6 @@ local lastServerData2
 local nextCrashThink = 0
 local nextCrashAnalysis
 local crashAnalysisAttempts = 0
-local groupEditor = groupEditor or nil
 
 function IMPULSE:Think()
 	if LocalPlayer():Team() != 0 and not vgui.CursorVisible() and not impulse_ActiveWorkbar then
@@ -63,8 +62,8 @@ function IMPULSE:Think()
 						impulse.entityMenu:SetContainer(traceEnt)
 					end
 				end
-			elseif input.IsKeyDown(KEY_F6) and not IsValid(groupEditor) then
-				groupEditor = vgui.Create("impulseGroupEditor")
+			elseif input.IsKeyDown(KEY_F6) and not IsValid(groupEditor) and not LocalPlayer():IsCP() then
+				impulse.groupEditor = vgui.Create("impulseGroupEditor")
 			end
 		end
 	end

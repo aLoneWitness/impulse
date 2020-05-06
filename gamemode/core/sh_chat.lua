@@ -427,6 +427,35 @@ local eventCommand = {
 
 impulse.RegisterChatCommand("/event", eventCommand)
 
+local groupChatCommand = {
+	description = "Sends a message to members of your group.",
+	requiresArg = true,
+	onRun = function(ply, arg, rawText)
+		local group = ply:GetSyncVar(SYNC_GROUP_NAME, nil)
+
+		if not group then
+			return ply:Notify("You must be in a group to use this command.")
+		end
+
+		if ply:IsCP() then
+			return ply:Notify("You can not use this command as this team.")
+		end
+
+		if not ply:GroupHasPermission(2) then
+			return ply:Notify("Your group rank does not have permission to do this.")
+		end
+
+		for v,k in pairs(player.GetAll()) do
+			if k:GetSyncVar(SYNC_GROUP_NAME, "") == group and not k:IsCP() then
+				k:SendChatClassMessage(15, rawText, ply)
+			end
+		end
+	end
+}
+
+impulse.RegisterChatCommand("/group", groupChatCommand)
+impulse.RegisterChatCommand("/g", groupChatCommand)
+
 if CLIENT then
 	local talkCol = Color(255, 255, 100)
 	local infoCol = Color(135, 206, 250)
@@ -442,6 +471,7 @@ if CLIENT then
 	local acCol = Color(0, 235, 0, 255)
 	local eventCol = Color(255, 69, 0)
 	local fallbackRankCol = Color(211, 211, 211)
+	local groupCol = Color(148, 0, 211)
 	local rankCols = impulse.Config.RankColours
 
 	impulse.RegisterChatClass(1, function(message, speaker)
@@ -509,5 +539,16 @@ if CLIENT then
 
 	impulse.RegisterChatClass(14, function(message, speaker)
 		chat.AddText(eventCol, "[EVENT] ", message)
+	end)
+
+	impulse.RegisterChatClass(15, function(message, speaker)
+		local groupName = LocalPlayer():GetSyncVar(SYNC_GROUP_NAME, nil)
+		local groupRank = speaker:GetSyncVar(SYNC_GROUP_RANK, nil)
+
+		if not groupName or not groupRank then
+			return
+		end
+
+		chat.AddText(groupCol, "["..groupName.."] ("..groupRank..") ", speaker:Nick(), ": ", message)
 	end)
 end

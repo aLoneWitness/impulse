@@ -45,11 +45,30 @@ function PANEL:NoGroup()
 	lbl:SetContentAlignment(5)
 	lbl:SetTextColor(darkText)
 
+	local scroll = vgui.Create("DScrollPanel", self)
+	scroll:SetPos(125, 110)
+	scroll:SetSize(480, 100)
+	scroll:CenterHorizontal()
+
+	for v,k in pairs(impulse.Group.Invites) do
+		local btn = scroll:Add("DButton")
+		btn:SetText("Accept invite to "..v.." from "..k)
+		btn:Dock(TOP)
+
+		function btn:DoClick()
+			net.Start("impulseGroupDoInviteAccept")
+			net.WriteString(v)
+			net.SendToServer()
+
+			impulse.Group.Invites[v] = nil
+		end
+	end
+
 	local lbl = vgui.Create("DLabel", self)
 	lbl:SetText("Create a new group")
 	lbl:SetFont("Impulse-Elements19-Shadow")
 	lbl:Dock(TOP)
-	lbl:SetTall(90)
+	lbl:SetTall(150)
 	lbl:SetContentAlignment(2)
 	lbl:SetTextColor(darkText)
 
@@ -62,17 +81,40 @@ function PANEL:NoGroup()
 
 	local newGroup = vgui.Create("DButton", self)
 	newGroup:SetTall(25)
-	newGroup:SetWide(300)
+	newGroup:SetWide(450)
 	newGroup:SetText("Create new group ("..impulse.Config.CurrencyPrefix..impulse.Config.GroupMakeCost..")")
-	newGroup:DockMargin(160, 0, 160, 0)
+	newGroup:DockMargin(120, 0, 120, 0)
 	newGroup:Dock(TOP)
+
+	function newGroup:DoClick()
+		if LocalPlayer():GetXP() < impulse.Config.GroupXPRequirement then
+			return LocalPlayer():Notify("You need at least "..impulse.Config.GroupXPRequirement.."XP to make a group.")
+		end
+
+		if not LocalPlayer():CanAfford(impulse.Config.GroupMakeCost) then
+			return LocalPlayer():Notify("You can not afford to make a group.")
+		end
+
+		Derma_StringRequest("impulse",
+			"Enter the group name below:\nTHIS CAN NOT BE EDITED LATER!",
+			"",
+			function(name)
+				impulse.Group.Groups[1] = {}
+
+				net.Start("impulseGroupDoCreate")
+				net.WriteString(name)
+				net.SendToServer()
+			end, nil, "Create group")
+	end
 end
 
 function PANEL:ShowGroup()
+	local panel = self
 	self.sheet = vgui.Create("DColumnSheet", self)
 	self.sheet:Dock(FILL)
 
 	local sheet = self:AddSheet("Overview", "icon16/vcard.png")
+	local panel = self
 
 	local lbl = vgui.Create("DLabel", sheet)
 	lbl:SetText(LocalPlayer():GetSyncVar(SYNC_GROUP_NAME, "Unknown Name"))
@@ -99,6 +141,26 @@ function PANEL:ShowGroup()
 	lbl:SetPos(5, 47)
 	lbl:SizeToContents()
 
+	local leave = vgui.Create("DButton", sheet)
+	leave:SetText("Leave group")
+	leave:SetPos(420, 7)
+	leave:SetSize(80, 20)
+
+	if LocalPlayer():GroupHasPermission(99) then
+		leave:SetDisabled(true)
+	end
+
+	function leave:DoClick()
+		Derma_Query("Are you sure you want to leave this group?",
+			"impulse",
+			"Leave",
+			function()
+				net.Start("impulseGroupDoLeave")
+				net.SendToServer()
+				panel:Remove()
+			end, "Go back")
+	end
+
 	local inv = vgui.Create("DButton", sheet)
 	inv:SetText("Invite a new member")
 	inv:SetPos(5, 70)
@@ -107,13 +169,34 @@ function PANEL:ShowGroup()
 	function inv:DoClick()
 		local m = DermaMenu()
 
-		local gname = LocalPlayer():GetSyncVar(SYNC_GROUP_NAME, " ")
+		local gname = LocalPlayer():GetSyncVar(SYNC_GROUP_NAME, nil)
+
+		if not gname then
+			return
+		end
+
 		for v,k in pairs(player.GetAll()) do
-			if k:GetSyncVar(SYNC_GROUP_NAME, "") == gname then
+			if k:GetSyncVar(SYNC_GROUP_NAME, nil) then
 				continue
 			end
 
-			m:AddOption(k)
+			if k:IsCP() then
+				continue
+			end
+
+			m:AddOption(k:Nick(), function()
+				if not IsValid(panel) then
+					return
+				end
+
+				if not IsValid(k) then
+					return
+				end
+
+				net.Start("impulseGroupDoInvite")
+				net.WriteEntity(k)
+				net.SendToServer()
+			end)
 		end
 
 		m:Open()
@@ -129,9 +212,17 @@ function PANEL:ShowGroup()
 	members:SetMultiSelect(false)
 	members:AddColumn("Name")
 	members:AddColumn("Rank")
+	members:AddColumn("Is Online")
 
 	for v,k in SortedPairsByMemberValue(group.Members, "Rank") do
-		local line = members:AddLine(k.Name, k.Rank)
+		local p = player.GetBySteamID(v)
+		local state = "Offline"
+
+		if IsValid(p) then
+			state = "Online"
+		end
+
+		local line = members:AddLine(k.Name, k.Rank, state)
 		line.SteamID = v
 		line.Name = k.Name
 	end
@@ -153,7 +244,20 @@ function PANEL:ShowGroup()
 			local sub = sRank:AddSubMenu(a)
 
 			for a,b in SortedPairs(group.Ranks) do
-				sub:AddOption(a)
+				if b[99] then
+					continue
+				end
+
+				sub:AddOption(a, function()
+					if not IsValid(panel) then
+						return
+					end
+
+					net.Start("impulseGroupDoSetRank")
+					net.WriteString(sid)
+					net.WriteString(a)
+					net.SendToServer()
+				end)
 			end
 		end
 
@@ -163,7 +267,13 @@ function PANEL:ShowGroup()
 					"impulse",
 					"Yes",
 					function()
-						print("ok")
+						if not IsValid(panel) then
+							return
+						end
+
+						net.Start("impulseGroupDoRemove")
+						net.WriteString(sid)
+						net.SendToServer()
 					end,
 					"No")
 			end)
@@ -193,17 +303,29 @@ local function addGroup(s, name)
 	return sheet
 end
 
+function PANEL:Refresh()
+	if not IsValid(self.sheet) then
+		self:Remove()
+
+		impulse.groupEditor = vgui.Create("impulseGroupEditor")
+		return 
+	end
+
+	self.sheet:Remove()
+	self:Init()
+end
 
 function PANEL:ShowRanks()
 	local group = impulse.Group.Groups[1]
 	local sheet = self:AddSheet("Ranks", "icon16/group_edit.png")
+	local panel = self
 
 	self.ranks = vgui.Create("DColumnSheet", sheet)
 	self.ranks:Dock(FILL)
 
 	self.ranks.Navigation:SetWide(150)
 
-	for v,k in pairs(group.Ranks) do
+	for v,k in SortedPairs(group.Ranks) do
 		local group = addGroup(self.ranks, v)
 
 		local scroll = vgui.Create("DScrollPanel", group)
@@ -231,6 +353,7 @@ function PANEL:ShowRanks()
 		name:Dock(TOP)
 		name:DockMargin(0, 0, 0, 5)
 
+		local perms = {}
 		for a,b in pairs(RPGROUP_PERMISSIONS) do
 			local check = vgui.Create("DCheckBoxLabel", scroll)
 			check:SetValue(k[a] or false)
@@ -240,15 +363,56 @@ function PANEL:ShowRanks()
 			if a == 0 or a == 99 then
 				check:SetDisabled(true)
 			end
+
+			perms[a] = check
+		end
+
+		local create = vgui.Create("DButton", scroll)
+		create:SetText("Update rank")
+		create:DockMargin(0, 10, 0, 0)
+		create:Dock(TOP)
+
+		function create:DoClick()
+			local name = string.Trim(name:GetValue(), " ")
+
+			net.Start("impulseGroupDoRankAdd")
+			net.WriteString(v)
+			if name != v then
+				net.WriteBool(true)
+				net.WriteString(name)
+			else
+				net.WriteBool(false)
+			end
+			for v,k in pairs(RPGROUP_PERMISSIONS) do
+				net.WriteUInt(v, 8)
+				net.WriteBool(perms[v]:GetChecked())
+			end
+			net.SendToServer()
 		end
 
 		local del = vgui.Create("DButton", scroll)
 		del:SetText("Remove rank")
+		del:SetTextColor(Color(255, 0, 0))
 		del:DockMargin(0, 10, 0, 0)
 		del:Dock(TOP)
 
 		if not removable then
 			del:SetDisabled(true)
+		end
+
+		function del:DoClick()
+			Derma_Query("Are you sure you want to remove this rank?\nThis will set all rank members to the default rank.",
+				"impulse",
+				"Remove",
+				function()
+					if not IsValid(panel) then
+						return
+					end
+
+					net.Start("impulseGroupDoRankRemove")
+					net.WriteString(v)
+					net.SendToServer()
+				end)
 		end
 	end
 
@@ -256,6 +420,11 @@ function PANEL:ShowRanks()
 
 	local scroll = vgui.Create("DScrollPanel", addRank)
 	scroll:Dock(FILL)
+
+	local lbl = vgui.Create("DLabel", scroll)
+	lbl:SetText("Create new rank:")
+	lbl:SetFont("Impulse-Elements16-Shadow")
+	lbl:Dock(TOP)
 
 	local lbl = vgui.Create("DLabel", scroll)
 	lbl:SetText("Name:")
@@ -267,21 +436,38 @@ function PANEL:ShowRanks()
 	name:Dock(TOP)
 	name:DockMargin(0, 0, 0, 5)
 
+	local perms = {}
 	for a,b in pairs(RPGROUP_PERMISSIONS) do
 		local check = vgui.Create("DCheckBoxLabel", scroll)
 		check:SetValue(false)
 		check:SetText(b)
 		check:Dock(TOP)
+		check.PermID = a
 
 		if a == 0 or a == 99 then
 			check:SetDisabled(true)
 		end
+
+		perms[a] = check
 	end
 
 	local create = vgui.Create("DButton", scroll)
 	create:SetText("Create rank")
 	create:DockMargin(0, 10, 0, 0)
 	create:Dock(TOP)
+
+	function create:DoClick()
+		local name = string.Trim(name:GetValue(), " ")
+
+		net.Start("impulseGroupDoRankAdd")
+		net.WriteString(name)
+		net.WriteBool(false)
+		for v,k in pairs(RPGROUP_PERMISSIONS) do
+			net.WriteUInt(v, 8)
+			net.WriteBool(perms[v]:GetChecked())
+		end
+		net.SendToServer()
+	end
 end
 
 
@@ -295,6 +481,8 @@ function PANEL:ShowAdmin()
 	del:SetTextColor(Color(255, 0, 0))
 	del:Dock(TOP)
 
+	local panel = self
+
 	function del:DoClick()
 		Derma_StringRequest("impulse", 
 			"Closing this group will delete it forever. You will have to pay to make another group.\nPlease type '"..name.."' below to confirm the deletion:",
@@ -303,6 +491,11 @@ function PANEL:ShowAdmin()
 				if text != name then
 					return LocalPlayer():Notify("Name does not match.")
 				end
+
+				net.Start("impulseGroupDoDelete")
+				net.SendToServer()
+
+				panel:Remove()
 			end, nil, "Delete forever")
 	end
 end
