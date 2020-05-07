@@ -264,3 +264,7 @@ net.Receive("opsUnderInvestigation", function()
 	impulse.MenuMessage.Add("cheater", "Cheating Investigation Notice", template, Color(238, 210, 2))
 	impulse.MenuMessage.Save("cheater")
 end)
+
+net.Receive("opsE2Viewer", function()
+	vgui.Create("impulseE2Viewer")
+end)

@@ -6,6 +6,7 @@ function PANEL:Init()
 	self:SetTitle("Group Menu")
 	self:MakePopup()
 
+	self.sheets = {}
 	local panel = self
 
 	if LocalPlayer():GetSyncVar(SYNC_GROUP_NAME, "") != "" then
@@ -21,7 +22,10 @@ function PANEL:AddSheet(name, icon)
 	sheet:DockMargin(5, 5, 5, 5)
 	sheet:Dock(FILL)
 
-	self.sheet:AddSheet(name, sheet, icon)
+	local x = self.sheet:AddSheet(name, sheet, icon)
+	x.Panel.name = name
+	x.Button.name = name
+	table.insert(self.sheets, x.Panel)
 
 	return sheet
 end
@@ -311,8 +315,17 @@ function PANEL:Refresh()
 		return 
 	end
 
+	--local lastTab = self.sheet:GetActiveButton().name
+
 	self.sheet:Remove()
 	self:Init()
+
+	--for v,k in pairs(self.sheets) do
+	--	print(k.name)
+	--	if k.name == lastTab then
+	--		self.sheet:SetActiveButton(k)
+	--	end
+	--end
 end
 
 function PANEL:ShowRanks()

@@ -60,6 +60,10 @@ function IMPULSE:Think()
 						impulse.entityMenu = vgui.Create("impulseEntityMenu")
 						impulse.entityMenu:SetRangeEnt(traceEnt)
 						impulse.entityMenu:SetContainer(traceEnt)
+					elseif traceEnt:GetClass() == "prop_ragdoll" then
+						impulse.entityMenu = vgui.Create("impulseEntityMenu")
+						impulse.entityMenu:SetRangeEnt(traceEnt)
+						impulse.entityMenu:SetBody(traceEnt)
 					end
 				end
 			elseif input.IsKeyDown(KEY_F6) and not IsValid(groupEditor) and not LocalPlayer():IsCP() then

@@ -196,6 +196,12 @@ function PANEL:SetContainer(ent)
 	if not self.hasAction then return self:Remove() end
 end
 
+function PANEL:SetBody(ragdoll)
+	hook.Run("RagdollMenuAddOptions", self, ragdoll)
+
+	if not self.hasAction then return self:Remove() end
+end
+
 function PANEL:Think()
 	if self.rangeEnt and IsValid(self.rangeEnt) then
 		local dist = self.rangeEnt:GetPos():DistToSqr(LocalPlayer():GetPos())

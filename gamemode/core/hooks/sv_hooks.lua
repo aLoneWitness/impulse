@@ -556,7 +556,7 @@ function IMPULSE:UpdatePlayerSync(ply)
 	end
 end
 
-function IMPULSE:DoPlayerDeath(ply)
+function IMPULSE:DoPlayerDeath(ply, attacker, dmginfo)
 	local vel = ply:GetVelocity()
 
 	local ragdoll = ents.Create("prop_ragdoll")
@@ -564,6 +564,21 @@ function IMPULSE:DoPlayerDeath(ply)
 	ragdoll:SetPos(ply:GetPos())
 	ragdoll:SetSkin(ply:GetSkin())
 	ragdoll.DeadPlayer = ply
+	ragdoll.Killer = attacker
+	ragdoll.DmgInfo = dmginfo
+
+	if ply.LastFall and ply.LastFall > CurTime() - 0.5 then
+		ragdoll.FallDeath = true
+	end
+
+	if IsValid(attacker) and attacker:IsPlayer() then
+		local wep = attacker:GetActiveWeapon()
+
+		if IsValid(wep) then
+			ragdoll.DmgWep = wep:GetClass()
+		end	
+	end
+
 	ragdoll.CanConstrain = false
 	ragdoll.NoCarry = true
 
@@ -838,6 +853,7 @@ function IMPULSE:PostCleanupMap()
 end
 
 function IMPULSE:GetFallDamage(ply, speed)
+	ply.LastFall = CurTime()
 	return (speed / 8)
 end
 

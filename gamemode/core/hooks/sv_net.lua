@@ -1922,6 +1922,10 @@ net.Receive("impulseGroupDoSetRank", function(len, ply)
 		return
 	end
 
+	if rankName == memberData.Rank then
+		return ply:Notify("This player is already set to this rank.")
+	end
+
 	local n = targ
 
 	if IsValid(targEnt) then
