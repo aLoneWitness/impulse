@@ -99,11 +99,25 @@ function PANEL:ReloadReports()
 					reporteeName = report.data[1]:SteamName()
 				end 
 
-				Derma_StringRequest("ops report reply to "..reporteeName, "Message to send:", nil, function(msg)
+				local i = Derma_StringRequest("ops report reply to "..reporteeName, "Message to send:", nil, function(msg)
 					net.Start("impulseChatMessage")
 					net.WriteString("/rmsg "..msg)
 					net.SendToServer()
 				end, nil, "Send")
+
+				local textEntry = i:GetChild(4):GetChildren()[2]
+				local quickReplies = vgui.Create("DComboBox", i)
+				quickReplies:SetPos(10, 90)
+				quickReplies:SetSize(145, 20)
+				quickReplies:SetValue("Quick replies")
+
+				for v,k in pairs(impulse.Config.ModQuickReplies) do
+					quickReplies:AddChoice(k)
+				end
+
+				function quickReplies:OnSelect()
+					textEntry:SetValue(self:GetValue())
+				end
 			end
 		end
 

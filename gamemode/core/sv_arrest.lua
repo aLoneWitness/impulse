@@ -25,7 +25,8 @@ function meta:UnArrest()
 
 	if self.ArrestedWeapons then
 		for v,k in pairs(self.ArrestedWeapons) do
-			self:Give(v)
+			local w = self:Give(v)
+			w:SetClip1(0)
 		end
 
 		self.ArrestedWeapons = nil
@@ -36,6 +37,7 @@ function meta:UnArrest()
 	self:SelectWeapon("impulse_hands")
 	--self:SetJumpPower(160)
 	self:StopDrag()
+	self:StripAmmo()
 end
 
 function meta:DragPlayer(ply)

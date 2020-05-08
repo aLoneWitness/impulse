@@ -114,11 +114,46 @@ local quickTools = {
 		name = "Ban",
 		icon = "icon16/user_delete.png",
 		onRun = function(ply, sid)
-			Derma_StringRequest("impulse", "Enter the length (in minutes):", "", function(length)
+			local i = Derma_StringRequest("impulse", "Enter the length (in minutes):", "", function(length)
 				Derma_StringRequest("impulse", "Enter the reason:", "", function(reason)
 					LocalPlayer():ConCommand("say /ban "..sid.." "..length.." "..reason)
 				end)
 			end)
+
+			local textEntry = i:GetChild(4):GetChildren()[2]
+
+			local function addTime(time)
+				local v = textEntry:GetValue()
+
+				local new = (tonumber(v) or 0) + time
+
+				textEntry:SetValue(new)
+				LocalPlayer():Notify("Added "..time.." minutes.")
+			end
+
+			local addDay = vgui.Create("DButton", i)
+			addDay:SetPos(10, 90)
+			addDay:SetSize(25, 20)
+			addDay:SetText("+1D")
+			addDay.DoClick = function() addTime(1440) end
+
+			local addDay = vgui.Create("DButton", i)
+			addDay:SetPos(40, 90)
+			addDay:SetSize(25, 20)
+			addDay:SetText("+1W")
+			addDay.DoClick = function() addTime(10080) end
+
+			local addDay = vgui.Create("DButton", i)
+			addDay:SetPos(70, 90)
+			addDay:SetSize(25, 20)
+			addDay:SetText("+1M")
+			addDay.DoClick = function() addTime(43200) end
+
+			local addDay = vgui.Create("DButton", i)
+			addDay:SetPos(100, 90)
+			addDay:SetSize(25, 20)
+			addDay:SetText("+6M")
+			addDay.DoClick = function() addTime(259200) end
 		end
 	}
 }
