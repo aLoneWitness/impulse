@@ -13,6 +13,10 @@ function LoadSaveEnts()
 
 			if k.keyvalue then
 				x.impulseSaveKeyValue = k.keyvalue
+
+				if k.keyvalue["nopos"] then
+					x.AlwaysPos = k.pos
+				end
 			end
 
 			x:Spawn()
@@ -25,6 +29,8 @@ function LoadSaveEnts()
 			end
 		end
 	end
+
+	hook.Run("PostLoadSaveEnts")
 end
 
 concommand.Add("impulse_save_saveall", function(ply, cmd, args)
@@ -34,7 +40,7 @@ concommand.Add("impulse_save_saveall", function(ply, cmd, args)
 
 	for v,k in pairs(ents.GetAll()) do
 		if k.impulseSaveEnt then
-			table.insert(savedEnts, {pos =  k:GetPos(), angle = k:GetAngles(), class = k:GetClass(), model = k:GetModel(), keyvalue = (k.impulseSaveKeyValue or nil)})
+			table.insert(savedEnts, {pos =  k.AlwaysPos or k:GetPos(), angle = k:GetAngles(), class = k:GetClass(), model = k:GetModel(), keyvalue = (k.impulseSaveKeyValue or nil)})
 		end
 	end
 
