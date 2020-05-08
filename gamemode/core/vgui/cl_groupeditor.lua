@@ -133,11 +133,10 @@ function PANEL:ShowGroup()
 		return
 	end
 
-	local lbl = vgui.Create("DLabel", sheet)
-	lbl:SetText("Total members: "..table.Count(group.Members))
-	lbl:SetFont("Impulse-Elements20-Shadow")
-	lbl:SetPos(5, 32)
-	lbl:SizeToContents()
+	local lblM = vgui.Create("DLabel", sheet)
+	lblM:SetText("")
+	lblM:SetFont("Impulse-Elements20-Shadow")
+	lblM:SetPos(5, 32)
 
 	local lbl = vgui.Create("DLabel", sheet)
 	lbl:SetText("Your rank: "..LocalPlayer():GetSyncVar(SYNC_GROUP_RANK, "Unknown Rank"))
@@ -218,18 +217,24 @@ function PANEL:ShowGroup()
 	members:AddColumn("Rank")
 	members:AddColumn("Is Online")
 
+	local ons = 0
+
 	for v,k in SortedPairsByMemberValue(group.Members, "Rank") do
 		local p = player.GetBySteamID(v)
 		local state = "Offline"
 
 		if IsValid(p) then
 			state = "Online"
+			ons = ons + 1
 		end
 
 		local line = members:AddLine(k.Name, k.Rank, state)
 		line.SteamID = v
 		line.Name = k.Name
 	end
+
+	lblM:SetText("Total members: "..table.Count(group.Members).." ("..ons.." online)")
+	lblM:SizeToContents()
 
 	function members:OnRowSelected(index, row)
 		local sid = row.SteamID
