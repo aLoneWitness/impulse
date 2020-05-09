@@ -102,6 +102,10 @@ end
 function meta:SetDoorUser(door)
 	local doorOwners = door:GetSyncVar(SYNC_DOOR_OWNERS)
 
+	if not doorOwners then
+		return
+	end
+
 	table.insert(doorOwners, self:EntIndex())
 	door:SetSyncVar(SYNC_DOOR_OWNERS, doorOwners, true)
 
@@ -111,6 +115,10 @@ end
 
 function meta:RemoveDoorUser(door)
 	local doorOwners = door:GetSyncVar(SYNC_DOOR_OWNERS)
+
+	if not doorOwners then
+		return
+	end
 
 	table.RemoveByValue(doorOwners, self:EntIndex())
 	door:SetSyncVar(SYNC_DOOR_OWNERS, doorOwners, true)
