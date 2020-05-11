@@ -586,6 +586,8 @@ function IMPULSE:DoPlayerDeath(ply, attacker, dmginfo)
 		ragdoll:SetBodygroup(k.id, ply:GetBodygroup(k.id))
 	end
 
+	hook.Run("PlayerRagdollPreSpawn", ragdoll, ply, attacker)
+
 	ragdoll:Spawn()
 	ragdoll:SetCollisionGroup(COLLISION_GROUP_WORLD)
 

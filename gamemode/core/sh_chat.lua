@@ -481,6 +481,10 @@ if CLIENT then
 	end)
 
 	impulse.RegisterChatClass(2, function(message, speaker)
+		if not impulse.GetSetting("chat_oocenabled", true) then
+			return print("(OOC DISABLED) [OOC] "..speaker:SteamName()..": "..message)
+		end
+
 		chat.AddText(oocTagCol, "[OOC] ", (rankCols[speaker:IsIncognito() and "user" or speaker:GetUserGroup()] or fallbackRankCol), speaker:SteamName(), oocCol, ": ", message)
 	end)
 

@@ -43,7 +43,11 @@ function ENT:Initialize()
 
     timer.Simple(1, function()
         if IsValid(self) then
-            self:DoAnimation(self.Vendor and self.Vendor.Sequence)
+            if self.Vendor and self.Vendor.Sequence then
+                self:DoAnimation(self.Vendor.Sequence)
+            else
+                self:DoAnimation()
+            end
         end
     end)
 

@@ -14,7 +14,7 @@ function ENT:SetupDataTables()
 end
 
 function ENT:DoAnimation(custom)
-	if custom then
+	if custom and custom != "" then
 		return self:ResetSequence(custom)
 	end
 

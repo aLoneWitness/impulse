@@ -5,7 +5,9 @@ function PANEL:Init()
 	self:Center()
 	self:SetTitle("ops E2 Viewer")
 	self:MakePopup()
+end
 
+function PANEL:SetupE2S(e2s)
 	self.list = vgui.Create("DListView", self)
 	self.list:Dock(FILL)
 	self.list:SetMultiSelect(false)
@@ -17,20 +19,19 @@ function PANEL:Init()
 
 	local panel = self
 
-	for v,k in pairs(ents.FindByClass("gmod_wire_expression2")) do
-    	local data = k:GetOverlayData()
-    	local owner = k:CPPIGetOwner()
+	for v,k in pairs(e2s) do
+    	local owner = k.ent:CPPIGetOwner()
 
-    	if not owner or not data then
+    	if not owner then
     		return
     	end
 
-    	local cpuTime = data.timebench * 1000000
+    	local cpuTime = k.perf * 1000000
     	if cpuTime < 0.01 then
     		cpuTime = 0
     	end
 
-    	local x = self.list:AddLine(owner:Nick().." ("..owner:SteamName()..")", data.txt, cpuTime)
+    	local x = self.list:AddLine(owner:Nick().." ("..owner:SteamName()..")", k.name, cpuTime)
     	x.Owner = owner:SteamID()
     	x.Ent = k
 
