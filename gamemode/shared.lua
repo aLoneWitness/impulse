@@ -63,9 +63,13 @@ function impulse.lib.LoadFile(fileName)
 	end
 end
 
-function impulse.lib.includeDir(directory, fromLua)
+function impulse.lib.includeDir(directory, hookMode, variable, uid)
 	for k, v in ipairs(file.Find(directory.."/*.lua", "LUA")) do
-    	impulse.lib.LoadFile(directory.."/"..v)
+    	if hookMode then
+    		impulse.Schema.LoadHooks(directory.."/"..v, variable, uid)
+    	else
+    		impulse.lib.LoadFile(directory.."/"..v)
+    	end
 	end
 end
 
@@ -80,6 +84,7 @@ file.CreateDir("impulse")
 local isPreview = CreateConVar("impulse_ispreview", 0, FCVAR_REPLICATED, "If the current build is in preview mode.")
 
 if SERVER then
+	impulse.YML = {}
 	local dbFile = "impulse/config.yml"
 
 	impulse.DB = {
@@ -95,16 +100,24 @@ if SERVER then
 	if file.Exists(dbFile, "DATA") then
 		local dbConf = impulse.Yaml.Read("data/"..dbFile)
 
-		if dbConf and type(dbConf) == "table" and dbConf.db and type(dbConf.db) == "table" then
-			table.Merge(impulse.DB, dbConf.db)
-			print("[impulse] [config.yml] Loaded release database config file!")
-			dbConfLoaded = true
+		if dbConf and type(dbConf) == "table" then
+			if dbConf.db and type(dbConf.db) == "table" then
+				table.Merge(impulse.DB, dbConf.db)
+				print("[impulse] [config.yml] Loaded release database config file!")
+				dbConfLoaded = true
 
-			if dbConf.dev and type(dbConf.dev) == "table" then
-				if dbConf.dev.preview then
-					isPreview:SetInt(1)
+				if dbConf.dev and type(dbConf.dev) == "table" then
+					if dbConf.dev.preview then
+						isPreview:SetInt(1)
+					end
 				end
 			end
+
+			if dbConf.schemadb and dbConf.schemadb[engine.ActiveGamemode()] then
+				impulse.DB.database = dbConf.schemadb[engine.ActiveGamemode()]
+			end
+
+			impulse.YML = dbConf
 		end
 	end
 
@@ -133,10 +146,7 @@ function impulse.reload()
 
     for v, plugin in ipairs(folders) do
         MsgC( Color( 83, 143, 239 ), "[impulse] Loading plugin '"..plugin.."'\n" )
-        impulse.lib.includeDir("impulse/plugins/"..plugin.."/setup")
-	    impulse.lib.includeDir("impulse/plugins/"..plugin)
-	    impulse.lib.includeDir("impulse/plugins/"..plugin.."/vgui")
-	    impulse.lib.includeDir("impulse/plugins/"..plugin.."/hooks")
+        impulse.Schema.LoadPlugin("impulse/plugins/"..plugin, plugin)
     end
 end
 

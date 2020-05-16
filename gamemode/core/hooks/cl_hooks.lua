@@ -81,28 +81,6 @@ function IMPULSE:Think()
 				k:SetHandsBehindBack(isArrested)
 				k.BoneArrested = isArrested
 			end
-
-			local bleedingRange = (impulse.GetSetting("perf_bleedingrange") or 800) ^ 2
-			local dist = k:GetPos():DistToSqr(LocalPlayer():GetPos())
-
-			if isBleeding and dist < bleedingRange and (k.nextBleed or 0) < CurTime() and k:GetMoveType() != MOVETYPE_NOCLIP then
-				local pos = k:GetPos()
-
-				if dist < (300 ^ 2) then
-					local effectdata = EffectData()
-					effectdata:SetOrigin((pos + k:OBBCenter()))
-
-					util.Effect("BloodImpact", effectdata)
-				end
-
-				if not k.lastBleedPos or (k.lastBleedPos:DistToSqr(k:GetPos()) > (40 ^ 2)) then
-					util.Decal("Blood", pos, Vector(pos.x, pos.y, -100000), k)
-					k.lastBleedPos = pos
-				end
-
-				k.nextBleed = CurTime() + math.random(5, 10)
-			end
-
 		end
 
 		nextLoopThink = CurTime() + 0.5
@@ -181,12 +159,26 @@ function IMPULSE:DefineSettings()
 	impulse.DefineSetting("view_thirdperson", {name="Thirdperson enabled", category="View", type="tickbox", default=false})
 	impulse.DefineSetting("view_thirdperson_fov", {name="Thirdperson FOV", category="View", type="slider", default=90, minValue=60, maxValue=95})
 	impulse.DefineSetting("perf_mcore", {name="Multi-core rendering enabled", category="Performance", type="tickbox", default=false, onChanged = function(newValue)
-		if newValue then
-			RunConsoleCommand("gmod_mcore_test", tostring(tonumber(newValue)))
+		RunConsoleCommand("gmod_mcore_test", tostring(tonumber(newValue)))
+
+		if newValue == 1 then
+			RunConsoleCommand("mat_queue_mode", "-1")
+			RunConsoleCommand("cl_threaded_bone_setup", "1")
+		else
+			RunConsoleCommand("cl_threaded_bone_setup", "0")
 		end
 	end})
+	impulse.DefineSetting("perf_dynlight", {name="Dynamic light rendering enabled", category="Performance", type="tickbox", default=true, onChanged = function(newValue)
+		local v = 0
+		if newValue == 1 then
+			v = 1
+		end
+
+		RunConsoleCommand("r_shadows", v)
+		RunConsoleCommand("r_dynamic", v)
+	end})
 	impulse.DefineSetting("perf_blur", {name="Blur enabled", category="Performance", type="tickbox", default=true})
-	impulse.DefineSetting("perf_bleedingrange", {name="Bleeding render range", category="Performance", type="slider", default=1000, minValue=200, maxValue=3000})
+	--impulse.DefineSetting("perf_bleedingrange", {name="Bleeding render range", category="Performance", type="slider", default=1000, minValue=200, maxValue=3000})
 	impulse.DefineSetting("inv_sortequippablesattop", {name="Sort equipped at top", category="Inventory", type="tickbox", default=true})
 	impulse.DefineSetting("inv_sortweight", {name="Sort by weight", category="Inventory", type="dropdown", default="Inventory only", options={"Never", "Inventory only", "Containers only", "Always"}})
 	impulse.DefineSetting("misc_vendorgreeting", {name="Vendor greeting sound", category="Misc", type="tickbox", default=true})

@@ -245,6 +245,10 @@ function PANEL:Init()
 	schemaLabel:SizeToContents()
 	schemaLabel:SetPos(100,140)
 
+	if schemaLabel:GetWide() > 300 then
+		schemaLabel:SetFont("Impulse-Elements27")
+	end
+
 	local newsLabel = vgui.Create("DLabel", self)
 	newsLabel:SetFont("Impulse-Elements32")
 	newsLabel:SetText("News")

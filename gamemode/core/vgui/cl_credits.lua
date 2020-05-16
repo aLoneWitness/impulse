@@ -99,7 +99,7 @@ function PANEL:Init()
 		<font=Impulse-Elements23>
 		Copyright 2019 Jake Green (vin)
 		impulse-community.com
-		vingard.ovh
+		jakegreen.me
 		</font>]], 550)
 
 	self.scrollY = ScrH() + 160
