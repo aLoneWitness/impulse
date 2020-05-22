@@ -116,9 +116,9 @@ if SERVER then
 			if dbConf.schemadb and dbConf.schemadb[engine.ActiveGamemode()] then
 				impulse.DB.database = dbConf.schemadb[engine.ActiveGamemode()]
 			end
-
-			impulse.YML = dbConf
 		end
+
+		impulse.YML = dbConf
 	end
 
 	if not dbConfLoaded then

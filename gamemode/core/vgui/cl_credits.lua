@@ -33,7 +33,6 @@ function PANEL:Init()
 		Inspired by
 		<font=Impulse-Elements23>Aerolite, Apex-Roleplay and Cookie-Network</font>
 
-
 		Testing team
 		<font=Impulse-Elements23>Aquaman
 		Baker
@@ -79,25 +78,14 @@ function PANEL:Init()
 		]]..impulse.Config.SchemaName..[[
 
 
-		Developers
-		<font=Impulse-Elements23>vin
-		aLoneWitness</font>
-
-		Powered by
-		<font=Impulse-Elements23>vin - Longsword weapon base</font>
-
-		Special thanks
-		<font=Impulse-Elements23>nutscript - great examples of HL2:RP systems
-		zepla - Enhanced Citizens v4
-		DPotatoman - Metropolice pack</font>
+		]]..string.Replace(impulse.Config.SchemaCredits, "\n", "\n		")..[[
 		</font>
-		
 
 
 
 
 		<font=Impulse-Elements23>
-		Copyright 2019 Jake Green (vin)
+		Copyright 2020 Jake Green (vin)
 		impulse-community.com
 		jakegreen.me
 		</font>]], 550)
