@@ -251,7 +251,7 @@ function IMPULSE:CalcView(player, origin, angles, fov)
 	local ragdoll = player.Ragdoll
 
 	if ragdoll and IsValid(ragdoll) then
-		local eyes = ragdoll:GetAttachment(ragdoll:LookupAttachment( "eyes" ))
+		local eyes = ragdoll:GetAttachment(ragdoll:LookupAttachment("eyes"))
 		if not eyes then return end
 
 		view = {
@@ -309,8 +309,10 @@ function IMPULSE:CalcView(player, origin, angles, fov)
 			fov = Lerp(FrameTime() * 15, wep.FOVMultiplier, wep:GetIronsights() and wep.IronsightsFOV or 1) * fov
 		end
 
+		local delta = player.EyePos(player) - origin
+
 		return {
-			origin = pos,
+			origin = pos + delta,
 			angles = angles,
 			fov = fov
 		}
