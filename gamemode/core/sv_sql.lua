@@ -72,6 +72,13 @@ function IMPULSE:DatabaseConnected()
         sqlQuery:Create("data", "longtext")
         sqlQuery:PrimaryKey("id")
     sqlQuery:Execute()
+
+    local sqlQuery = mysql:Create("impulse_data")
+        sqlQuery:Create("id", "int unsigned NOT NULL AUTO_INCREMENT")
+        sqlQuery:Create("name", "varchar(255) NOT NULL")
+        sqlQuery:Create("data", "longtext")
+        sqlQuery:PrimaryKey("id")
+    sqlQuery:Execute()
 end
 
 timer.Create("impulsedb.Think", 1, 0, function()
