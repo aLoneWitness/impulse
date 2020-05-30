@@ -18,7 +18,7 @@ local function CheckFamilySharing(ply, sid)
 
 		local lender = body.response.lender_steamid
 		if lender != "0" then -- if does not own gmod
-			ply:Kick("Sorry, we do not allow Stean accounts that don't own the game fully. For more information goto support.impulse-community.com")
+			ply:Kick("Sorry, we do not allow Steam accounts that don't own the game fully. For more information goto support.impulse-community.com")
 		end
 	end,
 

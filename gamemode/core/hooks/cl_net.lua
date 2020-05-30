@@ -9,7 +9,7 @@ net.Receive("impulseNotify", function(len)
 		return
 	end
 	
-	LocalPlayer():Notify(message)
+	LocalPlayer():Notify(OwOifyText(message, true, true))
 end)
 
 net.Receive("impulseATMOpen", function()

@@ -15,7 +15,7 @@ function impulse.Data.Write(name, data)
 	local query = mysql:Select("impulse_data")
 	query:Select("id")
 	query:Where("name", name)
-	query:Callback(function(result)
+	query:Callback(function(result) -- somewhat annoying that we cant do a conditional query or smthing but whatever
 		if type(result) == "table" and #result > 0 then
 			local followUp = mysql:Update("impulse_data")
 			followUp:Update("data", pon.encode(data))
