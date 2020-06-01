@@ -14,7 +14,7 @@ print('No permission is granted to USE, REPRODUCE, EDIT or SELL this software.')
 MsgC( Color( 83, 143, 239 ), "[impulse] Starting server load...\n" )
 impulse = impulse or {} -- defining global function table
 
-impulse.meta = FindMetaTable( "Player" )
+impulse.meta = FindMetaTable("Player")
 impulse.lib = {}
 
 -- load the framework bootstrapper

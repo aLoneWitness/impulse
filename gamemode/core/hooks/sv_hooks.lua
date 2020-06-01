@@ -851,7 +851,7 @@ end
 LoadButtons()
 
 function GM:PostCleanupMap()
-	GM:InitPostEntity()
+	hook.Run("InitPostEntity")
 end
 
 function GM:GetFallDamage(ply, speed)

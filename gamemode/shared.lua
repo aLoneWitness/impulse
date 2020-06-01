@@ -138,9 +138,16 @@ impulse.lib.includeDir("impulse/gamemode/core/vgui")
 impulse.lib.includeDir("impulse/gamemode/core/hooks")
 
 function impulse.reload()
+	GM = GM or GAMEMODE
     MsgC( Color( 83, 143, 239 ), "[impulse] Reloading gamemode...\n" )
     impulse.lib.includeDir("impulse/gamemode/core")
 
+	impulse.reloadPlugins()
+
+	GM = nil
+end
+
+function impulse.reloadPlugins()
 	local files, folders = file.Find("impulse/plugins/*", "LUA")
 
     for v, plugin in ipairs(folders) do
