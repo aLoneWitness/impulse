@@ -1,4 +1,4 @@
---- Functions to control a player's animations. Based heavily on nutscript's Anim system
+--- Functions to control a player's animations, based heavily on nutscript's Anim system
 -- @module Anim
 
 -- this animation system is HEAVILY based on nutscripts system with partial recodes or changes to suit impulse.
@@ -566,7 +566,7 @@ local type = type
 local PLAYER_HOLDTYPE_TRANSLATOR = PLAYER_HOLDTYPE_TRANSLATOR
 local HOLDTYPE_TRANSLATOR = HOLDTYPE_TRANSLATOR
 
-function IMPULSE:TranslateActivity(ply, act)
+function GM:TranslateActivity(ply, act)
 	local model = string.lower(ply.GetModel(ply))
 	local class = getModelClass(model) or "player"
 	local weapon = ply.GetActiveWeapon(ply)
@@ -649,7 +649,7 @@ end
 local vectorAngle = FindMetaTable("Vector").Angle
 local normalizeAngle = math.NormalizeAngle
 
-function IMPULSE:CalcMainActivity(ply, velocity)
+function GM:CalcMainActivity(ply, velocity)
 	local eyeAngles = ply.EyeAngles(ply)
 	local yaw = vectorAngle(velocity)[2]
 	local normalized = normalizeAngle(yaw - eyeAngles[2])
@@ -666,7 +666,7 @@ function IMPULSE:CalcMainActivity(ply, velocity)
 	return seqIdeal, ply.impulseForceSeq or oldSeqOverride or ply.CalcSeqOverride
 end
 
-function IMPULSE:DoAnimationEvent(ply, event, data)
+function GM:DoAnimationEvent(ply, event, data)
 	local model = ply:GetModel():lower()
 	local class = impulse.Anim.GetModelClass(model)
 

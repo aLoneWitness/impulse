@@ -15,7 +15,7 @@ impulse.Settings = impulse.Settings or {}
 -- @func[opt] onChanged Called when setting is changed
 -- @table SettingData
 
---- Defines a new setting for use
+--- Defines a new setting for use - only call this inside the DefineSettings hook
 -- @realm client
 -- @string name Setting class name
 -- @param settingData A table containg setting data (see below)
@@ -25,6 +25,8 @@ function impulse.DefineSetting(name, settingdata)
 	impulse.LoadSettings()
 end
 
+local toBool = tobool
+local optX = {["tickbox"] = true} -- hash comparisons faster than string
 --- Gets the value of a setting
 -- @realm client
 -- @string name Setting class name
@@ -32,9 +34,14 @@ end
 function impulse.GetSetting(name)
 	local settingData = impulse.Settings[name]
 
-	if settingData.type == "tickbox" then
-		return tobool(settingData.value)
+	if optX[settingData.type] then
+		if settingData.value == nil then
+			return settingData.default
+		end
+
+		return toBool(settingData.value)
 	end
+
 	return settingData.value or settingData.default
 end
 

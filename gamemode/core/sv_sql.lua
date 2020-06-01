@@ -5,7 +5,7 @@
 
 -- Uses https://github.com/FredyH/MySQLOO/releases
 
-function IMPULSE:DatabaseConnected()
+function GM:DatabaseConnected()
     local sqlQuery = mysql:Create("impulse_players") -- if not table exist, make it.
         sqlQuery:Create("id", "int unsigned NOT NULL AUTO_INCREMENT") -- index
         sqlQuery:Create("rpname", "varchar(70) NOT NULL") -- rpname

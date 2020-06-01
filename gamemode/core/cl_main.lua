@@ -6,7 +6,7 @@
 ** This file is private and may not be shared, downloaded, used or sold.
 */
 
-function IMPULSE:ForceDermaSkin()
+function GM:ForceDermaSkin()
 	return "impulse"
 end
 

@@ -1,3 +1,6 @@
+--- Controls the business system which allows players to purchase items
+-- @module Business
+
 /*
 ** Copyright (c) 2017 Jake Green (TheVingard)
 ** This file is private and may not be shared, downloaded, used or sold.
@@ -9,6 +12,11 @@ impulse.Business.DataRef = impulse.Business.DataRef or {}
 
 local busID = 0
 
+--- Renders a blur effect on a panel. Call this inside PANEL:Paint
+-- @realm shared
+-- @string name Buyable name
+-- @param buyableData Buyable data
+-- @see BuyableData
 function impulse.Business.Define(name, buyableData)
 	busID = busID + 1
 	buyableData.key = name
@@ -16,6 +24,9 @@ function impulse.Business.Define(name, buyableData)
     impulse.Business.DataRef[busID] = name
 end
 
+--- Returns if a player can buy a buyable
+-- @realm shared
+-- @string name Buyable name
 function meta:CanBuy(name)
 	local buyable = impulse.Business.Data[name]
 
@@ -34,6 +45,13 @@ function meta:CanBuy(name)
 	return true
 end
 
+--- Spawns a buyable as an entity
+-- @realm server
+-- @vector pos
+-- @angle ang
+-- @string buyable Buyable name
+-- @entity owner Owner player
+-- @internal
 function impulse.SpawnBuyable(pos, ang, buyable, owner)
 	local spawnedBuyable
 
@@ -75,3 +93,19 @@ function impulse.SpawnBuyable(pos, ang, buyable, owner)
 
 	return spawnedBuyable
 end
+
+--- A collection of data that defines how a buyable will behave
+-- @realm shared
+-- @string[opt] entity Entity class name
+-- @string[opt] bench Bench class name
+-- @string model Model
+-- @string description Buyable description
+-- @int price Price
+-- @param[opt] teams A table of teams that can buy this buyable
+-- @param[opt] classes A table of classes that can buy this buyable
+-- @bool[opt=false] refund Should this buyable be refunded on server crashes
+-- @int[opt=0] refundAdd The amount to add to the price in the event of a refund being issued
+-- @bool[opt=false] removeOnTeamSwitch Should the buyable be removed on team switch
+-- @func[opt] postSpawn Called after the buyable is spawned (ent, ply) arguments passed
+-- @func[opt] customCheck Determines if the buyable can be spawned based on return value (ply) arguments passed
+-- @table BuyableData

@@ -1,7 +1,7 @@
 local isValid = IsValid
 local mathAbs = math.abs
 
-function IMPULSE:PlayerInitialSpawn(ply)
+function GM:PlayerInitialSpawn(ply)
 	local isNew = true
 
 	-- sync players with all other clients/ents
@@ -74,7 +74,7 @@ function IMPULSE:PlayerInitialSpawn(ply)
 	end)
 end
 
-function IMPULSE:PlayerInitialSpawnLoaded(ply) -- called once player is full loaded
+function GM:PlayerInitialSpawnLoaded(ply) -- called once player is full loaded
 	local jailTime = impulse.Arrest.DCRemember[ply:SteamID()]
 
 	if ply.ammoToGive then
@@ -106,7 +106,7 @@ function IMPULSE:PlayerInitialSpawnLoaded(ply) -- called once player is full loa
 	end
 end
 
-function IMPULSE:PlayerSpawn(ply)
+function GM:PlayerSpawn(ply)
 	local cellID = ply.InJail
 
 	if ply.InJail then
@@ -168,7 +168,7 @@ function IMPULSE:PlayerSpawn(ply)
 	hook.Run("PlayerLoadout", ply)
 end
 
-function IMPULSE:PlayerDisconnected(ply)
+function GM:PlayerDisconnected(ply)
 	local userID = ply:UserID()
 	local steamID = ply:SteamID()
 	local entIndex = ply:EntIndex()
@@ -246,7 +246,7 @@ function IMPULSE:PlayerDisconnected(ply)
 	impulse.Refunds.RemoveAll(steamID)
 end
 
-function IMPULSE:PlayerLoadout(ply)
+function GM:PlayerLoadout(ply)
 	ply:SetRunSpeed(impulse.Config.JogSpeed)
 	ply:SetWalkSpeed(impulse.Config.WalkSpeed)
 
@@ -451,7 +451,7 @@ function impulse.SetupPlayer(ply, dbData)
 	hook.Run("PostSetupPlayer", ply)
 end
 
-function IMPULSE:PostSetupPlayer(ply)
+function GM:PostSetupPlayer(ply)
 	ply.impulseData.Achievements = ply.impulseData.Achievements or {}
 
 	for v,k in pairs(impulse.Config.Achievements) do
@@ -459,14 +459,14 @@ function IMPULSE:PostSetupPlayer(ply)
 	end
 end
 
-function IMPULSE:ShowHelp()
+function GM:ShowHelp()
 	return
 end
 
 local talkCol = Color(255, 255, 100)
 local infoCol = Color(135, 206, 250)
 
-function IMPULSE:PlayerSay(ply, text, teamChat, newChat)
+function GM:PlayerSay(ply, text, teamChat, newChat)
 	if not ply.beenSetup then return "" end -- keep out players who are not setup yet
 	if teamChat == true then return "" end -- disabled team chat
 
@@ -535,14 +535,14 @@ local function canHearCheck(listener) -- based on darkrps voice chat optomizatio
 	end
 end
 
-function IMPULSE:PlayerCanHearPlayersVoice(listener, speaker)
+function GM:PlayerCanHearPlayersVoice(listener, speaker)
 	if not speaker:Alive() then return false end
 
 	local canHear = listener.CanHear and listener.CanHear[speaker]
 	return canHear, true
 end
 
-function IMPULSE:UpdatePlayerSync(ply)
+function GM:UpdatePlayerSync(ply)
 	for v,k in pairs(impulse.Sync.Data) do
 		local ent = Entity(v)
 
@@ -556,7 +556,7 @@ function IMPULSE:UpdatePlayerSync(ply)
 	end
 end
 
-function IMPULSE:DoPlayerDeath(ply, attacker, dmginfo)
+function GM:DoPlayerDeath(ply, attacker, dmginfo)
 	local vel = ply:GetVelocity()
 
 	local ragdoll = ents.Create("prop_ragdoll")
@@ -627,7 +627,7 @@ function IMPULSE:DoPlayerDeath(ply, attacker, dmginfo)
 	return true
 end
 
-function IMPULSE:PlayerDeath(ply, killer)
+function GM:PlayerDeath(ply, killer)
 	local wait = impulse.Config.RespawnTime
 
 	if ply:IsDonator() then
@@ -681,7 +681,7 @@ function IMPULSE:PlayerDeath(ply, killer)
 	ply.HasDied = true
 end
 
-function IMPULSE:PlayerSilentDeath(ply)
+function GM:PlayerSilentDeath(ply)
 	ply.IsKillSilent = true
 	ply.TempWeapons = {}
 
@@ -699,7 +699,7 @@ function IMPULSE:PlayerSilentDeath(ply)
 	end
 end
 
-function IMPULSE:PlayerDeathThink(ply)
+function GM:PlayerDeathThink(ply)
 	if not ply.respawnWait then
 		ply:Spawn()
 		return true
@@ -712,15 +712,15 @@ function IMPULSE:PlayerDeathThink(ply)
 	return true
 end
 
-function IMPULSE:PlayerDeathSound()
+function GM:PlayerDeathSound()
 	return true
 end
 
-function IMPULSE:CanPlayerSuicide()
+function GM:CanPlayerSuicide()
 	return false
 end
 
-function IMPULSE:OnPlayerChangedTeam(ply) -- get rid of it logging team changes to console
+function GM:OnPlayerChangedTeam(ply) -- get rid of it logging team changes to console
 	if ply.BuyableTeamRemove then
 		for v,k in pairs(ply.BuyableTeamRemove) do
 			if k and IsValid(k) and k.BuyableOwner == ply then
@@ -730,7 +730,7 @@ function IMPULSE:OnPlayerChangedTeam(ply) -- get rid of it logging team changes 
 	end
 end
 
-function IMPULSE:SetupPlayerVisibility(ply)
+function GM:SetupPlayerVisibility(ply)
 	if ply.extraPVS then
 		AddOriginToPVS(ply.extraPVS)
 	end
@@ -740,7 +740,7 @@ function IMPULSE:SetupPlayerVisibility(ply)
 	end
 end
 
-function IMPULSE:KeyPress(ply, key)
+function GM:KeyPress(ply, key)
 	if ply:IsAFK() then
 		ply:UnMakeAFK()	
 	end
@@ -773,7 +773,7 @@ function IMPULSE:KeyPress(ply, key)
 	end
 end
 
-function IMPULSE:PlayerUse(ply, entity)
+function GM:PlayerUse(ply, entity)
 	if (ply.useNext or 0) > CurTime() then return false end
 	ply.useNext = CurTime() + 0.3
 
@@ -799,7 +799,7 @@ function IMPULSE:PlayerUse(ply, entity)
 	end
 end
 
-function IMPULSE:KeyRelease(ply, key)
+function GM:KeyRelease(ply, key)
 	if key == IN_RELOAD then
 		timer.Remove("impulseRaiseWait"..ply:SteamID())
 	end
@@ -815,7 +815,7 @@ local function LoadButtons()
 	end
 end
 
-function IMPULSE:InitPostEntity()
+function GM:InitPostEntity()
 	impulse.Doors.Load()
 
 	for v,k in pairs(ents.GetAll()) do
@@ -850,18 +850,18 @@ end
 
 LoadButtons()
 
-function IMPULSE:PostCleanupMap()
-	IMPULSE:InitPostEntity()
+function GM:PostCleanupMap()
+	GM:InitPostEntity()
 end
 
-function IMPULSE:GetFallDamage(ply, speed)
+function GM:GetFallDamage(ply, speed)
 	ply.LastFall = CurTime()
 	return (speed / 8)
 end
 
 local lastAFKScan
 local curTime = CurTime
-function IMPULSE:Think()
+function GM:Think()
 	local ctime = curTime()
 	local allPlayers = player.GetAll()
 
@@ -934,12 +934,12 @@ function IMPULSE:Think()
 	end
 end
 
-function IMPULSE:DatabaseConnectionFailed(errorText)
+function GM:DatabaseConnectionFailed(errorText)
 	print("[impulse] [SERIOUS FAULT] DB connection failure... Attempting reconnection...")
 	mysql:Connect(impulse.DB.ip, impulse.DB.username, impulse.DB.password, impulse.DB.database, impulse.DB.port)
 end
 
-function IMPULSE:PlayerCanPickupWeapon(ply)
+function GM:PlayerCanPickupWeapon(ply)
 	if ply:GetSyncVar(SYNC_ARRESTED, false) then
 		return false
 	end
@@ -953,7 +953,7 @@ local exploitRagBlock = {
 	["models/zombie/zmanims.mdl"] = true
 }
 
-function IMPULSE:PlayerSpawnRagdoll(ply, model)
+function GM:PlayerSpawnRagdoll(ply, model)
 	if exploitRagBlock[model] then
 		return false
 	end
@@ -961,27 +961,27 @@ function IMPULSE:PlayerSpawnRagdoll(ply, model)
 	return ply:IsAdmin()
 end
 
-function IMPULSE:PlayerSpawnSENT(ply)
+function GM:PlayerSpawnSENT(ply)
 	return ply:IsSuperAdmin()
 end
 
-function IMPULSE:PlayerSpawnSWEP(ply)
+function GM:PlayerSpawnSWEP(ply)
 	return ply:IsSuperAdmin()
 end
 
-function IMPULSE:PlayerGiveSWEP(ply)
+function GM:PlayerGiveSWEP(ply)
 	return ply:IsSuperAdmin()
 end
 
-function IMPULSE:PlayerSpawnEffect(ply)
+function GM:PlayerSpawnEffect(ply)
 	return ply:IsAdmin()
 end
 
-function IMPULSE:PlayerSpawnNPC(ply)
+function GM:PlayerSpawnNPC(ply)
 	return ply:IsSuperAdmin() or (ply:IsAdmin() and impulse.Ops.EventManager.GetEventMode())
 end
 
-function IMPULSE:PlayerSpawnProp(ply, model)
+function GM:PlayerSpawnProp(ply, model)
 	if not ply:Alive() or not ply.beenSetup or ply:GetSyncVar(SYNC_ARRESTED, false) then
 		return false
 	end
@@ -1017,11 +1017,11 @@ function IMPULSE:PlayerSpawnProp(ply, model)
 	return true
 end
 
-function IMPULSE:PlayerSpawnedProp(ply, model, ent)
+function GM:PlayerSpawnedProp(ply, model, ent)
 	ply:AddPropCount(ent)
 end
 
-function IMPULSE:PlayerSpawnVehicle(ply, model)
+function GM:PlayerSpawnVehicle(ply, model)
 	if ply:GetSyncVar(SYNC_ARRESTED, false) then
 		return false
 	end
@@ -1049,12 +1049,12 @@ function IMPULSE:PlayerSpawnVehicle(ply, model)
 	end
 end
 
-function IMPULSE:PlayerSpawnedVehicle(ply, ent)
+function GM:PlayerSpawnedVehicle(ply, ent)
 	ply.SpawnedVehicles = ply.SpawnedVehicles or {}
 	table.insert(ply.SpawnedVehicles, ent)
 end
 
-function IMPULSE:CanDrive()
+function GM:CanDrive()
 	return false
 end
 
@@ -1063,7 +1063,7 @@ local whitelistProp = {
 	["collision"] = true
 }
 
-function IMPULSE:CanProperty(ply, prop)
+function GM:CanProperty(ply, prop)
 	if whitelistProp[prop] then
 		return true
 	end
@@ -1120,7 +1120,7 @@ local adminWorldRemoveWhitelist = {
 	["prop_physics"] = true
 }
 
-function IMPULSE:CanTool(ply, tr, tool)
+function GM:CanTool(ply, tr, tool)
 	if not ply:IsAdmin() and tool == "spawner" then
 		return false
 	end
@@ -1168,7 +1168,7 @@ function IMPULSE:CanTool(ply, tr, tool)
 	return true
 end
 
---function IMPULSE:PhysgunPickup(ply, ent)
+--function GM:PhysgunPickup(ply, ent)
 --	if ply:IsAdmin() and not ply:IsSuperAdmin() then
 --		local owner = ent:CPPIGetOwner()
 --
@@ -1213,7 +1213,7 @@ local whitelistDupeEnts = {
 	["prop_door_rotating"] = true -- door tool
 }
 
-function IMPULSE:ADVDupeIsAllowed(ply, class, entclass) -- adv dupe 2 can be easily exploited, this fixes it. you must have the impulse version of AD2 for this to work
+function GM:ADVDupeIsAllowed(ply, class, entclass) -- adv dupe 2 can be easily exploited, this fixes it. you must have the impulse version of AD2 for this to work
 	if bannedDupeEnts[class] then
 		return false
 	end
@@ -1234,13 +1234,13 @@ function IMPULSE:ADVDupeIsAllowed(ply, class, entclass) -- adv dupe 2 can be eas
 	return false
 end
 
-function IMPULSE:SetupMove(ply, mvData)
+function GM:SetupMove(ply, mvData)
 	if isValid(ply.ArrestedDragging) then
 		mvData:SetMaxClientSpeed(impulse.Config.WalkSpeed - 30)
 	end
 end
 
-function IMPULSE:CanPlayerEnterVehicle(ply, veh)
+function GM:CanPlayerEnterVehicle(ply, veh)
 	if ply:GetSyncVar(SYNC_ARRESTED, false) or ply.ArrestedDragging then
 		return false
 	end
@@ -1248,7 +1248,7 @@ function IMPULSE:CanPlayerEnterVehicle(ply, veh)
 	return true
 end
 
-function IMPULSE:CanExitVehicle(veh, ply)
+function GM:CanExitVehicle(veh, ply)
 	if ply:GetSyncVar(SYNC_ARRESTED, false) then
 		return false
 	end
@@ -1256,7 +1256,7 @@ function IMPULSE:CanExitVehicle(veh, ply)
 	return true
 end
 
-function IMPULSE:PlayerSetHandsModel(ply, hands)
+function GM:PlayerSetHandsModel(ply, hands)
 	local handModel = impulse.Teams.Data[ply:Team()].handModel
 
 	if handModel then
@@ -1274,11 +1274,11 @@ function IMPULSE:PlayerSetHandsModel(ply, hands)
 	end
 end
 
-function IMPULSE:PlayerSpray()
+function GM:PlayerSpray()
 	return true
 end
 
-function IMPULSE:PlayerShouldTakeDamage(ply, attacker)
+function GM:PlayerShouldTakeDamage(ply, attacker)
 	if ply:Team() == 0 then
 		return false
 	end
@@ -1298,7 +1298,7 @@ function IMPULSE:PlayerShouldTakeDamage(ply, attacker)
 	return true
 end
 
-function IMPULSE:LongswordCalculateMeleeDamage(ply, damage, ent)
+function GM:LongswordCalculateMeleeDamage(ply, damage, ent)
 	local skill = ply:GetSkillLevel("strength")
 	local dmg = damage * (1 + (skill * .059))
 	local override = hook.Run("CalculateMeleeDamage", ply, dmg, ent)
@@ -1306,7 +1306,7 @@ function IMPULSE:LongswordCalculateMeleeDamage(ply, damage, ent)
 	return override or dmg
 end
 
-function IMPULSE:LongswordMeleeHit(ply)
+function GM:LongswordMeleeHit(ply)
 	if ply.StrengthUp and ply.StrengthUp > 5 then
 		ply:AddSkillXP("strength", math.random(1, 6))
 		ply.StrengthUp = 0
@@ -1316,6 +1316,6 @@ function IMPULSE:LongswordMeleeHit(ply)
 	ply.StrengthUp = (ply.StrengthUp or 0) + 1
 end
 
-function IMPULSE:LongswordHitEntity(ply, ent)
+function GM:LongswordHitEntity(ply, ent)
 	-- if tree then vood ect.
 end

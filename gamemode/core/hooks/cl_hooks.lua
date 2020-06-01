@@ -1,4 +1,4 @@
-function IMPULSE:OnSchemaLoaded()
+function GM:OnSchemaLoaded()
 	if not impulse.MainMenu and not IsValid(impulse.MainMenu) then
 		vgui.Create("impulseSplash")
 
@@ -27,7 +27,7 @@ local nextCrashThink = 0
 local nextCrashAnalysis
 local crashAnalysisAttempts = 0
 
-function IMPULSE:Think()
+function GM:Think()
 	if LocalPlayer():Team() != 0 and not vgui.CursorVisible() and not impulse_ActiveWorkbar then
 		if not IsValid(impulse.MainMenu) or not impulse.MainMenu:IsVisible() then
 			if input.IsKeyDown(KEY_F1) then
@@ -131,7 +131,7 @@ function IMPULSE:Think()
 	end
 end
 
-function IMPULSE:InitPostEntity()
+function GM:InitPostEntity()
 	for a,button in pairs(ents.FindByClass("func_button")) do
 		for v,k in pairs(impulse.Config.Buttons) do
 			if k.pos:DistToSqr(button:GetPos()) < (9 ^ 2) then -- getpos client/server innaccuracy
@@ -141,19 +141,19 @@ function IMPULSE:InitPostEntity()
 	end
 end
 
-function IMPULSE:ScoreboardShow()
+function GM:ScoreboardShow()
 	if LocalPlayer():Team() == 0 then return end -- players who have not been loaded yet
 
     impulse_scoreboard = vgui.Create("impulseScoreboard")
 end
 
-function IMPULSE:ScoreboardHide()
+function GM:ScoreboardHide()
 	if LocalPlayer():Team() == 0 then return end -- players who have not been loaded yet
 	
     impulse_scoreboard:Remove()
 end
 
-function IMPULSE:DefineSettings()
+function GM:DefineSettings()
 	impulse.DefineSetting("hud_vignette", {name="Vignette enabled", category="HUD", type="tickbox", default=true})
 	impulse.DefineSetting("hud_iconcolours", {name="Icon colours enabled", category="HUD", type="tickbox", default=false})
 	impulse.DefineSetting("view_thirdperson", {name="Thirdperson enabled", category="View", type="tickbox", default=false})
@@ -187,7 +187,7 @@ end
 
 local loweredAngles = Angle(30, -30, -25)
 
-function IMPULSE:CalcViewModelView(weapon, viewmodel, oldEyePos, oldEyeAng, eyePos, eyeAngles)
+function GM:CalcViewModelView(weapon, viewmodel, oldEyePos, oldEyeAng, eyePos, eyeAngles)
 	if not IsValid(weapon) then return end
 
 	local vm_origin, vm_angles = eyePos, eyeAngles
@@ -230,13 +230,13 @@ function IMPULSE:CalcViewModelView(weapon, viewmodel, oldEyePos, oldEyeAng, eyeP
 	return vm_origin, vm_angles
 end
 
-function IMPULSE:ShouldDrawLocalPlayer()
+function GM:ShouldDrawLocalPlayer()
 	if impulse.GetSetting("view_thirdperson") then
 		return true
 	end
 end
 
-function IMPULSE:CalcView(player, origin, angles, fov)
+function GM:CalcView(player, origin, angles, fov)
 	local view
 
 	if IsValid(impulse.MainMenu) and impulse.MainMenu:IsVisible() and not impulse.MainMenu.popup then
@@ -331,7 +331,7 @@ local blackandwhite = {
 	["$pp_colour_mulb"] = 0
 }
 
-function IMPULSE:RenderScreenspaceEffects()
+function GM:RenderScreenspaceEffects()
 	if impulse.hudEnabled == false or (IsValid(impulse.MainMenu) and impulse.MainMenu:IsVisible()) then
 		return
 	end
@@ -341,19 +341,19 @@ function IMPULSE:RenderScreenspaceEffects()
 	end
 end
 
-function IMPULSE:StartChat()
+function GM:StartChat()
 	net.Start("impulseChatState")
 	net.WriteBool(true)
 	net.SendToServer()
 end
 
-function IMPULSE:FinishChat()
+function GM:FinishChat()
 	net.Start("impulseChatState")
 	net.WriteBool(false)
 	net.SendToServer()
 end
 
-function IMPULSE:OnContextMenuOpen()
+function GM:OnContextMenuOpen()
 	if LocalPlayer():Team() == 0 or not LocalPlayer():Alive() or impulse_ActiveWorkbar then return end
 	if LocalPlayer():GetSyncVar(SYNC_ARRESTED, false) then return end
 
@@ -376,7 +376,7 @@ function IMPULSE:OnContextMenuOpen()
 	end
 end
 
-function IMPULSE:OnContextMenuClose()
+function GM:OnContextMenuClose()
 	if IsValid(g_ContextMenu) then 
 		g_ContextMenu:Close()
 		hook.Call("ContextMenuClosed", self)
@@ -400,7 +400,7 @@ local blockNormalTabs = {
 	["#spawnmenu.category.npcs"] = true
 }
 
-function IMPULSE:PostReloadToolsMenu()
+function GM:PostReloadToolsMenu()
 	local spawnMenu = g_SpawnMenu
 
 	if spawnMenu then
@@ -429,7 +429,7 @@ function IMPULSE:PostReloadToolsMenu()
 	end
 end
 
-function IMPULSE:SpawnMenuOpen()
+function GM:SpawnMenuOpen()
 	if LocalPlayer():Team() == 0 or not LocalPlayer():Alive() then
 		return false
 	else
@@ -437,7 +437,7 @@ function IMPULSE:SpawnMenuOpen()
 	end
 end
 
-function IMPULSE:DisplayMenuMessages(menu)
+function GM:DisplayMenuMessages(menu)
 	menu.Messages = menu.Messages or {}
 
 	for v,k in pairs(menu.Messages) do
@@ -485,7 +485,7 @@ function IMPULSE:DisplayMenuMessages(menu)
 	end
 end
 
-function IMPULSE:OnAchievementAchieved() -- disable steam achievement chat messages
+function GM:OnAchievementAchieved() -- disable steam achievement chat messages
 	return
 end
 

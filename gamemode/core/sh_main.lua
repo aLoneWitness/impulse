@@ -1,15 +1,18 @@
+--- A physical player in the server
+-- @classmod Player
+
 if SERVER then
-	util.AddNetworkString( "IMPULSE-ColoredMessage" )
-	util.AddNetworkString( "IMPULSE-SurfaceSound" )
+	util.AddNetworkString( "GM-ColoredMessage" )
+	util.AddNetworkString( "GM-SurfaceSound" )
     util.AddNetworkString("impulseNotify")
 
 	function meta:AddChatText(...)
 		local package = {...}
-		netstream.Start(self, "IMPULSE-ColoredMessage", package)
+		netstream.Start(self, "GM-ColoredMessage", package)
 	end
 
 	function meta:SurfacePlaySound(sound)
-	    net.Start("IMPULSE-SurfaceSound")
+	    net.Start("GM-SurfaceSound")
 	    net.WriteString(sound)
 	    net.Send(self)
 	end
@@ -35,25 +38,30 @@ if SERVER then
         end
     end
 else
-	netstream.Hook("IMPULSE-ColoredMessage",function(msg)
+	netstream.Hook("GM-ColoredMessage",function(msg)
 		chat.AddText(unpack(msg))
 	end)
 
-	net.Receive("IMPULSE-SurfaceSound",function()
+	net.Receive("GM-SurfaceSound",function()
         surface.PlaySound(net.ReadString())
     end)
 end
 
 local eMeta = FindMetaTable("Entity")
 
+--- Returns if a player is an impulse framework developer
+-- @realm shared
+-- @treturn bool Is developer
 function meta:IsDeveloper()
     return self:SteamID() == "STEAM_0:1:95921723"
 end
 
+--- Returns if a player has donator status
+-- @realm shared
+-- @treturn bool Is donator
 function meta:IsDonator()
     return (self:IsUserGroup("donator") or self:IsAdmin())
 end
-
 
 local adminGroups = {
     ["admin"] = true,
@@ -72,6 +80,9 @@ function meta:IsAdmin()
     return false
 end
 
+--- Returns if a player is in the spawn zone
+-- @realm shared
+-- @treturn bool Is in spawn
 function meta:InSpawn()
     return self:GetPos():WithinAABox(impulse.Config.SpawnPos1, impulse.Config.SpawnPos2)
 end
@@ -93,6 +104,9 @@ local function OrganizeNotices(i)
     end
 end
 
+--- Sends a notification to a player
+-- @realm shared
+-- @string message The notification message
 function meta:Notify(message)
     if CLIENT then
         if not impulse.hudEnabled then
@@ -150,6 +164,9 @@ function eMeta:IsFemale(modelov)
     return false
 end
 
+--- Returns if the player has a female character
+-- @realm shared
+-- @treturn bool Is female
 function meta:IsCharacterFemale()
     if SERVER then
         return self:IsFemale(self.defaultModel)

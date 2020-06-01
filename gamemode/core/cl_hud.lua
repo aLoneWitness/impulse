@@ -15,7 +15,7 @@ hidden["CHudHistoryResource"] = true
 hidden["CHudDeathNotice"] = true
 hidden["CHudDamageIndicator"] = true
 
-function IMPULSE:HUDShouldDraw(element)
+function GM:HUDShouldDraw(element)
 	if (hidden[element]) then
 		return false
 	end
@@ -182,7 +182,7 @@ local function DrawCrosshair(x, y)
 	surface.DrawLine(x, y + crosshairLength, x, y + crosshairGap)
 end
 
-function IMPULSE:HUDPaint()
+function GM:HUDPaint()
 	local health = LocalPlayer():Health()
 	local lp = LocalPlayer()
 	local lpTeam = lp:Team()
@@ -482,7 +482,9 @@ function IMPULSE:HUDPaint()
 		surface.SetTextPos(390, y + 30)
 		surface.SetTextColor(watermarkCol)
 		surface.SetFont("Impulse-Elements18-Shadow")
-		surface.DrawText("PREVIEW BUILD - "..IMPULSE.Version.." - "..LocalPlayer():SteamID64().. " - ".. os.date("%H:%M:%S - %d/%m/%Y", os.time()))
+		surface.DrawText("PREVIEW BUILD - "..impulse.Version.." - "..LocalPlayer():SteamID64().. " - ".. os.date("%H:%M:%S - %d/%m/%Y", os.time()))
+		surface.SetTextPos(390, y + 50)
+		surface.DrawText("SCHEMA: "..SCHEMA_NAME.." VERSION: "..impulse.Config.SchemaVersion or "?")
 	end
 
 	-- dev hud
@@ -552,7 +554,7 @@ local textFde = 0
 local holdTime
 overheadEntCache = {}
 -- overhead info is HEAVILY based off nutscript. I'm not taking credit for it. but it saves clients like 70 fps so its worth it
-function IMPULSE:HUDPaintBackground()
+function GM:HUDPaintBackground()
 
 	if impulse.GetSetting("hud_vignette") == true then
 		surface.SetMaterial(vignette)

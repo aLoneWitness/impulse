@@ -7,18 +7,17 @@
 GM.Name = "impulse"
 GM.Author = "vin"
 GM.Website = "https://www.jakegreen.me"
-GM.Version = 1.31
+impulse.Version = 1.31
 MsgC( Color( 83, 143, 239 ), "[impulse] Starting shared load...\n" )
-IMPULSE = GM
 meta = FindMetaTable("Player")
 
 -- Called after the gamemode has loaded.
-function IMPULSE:Initialize()
+function GM:Initialize()
 	impulse.reload()
 end
 
 -- Called when a file has been modified.
-function IMPULSE:OnReloaded()
+function GM:OnReloaded()
 	impulse.reload()
 end
 

@@ -2,7 +2,7 @@ local KEY_BLACKLIST = IN_ATTACK + IN_ATTACK2
 local isValid = IsValid
 local mathAbs = math.abs
 
-function IMPULSE:StartCommand(ply, cmd)
+function GM:StartCommand(ply, cmd)
 	if not ply:IsWeaponRaised() then
 		cmd:RemoveKey(KEY_BLACKLIST)
 	end
@@ -25,13 +25,13 @@ function IMPULSE:StartCommand(ply, cmd)
 	end
 end
 
-function IMPULSE:PlayerSwitchWeapon(ply, oldWep, newWep)
+function GM:PlayerSwitchWeapon(ply, oldWep, newWep)
 	if SERVER then
 		ply:SetWeaponRaised(false)
 	end
 end
 
-function IMPULSE:Move(ply, mvData)
+function GM:Move(ply, mvData)
 	-- alt walk thing based on nutscripts
 	if ply:GetMoveType() == MOVETYPE_WALK and (ply.BrokenLegs or mvData:KeyDown(IN_WALK)) then
 		local speed = ply:GetWalkSpeed()

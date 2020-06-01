@@ -91,11 +91,26 @@ function impulse.chatBox.buildBox()
 
 					self.LastMessage = "/r "..self:GetText()
 				else
-					net.Start("impulseChatMessage")
-					net.WriteString(self:GetText())
-					net.SendToServer()
+					if not impulse.GetSetting("chat_oocenabled", true) then
+						local text = string.Explode(" ", impulse.chatBox.entry:GetValue())
+						text = text[1] or ""
 
-					self.LastMessage = self:GetText()
+						if text == "//" or text == "/ooc" then
+							LocalPlayer():Notify("You have disabled OOC. You can re-enable it by pressing F1 > Settings > Chatbox.")
+						else
+							net.Start("impulseChatMessage")
+							net.WriteString(self:GetText())
+							net.SendToServer()
+
+							self.LastMessage = self:GetText()
+						end
+					else
+						net.Start("impulseChatMessage")
+						net.WriteString(self:GetText())
+						net.SendToServer()
+
+						self.LastMessage = self:GetText()
+					end
 				end
 			end
 
@@ -137,6 +152,9 @@ function impulse.chatBox.buildBox()
 
 
 					draw.DrawText("(you have "..LocalPlayer().OOCLimit.." OOC messages left)", "Impulse-Elements18-Shadow", 5, h - 24)
+					self:GetParent().TypingInOOC = true
+				else
+					self:GetParent().TypingInOOC = false
 				end
 
 				local i = 0

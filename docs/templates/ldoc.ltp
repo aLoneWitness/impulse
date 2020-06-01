@@ -2,6 +2,7 @@
 # local root = ldoc.css:gsub("ldoc.css", "")
 # local iter = ldoc.modules.iter
 # local repo = "https://github.com/vingard/impulse/"
+# local base = "c:/program files (x86)/steam/steamapps/common/garrysmod/garrysmod/gamemodes/impulse/"
 # local pageTitle = module and (ldoc.display_name(module) .. " - " .. ldoc.title) or ldoc.title
 
 # local function markup(text, item)
@@ -16,7 +17,7 @@
 # end
 
 # local function repoReference(item)
-#   return repo .. "tree/master" .. item.file.filename:gsub(item.file.base, "/gamemode") .. "#L" .. item.lineno
+#   return repo .. "tree/master" .. item.file.filename:gsub(base, "/gamemode") .. "#L" .. item.lineno
 # end
 
 <html>

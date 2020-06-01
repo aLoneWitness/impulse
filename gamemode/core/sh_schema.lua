@@ -1,11 +1,13 @@
-/*
-** Copyright (c) 2017 Jake Green (TheVingard)
-** This file is private and may not be shared, downloaded, used or sold.
-*/
+--- Allows for control of the boot process of the schema such as piggybacking from other schemas
+-- @module Schema
 
 impulse.Schema = impulse.Schema or {}
 HOOK_CACHE = {}
 
+--- Starts the Schema boot sequence
+-- @realm shared
+-- @string name Schema file name
+-- @internal
 function impulse.Schema.Boot(name)
     SCHEMA_NAME = name
     MsgC(Color( 83, 143, 239 ), "[impulse] Loading '"..SCHEMA_NAME.."' schema...\n")
@@ -66,20 +68,31 @@ function impulse.Schema.Boot(name)
 
     GM.Name = "impulse: "..impulse.Config.SchemaName
 
-    hook.Call("OnSchemaLoaded", IMPULSE)
+    hook.Call("OnSchemaLoaded", GM)
 end
 
+--- Boots a specified object from a foreign schema using the piggbacking system
+-- @realm shared
+-- @string name Schema file name
+-- @string object The folder in the schema to load
 function impulse.Schema.PiggyBoot(schema, object)
     MsgC(Color( 83, 143, 239 ), "[impulse] Piggybacking "..object.." from '"..schema.."' schema...\n")
     impulse.lib.includeDir(schema.."/"..object)
 end
 
+--- Boots a specified plugin from a foreign schema using the piggbacking system
+-- @realm shared
+-- @string name Schema file name
+-- @string plugin The plugin folder name
 function impulse.Schema.PiggyBootPlugin(schema, plugin)
     MsgC(Color( 83, 143, 239 ), "[impulse] ["..schema.."] Loading plugin (via PiggyBoot) '"..plugin.."'\n")
     impulse.Schema.LoadPlugin(schema.."/plugins/"..plugin, plugin)
 end
 
-function impulse.SchemaPiggyBootEntities(schema)
+--- Boots all entities from a foreign schema using the piggbacking system
+-- @realm shared
+-- @string name Schema file name
+function impulse.Schema.PiggyBootEntities(schema)
     impulse.Schema.LoadEntites(schema.."/entities")
 end
 
@@ -203,8 +216,4 @@ function impulse.Schema.LoadHooks(file, variable, uid)
 
     PLUGIN.impulseLoading = nil
     _G[variable] = nil
-end
-
-function impulse.Schema.LoadEntities(path)
-
 end
