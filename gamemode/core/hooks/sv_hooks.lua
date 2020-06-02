@@ -144,6 +144,10 @@ function GM:PlayerSpawn(ply)
 		ply:SetSyncVar(SYNC_ARRESTED, false, true)
 	end
 
+	if ply:HasBrokenLegs() then
+		ply:FixLegs()
+	end
+
 	if ply.beenSetup then
 		ply:SetTeam(impulse.Config.DefaultTeam)
 
@@ -856,7 +860,27 @@ end
 
 function GM:GetFallDamage(ply, speed)
 	ply.LastFall = CurTime()
-	return (speed / 8)
+
+	local dmg = speed * 0.075
+
+	if speed > 800 then
+		dmg = dmg + 40
+	end
+
+	local shouldBreakLegs = hook.Run("PlayerShouldBreakLegs", ply, dmg)
+
+	if shouldBreakLegs != nil and shouldBreakLegs == false then
+		return dmg
+	end
+
+	local strength = ply:GetSkillLevel("strength")
+	local r = math.random(0, 20 + (strength * 2))
+
+	if r <= 20 then
+		ply:BreakLegs()
+	end
+
+	return dmg
 end
 
 local lastAFKScan
@@ -930,6 +954,11 @@ function GM:Think()
 			end
 
 			k.LastKnownPos = k.GetPos(k)
+
+			if k.BrokenLegs and k.BrokenLegsTime < ctime and k:Alive() then
+				k:FixLegs()
+				k:Notify("Your broken legs have healed naturally.")
+			end
 		end
 	end
 end

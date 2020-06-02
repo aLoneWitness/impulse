@@ -205,7 +205,7 @@ function impulse.Schema.LoadHooks(file, variable, uid)
         if type(k) == "function" then
             c = c + 1
             hook.Add(v, "impulse"..uid..c, function(...)
-                k(nil, ...)
+                return k(nil, ...)
             end)
         end
     end

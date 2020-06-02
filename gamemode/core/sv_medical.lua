@@ -1,23 +1,21 @@
 function meta:BreakLegs()
+	self.BrokenLegsTime = CurTime() + impulse.Config.BrokenLegsHealTime -- reset heal time
+
+	if self:HasBrokenLegs() then
+		return
+	end
+
 	self:SetSyncVar(SYNC_BROKENLEGS, true, true)
 	self.BrokenLegs = true
-end
 
-function meta:HasBrokenLegs()
-	return self:GetSyncVar(SYNC_BROKENLEGS, false)
+	self:EmitSound("impulse/bone"..math.random(1, 3)..".wav")
+	self:Notify("You have broken your legs.")
+
+	hook.Run("PlayerLegsBroken", self)
 end
 
 function meta:FixLegs()
 	self:SetSyncVar(SYNC_BROKENLEGS, false, true)
 	self.BrokenLegs = false
-end
-
-function meta:StartBleeding()
-	self:SetSyncVar(SYNC_BLEEDING, true, true)
-	self.BleedStage = 1
-end
-
-function meta:StopBleeding()
-	self:SetSyncVar(SYNC_BLEEDING, false, true)
-	self.BleedStage = nil
+	self.BrokenLegsTime = nil
 end
