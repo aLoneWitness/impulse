@@ -202,9 +202,7 @@ end
 -- @field SYNC_ARRESTED
 -- @field SYNC_HUNGER
 -- @field SYNC_TYPING
--- @field SYNC_BLEEDING
 -- @field SYNC_BROKENLEGS
--- @field SYNC_DISEASES
 -- @field SYNC_PROPCOUNT
 -- @field SYNC_CRAFTLEVEL
 -- @field SYNC_THROPHYPOINTS
@@ -230,9 +228,7 @@ SYNC_RANK = impulse.Sync.RegisterVar(SYNC_INT)
 SYNC_ARRESTED = impulse.Sync.RegisterVar(SYNC_BOOL)
 SYNC_HUNGER = impulse.Sync.RegisterVar(SYNC_INT)
 SYNC_TYPING = impulse.Sync.RegisterVar(SYNC_BOOL)
-SYNC_BLEEDING = impulse.Sync.RegisterVar(SYNC_BOOL)
 SYNC_BROKENLEGS = impulse.Sync.RegisterVar(SYNC_BOOL)
-SYNC_DISEASES = impulse.Sync.RegisterVar(SYNC_INTSTACK)
 SYNC_PROPCOUNT = impulse.Sync.RegisterVar(SYNC_INT)
 SYNC_CRAFTLEVEL = impulse.Sync.RegisterVar(SYNC_INT)
 SYNC_TROPHYPOINTS = impulse.Sync.RegisterVar(SYNC_BIGINT)

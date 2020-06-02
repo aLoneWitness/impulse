@@ -75,7 +75,6 @@ function GM:Think()
 	if (nextLoopThink or 0) < CurTime() then
 		for v,k in pairs(player.GetAll()) do
 			local isArrested = k:GetSyncVar(SYNC_ARRESTED, false)
-			local isBleeding = k:GetSyncVar(SYNC_BLEEDING, false)
 
 			if isArrested != (k.BoneArrested or false) then
 				k:SetHandsBehindBack(isArrested)
@@ -178,7 +177,6 @@ function GM:DefineSettings()
 		RunConsoleCommand("r_dynamic", v)
 	end})
 	impulse.DefineSetting("perf_blur", {name="Blur enabled", category="Performance", type="tickbox", default=true})
-	--impulse.DefineSetting("perf_bleedingrange", {name="Bleeding render range", category="Performance", type="slider", default=1000, minValue=200, maxValue=3000})
 	impulse.DefineSetting("inv_sortequippablesattop", {name="Sort equipped at top", category="Inventory", type="tickbox", default=true})
 	impulse.DefineSetting("inv_sortweight", {name="Sort by weight", category="Inventory", type="dropdown", default="Inventory only", options={"Never", "Inventory only", "Containers only", "Always"}})
 	impulse.DefineSetting("misc_vendorgreeting", {name="Vendor greeting sound", category="Misc", type="tickbox", default=true})
