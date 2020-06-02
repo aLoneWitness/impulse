@@ -861,10 +861,10 @@ end
 function GM:GetFallDamage(ply, speed)
 	ply.LastFall = CurTime()
 
-	local dmg = speed * 0.075
+	local dmg = speed * 0.05
 
 	if speed > 800 then
-		dmg = dmg + 40
+		dmg = dmg + 75
 	end
 
 	local shouldBreakLegs = hook.Run("PlayerShouldBreakLegs", ply, dmg)
@@ -876,7 +876,7 @@ function GM:GetFallDamage(ply, speed)
 	local strength = ply:GetSkillLevel("strength")
 	local r = math.random(0, 20 + (strength * 2))
 
-	if r <= 20 then
+	if r <= 20 and not dmg >= ply:Health() then
 		ply:BreakLegs()
 	end
 
