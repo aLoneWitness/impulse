@@ -40,5 +40,5 @@ function impulse.Loot.GenerateFromPool(pool)
 		ANTICRASH_ATTEMPTS = 0
 	end
 
-	return loot
+	return loot, count
 end
