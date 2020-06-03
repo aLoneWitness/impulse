@@ -28,10 +28,10 @@ function impulse.Loot.GenerateFromPool(pool)
 		end
 	end
 
-	if count == 0 then -- warning this might get stuck?!
+	if count == 0 or (lootPool.MinItems and count < lootPool.MinItems) then -- warning this might get stuck?!
 		ANTICRASH_ATTEMPTS = ANTICRASH_ATTEMPTS + 1
 
-		if ANTICRASH_ATTEMPTS > 3 then
+		if ANTICRASH_ATTEMPTS > 10 then
 			print("HIGH LOOT GENERATION ATTEMPTS WARNING!!!!!!!!")	
 		end
 

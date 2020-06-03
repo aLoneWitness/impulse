@@ -863,7 +863,7 @@ function GM:GetFallDamage(ply, speed)
 
 	local dmg = speed * 0.05
 
-	if speed > 800 then
+	if speed > 780 then
 		dmg = dmg + 75
 	end
 
@@ -876,7 +876,7 @@ function GM:GetFallDamage(ply, speed)
 	local strength = ply:GetSkillLevel("strength")
 	local r = math.random(0, 20 + (strength * 2))
 
-	if r <= 20 and not dmg >= ply:Health() then
+	if r <= 20 and dmg < ply:Health() then
 		ply:BreakLegs()
 	end
 
