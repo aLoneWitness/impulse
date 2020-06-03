@@ -68,7 +68,9 @@ function impulse.Schema.Boot(name)
 
     GM.Name = "impulse: "..impulse.Config.SchemaName
 
-    hook.Call("OnSchemaLoaded", GM)
+    timer.Simple(1, function() -- hackyfix needs changing to something reliable
+        hook.Run("OnSchemaLoaded")
+    end)
 end
 
 --- Boots a specified object from a foreign schema using the piggbacking system
