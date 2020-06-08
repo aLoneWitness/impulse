@@ -20,6 +20,10 @@ function PANEL:Init()
 end
 
 function PANEL:SetupNews(newsData)
+	if not newsData then
+		return print("[impulse] Failed to load newsfeed.")
+	end
+	
 	for v,postData in pairs(newsData) do
 		if postData.type == "post" and postData.status == "publish" then
 			local image
