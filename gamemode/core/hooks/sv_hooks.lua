@@ -536,6 +536,7 @@ local function canHearCheck(listener) -- based on darkrps voice chat optomizatio
 
 	for _,speaker in ipairs(player.GetAll()) do
 		listener.CanHear[speaker] = (listPos:DistToSqr(speaker:GetShootPos()) < voiceDistance)
+		hook.Run("PlayerCanHearCheck", listener, speaker)
 	end
 end
 

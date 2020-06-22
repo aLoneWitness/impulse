@@ -483,6 +483,19 @@ impulse.Ops.EventManager.Config.Events = {
 			end
 		end
 	},
+	["itemspawn"] = {
+		Cat = "server",
+		Prop = {
+			["itemclass"] = "item_name",
+			["pos"] = Vector(0, 0, 0)
+		},
+		NeedUID = true,
+		Clientside = false,
+		Do = function(prop, uid)
+			local x = impulse.Inventory.SpawnItem(prop["itemclass"], prop["pos"])
+			x.IsRestrictedItem = true
+		end
+	},
 	["setcookie"] = {
 		Cat = "cookies",
 		Prop = {

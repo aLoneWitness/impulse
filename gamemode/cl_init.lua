@@ -16,4 +16,5 @@ MsgC( Color( 0, 255, 0 ), "[impulse] Completed client load...\n" )
 timer.Remove("HintSystem_OpeningMenu")
 timer.Remove("HintSystem_Annoy1")
 timer.Remove("HintSystem_Annoy2")
+hook.Remove("PreDrawHalos", "PropertiesHover")
 RunConsoleCommand("cl_showhints",  "0") -- disable annoying gmod hints by default

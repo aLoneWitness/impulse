@@ -81,7 +81,7 @@ if SERVER then
 				if self.ItemClip then
 					activator:GiveInventoryItem(self.Item.UniqueID, nil, nil, nil, nil, self.ItemClip) -- kinda messy ik
 				else
-					activator:GiveInventoryItem(self.Item.UniqueID)
+					activator:GiveInventoryItem(self.Item.UniqueID, nil, self.IsRestrictedItem or false)
 				end
 				
 				--activator:Notify("You have picked up a "..self.Item.Name..".") grammatical problems + not really needed
