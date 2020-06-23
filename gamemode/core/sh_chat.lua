@@ -485,10 +485,12 @@ if CLIENT then
 			return print("(OOC DISABLED) [OOC] "..speaker:SteamName()..": "..message)
 		end
 
+		impulse.customChatPlayer = speaker
 		chat.AddText(oocTagCol, "[OOC] ", (rankCols[speaker:IsIncognito() and "user" or speaker:GetUserGroup()] or fallbackRankCol), speaker:SteamName(), oocCol, ": ", message)
 	end)
 
 	impulse.RegisterChatClass(3, function(message, speaker)
+		impulse.customChatPlayer = speaker
 		chat.AddText(oocTagCol, "[LOOC] ", (rankCols[speaker:IsIncognito() and "user" or speaker:GetUserGroup()] or fallbackRankCol), speaker:SteamName(), (team.GetColor(speaker:Team())), " (", speaker:Name(), ")", oocCol, ": ",  message)
 	end)
 

@@ -136,6 +136,12 @@ function PANEL:AddText(...)
 		end
 	end
 
+	if impulse.customChatPlayer then
+		textElement.player = impulse.customChatPlayer
+	end
+
+	impulse.customChatPlayer = nil
+
 	textElement.OnMousePressed = function()
 		local subMenu = DermaMenu()
 
@@ -148,6 +154,20 @@ function PANEL:AddText(...)
 			chat.AddText(color_white, "Text copied to clipboard.")
 		end)
 		copyText:SetIcon("icon16/page_copy.png")
+
+		if LocalPlayer():IsAdmin() and IsValid(textElement.player) then
+			local banPly = subMenu:AddOption("OOC timeout sender", function()
+				Derma_StringRequest("impulse", "Enter timeout length in minutes:", "15", function(x)
+					if not IsValid(textElement.player) then
+						return
+					end
+
+
+					LocalPlayer():ConCommand("say /ooctimeout "..textElement.player:SteamID().." "..x)
+				end, nil, "Issue timeout")
+			end)
+			banPly:SetIcon("icon16/sound_add.png")
+		end
 
 		subMenu:Open()
 		subMenu:SetPos(gui.MouseX(), gui.MouseY())
