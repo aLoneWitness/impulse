@@ -1,6 +1,6 @@
 function GM:OnSchemaLoaded()
 	if not impulse.MainMenu and not IsValid(impulse.MainMenu) then
-		vgui.Create("impulseSplash")
+		impulse.SplashScreen = vgui.Create("impulseSplash")
 
 		if system.IsWindows() then
 			system.FlashWindow()
