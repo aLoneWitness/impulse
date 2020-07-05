@@ -43,3 +43,13 @@ net.Receive("impulseOpsEMClientsideEvent", function()
 
 	sequenceData.Do(prop or {}, uid)
 end)
+
+net.Receive("impulseOpsEMPlayScene", function()
+	local scene = net.ReadString()
+
+	if not impulse.Ops.EventManager.Scenes[scene] then
+		return print("[impulse] Error! Can't find sceneset: "..scene)
+	end
+
+	impulse.Scenes.PlaySet(scene)
+end)

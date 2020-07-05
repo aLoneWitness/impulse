@@ -99,6 +99,61 @@ impulse.Ops.EventManager.Config.Events = {
 	        explodeEnt:Fire("explode", "", 0)
 		end
 	},
+	["particleffect"] = {
+		Cat = "effect",
+		Prop = {
+			["pos"] = Vector(0, 0, 0),
+			["ang"] = Vector(0, 0, 0),
+			["name"] = "effect_name"
+		},
+		NeedUID = true,
+		Clientside = false,
+		Do = function(prop, uid)
+			OPS_ENTS = OPS_ENTS or {}
+
+		 	if OPS_ENTS[ui] and IsValid(OPS_ENTS[uid]) then
+ 				OPS_ENTS[uid]:Remove()
+ 			end
+
+			OPS_ENTS[uid] = ents.Create("prop_physics")
+			OPS_ENTS[uid]:SetModel("models/hunter/plates/plate.mdl")
+			OPS_ENTS[uid]:SetColor(Color(0, 0, 0, 0))
+			OPS_ENTS[uid]:SetRenderMode(RENDERMODE_TRANSCOLOR)
+			--OPS_ENTS[uid]:SetNoDraw(true)
+			OPS_ENTS[uid]:SetPos(prop["pos"])
+			OPS_ENTS[uid]:SetAngles(Angle(prop["ang"].x, prop["ang"].y, prop["ang"].z))
+			OPS_ENTS[uid]:Spawn()
+
+			local phys = OPS_ENTS[uid]:GetPhysicsObject()
+
+			if phys and phys:IsValid() then
+				phys:EnableMotion(false)
+			end
+
+			ParticleEffectAttach(prop["name"], PATTACH_ABSORIGIN_FOLLOW, OPS_ENTS[uid], 0)
+		end
+	},
+	["makefire"] = {
+		Cat = "effect",
+		Prop = {
+			["pos"] = Vector(0, 0, 0),
+			["duration"] = 15
+		},
+		NeedUID = false,
+		Clientside = false,
+		Do = function(prop, uid)
+			local explodeEnt = ents.Create("env_fire")
+	        explodeEnt:SetPos(prop["pos"])
+	        explodeEnt:Spawn()
+	        explodeEnt:Fire("startfire", "", 0)
+
+	        timer.Simple(prop["duration"], function()
+	        	if IsValid(explodeEnt) then
+	        		explodeEnt:Remove()
+	        	end
+	        end)
+		end
+	},
 	["chat"] = {
 		Cat = "ui",
 		Prop = {
@@ -735,6 +790,13 @@ impulse.Ops.EventManager.Config.Events = {
 		NeedUID = false,
 		Clientside = false,
 		Do = function(prop, uid)
+			for v,k in pairs(player.GetAll()) do
+				k:AllowScenePVSControl(true)
+			end
+
+			net.Start("impulseOpsEMPlayScene")
+			net.WriteString(prop["scene"])
+			net.Broadcast()
 		end
 	}
 }

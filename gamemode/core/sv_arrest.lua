@@ -88,6 +88,10 @@ function meta:Jail(time, jailData)
 		doCellMates = true
 	end
 
+	if not self:GetSyncVar(SYNC_ARRESTED, false) then
+		self:Arrest()
+	end
+
 	for v,k in pairs(impulse.Config.PrisonCells) do
 		local cellData = impulse.Arrest.Prison[v]
 		

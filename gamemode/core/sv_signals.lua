@@ -49,7 +49,7 @@ function impulse.Signals.ReadAll(onDone)
 	end
 end
 
-function impulse.Signals.Hook(class, from, func)
+function impulse.Signals.Hook(class, func)
 	impulse.Signals.Hooks[class] = func
 end
 
@@ -64,7 +64,7 @@ if db then
 		impulse.Signals.ReadAll(function(data)
 			for v,k in pairs(data) do
 				if impulse.Signals.Hooks[data.class] then
-					impulse.Signals.Hooks[data.class]()
+					impulse.Signals.Hooks[data.class](pon.decode(data.data))
 				end
 			end
 		end)
