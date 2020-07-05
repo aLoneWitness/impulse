@@ -25,10 +25,10 @@ impulse will eventually be released as open source software. The bullet point li
 * Config object rework. Assume config lua files as default values and use INI file as a overriding merge. Create ingame UI to edit this too. This will let server owners change configs without changing config default values. (this may have to be pon-based to allow for more data type compatability as INI only supports num, string and bool)
 
 ## Working with impulse
-If your working with impulse I reccomend you read the wiki first, feel free to DM me on discord if you have any questions.
+If your working with impulse I reccommend you read the wiki first, feel free to DM me on discord if you have any questions.
 
 ### Understanding the builds load process
-Currently, the build load process is very simple. The framework will look for a file called database.json in the data folder, and if it exists it will merge it with the default developer database configuration. This system will probably be updated at some point to allow to to apply to config objects and other things.
+Currently, the build load process is very simple. The framework will look for a file called config.yml in the data folder, and if it exists it will merge it with the default developer database configuration. This system will probably be updated at some point to allow to to apply to config objects and other things.
 
 ### Running development builds
 * Ensure mysqloov9 is installed
@@ -38,18 +38,17 @@ Currently, the build load process is very simple. The framework will look for a 
 ### Running release builds (on a server)
 * Ensure mysqloov9 is installed on the server
 * Create your database and database user
-* Navigate to data/impulse/database.json (make these files or folders if they don't exist)
-* Enter the JSON data below into database.json and configure it for your database
+* Navigate to data/impulse/config.yml (make these files or folders if they don't exist)
+* Enter the YAML data below into config.yml and configure it for your database
 * WARNING: Never use localhost instead use 127.0.0.1
 * WARNING: SQL strict mode MUST BE DISABLED
 ```
-{
-	"ip": "127.0.0.1",
-	"username": "impulsehl2rp",
-	"password": "dsdsds",
-	"database": "impulsehl2rp",
-	"port": 3306.0
-}
+db:
+  ip: "IP HERE"
+  username: "username"
+  password: "pass123"
+  database: "dbname"
+  port: 3306
 ```
 
 ## Required plugins
