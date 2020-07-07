@@ -6,3 +6,5 @@ impulse.Ops.EventManager.Data = impulse.Ops.EventManager.Data or {}
 impulse.Ops.EventManager.Config = impulse.Ops.EventManager.Config or {}
 
 file.CreateDir("impulse/ops/eventmanager")
+
+hook.Run("OpsSetup")

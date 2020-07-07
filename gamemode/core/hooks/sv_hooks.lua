@@ -257,6 +257,11 @@ function GM:PlayerLoadout(ply)
 	return true
 end
 
+-- dont show the staff slots
+if impulse.Config.StaffSlots then
+	RunConsoleCommand("sv_visiblemaxplayers", math.Clamp(game.MaxPlayers() - impulse.Config.StaffSlots, 1, 1000))
+end
+
 function impulse.SetupPlayer(ply, dbData)
 	local totalCount = player.GetCount()
 	local donorCount = 0
@@ -269,7 +274,7 @@ function impulse.SetupPlayer(ply, dbData)
 
 	local userCount = totalCount - donorCount
 
-	if not ply:IsDonator() and userCount >= (impulse.Config.UserSlots or 9999) then
+	if (not ply:IsDonator() and userCount >= (impulse.Config.UserSlots or 9999)) or (totalCount >= (game.MaxPlayers() - impulse.Config.StaffSlots) and not ply:IsAdmin()) then
 		ply:Kick("The server is currently at full user capacity. Donate at panel.impulse-community.com to access additional donator slots")
 		return
 	end

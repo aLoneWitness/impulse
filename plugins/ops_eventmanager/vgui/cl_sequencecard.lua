@@ -137,13 +137,13 @@ function PANEL:AddEvent(id, eventdata)
 	event.etype:SizeToContents()
 
 	local delay = vgui.Create("DLabel", event)
-	delay:SetPos(530, 2)
+	delay:SetPos(510, 2)
 	delay:SetText("Delay:")
 	delay:SizeToContents()
 
 	event.edelay = vgui.Create("DNumberWang", event)
 	event.edelay:SetDecimals(2)
-	event.edelay:SetPos(575, 2)
+	event.edelay:SetPos(555, 2)
 	event.edelay:SetSize(40, 18)
 	event.edelay:SetMin(0)
 	event.edelay:SetUpdateOnType(true)
@@ -158,7 +158,7 @@ function PANEL:AddEvent(id, eventdata)
 	end
 
 	event.eremove = vgui.Create("DImageButton", event)
-	event.eremove:SetPos(626, 2)
+	event.eremove:SetPos(606, 2)
 	event.eremove:SetImage("icon16/script_delete.png")
 	event.eremove:SizeToContents()
 
@@ -168,7 +168,7 @@ function PANEL:AddEvent(id, eventdata)
 	end
 
 	event.etypebtn = vgui.Create("DImageButton", event)
-	event.etypebtn:SetPos(226, 2)
+	event.etypebtn:SetPos(206, 2)
 	event.etypebtn:SetImage("icon16/textfield_rename.png")
 	event.etypebtn:SizeToContents()
 
@@ -196,7 +196,7 @@ function PANEL:AddEvent(id, eventdata)
 	end
 
 	event.eprop = vgui.Create("DImageButton", event)
-	event.eprop:SetPos(246, 2)
+	event.eprop:SetPos(226, 2)
 	event.eprop:SetImage("icon16/script_edit.png")
 	event.eprop:SizeToContents()
 
@@ -214,6 +214,14 @@ function PANEL:AddEvent(id, eventdata)
 		local x, y = panel.Dad:GetPos()
 		panel.Dad.Properties:SetPos(x + panel.Dad:GetWide() + 10, y)
 		panel.Dad.Properties:SetSize(300, 300)
+
+		local x = self
+
+		function panel.Dad.Properties:Think()
+			if not IsValid(x) then
+				self:Remove()
+			end
+		end
 	end
 
 	local delay = vgui.Create("DLabel", event)
@@ -244,8 +252,44 @@ function PANEL:AddEvent(id, eventdata)
 		end
 	end
 
+	function event.euid:GetAutoComplete(text)
+		local suggest = {}
+		local suggested = {}
+
+		for v,k in pairs(impulse.Ops.EventManager.Sequences[panel.Sequence].Events) do
+			if v == id then
+				continue
+			end
+
+			if k.UID and not suggested[k.UID] and string.StartWith(k.UID, text) then
+				table.insert(suggest, k.UID)
+				suggested[k.UID] = true
+			end
+		end
+
+		return suggest
+	end
+
+	local function moveToCustomSlot()
+		Derma_StringRequest("impulse ops", "Enter where you wish to move this event to:", "", function(slot)
+			if not tonumber(slot) then
+				return
+			end
+
+			local me = impulse.Ops.EventManager.Sequences[panel.Sequence].Events[id]
+			local oldId = id
+			local size = table.Count(impulse.Ops.EventManager.Sequences[panel.Sequence].Events)
+			slot = math.Clamp(math.floor(slot), 1, size + 1)
+
+			table.remove(impulse.Ops.EventManager.Sequences[panel.Sequence].Events, id)
+			table.insert(impulse.Ops.EventManager.Sequences[panel.Sequence].Events, slot, me)
+
+			panel.Dad:ReloadSequences()
+ 		end, nil, "Move")
+	end
+
 	event.emup = vgui.Create("DImageButton", event)
-	event.emup:SetPos(270, 2)
+	event.emup:SetPos(250, 2)
 	event.emup:SetImage("icon16/arrow_up.png")
 	event.emup:SizeToContents()
 
@@ -260,8 +304,12 @@ function PANEL:AddEvent(id, eventdata)
 		panel.Dad:ReloadSequences()
 	end
 
+	function event.emup:DoRightClick()
+		moveToCustomSlot()
+	end
+
 	event.emdown = vgui.Create("DImageButton", event)
-	event.emdown:SetPos(286, 2)
+	event.emdown:SetPos(266, 2)
 	event.emdown:SetImage("icon16/arrow_down.png")
 	event.emdown:SizeToContents()
 
@@ -272,6 +320,33 @@ function PANEL:AddEvent(id, eventdata)
 
 		table.remove(impulse.Ops.EventManager.Sequences[panel.Sequence].Events, id)
 		table.insert(impulse.Ops.EventManager.Sequences[panel.Sequence].Events, math.Clamp(oldId + 1, 1, size), me)
+
+		panel.Dad:ReloadSequences()
+	end
+
+	function event.emdown:DoRightClick()
+		moveToCustomSlot()
+	end
+
+	event.edupe = vgui.Create("DImageButton", event)
+	event.edupe:SetPos(290, 2)
+	event.edupe:SetImage("icon16/page_copy.png")
+	event.edupe:SizeToContents()
+
+	local function copy1(obj)
+	    if type(obj) ~= 'table' then return obj end
+	    local res = {}
+	    for k, v in pairs(obj) do res[copy1(k)] = copy1(v) end
+	    return res
+	end
+
+
+	function event.edupe:DoClick()
+		local me = impulse.Ops.EventManager.Sequences[panel.Sequence].Events[id]
+		local oldId = id
+		local size = table.Count(impulse.Ops.EventManager.Sequences[panel.Sequence].Events)
+
+		table.insert(impulse.Ops.EventManager.Sequences[panel.Sequence].Events, math.Clamp(oldId + 1, 1, size), copy1(me))
 
 		panel.Dad:ReloadSequences()
 	end

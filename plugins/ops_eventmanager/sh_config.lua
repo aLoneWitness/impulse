@@ -260,6 +260,36 @@ impulse.Ops.EventManager.Config.Events = {
 			text:Setup(prop["message"], prop["pos_x"], prop["pos_y"], prop["message_fadein"], prop["message_fadeout"], prop["message_hold"], prop["message_colour"], prop["message_align"])
 		end
 	},
+	["textarray"] = {
+		Cat = "ui",
+		Prop = {
+			["message"] = "Item 1|Item 2|Item 3",
+			["pos_x"] = 0.5,
+			["pos_y"] = 0.5,
+			["message_fadein"] = 3,
+			["message_fadeout"] = 3,
+			["message_hold"] = 5,
+			["message_colour"] = Color(255, 255, 255, 255),
+			["message_align"] = TEXT_ALIGN_CENTER,
+			["array_ygap"] = 38,
+			["array_delay"] = 1
+		},
+		NeedUID = false,
+		Clientside = true,
+		Do = function(prop, uid)
+			local items = string.Split(prop["message"], "|")
+			local c = 1
+			local max = table.Count(items)
+			local yAdd = prop["array_ygap"]
+
+			timer.Create("impulseOpsEMTextArray"..math.random(1,100000), prop["array_delay"], max, function()
+				local text = vgui.Create("impulseFadeText")
+				text:Setup(items[c], prop["pos_x"], prop["pos_y"] + (((c - 1) * yAdd) / ScrH()), prop["message_fadein"], prop["message_fadeout"], prop["message_hold"] + ((max - c) * prop["array_delay"]), prop["message_colour"], prop["message_align"])
+
+				c = c + 1
+			end)
+		end
+	},
 	["spawnent"] = {
 		Cat = "ent",
 		Prop = {

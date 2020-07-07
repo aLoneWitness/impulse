@@ -5,7 +5,11 @@ function meta:MakeAFK()
 	local maxcount = impulse.Config.UserSlots or game.MaxPlayers()
 	local limit = impulse.Config.AFKKickRatio * maxcount
 
-	if playercount >= limit and not self:IsDonator() then
+	if playercount >= limit and (impulse.Ops.EventManager.GetEventMode() or not self:IsDonator()) then
+		if self:IsAdmin() then
+			return
+		end
+		
 		self:Kick("You have been kicked for inactivity on a busy server. See you again soon!")
 		return
 	end
