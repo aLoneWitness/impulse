@@ -60,7 +60,25 @@ function PANEL:SetTable(prop, callback)
 			row:SetValue(k.x..", "..k.y..", "..k.z)
 
 			function row:DataChanged(newValue)
-				local vec = string.Split(newValue, ",")
+				local vec = string.Trim(newValue, " ")
+
+				if string.EndsWith(vec, ")") then
+					if string.StartWith(vec, "Vector(") then
+						self:SetValue(string.Trim(string.sub(vec, 8), ")"))
+						return
+					elseif string.StartWith(vec, "Angle(") then
+						self:SetValue(string.Trim(string.sub(vec, 7), ")"))
+						return
+					end
+				end
+
+				local cVec = vec
+				vec = string.Split(vec, ",")
+
+				if #vec == 1 and #string.Split(cVec, " ") == 2 then
+					self:SetValue(string.Replace(cVec, " ", ", "))
+					return
+				end
 				
 				for v,k in pairs(vec) do
 					string.Trim(k, " ")

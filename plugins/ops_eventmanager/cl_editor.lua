@@ -43,3 +43,7 @@ function impulse.Ops.EventManager.SequencePush(name)
 
 	print("[ops-em] Push fully sent to server!")
 end
+
+function impulse.Ops.EventManager.GetVersionHash()
+	return util.CRC(util.TableToJSON(impulse.Ops.EventManager.Config.Events))
+end

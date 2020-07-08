@@ -8,6 +8,7 @@ function PANEL:SetSequence(key, data)
 	self.main:Dock(FILL)
 	self.main:SetLabel("Sequence: "..key)
 	self.main.Header:SetTall(25)
+	self.main:SetTooltip("Version hash: "..(impulse.Ops.EventManager.Sequences[key].VersionHash or "outdated"))
 
 	self.mainScroll = vgui.Create("DScrollPanel", self.main)
 	self.mainScroll:Dock(FILL)
@@ -34,13 +35,13 @@ function PANEL:SetSequence(key, data)
 
 	function newSeq:DoClick()
 		local id = table.insert(impulse.Ops.EventManager.Sequences[key].Events, {
-			Type = "chat",
+			Type = "empty",
 			Prop = {},
 			UID = nil,
 			Delay = 0
 		})
 
-		table.Merge(impulse.Ops.EventManager.Sequences[key].Events[id].Prop, impulse.Ops.EventManager.Config.Events["chat"].Prop)
+		table.Merge(impulse.Ops.EventManager.Sequences[key].Events[id].Prop, impulse.Ops.EventManager.Config.Events["empty"].Prop)
 
 		panel:AddEvent(id, impulse.Ops.EventManager.Sequences[key].Events[id])
 	end
@@ -161,6 +162,7 @@ function PANEL:AddEvent(id, eventdata)
 	event.eremove:SetPos(606, 2)
 	event.eremove:SetImage("icon16/script_delete.png")
 	event.eremove:SizeToContents()
+	event.eremove:SetTooltip("Delete event")
 
 	function event.eremove:DoClick()
 		table.remove(impulse.Ops.EventManager.Sequences[panel.Sequence].Events, id)
@@ -171,12 +173,17 @@ function PANEL:AddEvent(id, eventdata)
 	event.etypebtn:SetPos(206, 2)
 	event.etypebtn:SetImage("icon16/textfield_rename.png")
 	event.etypebtn:SizeToContents()
+	event.etypebtn:SetTooltip("Change event type")
 
 	function event.etypebtn:DoClick()
 		local m = DermaMenu()
 		local cats = {}
 
 		for v,k in pairs(impulse.Ops.EventManager.Config.Events) do
+			if k.Cat == "hidden" then
+				continue
+			end
+
 			if not cats[k.Cat] then
 				local c, p = m:AddSubMenu(k.Cat)
 				p:SetIcon(impulse.Ops.EventManager.Config.CategoryIcons[k.Cat])
@@ -199,6 +206,11 @@ function PANEL:AddEvent(id, eventdata)
 	event.eprop:SetPos(226, 2)
 	event.eprop:SetImage("icon16/script_edit.png")
 	event.eprop:SizeToContents()
+	event.eprop:SetTooltip("Event properties")
+
+	if table.Count(impulse.Ops.EventManager.Sequences[panel.Sequence].Events[id].Prop) == 0 then
+		event.eprop:SetDisabled(true)
+	end
 
 	function event.eprop:DoClick()
 		if panel.Dad.Properties and IsValid(panel.Dad.Properties) then
@@ -279,7 +291,7 @@ function PANEL:AddEvent(id, eventdata)
 			local me = impulse.Ops.EventManager.Sequences[panel.Sequence].Events[id]
 			local oldId = id
 			local size = table.Count(impulse.Ops.EventManager.Sequences[panel.Sequence].Events)
-			slot = math.Clamp(math.floor(slot), 1, size + 1)
+			slot = math.Clamp(math.floor(slot), 1, size)
 
 			table.remove(impulse.Ops.EventManager.Sequences[panel.Sequence].Events, id)
 			table.insert(impulse.Ops.EventManager.Sequences[panel.Sequence].Events, slot, me)
@@ -292,6 +304,7 @@ function PANEL:AddEvent(id, eventdata)
 	event.emup:SetPos(250, 2)
 	event.emup:SetImage("icon16/arrow_up.png")
 	event.emup:SizeToContents()
+	event.emup:SetTooltip("Move event up (right click for manual input)")
 
 	function event.emup:DoClick()
 		local me = impulse.Ops.EventManager.Sequences[panel.Sequence].Events[id]
@@ -312,6 +325,7 @@ function PANEL:AddEvent(id, eventdata)
 	event.emdown:SetPos(266, 2)
 	event.emdown:SetImage("icon16/arrow_down.png")
 	event.emdown:SizeToContents()
+	event.emdown:SetTooltip("Move event down (right click for manual input)")
 
 	function event.emdown:DoClick()
 		local me = impulse.Ops.EventManager.Sequences[panel.Sequence].Events[id]
@@ -332,6 +346,7 @@ function PANEL:AddEvent(id, eventdata)
 	event.edupe:SetPos(290, 2)
 	event.edupe:SetImage("icon16/page_copy.png")
 	event.edupe:SizeToContents()
+	event.edupe:SetTooltip("Copy event")
 
 	local function copy1(obj)
 	    if type(obj) ~= 'table' then return obj end

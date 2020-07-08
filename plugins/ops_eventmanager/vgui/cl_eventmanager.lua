@@ -25,7 +25,12 @@ function PANEL:Init()
 			"Enter sequence name:",
 			nil, 
 			function(text)
-				impulse.Ops.EventManager.Sequences[text] = {Name = text, Events = {}, FileName = text}
+				impulse.Ops.EventManager.Sequences[text] = {
+					Name = text, 
+					FileName = text,
+					Events = {}, 
+					VersionHash = impulse.Ops.EventManager.GetVersionHash()
+				}
 				self:ReloadSequences()
 			end, nil, "Create", "Cancel")
 	end)
@@ -44,7 +49,6 @@ function PANEL:Init()
 		browser:SetOpen(true)
 		browser:SetCurrentFolder("impulse/ops/eventmanager")
 		browser:SetFileTypes("*.json")
-		browser:SetSearch(true)
 
 		function browser:OnSelect(path)
 			local result, msg = impulse.Ops.EventManager.SequenceLoad(path)

@@ -1,4 +1,5 @@
 impulse.Ops.EventManager.Config.CategoryIcons = {
+	["hidden"] = "icon16/new.png",
 	["music"] = "icon16/music.png",
 	["effect"] = "icon16/wand.png",
 	["sound"] = "icon16/sound.png",
@@ -7,10 +8,19 @@ impulse.Ops.EventManager.Config.CategoryIcons = {
 	["scene"] = "icon16/film.png",
 	["npc"] = "icon16/user.png",
 	["ent"] = "icon16/brick.png",
-	["cookies"] = "icon16/database.png"
+	["cookies"] = "icon16/database.png",
+	["script"] = "icon16/script_code_red.png",
+	["rtcamera"] = "icon16/camera.png"
 }
 
 impulse.Ops.EventManager.Config.Events = {
+	["empty"] = {
+		Cat = "hidden",
+		Prop = {},
+		NeedUID = false,
+		Clientside = false,
+		Do = function() end
+	},
 	["screenshake"] = {
 		Cat = "effect",
 		Prop = {
@@ -210,35 +220,6 @@ impulse.Ops.EventManager.Config.Events = {
 		Clientside = true,
 		Do = function(prop, uid)
 			impulse.hudEnabled = true
-		end
-	},
-	["webvideo"] = {
-		Cat = "ui",
-		Prop = {
-			["url"] = ".mp4 plz"
-		},
-		NeedUID = true,
-		Clientside = true,
-		Do = function(prop, uid)
-			local service = medialib.load("media").guessService(prop["url"])
-			local mediaclip = service:load(prop["url"])
-
-			OPS_VIDS = OPS_VIDS or {}
-
-			if OPS_VIDS[uid] then
-				OPS_VIDS[uid]:stop()
-				OPS_VIDS[uid] = nil
-			end
-
-			OPS_VIDS[uid] = mediaclip
-
-			mediaclip:play()
-
-			hook.Add("HUDPaint", "opsEMVideo", function()
-				if OPS_VIDS[uid] then
-					OPS_VIDS[uid]:draw(0, 0, w, h)
-				end
-			end)
 		end
 	},
 	["text"] = {
@@ -812,6 +793,23 @@ impulse.Ops.EventManager.Config.Events = {
 			impulse.Dispatch.SetupCityCode(prop["code"])
 		end
 	},
+	["voiceallowedset"] = {
+		Cat = "server",
+		Prop = {
+			["allow_voice"] = true
+		},
+		NeedUID = false,
+		Clientside = false,
+		Do = function(prop, uid)
+			if prop["allow_voice"] then
+				hook.Add("PlayerCanHearPlayersVoice", "opsEMBlockVoice", function()
+					return false, false
+				end)
+			else
+				hook.Remove("PlayerCanHearPlayersVoice", "opsEMBlockVoice")
+			end
+		end
+	},
 	["playscene"] = {
 		Cat = "scene",
 		Prop = {
@@ -827,6 +825,73 @@ impulse.Ops.EventManager.Config.Events = {
 			net.Start("impulseOpsEMPlayScene")
 			net.WriteString(prop["scene"])
 			net.Broadcast()
+		end
+	},
+	["callhook_server"] = {
+		Cat = "script",
+		Prop = {
+			["hook_name"] = ""
+		},
+		NeedUID = false,
+		Clientside = false,
+		Do = function(prop, uid)
+			hook.Run(prop["hook_name"])
+		end
+	},
+	["callhook_client"] = {
+		Cat = "script",
+		Prop = {
+			["hook_name"] = ""
+		},
+		NeedUID = false,
+		Clientside = true,
+		Do = function(prop, uid)
+			hook.Run(prop["hook_name"])
+		end
+	},
+	["rtcamera_create"] = {
+		Cat = "rtcamera",
+		Prop = {
+			["pos"] = Vector(0, 0, 0),
+			["ang"] = Vector(0, 0, 0),
+			["force_override"] = true
+		},
+		NeedUID = true,
+		Clientside = false,
+		Do = function(prop, uid)
+	 		OPS_RTCAMS = OPS_RTCAMS or {}
+
+	 		if OPS_RTCAMS[uid] and IsValid(OPS_RTCAMS[uid]) then
+	 			OPS_RTCAMS[uid]:Fire("SetOff")
+	 			OPS_RTCAMS[uid]:Remove()
+	 		end
+
+	 		OPS_RTCAMS[uid] = ents.Create("point_camera")
+
+	 		if prop["force_override"] then
+	 			OPS_RTCAMS[uid]:SetKeyValue("GlobalOverride", 1)
+	 		end
+
+ 			OPS_RTCAMS[uid]:SetPos(prop["pos"])
+ 			OPS_RTCAMS[uid]:SetAngles(Angle(prop["ang"].x, prop["ang"].y, prop["ang"].z))
+ 			OPS_RTCAMS[uid]:Spawn()
+	 		OPS_RTCAMS[uid]:Activate()
+
+	 		OPS_RTCAMS[uid]:Fire("SetOn")
+		end
+	},
+	["rtcamera_remove"] = {
+		Cat = "rtcamera",
+		Prop = {},
+		NeedUID = true,
+		Clientside = false,
+		Do = function(prop, uid)
+	 		OPS_RTCAMS = OPS_RTCAMS or {}
+
+	 		if OPS_RTCAMS[uid] and IsValid(OPS_RTCAMS[uid]) then
+	 			OPS_RTCAMS[uid]:Fire("SetOff")
+	 			OPS_RTCAMS[uid]:Remove()
+	 		end
 		end
 	}
 }
