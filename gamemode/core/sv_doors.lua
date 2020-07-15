@@ -22,11 +22,6 @@ function impulse.Doors.Save()
 		end
 	end
 
-	if file.Exists(fileName..".dat", "DATA") then
-		file.Write(fileName.."-backup.dat", file.Read(fileName, "DATA"))
-		print("[impulse] Backup created of old doors file, marked with -backup")
-	end 
-
 	print("[impulse] Saving doors to impulse/doors/"..game.GetMap()..".dat | Doors saved: "..#doors)
 	file.Write(fileName..".dat", util.TableToJSON(doors))
 end

@@ -38,6 +38,19 @@ function MakeCosmetic(ply, id, bone, data, slot)
 		ply.Cosmetics[slot]:SetModelScale(ply.Cosmetics[slot]:GetModelScale() * data.scale)
 	end
 
+	if data.matrixScale then
+		local mat = Matrix()
+		mat:Scale(data.matrixScale)
+		ply.Cosmetics[slot]:EnableMatrix("RenderMultiply", mat)
+	end
+
+	if data.subMaterials then
+		for v,k in pairs(data.subMaterials) do
+			ply.Cosmetics[slot]:SetSubMaterial(v, k)
+			print(k)
+		end
+	end
+
 	ply.Cosmetics[slot].drawdata = data
 	ply.Cosmetics[slot].bone = bone
 	ply.Cosmetics[slot].owner = ply

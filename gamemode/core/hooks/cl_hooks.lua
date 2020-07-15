@@ -487,6 +487,10 @@ function GM:OnAchievementAchieved() -- disable steam achievement chat messages
 	return
 end
 
+function GM:PostProcessPermitted()
+	return false
+end
+
 concommand.Add("impulse_togglethirdperson", function() -- ease of use command for binds
 	impulse.SetSetting("view_thirdperson", (!impulse.GetSetting("view_thirdperson")))
 end)

@@ -1,6 +1,9 @@
+file.CreateDir("impulse")
+file.CreateDir("impulse/saves")
+
 function LoadSaveEnts()
-	if file.Exists( "impulse/"..string.lower(game.GetMap())..".txt", "DATA") then
-		local savedEnts = util.JSONToTable( file.Read( "impulse/" .. string.lower( game.GetMap() ) .. ".txt" ) )
+	if file.Exists( "impulse/saves/"..string.lower(game.GetMap())..".dat", "DATA") then
+		local savedEnts = util.JSONToTable( file.Read( "impulse/saves/" .. string.lower( game.GetMap() ) .. ".dat" ) )
 		for v,k in pairs(savedEnts) do
 			local x = ents.Create(k.class)
 			x:SetPos(k.pos)
@@ -44,7 +47,7 @@ concommand.Add("impulse_save_saveall", function(ply, cmd, args)
 		end
 	end
 
-	file.Write("impulse/"..string.lower(game.GetMap())..".txt", util.TableToJSON(savedEnts))
+	file.Write("impulse/saves/"..string.lower(game.GetMap())..".dat", util.TableToJSON(savedEnts))
 
 	ply:AddChatText("All marked ents have been saved, all un-marked ents have been omitted from the save.")
 end)
