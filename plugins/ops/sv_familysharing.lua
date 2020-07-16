@@ -14,6 +14,7 @@ local function CheckFamilySharing(ply, sid)
 
 		if not body or not body.response or not body.response.lender_steamid then
 			error(string.format("ops FamilySharing: Invalid Steam API response for %s | %s\n", ply:Nick(), ply:SteamID()))
+			ply:Kick("Sorry, we do not allow private Steam accounts to connect. For more information goto support.impulse-community.com")
 		end
 
 		local lender = body.response.lender_steamid
@@ -23,7 +24,7 @@ local function CheckFamilySharing(ply, sid)
 	end,
 
 	function(code)
-		error(string.format("ops FamilySharing: Failed API call for %s | %s (Error: %s)\n", ply:Nick(), ply:SteamID(), code))
+		ply:Kick("Sorry, we do not allow private Steam accounts to connect. For more information goto support.impulse-community.com")
 	end
 	)
 end

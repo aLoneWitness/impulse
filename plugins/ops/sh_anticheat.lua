@@ -27,3 +27,11 @@ hook.Add("Simplac.PlayerViolation", "opsSimpLACLog", function(ply, ident, violat
 	net.Start("opsUnderInvestigation")
 	net.Send(ply)
 end)
+
+hook.Add("iac.CheaterConvicted", "iacCheaterLog", function(steamid, code)
+	for v,k in pairs(player.GetAll()) do
+		if k:IsAdmin() then
+			k:AddChatText(Color(255, 0, 0), "[IAC CONVICTION] "..steamid.." code: "..code)
+		end
+	end
+end)
