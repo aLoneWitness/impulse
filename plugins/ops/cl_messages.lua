@@ -108,6 +108,10 @@ net.Receive("opsNewReport", function()
 	if impulse.GetSetting("admin_onduty") then
 		chat.AddText(newReportCol, "[NEW REPORT] [#"..reportId.."] ", sender:SteamName(), " (", sender:Name(), "): ", message)
 	    surface.PlaySound("buttons/blip1.wav")
+
+		if WinToast then
+	       	WinToast.Show("New report [#"..reportId.."] from "..sender:SteamName(), message)
+	    end
 	end
 
     impulse.Ops.Reports[reportId] = {sender, message}
@@ -128,6 +132,10 @@ net.Receive("opsReportUpdate", function()
 		if impulse.Ops.Reports[reportId] and impulse.Ops.Reports[reportId][3] and impulse.Ops.Reports[reportId][3] == LocalPlayer() then
 			chat.AddText(claimedReportCol, "[REPORT UPDATE] [#"..reportId.."] ", sender:SteamName(), " (", sender:Name(), "): ", message)
 	        surface.PlaySound("buttons/blip1.wav")
+
+	        if WinToast then
+	        	WinToast.Show("Report updated [#"..reportId.."]", message)
+	        end
 		end
 	end
 

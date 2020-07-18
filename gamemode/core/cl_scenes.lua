@@ -18,7 +18,7 @@ local function hideEnts(hide, hidePlayers)
 
 	if hidePlayers or not hide then
 		for v,k in pairs(player.GetAll()) do
-			v:SetNoDraw(hidePlayers or false)
+			k:SetNoDraw(hidePlayers or false)
 		end
 	end
 end
