@@ -1129,6 +1129,8 @@ local bannedTools = {
 	["wire_teleporter"] = true,
 	["wire_trail"] = true,
 	["wire_trigger"] = true,
+	["wire_detonators"] = true,
+	["wire_detonator"] = true,
 	["wnpc"] = true
 }
 
@@ -1203,17 +1205,6 @@ function GM:CanTool(ply, tr, tool)
 	return true
 end
 
---function GM:PhysgunPickup(ply, ent)
---	if ply:IsAdmin() and not ply:IsSuperAdmin() then
---		local owner = ent:CPPIGetOwner()
---
---		if not owner and not adminWorldRemoveWhitelist[ent:GetClass()] then
---			print("h")
---			return false
---		end
---	end
---end
-
 local bannedDupeEnts = {
 	["gmod_wire_explosive"] = true,
 	["gmod_wire_simple_explosive"] = true,
@@ -1225,7 +1216,8 @@ local bannedDupeEnts = {
 	["gmod_wire_trail"] = true,
 	["gmod_wire_trigger"] = true,
 	["gmod_wire_trigger_entity"] = true,
-	["gmod_wire_rtcam"] = true
+	["gmod_wire_rtcam"] = true,
+	["gmod_wire_detonator"] = true
 }
 
 local donatorDupeEnts = {

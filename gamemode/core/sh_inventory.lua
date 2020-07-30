@@ -26,6 +26,7 @@ local countX = 1
 -- @internal
 function impulse.RegisterItem(item)
 	local class = item.WeaponClass
+	local attClass = item.AttachmentClass
 
 	if class then
 		function item:OnEquip(ply, itemclass, uid)
@@ -46,6 +47,16 @@ function impulse.RegisterItem(item)
 			if wep and IsValid(wep) then
 				self.clip = wep:Clip1()
 				ply:StripWeapon(class)
+			end
+		end
+	elseif attClass then
+		function item:OnEquip(ply, itemclass, uid)
+			local wep = ply:GetActiveWeapon()
+
+			if IsValid(wep) and wep.IsLongsword and wep.Attachments and wep.Attachments[attClass] then
+				wep:GiveAttachment(attClass)
+			else
+				ply:Notify("You can not equip this attachment on your current weapon.")
 			end
 		end
 	end

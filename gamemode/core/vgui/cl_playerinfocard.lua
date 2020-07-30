@@ -155,6 +155,13 @@ local quickTools = {
 			addDay:SetText("+6M")
 			addDay.DoClick = function() addTime(259200) end
 		end
+	},
+	{
+		name = "IAC Flag",
+		icon = "icon16/report_magnify.png",
+		onRun = function(ply, sid)
+			LocalPlayer():ConCommand("say /iacflag "..sid)
+		end
 	}
 }
 

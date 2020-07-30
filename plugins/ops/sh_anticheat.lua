@@ -35,3 +35,29 @@ hook.Add("iac.CheaterConvicted", "iacCheaterLog", function(steamid, code)
 		end
 	end
 end)
+
+if iac then
+	local iacFlagCommand = {
+	    description = "Flags a player for review by an IAC engineer.",
+	    requiresArg = true,
+	    adminOnly = true,
+	    onRun = function(ply, arg, rawText)
+	    	if (ply.iacFlagCool or 0) > CurTime() then
+	    		return ply:Notify("Wait a while before doing more of this...")
+	  		end
+	  		ply.iacFlagCool = CurTime() + 12
+	  		
+	        local name = arg[1]
+			local plyTarget = impulse.FindPlayer(name)
+
+			if plyTarget and plyTarget.impulseData then
+				plyTarget:FlagUser()
+				ply:Notify("Flagged "..plyTarget:Nick().." for review by an IAC engineer. Please contact your IAC engineer regarding your flag.")
+			else
+				return ply:Notify("Could not find player: "..tostring(name))
+			end
+	    end
+	}
+
+	impulse.RegisterChatCommand("/iacflag", iacFlagCommand)
+end
