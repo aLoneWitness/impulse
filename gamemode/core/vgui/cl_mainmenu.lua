@@ -338,8 +338,6 @@ function PANEL:Paint(w,h)
 
 	if isPreview then
 		draw.SimpleText("preview build", "Impulse-SpecialFont", 260, 115, Color(255, 242, 0))
-	else
-		draw.SimpleText("beta", "Impulse-SpecialFont", 370, 120, Color(170, 170, 170))
 	end
 end
 

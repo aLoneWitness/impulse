@@ -115,10 +115,13 @@ if SERVER then
 			if dbConf.schemadb and dbConf.schemadb[engine.ActiveGamemode()] then
 				impulse.DB.database = dbConf.schemadb[engine.ActiveGamemode()]
 			end
-		end
 
-		impulse.YML = dbConf
+			impulse.YML = dbConf
+		end
 	end
+
+	impulse.YML = impulse.YML or {}
+	impulse.YML.apis = impulse.YML.apis or {}
 
 	if not dbConfLoaded then
 		print("[impulse] [config.yml] Found no file. Assuming development database configuration. If this is a live server please setup this file!")

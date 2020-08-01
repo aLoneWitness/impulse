@@ -49,8 +49,6 @@ local function BlurRect(x, y, w, h)
 	end
 end
 
-
-
 local vignette = Material("impulse/vignette.png")
 local vig_alpha_normal = Color(10,10,10,190)
 local lasthealth
@@ -67,10 +65,8 @@ local whiteCol = Color(255, 255, 255, 255)
 local iconsWhiteCol = Color(255, 255, 255, 220)
 local bleedFlashCol = Color(230, 0, 0, 220)
 local painCol = Color(255,10,10,80)
-
 local crosshairGap = 5
 local crosshairLength = crosshairGap + 5
-
 local healthIcon = Material("impulse/icons/heart-128.png")
 local healthCol = Color(210, 0, 0, 255)
 local armourIcon = Material("impulse/icons/shield-128.png")
@@ -192,13 +188,17 @@ function GM:HUDPaint()
 	local aboveHUDUsed = false
 	local deathSoundPlayed
 
-	SERVER_DOWN = true
 	if SERVER_DOWN then
 		if not IsValid(CRASH_SCREEN) then
 			CRASH_SCREEN = vgui.Create("impulseCrashScreen")
 		end
-	elseif IsValid(CRASH_SCREEN) then
-		CRASH_SCREEN:Remove()
+	elseif IsValid(CRASH_SCREEN) and not CRASH_SCREEN.fadin then
+		CRASH_SCREEN.fadin = true
+		CRASH_SCREEN:AlphaTo(0, 1.2, nil, function()
+			if IsValid(CRASH_SCREEN) then
+				CRASH_SCREEN:Remove()
+			end
+		end)
 	end
 
 	if not lp:Alive() then

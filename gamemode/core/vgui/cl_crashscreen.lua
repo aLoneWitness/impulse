@@ -8,6 +8,8 @@ function PANEL:Init()
 	self:SetDraggable(false)
  	self:MoveToFront()
  	self:SetBackgroundBlur(true)
+ 	self:SetAlpha(0)
+ 	self:AlphaTo(255, 1.2)
 
  	http.Fetch("http://api.steampowered.com/ISteamApps/GetServersAtAddress/v0001?addr="..game.GetIPAddress(), function(json)
  		if not IsValid(self) then
@@ -58,7 +60,21 @@ function PANEL:DoLamar()
 	 	self.lamar:SetLookAt(pos + Vector(-10, -70, -10))
 	end
 
-	local r = math.random(2, 6)
+	local function doPostText()
+		self.backsoon = vgui.Create("DLabel", self)
+		self.backsoon:SetText("We'll be back soon!")
+		self.backsoon:SetFont("Impulse-SpecialFont")
+		self.backsoon:SizeToContents()
+		self.backsoon:Center()
+		self.backsoon:SetAlpha(0)
+		self.backsoon:AlphaTo(200, 8)
+
+		timer.Simple(8, function()
+			self.backsoon:AlphaTo(0, 10)
+		end)
+	end
+
+	local r = 2.7
 	wait(r, function()
 		surface.PlaySound("npc/headcrab/pain1.wav")
 
@@ -94,6 +110,28 @@ function PANEL:DoLamar()
 		x = x + 1.6
 		wait(x, function()
 			surface.PlaySound("npc/headcrab/attack2.wav")
+		end)
+
+		x = x + 0.6
+		wait(x, function()
+			surface.PlaySound("vehicles/v8/vehicle_impact_heavy1.wav")
+			surface.PlaySound("ambient/energy/zap6.wav")
+
+			timer.Simple(0.3, function()
+				surface.PlaySound("ambient/energy/zap7.wav")
+			end)
+		end)
+
+		wait(x + 2.5, doPostText)
+
+		x = x + 3
+		wait(x, function()
+			surface.PlaySound("ambient/energy/spark1.wav")
+		end)
+
+		x = x + 1.2
+		wait(x, function()
+			surface.PlaySound("ambient/energy/spark3.wav")
 		end)
 	end)
 end

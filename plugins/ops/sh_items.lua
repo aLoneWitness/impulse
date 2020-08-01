@@ -30,6 +30,7 @@ if CLIENT then
             elseif text == "Custom SteamID (Offline User)" then
                 Derma_StringRequest("impulse", "Enter the SteamID (not 64 format) below:", "", function(sid)
                     if IsValid(panel) then
+                        sid = string.Trim(sid, " ")
                         panel.Selected = sid
                         self:SetText("Custom SteamID ("..sid..")")
                     end

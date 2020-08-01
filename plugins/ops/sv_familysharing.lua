@@ -1,11 +1,13 @@
-local APIKey = "***REMOVED***" -- this key is private do not share it
-
 local function CheckFamilySharing(ply, sid)
+	if not impulse.YML.apis.steam_key then
+		return print("ops FamilySharing: No apis.steam_key defined in config.yml! Can't check for familysharing!")
+	end
+	
 	local s64id = util.SteamIDTo64(sid)
 	
 	http.Fetch(
 	string.format("http://api.steampowered.com/IPlayerService/IsPlayingSharedGame/v0001/?key=%s&format=json&steamid=%s&appid_playing=4000",
-		APIKey,
+		impulse.YML.apis.steam_key,
 		s64id
 	),
 
