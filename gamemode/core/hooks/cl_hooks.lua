@@ -237,7 +237,7 @@ end
 function GM:CalcView(player, origin, angles, fov)
 	local view
 
-	if IsValid(impulse.MainMenu) and impulse.MainMenu:IsVisible() and not impulse.MainMenu.popup then
+	if IsValid(impulse.splash) or (IsValid(impulse.MainMenu) and impulse.MainMenu:IsVisible() and not impulse.MainMenu.popup) then
 		view = {
 			origin = impulse.Config.MenuCamPos,
 			angles = impulse.Config.MenuCamAng,

@@ -622,7 +622,13 @@ function GM:DoPlayerDeath(ply, attacker, dmginfo)
 
 	timer.Simple(impulse.Config.BodyDeSpawnTime, function()
 		if ragdoll and IsValid(ragdoll) then
-			ragdoll:Remove()
+			ragdoll:Fire("FadeAndRemove", 7)
+
+			timer.Simple(10, function() -- i have a feeling FadeAndRemove won't work with every ragdoll or something
+				if IsValid(ragdoll) then
+					ragdoll:Remove() -- just in case
+				end
+			end)
 		end
 	end)
 

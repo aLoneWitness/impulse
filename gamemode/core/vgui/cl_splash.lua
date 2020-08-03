@@ -8,6 +8,8 @@ function PANEL:Init()
 	self:MakePopup()
 	self:SetPopupStayAtBack(true)
 	self.welcomeMessage = "Welcome"
+
+	impulse.splash = self
 end
 
 function PANEL:OnKeyCodeReleased()
@@ -44,12 +46,21 @@ function PANEL:OnMousePressed()
 	self:OnKeyCodeReleased()
 end
 
+local splashCol = Color(200, 200, 200, 150)
 function PANEL:Paint(w,h)
-	surface.SetDrawColor(color_black) -- menu body
-	surface.DrawRect(0, 0, w, h)
-	draw.DrawText(self.welcomeMessage.." to", "Impulse-Elements27-Shadow", ScrW()/2, 150, color_white, TEXT_ALIGN_CENTER)
-	impulse.render.glowgo((ScrW()/2)-168, 200, 337, 91)
-	draw.DrawText("Press any key to continue...", "Impulse-Elements27-Shadow", ScrW()/2, 302, color_white, TEXT_ALIGN_CENTER)
+	--impulse.blur(self, 10, 20, 255)
+	Derma_DrawBackgroundBlur(self)
+	--surface.SetDrawColor(color_black) -- menu body
+	--surface.DrawRect(0, 0, w, h)
+
+	local x = w * .5
+	local y = h * .4
+	local logo_scale = 1.1
+	local logo_w = logo_scale * 367
+	local logo_h = logo_scale * 99
+	--draw.DrawText(self.welcomeMessage.." to", "Impulse-Elements27-Shadow", ScrW()/2, 150, color_white, TEXT_ALIGN_CENTER)
+	impulse.render.glowgo(x - (logo_w * .5), y, logo_w, logo_h)
+	draw.DrawText("press any key to continue", "Impulse-Elements27-Shadow", x, y + logo_h + 40, splashCol, TEXT_ALIGN_CENTER)
 end
 
 vgui.Register("impulseSplash", PANEL, "DPanel")
