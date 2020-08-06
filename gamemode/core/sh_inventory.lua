@@ -48,16 +48,38 @@ function impulse.RegisterItem(item)
 				self.clip = wep:Clip1()
 				ply:StripWeapon(class)
 			end
+
+			if ply.InvAttachments then
+				local uid = ply.InvAttachments[class]
+
+				if uid and ply:HasInventoryItemSpecific(uid) then
+					ply.doForcedInvEquip = true
+					ply:SetInventoryItemEquipped(uid, false)
+				end
+			end
 		end
 	elseif attClass then
-		function item:OnEquip(ply, itemclass, uid)
+		function item:CanEquip(ply)
+			if ply.doForcedInvEquip then
+				ply.doForcedInvEquip = nil
+				return true -- hacky needs replacement
+			end
+
 			local wep = ply:GetActiveWeapon()
 
 			if IsValid(wep) and wep.IsLongsword and wep.Attachments and wep.Attachments[attClass] then
-				wep:GiveAttachment(attClass)
+				return true
 			else
-				ply:Notify("You can not equip this attachment on your current weapon.")
+				return false
 			end
+		end
+
+		function item:OnEquip(ply, itemclass, uid)
+			local wep = ply:GetActiveWeapon()
+
+			wep:GiveAttachment(attClass)
+			ply.InvAttachments = ply.InvAttachments or {}
+			ply.InvAttachments[wep:GetClass()] = uid
 		end
 
 		function item:UnEquip(ply, itemclass, uid)
@@ -65,11 +87,13 @@ function impulse.RegisterItem(item)
 
 			for v,k in pairs(weps) do
 				if IsValid(k) and k.IsLongsword and k.Attachments and k.Attachments[attClass] and k:HasAttachment(attClass) then
-					print("owo")
-					k:SetCurAttachment("") -- shitcode ikr
-					break
+					k:TakeAttachment(attClass)
+					ply.InvAttachments[k:GetClass()] = nil
+					return
 				end
 			end
+
+			ply.InvAttachments = {} -- if the loop fails clear attach table
 		end
 	end
 

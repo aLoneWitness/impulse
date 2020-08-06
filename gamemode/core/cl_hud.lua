@@ -188,7 +188,7 @@ function GM:HUDPaint()
 	local aboveHUDUsed = false
 	local deathSoundPlayed
 
-	if SERVER_DOWN then
+	if SERVER_DOWN and CRASHSCREEN_ALLOW then
 		if not IsValid(CRASH_SCREEN) then
 			CRASH_SCREEN = vgui.Create("impulseCrashScreen")
 		end

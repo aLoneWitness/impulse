@@ -39,6 +39,12 @@ function meta:SetTeam(teamID, forced)
 		end
 	end
 
+	if teamData.runSpeed then
+		self:SetRunSpeed(teamData.runSpeed)
+	else
+		self:SetRunSpeed(impulse.Config.JogSpeed)
+	end
+
 	self.DoorGroups = teamData.doorGroup or {}
 
 	if self:Team() != teamID then

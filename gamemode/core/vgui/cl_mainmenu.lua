@@ -68,6 +68,8 @@ function PANEL:Init()
 			selfPanel:Remove()
 			impulse.hudEnabled = true
 		end
+
+		CRASHSCREEN_ALLOW = true
 	end
 
 	local button = vgui.Create("DButton", self.core)

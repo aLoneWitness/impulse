@@ -260,7 +260,7 @@ function GM:CalcView(player, origin, angles, fov)
 		return view
 	end
 
-	if impulse.GetSetting("view_thirdperson") then
+	if impulse.GetSetting("view_thirdperson") and player:GetViewEntity() == player then
 		local angles = player:GetAimVector():Angle()
 		local targetpos = Vector(0, 0, 60)
 
@@ -303,7 +303,7 @@ function GM:CalcView(player, origin, angles, fov)
 		local fov = impulse.GetSetting("view_thirdperson_fov")
 		local wep = player:GetActiveWeapon()
 
-		if wep and IsValid(wep) and wep.GetIronsights then
+		if wep and IsValid(wep) and wep.GetIronsights and not wep.NoThirdpersonIronsights then
 			fov = Lerp(FrameTime() * 15, wep.FOVMultiplier, wep:GetIronsights() and wep.IronsightsFOV or 1) * fov
 		end
 
