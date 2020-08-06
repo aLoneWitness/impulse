@@ -249,7 +249,13 @@ impulse.Anim.overwatch = {
 		[ACT_MP_RUN] = {ACT_RUN_AIM_RIFLE, ACT_RUN_AIM_RIFLE},
 		attack = ACT_MELEE_ATTACK_SWING_GESTURE
 	},
-	glide = ACT_GLIDE
+	glide = ACT_GLIDE,
+	vehicle = {
+		chair = {ACT_CROUCHIDLE, Vector(5, 0, -5)},
+		["prop_vehicle_airboat"] = {ACT_CROUCHIDLE, Vector(10, 0, 0)},
+		["prop_vehicle_jeep"] = {ACT_CROUCHIDLE, Vector(18, -2, 4)},
+		["prop_vehicle_prisoner_pod"] = {"idle_unarmed", Vector(-4, -0.5, 0)}
+	}
 }
 impulse.Anim.vort = {
 	normal = {
@@ -605,7 +611,7 @@ function GM:TranslateActivity(ply, act)
 				local fixvec = animTree.vehicle[class][2]
 
 				if fixvec then
-					ply:SetLocalPos(Vector(16.5438, -0.1642, -20.5493))
+					ply:SetLocalPos(fixvec)
 				end
 
 				if type(act) == "string" then

@@ -996,7 +996,7 @@ net.Receive("impulseCharacterEdit", function(len, ply)
 		query:Update("skin", newSkin)
 		query:Update("model", newModel)
 		query:Where("steamid", ply:SteamID())
-		query:Execute(true)
+		query:Execute()
 
 		ply.defaultModel = newModel
 		ply.defaultSkin = newSkin

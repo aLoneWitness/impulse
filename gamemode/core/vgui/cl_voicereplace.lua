@@ -22,7 +22,7 @@ end
 function PANEL:Setup( ply )
 
 	self.ply = ply
-	self.LabelName:SetText( ply:Nick() )
+	self.LabelName:SetText( ply:KnownName() )
 	
 	self.Color = team.GetColor( ply:Team() )
 	

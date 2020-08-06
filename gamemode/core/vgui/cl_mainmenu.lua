@@ -12,7 +12,27 @@ function PANEL:Init()
 	self:MakePopup()
 	self:SetPopupStayAtBack(true)
 
-	local button = vgui.Create("DButton", self)
+	local panel = self
+
+	self.core = vgui.Create("DPanel", self)
+	self.core:SetPos(0, 0)
+	self.core:SetSize(ScrW(), ScrH())
+
+	local bodyCol = Color(30, 30, 30, 190)
+	function self.core:Paint(w, h)
+		surface.SetDrawColor(bodyCol) -- menu body
+		surface.DrawRect(70,0,400,h) -- left body
+		surface.DrawRect(w-540,0,520,380)-- news body
+		impulse.render.glowgo(100,50,337,91)
+
+		local isPreview = GetConVar("impulse_ispreview"):GetBool()
+
+		if isPreview then
+			draw.SimpleText("preview build", "Impulse-SpecialFont", 260, 115, Color(255, 242, 0))
+		end
+	end
+
+	local button = vgui.Create("DButton", self.core)
 	button:SetPos(100,200)
 	button:SetFont("Impulse-Elements48")
 	button:SetText("Play")
@@ -50,7 +70,7 @@ function PANEL:Init()
 		end
 	end
 
-	local button = vgui.Create("DButton", self)
+	local button = vgui.Create("DButton", self.core)
 	button:SetPos(100,250)
 	button:SetFont("Impulse-Elements32")
 	button:SetText("Settings")
@@ -74,7 +94,7 @@ function PANEL:Init()
 		vgui.Create("impulseSettings", selfPanel)
 	end
 
-	local button = vgui.Create("DButton", self)
+	local button = vgui.Create("DButton", self.core)
 	button:SetPos(100,280)
 	button:SetFont("Impulse-Elements32")
 	button:SetText("Achievements")
@@ -98,7 +118,7 @@ function PANEL:Init()
 		vgui.Create("impulseAchievements", selfPanel)
 	end
 
-	local button = vgui.Create("DButton", self)
+	local button = vgui.Create("DButton", self.core)
 	button:SetPos(100,310)
 	button:SetFont("Impulse-Elements32")
 	button:SetText("Community")
@@ -123,7 +143,7 @@ function PANEL:Init()
 		gui.OpenURL(impulse.Config.CommunityURL or "www.google.com")
 	end
 
-	local button = vgui.Create("DButton", self)
+	local button = vgui.Create("DButton", self.core)
 	button:SetPos(100,340)
 	button:SetFont("Impulse-Elements32")
 	button:SetText("Donate")
@@ -148,7 +168,7 @@ function PANEL:Init()
 		gui.OpenURL(impulse.Config.DonateURL or "www.google.com")
 	end
 
-	local button = vgui.Create("DButton", self)
+	local button = vgui.Create("DButton", self.core)
 	button:SetPos(100,ScrH()-230)
 	button:SetFont("Impulse-Elements32")
 	button:SetText("Credits")
@@ -232,13 +252,13 @@ function PANEL:Init()
 	end
 
 	local year = os.date("%Y", os.time())
-	local copyrightLabel = vgui.Create("DLabel", self)
+	local copyrightLabel = vgui.Create("DLabel", self.core)
 	copyrightLabel:SetFont("Impulse-Elements14")
 	copyrightLabel:SetText("Powered by impulse\nCopyright vin "..year.."\nimpulse version: "..impulse.Version)
 	copyrightLabel:SizeToContents()
 	copyrightLabel:SetPos(ScrW()-copyrightLabel:GetWide(), ScrH()-copyrightLabel:GetTall()-5)
 
-	local schemaLabel = vgui.Create("DLabel", self)
+	local schemaLabel = vgui.Create("DLabel", self.core)
 	schemaLabel:SetFont("Impulse-Elements32")
 	schemaLabel:SetText(impulse.Config.SchemaName)
 	--schemaLabel:SetTextColor(Color(impulse.Config.MainColour.r, impulse.Config.MainColour.g, impulse.Config.MainColour.b)) not sure if i like this
@@ -249,13 +269,13 @@ function PANEL:Init()
 		schemaLabel:SetFont("Impulse-Elements27")
 	end
 
-	local newsLabel = vgui.Create("DLabel", self)
+	local newsLabel = vgui.Create("DLabel", self.core)
 	newsLabel:SetFont("Impulse-Elements32")
 	newsLabel:SetText("News")
 	newsLabel:SizeToContents()
 	newsLabel:SetPos(self:GetWide()-530, 60)
 
-	local newsfeed = vgui.Create("impulseNewsfeed", self)
+	local newsfeed = vgui.Create("impulseNewsfeed", self.core)
 	newsfeed:SetSize(500,270)
 	newsfeed:SetPos(self:GetWide()-530, 100)
 
@@ -325,20 +345,8 @@ function PANEL:OnChildAdded(child)
 	self.openElement = child
 end
 
-local bodyCol = Color(30, 30, 30, 190)
 function PANEL:Paint(w,h)
 	Derma_DrawBackgroundBlur(self)
-
-	surface.SetDrawColor(bodyCol) -- menu body
-	surface.DrawRect(70,0,400,h) -- left body
-	surface.DrawRect(w-540,0,520,380)-- news body
-	impulse.render.glowgo(100,50,337,91)
-
-	local isPreview = GetConVar("impulse_ispreview"):GetBool()
-
-	if isPreview then
-		draw.SimpleText("preview build", "Impulse-SpecialFont", 260, 115, Color(255, 242, 0))
-	end
 end
 
 vgui.Register("impulseMainMenu", PANEL, "DPanel")

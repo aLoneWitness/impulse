@@ -59,6 +59,18 @@ function impulse.RegisterItem(item)
 				ply:Notify("You can not equip this attachment on your current weapon.")
 			end
 		end
+
+		function item:UnEquip(ply, itemclass, uid)
+			local weps = ply:GetWeapons()
+
+			for v,k in pairs(weps) do
+				if IsValid(k) and k.IsLongsword and k.Attachments and k.Attachments[attClass] and k:HasAttachment(attClass) then
+					print("owo")
+					k:SetCurAttachment("") -- shitcode ikr
+					break
+				end
+			end
+		end
 	end
 
 	local craftSound = item.CraftSound
