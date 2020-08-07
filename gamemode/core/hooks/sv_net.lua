@@ -623,7 +623,7 @@ net.Receive("impulseSellAllDoors", function(len, ply)
 				ply:RemoveDoorMaster(v, noUnlock)
 				sold = sold + 1
 			else
-				ply:RemoveDoorUser(ply)
+				ply:RemoveDoorUser(v)
 			end
 		end
 	end

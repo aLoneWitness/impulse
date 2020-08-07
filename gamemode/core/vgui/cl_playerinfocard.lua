@@ -158,9 +158,11 @@ local quickTools = {
 	},
 	{
 		name = "IAC Flag",
-		icon = "icon16/report_magnify.png",
+		icon = "icon16/flag_red.png",
 		onRun = function(ply, sid)
-			LocalPlayer():ConCommand("say /iacflag "..sid)
+			Derma_Query("BEFORE FLAGGING READ THE GUIDE AT: https://impulse-community.com/threads/how-to-iac-flag-a-user.3044/\nAre you sure you want to flag:\n"..ply:Nick().."("..ply:SteamName()..")?", "ops", "Yes", function()
+				LocalPlayer():ConCommand("say /iacflag "..sid)
+			end, "No, take me back!")
 		end
 	}
 }

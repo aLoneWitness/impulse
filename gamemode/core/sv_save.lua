@@ -102,9 +102,13 @@ concommand.Add("impulse_save_keyvalue", function(ply, cmd, args)
 				value = tonumber(value)
 			end
 
+			if value == "nil" then
+				value = nil
+			end
+
 			ent.impulseSaveKeyValue = ent.impulseSaveKeyValue or {}
 			ent.impulseSaveKeyValue[key] = value
-			ply:AddChatText("Key/Value ("..key.."="..value..") pair set on "..ent:GetClass()..".")
+			ply:AddChatText("Key/Value ("..key.."="..(value or "VALUE REMOVED")..") pair set on "..ent:GetClass()..".")
 		else
 			ply:AddChatText("Mark this entity for saving first.")
 		end
