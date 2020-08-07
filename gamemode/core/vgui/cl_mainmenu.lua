@@ -282,7 +282,7 @@ function PANEL:Init()
 	newsfeed:SetPos(self:GetWide()-530, 100)
 
 	local testMessage = function()
-		
+		hook.Run("ShowMenuModalMessage", self)
 	end
 
 	timer.Simple(0, function()
