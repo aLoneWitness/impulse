@@ -465,7 +465,7 @@ if CLIENT then
 	local whisperCol = Color(65, 105, 225)
 	local infoCol = Color(135, 206, 250)
 	local talkCol = Color(255, 255, 100)
-	local radioCol = Color(55, 146, 21)
+	local radioCol = Color(65, 120, 200)
 	local pmCol = Color(45, 154, 6)
 	local advertCol = Color(255, 174, 66)
 	local acCol = Color(0, 235, 0, 255)

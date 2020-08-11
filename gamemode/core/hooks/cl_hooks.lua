@@ -69,6 +69,8 @@ function GM:Think()
 			elseif input.IsKeyDown(KEY_F6) and not IsValid(groupEditor) and not LocalPlayer():IsCP() then
 				impulse.groupEditor = vgui.Create("impulseGroupEditor")
 			end
+
+			hook.Run("CheckMenuInput")
 		end
 	end
 

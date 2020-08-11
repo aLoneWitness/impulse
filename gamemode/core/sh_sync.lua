@@ -187,6 +187,8 @@ if CLIENT then
 				impulse.Sync.Data[targetID][varID] = nil
 			end
 		end
+
+		hook.Run("OnSyncUpdate", varID, targetID)
 	end)
 end
 

@@ -74,7 +74,7 @@ function PANEL:DoLamar()
 		end)
 	end
 
-	local r = 2.7
+	local r = 3.8
 	wait(r, function()
 		surface.PlaySound("npc/headcrab/pain1.wav")
 

@@ -2025,9 +2025,9 @@ net.Receive("impulseGroupDoCreate", function(len, ply)
 		return
 	end
 
-	local name = string.sub(net.ReadString(), 1, 32)
+	local name = string.Trim(string.sub(net.ReadString(), 1, 32), " ")
 
-	if string.Trim(name, " ") == "" then
+	if name == "" then
 		return ply:Notify("Invalid group name.")
 	end
 
