@@ -27,6 +27,12 @@ function PANEL:SetLabel(text)
 	self.Label = text
 end
 
+function PANEL:Think()
+	if self.AutoReturn then
+		self:SetProgress(math.Clamp(self.AutoReturn() or 0, 0, 100))
+	end
+end
+
 local gradient = Material("vgui/gradient-d")
 
 function PANEL:Paint(w,h)

@@ -14,6 +14,19 @@ function PANEL:Think()
 	if not LocalPlayer():Alive() then
 		return self:Remove()
 	end
+
+	if not impulse.hudEnabled then
+		return self:Remove()
+	end
+
+	local x = hook.Run("ShouldDrawHUDBox") or false
+	if x == false then
+		return self:Remove()
+	end
+
+	if impulse.chatBox and IsValid(impulse.chatBox.frame) then
+		return self:Remove()
+	end
 end
 
 function PANEL:Paint(w,h)

@@ -65,58 +65,17 @@ function impulse.Sync.RegisterVar(type, conditional)
 	return syncVarsID
 end
 
+local ioRegister = {}
+ioRegister[SERVER] = {}
+ioRegister[CLIENT] = {}
+
 --- Reads or writes a value based on the SyncType provided
 -- @realm shared
 -- @internal
 -- @int type SyncType
 -- @param value
 function impulse.Sync.DoType(type, value)
-	if SERVER then
-		if type == SYNC_BOOL then
-			return net.WriteBool(value)
-		elseif type == SYNC_INT then
-			return net.WriteUInt(value, 8)
-		elseif type == SYNC_STRING then
-			return net.WriteString(value)
-		elseif type == SYNC_BIGINT then
-			return net.WriteUInt(value, 16)
-		elseif type == SYNC_HUGEINT then
-			return net.WriteUInt(value, 32)
-		elseif type == SYNC_MINITABLE then
-			return net.WriteData(pon.encode(value), 32)
-		elseif type == SYNC_INTSTACK then
-			local count = net.WriteUInt(#value, 8)
-
-			for v,k in pairs(value) do
-				net.WriteUInt(k, 8)
-			end
-
-			return
-		end
-	else
-		if type == SYNC_BOOL then
-			return net.ReadBool()
-		elseif type == SYNC_INT then
-			return net.ReadUInt(8)
-		elseif type == SYNC_STRING then
-			return net.ReadString()
-		elseif type == SYNC_BIGINT then
-			return net.ReadUInt(16)
-		elseif type == SYNC_HUGEINT then
-			return net.ReadUInt(32)
-		elseif type == SYNC_MINITABLE then
-			return pon.decode(net.ReadData(32))
-		elseif type == SYNC_INTSTACK then
-			local count = net.ReadUInt(8)
-			local compiled =  {}
-
-			for k = 1, count do
-				table.insert(compiled, (net.ReadUInt(8)))
-			end
-
-			return compiled
-		end
-	end
+	return ioRegister[SERVER or CLIENT][type](value)
 end
 
 if CLIENT then
@@ -190,6 +149,39 @@ if CLIENT then
 
 		hook.Run("OnSyncUpdate", varID, targetID)
 	end)
+end
+
+-- Declare some sync var types and how they are read/written
+ioRegister[SERVER][SYNC_BOOL] = function(val) return net.WriteBool(val) end
+ioRegister[CLIENT][SYNC_BOOL] = function(val) return net.ReadBool() end
+ioRegister[SERVER][SYNC_INT] = function(val) return net.WriteUInt(val, 8) end
+ioRegister[CLIENT][SYNC_INT] = function(val) return net.ReadUInt(8) end
+ioRegister[SERVER][SYNC_BIGINT] = function(val) return net.WriteUInt(val, 16) end
+ioRegister[CLIENT][SYNC_BIGINT] = function(val) return net.ReadUInt(16) end
+ioRegister[SERVER][SYNC_HUGEINT] = function(val) return net.WriteUInt(val, 32) end
+ioRegister[CLIENT][SYNC_HUGEINT] = function(val) return net.ReadUInt(32) end
+ioRegister[SERVER][SYNC_STRING] = function(val) return net.WriteString(val) end
+ioRegister[CLIENT][SYNC_STRING] = function(val) return net.ReadString() end
+ioRegister[SERVER][SYNC_MINITABLE] = function(val) return net.WriteData(pon.encode(val), 32) end
+ioRegister[CLIENT][SYNC_MINITABLE] = function(val) return pon.decode(net.ReadData(32)) end
+ioRegister[SERVER][SYNC_INTSTACK] = function(val) 
+	local count = net.WriteUInt(#val, 8)
+
+	for v,k in pairs(val) do
+		net.WriteUInt(k, 8)
+	end
+
+	return
+end
+ioRegister[CLIENT][SYNC_INTSTACK] = function(val) 
+	local count = net.ReadUInt(8)
+	local compiled =  {}
+
+	for k = 1, count do
+		table.insert(compiled, (net.ReadUInt(8)))
+	end
+
+	return compiled
 end
 
 --- Default Sync variables
