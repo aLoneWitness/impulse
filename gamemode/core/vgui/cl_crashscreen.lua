@@ -1,5 +1,7 @@
 local PANEL = {}
 
+local waits = {}
+
 function PANEL:Init()
 	self:SetSize(700, 600)
 	self:Center()
@@ -11,25 +13,34 @@ function PANEL:Init()
  	self:SetAlpha(0)
  	self:AlphaTo(255, 1.2)
 
- 	http.Fetch("http://api.steampowered.com/ISteamApps/GetServersAtAddress/v0001?addr="..game.GetIPAddress(), function(json)
- 		if not IsValid(self) then
- 			return
- 		end
- 		
- 		local data = util.JSONToTable(json)
+ 	local function wait(s, f)
+		table.insert(waits, {SysTime() + s, function()
+			if IsValid(self) then
+				f()
+			end
+		end})
+	end
 
- 		if not data["response"]["servers"] then
- 			self.ServerIsOff = true
- 			self:DoLamar()
- 		else
- 			self.ServerIsOff = false
- 		end
- 	end, function()
- 		self.ServerIsOff = false
- 	end)
+	wait(3.33, function()
+	 	http.Fetch("http://api.steampowered.com/ISteamApps/GetServersAtAddress/v0001?addr="..game.GetIPAddress(), function(json)
+	 		if not IsValid(self) then
+	 			return
+	 		end
+	 		
+	 		local data = util.JSONToTable(json)
+
+	 		if not data["response"]["servers"] or not data["response"]["servers"][0] then
+	 			self.ServerIsOff = true
+	 			self:DoLamar()
+	 		else
+	 			self.ServerIsOff = false
+	 		end
+	 	end, function()
+	 		self.ServerIsOff = false
+	 	end)
+	 end)
 end
 
-local waits = {}
 function PANEL:DoLamar()
 	local function wait(s, f)
 		table.insert(waits, {SysTime() + s, function()
@@ -75,7 +86,7 @@ function PANEL:DoLamar()
 		end)
 	end
 
-	local r = 3.8
+	local r = 1
 	wait(r, function()
 		surface.PlaySound("npc/headcrab/pain1.wav")
 
