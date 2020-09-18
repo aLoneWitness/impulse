@@ -171,6 +171,10 @@ local quickTools = {
 function PANEL:Init()
 	self:Hide()
 	timer.Simple(0, function() -- Time to allow SetPlayer to catch up
+		if not IsValid(self) then
+			return
+		end
+		
 		self:Show()
 		self:SetSize(600, 400)
 		self:Center()
