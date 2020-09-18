@@ -6,6 +6,12 @@ function LoadSaveEnts()
 		local savedEnts = util.JSONToTable( file.Read( "impulse/saves/" .. string.lower( game.GetMap() ) .. ".dat" ) )
 		for v,k in pairs(savedEnts) do
 			local x = ents.Create(k.class)
+
+			if not IsValid(x) then
+				print("[impulse] [save] Entity "..k.class.." does not exist! Skipping!")
+				continue
+			end
+
 			x:SetPos(k.pos)
 			x:SetAngles(k.angle)
 			

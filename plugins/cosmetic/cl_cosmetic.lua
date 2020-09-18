@@ -47,7 +47,6 @@ function MakeCosmetic(ply, id, bone, data, slot)
 	if data.subMaterials then
 		for v,k in pairs(data.subMaterials) do
 			ply.Cosmetics[slot]:SetSubMaterial(v, k)
-			print(k)
 		end
 	end
 

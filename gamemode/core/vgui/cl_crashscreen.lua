@@ -29,13 +29,14 @@ function PANEL:Init()
  	end)
 end
 
+local waits = {}
 function PANEL:DoLamar()
 	local function wait(s, f)
-		timer.Simple(s, function()
+		table.insert(waits, {SysTime() + s, function()
 			if IsValid(self) then
 				f()
 			end
-		end)
+		end})
 	end
 
 	local function doAnim()
@@ -138,6 +139,14 @@ end
 
 function PANEL:Think()
 	self:MoveToFront()
+
+	for v,k in pairs(waits) do
+		if k != nil and k[1] < SysTime() then
+			k[2]()
+
+			waits[v] = nil
+		end
+	end
 end
 
 function PANEL:PaintOver()

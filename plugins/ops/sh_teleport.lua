@@ -41,6 +41,23 @@ local gotoCommand = {
 		if plyTarget and ply != plyTarget then
 			opsGoto(ply, plyTarget:GetPos())
 			ply:Notify("You have teleported to "..plyTarget:Name().."'s position.")
+		elseif string.sub(name, 1, 1) == "#" then
+			local id = string.sub(name, 2)
+
+			if not tonumber(id) then
+				return ply:Notify("Invalid entity ID: "..id)
+			end
+
+			id = tonumber(id)
+
+			local ent = Entity(id)
+
+			if not IsValid(ent) then
+				return ply:Notify("Entity "..id.." does not exist.")
+			end
+
+			opsGoto(ply, ent:GetPos())
+			ply:Notify("You have teleported to Entity "..id.."'s position.")
 		else
 			return ply:Notify("Could not find player: "..tostring(name))
 		end

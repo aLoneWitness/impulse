@@ -88,6 +88,14 @@ function meta:CanBecomeTeam(teamID, notify)
 		end
 	end
 
+	if teamData.customCheck then
+		local r = teamData.customCheck(self, teamID)
+
+		if r != nil and r == false then
+			return false
+		end
+	end
+
 	return true
 end
 
@@ -125,6 +133,14 @@ function meta:CanBecomeTeamClass(classID, notify)
 				if notify then self:Notify(classData.name .. " is full.") end
 				return false
 			end
+		end
+	end
+
+	if classData.customCheck then
+		local r = classData.customCheck(self, classID)
+
+		if r != nil and r == false then
+			return false
 		end
 	end
 
@@ -170,6 +186,14 @@ function meta:CanBecomeTeamRank(rankID, notify)
 				if notify then self:Notify(rankData.name .. " is full.") end
 				return false
 			end
+		end
+	end
+
+	if rankData.customCheck then
+		local r = rankData.customCheck(self, rankID)
+
+		if r != nil and r == false then
+			return false
 		end
 	end
 
