@@ -65,13 +65,15 @@ function impulse.RegisterItem(item)
 				return true -- hacky needs replacement
 			end
 
-			local wep = ply:GetActiveWeapon()
+			local weps = ply:GetWeapons()
 
-			if IsValid(wep) and wep.IsLongsword and wep.Attachments and wep.Attachments[attClass] then
-				return true
-			else
-				return false
+			for v,k in pairs(weps) do
+				if IsValid(k) and k.IsLongsword and k.Attachments and k.Attachments[attClass] then
+					return true
+				end
 			end
+
+			return false
 		end
 
 		function item:OnEquip(ply, itemclass, uid)
