@@ -19,6 +19,8 @@ function GM:OnSchemaLoaded()
 
 		impulse.MenuMessage.Data[data.type] = data
 	end
+
+	LocalPlayer():ConCommand("fov_desired 90") -- weird fix for fovs?
 end
 
 local lastServerData1
