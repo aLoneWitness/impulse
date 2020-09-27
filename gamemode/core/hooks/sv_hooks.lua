@@ -566,6 +566,13 @@ end
 function GM:DoPlayerDeath(ply, attacker, dmginfo)
 	local vel = ply:GetVelocity()
 
+	local ragCount = #ents.FindByClass("prop_ragdoll")
+
+	if ragCount > 32 then
+		print("[impulse] Avoiding ragdoll body spawn for performance reasons... (rag count: "..ragCount..")")
+		return
+	end
+
 	local ragdoll = ents.Create("prop_ragdoll")
 	ragdoll:SetModel(ply:GetModel())
 	ragdoll:SetPos(ply:GetPos())

@@ -474,6 +474,11 @@ function meta:SetInventoryItemEquipped(itemid, state)
 	if not self:Alive() then return end
 	
 	local item = impulse.Inventory.Data[self.impulseID][1][itemid]
+
+	if not item then
+		return
+	end
+	
 	local id = impulse.Inventory.ClassToNetID(item.class)
 	local onEquip = impulse.Inventory.Items[id].OnEquip
 	local unEquip = impulse.Inventory.Items[id].UnEquip

@@ -24,7 +24,7 @@ function PANEL:Think()
 		return self:Remove()
 	end
 
-	if impulse.chatBox and IsValid(impulse.chatBox.frame) then
+	if impulse.chatBox and IsValid(impulse.chatBox.chatLog) and impulse.chatBox.chatLog.active then
 		return self:Remove()
 	end
 end

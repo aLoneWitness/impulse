@@ -126,7 +126,7 @@ function meta:Jail(time, jailData)
 	end
 
 	if pos then
-		self:SetPos(impulse.FindEmptyPos(pos, {self}, 150, 30, Vector(16, 16, 64)))
+		self:SetPos(impulse.FindEmptyPos(pos, {self}, 100, 30, Vector(16, 16, 64)))
 		self:SetEyeAngles(impulse.Config.PrisonAngle)
 
 		self:ClearIllegalInventory()
