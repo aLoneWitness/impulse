@@ -70,6 +70,7 @@ function PANEL:Init()
 		end
 
 		CRASHSCREEN_ALLOW = true
+		LocalPlayer():ConCommand("fov_desired 90") -- weird fix for fovs?
 	end
 
 	local button = vgui.Create("DButton", self.core)
