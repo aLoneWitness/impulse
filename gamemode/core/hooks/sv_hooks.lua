@@ -830,6 +830,10 @@ local function LoadButtons()
 		for v,k in pairs(impulse.Config.Buttons) do
 			if k.pos:DistToSqr(button:GetPos()) < (9 ^ 2) then -- getpos client/server innaccuracy
 				button.ButtonCheck = v
+
+				if k.init then
+					k.init(button)
+				end
 			end
 		end
 	end
