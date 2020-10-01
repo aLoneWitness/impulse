@@ -97,26 +97,33 @@ if SERVER then
 	local dbConfLoaded = false
 
 	if file.Exists(dbFile, "DATA") then
-		local dbConf = impulse.Yaml.Read("data/"..dbFile)
+		local worked, err = pcall(function() impulse.Yaml.Read("data/"..dbFile) end) 
 
-		if dbConf and type(dbConf) == "table" then
-			if dbConf.db and type(dbConf.db) == "table" then
-				table.Merge(impulse.DB, dbConf.db)
-				print("[impulse] [config.yml] Loaded release database config file!")
-				dbConfLoaded = true
+		if worked then
+			local dbConf = impulse.Yaml.Read("data/"..dbFile)
 
-				if dbConf.dev and type(dbConf.dev) == "table" then
-					if dbConf.dev.preview then
-						isPreview:SetInt(1)
+			if dbConf and type(dbConf) == "table" then
+				if dbConf.db and type(dbConf.db) == "table" then
+					table.Merge(impulse.DB, dbConf.db)
+					print("[impulse] [config.yml] Loaded release database config file!")
+					dbConfLoaded = true
+
+					if dbConf.dev and type(dbConf.dev) == "table" then
+						if dbConf.dev.preview then
+							isPreview:SetInt(1)
+						end
 					end
 				end
-			end
 
-			if dbConf.schemadb and dbConf.schemadb[engine.ActiveGamemode()] then
-				impulse.DB.database = dbConf.schemadb[engine.ActiveGamemode()]
-			end
+				if dbConf.schemadb and dbConf.schemadb[engine.ActiveGamemode()] then
+					impulse.DB.database = dbConf.schemadb[engine.ActiveGamemode()]
+				end
 
-			impulse.YML = dbConf
+				impulse.YML = dbConf
+			end
+		else
+			print("[impulse] [config.yml] Error: "..err)
+			SetGlobalString("impulse_fatalerror", "Failed to load config.yml, error: "..err)
 		end
 	end
 

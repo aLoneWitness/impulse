@@ -1,6 +1,6 @@
 function PLUGIN:PlayerAuthed(ply, sid)
 	if not impulse.YML.apis.steam_key then
-		return print("ops FamilySharing: No apis.steam_key defined in config.yml! Can't check for familysharing!")
+		return print("[ops] No apis.steam_key defined in config.yml! Can't check for familysharing!")
 	end
 	
 	local s64id = util.SteamIDTo64(sid)

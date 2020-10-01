@@ -12,6 +12,10 @@ function impulse.Schema.Boot(name)
     SCHEMA_NAME = name
     MsgC(Color( 83, 143, 239 ), "[impulse] Loading '"..SCHEMA_NAME.."' schema...\n")
 
+    if not file.Exists(SCHEMA_NAME, "LUA") then
+        SetGlobalString("impulse_fatalerror", "Failed to load Schema '"..name.."', does not exist.")
+    end
+
     local bootController = SCHEMA_NAME.."/schema/bootcontroller.lua"
 
     if file.Exists(bootController, "LUA") then
