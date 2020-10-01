@@ -986,7 +986,10 @@ end
 function GM:DatabaseConnectionFailed(errorText)
 	SetGlobalString("impulse_fatalerror", "Failed to connect to database. See server console for error.")
 	print("[impulse] [SERIOUS FAULT] DB connection failure... Attempting reconnection...")
-	mysql:Connect(impulse.DB.ip, impulse.DB.username, impulse.DB.password, impulse.DB.database, impulse.DB.port)
+
+	timer.Simple(0.66, function()
+		mysql:Connect(impulse.DB.ip, impulse.DB.username, impulse.DB.password, impulse.DB.database, impulse.DB.port)
+	end)
 end
 
 function GM:PlayerCanPickupWeapon(ply)

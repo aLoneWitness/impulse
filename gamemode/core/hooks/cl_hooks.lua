@@ -21,6 +21,10 @@ function GM:OnSchemaLoaded()
 	end
 end
 
+if engine.ActiveGamemode() == "impulse" then -- debug fallback
+	impulse.SplashScreen = vgui.Create("impulseSplash")
+end
+
 local lastServerData1
 local lastServerData2
 local nextCrashThink = 0

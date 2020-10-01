@@ -29,3 +29,13 @@ RunConsoleCommand("sv_allowupload", "0")
 RunConsoleCommand("sv_allowdownload", "0")
 RunConsoleCommand("sv_allowcslua", "0")
 
+if engine.ActiveGamemode() == "impulse" then
+	local gs = ""
+	for v,k in pairs(engine.GetGamemodes()) do
+		if k.name:find("impulse") and k.name != "impulse" then
+			gs = gs..k.name.."\n"
+		end
+	end
+
+    SetGlobalString("impulse_fatalerror", "No schema loaded. Please place the schema in your gamemodes folder, then set it as your gamemode.\n\nInstalled available schemas:\n"..gs)
+end

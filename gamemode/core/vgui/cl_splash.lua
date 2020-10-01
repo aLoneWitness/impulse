@@ -47,6 +47,37 @@ function PANEL:OnKeyCodeReleased()
 		end
 
 		timer.Simple(0.33, function()
+			if GetGlobalString("impulse_fatalerror", "") != "" then
+				local x, y = ScrW() * .3, ScrH() * .3
+
+				local sad = vgui.Create("DImage", self)
+				sad:SetPos(x + 210, y - 100)
+				sad:SetSize(224, 60)
+				sad:SetImage("impulse/impulse-logo-white.png")
+				sad:SetAlpha(100)
+
+				local sad = vgui.Create("DImage", self)
+				sad:SetPos(x, y)
+				sad:SetSize(180, 180)
+				sad:SetImage("impulse/icons/sad.png")
+
+				local title = vgui.Create("DLabel", self)
+				title:SetPos(x + 210, y)
+				title:SetFont("Impulse-Elements32-Shadow")
+				title:SetText("Fatal Error")
+				title:SizeToContents()
+
+				local desc = vgui.Create("DLabel", self)
+				desc:SetPos(x + 210, y + 70)
+				desc:SetSize(410, 500)
+				desc:SetFont("Impulse-Elements19-Shadow")
+				desc:SetContentAlignment(7)
+				desc:SetWrap(true)
+				desc:SetText(GetGlobalString("impulse_fatalerror", "").."\n\nCheck the server console for more details. When you have corrected the fault, restart the server.")
+
+				return
+			end
+
 			self:Remove()
 
 			if impulse_isNewPlayer or (cookie.GetString("impulse_em_do_intro") or "") == "true" then

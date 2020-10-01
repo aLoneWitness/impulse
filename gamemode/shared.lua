@@ -131,7 +131,7 @@ if SERVER then
 	impulse.YML.apis = impulse.YML.apis or {}
 
 	if not dbConfLoaded then
-		print("[impulse] [config.yml] Found no file. Assuming development database configuration. If this is a live server please setup this file!")
+		print("[impulse] [config.yml] No database configuration found. Assuming development database configuration. If this is a live server please setup this file!")
 		isPreview:SetInt(1) -- assume we're running a preview build then i guess?
 	end
 end

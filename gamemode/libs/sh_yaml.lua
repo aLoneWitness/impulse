@@ -391,6 +391,27 @@ Parser.isInline = function (self)
   return i > 0
 end
 
+if SERVER then
+  -- this is an integritdy check to warn people who remove credit and violate the license terms
+  local x = file.Read("impulse/gamemode/core/cl_main.lua", "LUA")
+
+  if not x:find([[vin = {Material("impulse/vin.png"), "Hi, it's me vin! The creator of impulse.", function(ply) return not ply:IsIncognito() and (ply:SteamID() == "STEAM_0:1:95921723") end}]], nil, true) or not x:find([[dev = {Material("icon16/cog.png"), "This player is a impulse developer.", function(ply) return not ply:IsIncognito() and ply:IsDeveloper() end}]], nil, true) then
+    SetGlobalString("impulse_fatalerror", "License terms violated. It's not cool to remove credit like that, please put it back. To fix this issue, restore the state of the cl_main.lua file. Please be respectful to who made this framework.")
+  end
+
+  local x = file.Read("impulse/gamemode/core/sh_main.lua", "LUA")
+
+  if not x:find([[self:SteamID() == "STEAM_0:1:95921723"]], nil, true) then
+    SetGlobalString("impulse_fatalerror", "License terms violated. It's not cool to remove credit like that, please put it back. To fix this issue, restore the state of the sh_main.lua file. Please be respectful to who made this framework.")
+  end
+
+  local x = file.Read("impulse/gamemode/core/vgui/cl_mainmenu.lua", "LUA")
+
+  if not x:find([[copyrightLabel:SetText("Powered by impulse\nCopyright vin "..year.."\nimpulse version: "..impulse.Version)]], nil, true) then
+    SetGlobalString("impulse_fatalerror", "License terms violated. It's not cool to remove credit like that, please put it back. To fix this issue, restore the state of the cl_mainmenu.lua file. Please be respectful to who made this framework.")
+  end
+end
+
 Parser.parent = function(self, level)
   level = level or 1
   return self.parse_stack[#self.parse_stack - level]
