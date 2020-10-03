@@ -312,7 +312,7 @@ local dropMoneyCommand = {
 					end
 				end
 
-				hook.Run("PlayerDropMoney")
+				hook.Run("PlayerDropMoney", ply, note)
 				ply:Notify("You have dropped "..impulse.Config.CurrencyPrefix..value..".")
 			else
 				return ply:Notify("You cannot afford to drop that amount of money.")
