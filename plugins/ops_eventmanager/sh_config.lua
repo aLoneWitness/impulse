@@ -893,5 +893,52 @@ impulse.Ops.EventManager.Config.Events = {
 	 			OPS_RTCAMS[uid]:Remove()
 	 		end
 		end
+	},
+	["freezeplayers"] = {
+		Cat = "server",
+		Prop = {
+			["freeze"] = true
+		},
+		NeedUID = false,
+		Clientside = false,
+		Do = function(prop, uid)
+	 		for v,k in pairs(player.GetAll()) do
+	 			k:Freeze(prop["freeze"])
+	 		end
+		end
+	},
+	["lookat"] = {
+		Cat = "server",
+		Prop = {
+			["pos"] = Vector(0, 0, 0),
+			["speed"] = 1,
+			["smooth"] = true
+		},
+		NeedUID = false,
+		Clientside = true,
+		Do = function(prop, uid)
+			hook.Remove("Think", "opsEMSmoothLook")
+
+			local t = prop["pos"]
+			local o = LocalPlayer():GetShootPos()
+			local oa = LocalPlayer():EyeAngles()
+			local delta = (t - o):Angle()
+
+			if prop["smooth"] then
+				local x = 0
+				hook.Add("Think", "opsEMSmoothLook", function()
+					x = x + (FrameTime() * prop["speed"])
+					local l = LerpAngle(x, oa, delta)
+
+					LocalPlayer():SetEyeAngles(l)
+
+					if x >= 1 then
+						hook.Remove("Think", "opsEMSmoothLook")
+					end
+				end)
+			else
+				LocalPlayer():SetEyeAngles(delta)
+			end
+		end
 	}
 }
