@@ -42,6 +42,10 @@ if iac then
 	    requiresArg = true,
 	    adminOnly = true,
 	    onRun = function(ply, arg, rawText)
+	    	if true then
+	    		return ply:Notify("This feature has been disabled for now.")
+	    	end
+	    	
 	    	if (ply.iacFlagCool or 0) > CurTime() then
 	    		return ply:Notify("Wait a while before doing more of this...")
 	  		end

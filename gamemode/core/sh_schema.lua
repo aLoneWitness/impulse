@@ -8,7 +8,8 @@ HOOK_CACHE = {}
 -- @realm shared
 -- @string name Schema file name
 -- @internal
-function impulse.Schema.Boot(name)
+function impulse.Schema.Boot()
+    local name = engine.ActiveGamemode()
     SCHEMA_NAME = name
     MsgC(Color( 83, 143, 239 ), "[impulse] Loading '"..SCHEMA_NAME.."' schema...\n")
 
