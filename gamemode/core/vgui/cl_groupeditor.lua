@@ -357,7 +357,7 @@ function PANEL:ShowRanks()
 
 		local removable = true
 		if k[99] or k[0] then
-			lbl:SetText("this group can not be removed")
+			lbl:SetText("this rank can not be removed")
 			removable = false
 		end
 
@@ -430,7 +430,8 @@ function PANEL:ShowRanks()
 					net.Start("impulseGroupDoRankRemove")
 					net.WriteString(v)
 					net.SendToServer()
-				end)
+				end,
+				"Take me back")
 		end
 	end
 

@@ -5,7 +5,6 @@ local newReportCol = Color(173, 255, 47)
 local claimedReportCol = Color(147, 112, 219)
 
 file.CreateDir("impulse/ops")
-file.CreateDir("impulse/ops/reports")
 
 util.AddNetworkString("opsNewReport")
 util.AddNetworkString("opsReportMessage")

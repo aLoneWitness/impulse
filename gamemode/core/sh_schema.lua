@@ -67,6 +67,10 @@ function impulse.Schema.Boot()
     local files, plugins = file.Find(SCHEMA_NAME.."/plugins/*", "LUA")
 
     for v, dir in ipairs(plugins) do
+        if impulse.Config.DisabledPlugins and impulse.Config.DisabledPlugins[dir] then
+            continue
+        end
+        
         MsgC(Color( 83, 143, 239 ), "[impulse] ["..SCHEMA_NAME.."] Loading plugin '"..dir.."'\n")
         impulse.Schema.LoadPlugin(SCHEMA_NAME.."/plugins/"..dir, dir)
     end

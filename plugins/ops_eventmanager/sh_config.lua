@@ -511,7 +511,7 @@ impulse.Ops.EventManager.Config.Events = {
 	["changelevel"] = {
 		Cat = "server",
 		Prop = {
-			["map"] = ".bsp"
+			["map"] = "gm_construct"
 		},
 		NeedUID = false,
 		Clientside = false,

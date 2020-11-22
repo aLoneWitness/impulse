@@ -48,7 +48,7 @@ function PANEL:Init()
 
 	local sub = vgui.Create("DLabel", startScreen)
 	sub:Dock(TOP)
-	sub:SetText("A game by Vinard Industries. Licensed UU product #43257. Rated A for AUGMENTED.\n\nCONRTROLS: ARROW KEYS")
+	sub:SetText("A game by Vinard Industries. Licensed UU product #43257. Rated A for AUGMENTED.\n\nCONTROLS: ARROW KEYS")
 	sub:SetFont("Default")
 	sub:SizeToContents()
 
