@@ -160,7 +160,7 @@ function impulse.chatBox.buildBox()
 				local i = 0
 				local showing = 0
 				local isAdmin = LocalPlayer():IsAdmin()
-				local isLeadAdmin = LocalPlayer():IsUserGroup("leadadmin")
+				local isLeadAdmin = LocalPlayer():IsLeadAdmin()
 				local isSuperAdmin = LocalPlayer():IsSuperAdmin()
 
  				for k, v in pairs(impulse.chatCommands) do

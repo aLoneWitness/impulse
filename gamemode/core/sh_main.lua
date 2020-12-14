@@ -65,7 +65,8 @@ end
 
 local adminGroups = {
     ["admin"] = true,
-    ["leadadmin"] = true
+    ["leadadmin"] = true,
+    ["communitymanager"] = true
 }
 
 function meta:IsAdmin()
@@ -74,6 +75,23 @@ function meta:IsAdmin()
     end
     
     if adminGroups[self.GetUserGroup(self)] then
+        return true
+    end
+
+    return false
+end
+
+local leadAdminGroups = {
+    ["leadadmin"] = true,
+    ["communitymanager"] = true
+}
+
+function meta:IsLeadAdmin()
+    if self.IsSuperAdmin(self) then
+        return true
+    end
+    
+    if leadAdminGroups[self.GetUserGroup(self)] then
         return true
     end
 

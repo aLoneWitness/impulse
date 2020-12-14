@@ -16,13 +16,22 @@ local setHealthCommand = {
             return
         end
 
-        if not ply:IsSuperAdmin() and not ply:IsUserGroup("leadadmin") then
+        if not ply:IsLeadAdmin() then
             hp = math.Clamp(hp, 1, 100)
         end
+
 
         if targ and IsValid(targ) then
             targ:SetHealth(hp)
             ply:Notify("You have set "..targ:Nick().."'s health to "..hp..".")
+
+            if targ == ply then
+                for v,k in pairs(player.GetAll()) do
+                    if k:IsLeadAdmin() then
+                        ply:AddChatText(Color(135, 206, 235), "[ops] Moderator "..ply:SteamName().." set their health to "..hp..".")
+                    end
+                end
+            end
         else
             return ply:Notify("Could not find player: "..tostring(arg[1]))
         end

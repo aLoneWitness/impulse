@@ -493,7 +493,7 @@ function GM:PlayerSay(ply, text, teamChat, newChat)
 				return ""
 			end
 
-			if command.leadAdminOnly == true and (ply:GetUserGroup() != "leadadmin" and not ply:IsSuperAdmin()) then
+			if command.leadAdminOnly == true and not ply:IsLeadAdmin() then
 				ply:Notify("You must be a lead admin to use this command.")
 				return ""
 			end
