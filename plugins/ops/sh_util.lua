@@ -28,7 +28,7 @@ local setHealthCommand = {
             if targ == ply then
                 for v,k in pairs(player.GetAll()) do
                     if k:IsLeadAdmin() then
-                        ply:AddChatText(Color(135, 206, 235), "[ops] Moderator "..ply:SteamName().." set their health to "..hp..".")
+                        k:AddChatText(Color(135, 206, 235), "[ops] Moderator "..ply:SteamName().." set their health to "..hp..".")
                     end
                 end
             end
