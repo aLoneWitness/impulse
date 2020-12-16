@@ -19,12 +19,8 @@ end
 
 local date = os.date("%m-%d")
 function impulse.render.glowgo(x,y,w,h)
-	local col
-	if dateCustom[date] then
-		col = Glow(dateCustom[date][1], dateCustom[date][2], math.abs(math.sin((RealTime() - 0.08) * .2)))
-	else
-		col = Glow(fromCol, toCol, math.abs(math.sin((RealTime() - 0.08) * .2)))
-	end
+	local from, to = hook.Run("GetFrameworkLogoColour")
+	local col = Glow(from or fromCol, to or toCol, math.abs(math.sin((RealTime() - 0.08) * .2)))
 
 	surface.SetMaterial(impulseLogo)
 	surface.SetDrawColor(col)
