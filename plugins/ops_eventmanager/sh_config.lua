@@ -969,8 +969,6 @@ impulse.Ops.EventManager.Config.Events = {
 				["$pp_colour_mulb"] = prop["mul_rgb"].b
 			}
 
-			PrintTable(fx)
-
 			hook.Add("RenderScreenspaceEffects", "opsEMSS", function()
 				DrawColorModify(fx)
 			end)
@@ -998,7 +996,9 @@ impulse.Ops.EventManager.Config.Events = {
 		NeedUID = false,
 		Clientside = true,
 		Do = function(prop, uid)
-			impulse.AddCombineWaypoint(prop["message"], Vector(prop["pos"].x, prop["pos"].y, prop["pos"].z), prop["duration"], prop["iconid"], prop["colid"], prop["textcolid"])
+			if LocalPlayer():IsCP() then
+				impulse.AddCombineWaypoint(prop["message"], Vector(prop["pos"].x, prop["pos"].y, prop["pos"].z), prop["duration"], prop["iconid"], prop["colid"], prop["textcolid"])
+			end
 		end
 	},
 	["combinemessage"] = {
@@ -1011,7 +1011,9 @@ impulse.Ops.EventManager.Config.Events = {
 		NeedUID = false,
 		Clientside = true,
 		Do = function(prop, uid)
-			impulse.AddCombineMessage(prop["message"], prop["col"], prop["nosound"])
+			if LocalPlayer():IsCP() then
+				impulse.AddCombineMessage(prop["message"], prop["col"], prop["nosound"])
+			end
 		end
 	}
 }
