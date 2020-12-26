@@ -380,11 +380,16 @@ impulse.Ops.EventManager.Config.Events = {
 		Prop = {
 			["sound"] = "",
 			["level"] = 75,
-			["volume"] = 1
+			["volume"] = 1,
+			["cponly"] = false
 		},
 		NeedUID = false,
 		Clientside = true,
 		Do = function(prop, uid)
+			if prop["cponly"] and not LocalPlayer():IsCP() then
+				return
+			end
+			
 			LocalPlayer():EmitSound(prop["sound"], prop["level"], nil, prop["volume"])
 		end
 	},
@@ -939,6 +944,74 @@ impulse.Ops.EventManager.Config.Events = {
 			else
 				LocalPlayer():SetEyeAngles(delta)
 			end
+		end
+	},
+	["colourcorrection"] = {
+		Cat = "effect",
+		Prop = {
+			["brightness"] = 0,
+			["contrast"] = 1,
+			["colourlevel"] = 1,
+			["mul_rgb"] = Color(0, 0, 0)
+		},
+		NeedUID = false,
+		Clientside = true,
+		Do = function(prop, uid)
+			local fx = {
+				["$pp_colour_addr"] = 0,
+				["$pp_colour_addg"] = 0,
+				["$pp_colour_addb"] = 0,
+				["$pp_colour_brightness"] = prop["brightness"],
+				["$pp_colour_contrast"] = prop["contrast"],
+				["$pp_colour_colour"] = prop["colourlevel"],
+				["$pp_colour_mulr"] = prop["mul_rgb"].r,
+				["$pp_colour_mulg"] = prop["mul_rgb"].g,
+				["$pp_colour_mulb"] = prop["mul_rgb"].b
+			}
+
+			PrintTable(fx)
+
+			hook.Add("RenderScreenspaceEffects", "opsEMSS", function()
+				DrawColorModify(fx)
+			end)
+		end
+	},
+	["colourcorrection_kill"] = {
+		Cat = "effect",
+		Prop = {},
+		NeedUID = false,
+		Clientside = true,
+		Do = function(prop, uid)
+			hook.Remove("RenderScreenspaceEffects", "opsEMSS")
+		end
+	},
+	["combinewaypoint"] = {
+		Cat = "ui",
+		Prop = {
+			["message"] = "Waypoint message",
+			["pos"] = Vector(0, 0, 0),
+			["duration"] = 60,
+			["iconid"] = 1,
+			["colid"] = 1,
+			["textcolid"] = 1
+		},
+		NeedUID = false,
+		Clientside = true,
+		Do = function(prop, uid)
+			impulse.AddCombineWaypoint(prop["message"], Vector(prop["pos"].x, prop["pos"].y, prop["pos"].z), prop["duration"], prop["iconid"], prop["colid"], prop["textcolid"])
+		end
+	},
+	["combinemessage"] = {
+		Cat = "ui",
+		Prop = {
+			["message"] = "Message text here",
+			["col"] = Color(255, 0, 0),
+			["nosound"] = true
+		},
+		NeedUID = false,
+		Clientside = true,
+		Do = function(prop, uid)
+			impulse.AddCombineMessage(prop["message"], prop["col"], prop["nosound"])
 		end
 	}
 }
