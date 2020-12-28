@@ -464,6 +464,15 @@ impulse.Ops.EventManager.Config.Events = {
 			end)
 		end
 	},
+	["stopallsounds"] = {
+		Cat = "sound",
+		Prop = {},
+		NeedUID = false,
+		Clientside = true,
+		Do = function(prop, uid)
+			LocalPlayer():ConCommand("stopsound")
+		end
+	},
 	["urlmusic_play"] = {
 		Cat = "music",
 		Prop = {
@@ -815,12 +824,45 @@ impulse.Ops.EventManager.Config.Events = {
 			end
 		end
 	},
-	["playscene"] = {
+	["createscene"] = {
 		Cat = "scene",
 		Prop = {
-			["scene"] = ""
+			["pos"] = Vector(0, 0, 0),
+			["endpos"] = Vector(0, 0, 0),
+			["ang"] = Vector(0, 0, 0),
+			["endang"] = Vector(0, 0, 0),
+			["posSpeed"] = 0.1,
+			["posNoLerp"] = false,
+			["speed"] = 0.15,
+			["fovFrom"] = 70,
+			["fovTo"] = 70,
+			["fovSpeed"] = 0.2,
+			["text"] = "Optional text",
+			["time"] = 6,
+			["fadeIn"] = true,
+			["fadeOut"] = true
 		},
-		NeedUID = false,
+		NeedUID = true,
+		Clientside = true,
+		Do = function(prop, uid)
+			if not impulse.Ops.EventManager.Scenes then
+				return
+			end
+
+			if prop["text"] == "" then
+				prop["text"] = nil
+			end
+
+			prop["ang"] = Angle(prop["ang"].x, prop["ang"].y, prop["ang"].z)
+			prop["endang"] = Angle(prop["ang"].x, prop["ang"].y, prop["ang"].z)
+			
+			impulse.Ops.EventManager.Scenes[uid] = {prop}
+		end
+	},
+	["playscene"] = {
+		Cat = "scene",
+		Prop = {},
+		NeedUID = true,
 		Clientside = false,
 		Do = function(prop, uid)
 			for v,k in pairs(player.GetAll()) do
@@ -828,7 +870,7 @@ impulse.Ops.EventManager.Config.Events = {
 			end
 
 			net.Start("impulseOpsEMPlayScene")
-			net.WriteString(prop["scene"])
+			net.WriteString(uid)
 			net.Broadcast()
 		end
 	},

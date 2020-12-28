@@ -51,5 +51,5 @@ net.Receive("impulseOpsEMPlayScene", function()
 		return print("[impulse] Error! Can't find sceneset: "..scene)
 	end
 
-	impulse.Scenes.PlaySet(scene)
+	impulse.Scenes.PlaySet(impulse.Ops.EventManager.Scenes[scene])
 end)

@@ -86,6 +86,18 @@ function PANEL:SetSequence(key, data)
 		impulse.Ops.EventManager.SequencePush(key)
 	end
 
+	function uploadSeq:DoRightClick()
+		impulse.Ops.EventManager.SequencePush(key)
+
+		timer.Simple(0.1, function()
+			net.Start("impulseOpsEMPlaySequence")
+			net.WriteString(key)
+			net.SendToServer()
+		end)
+
+		LocalPlayer():Notify("Quick pushed sequence, playing...")
+	end
+
 	function self.main:Toggle() -- allowing them to accordion causes bugs
 		return
 	end
@@ -225,7 +237,7 @@ function PANEL:AddEvent(id, eventdata)
 
 		local x, y = panel.Dad:GetPos()
 		panel.Dad.Properties:SetPos(x + panel.Dad:GetWide() + 10, y)
-		panel.Dad.Properties:SetSize(300, 300)
+		panel.Dad.Properties:SetSize(300, 500)
 
 		local x = self
 
