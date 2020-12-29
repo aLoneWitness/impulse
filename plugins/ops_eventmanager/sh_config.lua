@@ -812,6 +812,63 @@ impulse.Ops.EventManager.Config.Events = {
  			OPS_NPCS[uid]:Fire("FireCanister")
  		end
 	},
+	["thumper_spawn"] = {
+		Cat = "npc",
+		Prop = {
+			["pos"] = Vector(0, 0, 0),
+			["ang"] = Vector(0, 0, 0),
+			["on"] = false,
+			["isBig"] = false
+		},
+		NeedUID = true,
+		Clientside = false,
+		Do = function(prop, uid)
+ 			OPS_NPCS = OPS_NPCS or {}
+
+ 			if OPS_NPCS[uid] and IsValid(OPS_NPCS[uid]) then
+ 				OPS_NPCS[uid]:Remove()
+ 			end
+
+ 			OPS_NPCS[uid] = ents.Create("prop_thumper")
+ 			OPS_NPCS[uid]:SetPos(prop["pos"])
+ 			OPS_NPCS[uid]:SetAngles(Angle(prop["ang"].x, prop["ang"].y, prop["ang"].z))
+ 			OPS_NPCS[uid]:Spawn()
+ 			OPS_NPCS[uid]:Activate()
+
+ 			if prop["on"] then
+ 				OPS_NPCS[uid]:Fire("Enable")
+ 			else
+ 				OPS_NPCS[uid]:Fire("Disable")
+ 			end
+
+ 			if prop["isBig"] then
+ 				OPS_NPCS[uid]:SetKeyValue("dustscale", 256)
+ 			else
+ 				OPS_NPCS[uid]:SetKeyValue("dustscale", 128)
+ 			end
+		end
+	},
+	["thumper_setstate"] = {
+		Cat = "npc",
+		Prop = {
+			["on"] = false
+		},
+		NeedUID = true,
+		Clientside = false,
+		Do = function(prop, uid)
+ 			OPS_NPCS = OPS_NPCS or {}
+
+ 			if not OPS_NPCS[uid] or not IsValid(OPS_NPCS[uid]) then
+ 				return
+ 			end
+
+ 			if prop["on"] then
+ 				OPS_NPCS[uid]:Fire("Enable")
+ 			else
+ 				OPS_NPCS[uid]:Fire("Disable")
+ 			end
+		end
+	},
 	["citycodeset"] = {
 		Cat = "server",
 		Prop = {

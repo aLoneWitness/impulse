@@ -4,12 +4,39 @@ function PANEL:Init()
 	self:MakePopup()
 end
 
+local naturalOrder = {
+	["pos"] = 1,
+	["endpos"] = 2,
+	["start_pos"] = 3,
+	["end_pos"] = 4,
+	["ang"] = 5,
+	["start_ang"] = 6,
+	["end_ang"] = 7,
+	["endang"] = 8,
+	["class"] = 9,
+	["sound"] = 10,
+	["model"] = 11,
+	["message"] = 12,
+	["text"] = 12.1,
+	["pos_x"] = 13,
+	["pos_y"] = 14,
+	["start"] = 15,
+	["end"] = 16,
+	["colour"] = 17,
+	["col"] = 18,
+	["duration"] = 19,
+	["time"] = 19.1,
+	["speed"] = 20,
+	["url"] = 21,
+	["volume"] = 22,
+	["level"] = 23
+}
 function PANEL:SetTable(prop, callback)
 	self.props = vgui.Create("DProperties", self)
 	--self.props:DockMargin(0, 30, 0, 0)
 	self.props:Dock(FILL)
 
-	for v,k in pairs(prop) do
+	local function setupProp(v, k)
 		if isbool(k) then
 			local row = self.props:CreateRow("Properties", v)
 			row:Setup("Boolean")
@@ -93,6 +120,30 @@ function PANEL:SetTable(prop, callback)
 				callback(v, Vector(vec[1], vec[2], vec[3]))
 			end
 		end
+	end
+
+	local done = {}
+	local add = {}
+
+	for v,k in pairs(naturalOrder) do
+		if prop[v] then
+			add[k] = v
+		end
+
+		done[v] = true
+	end
+
+	for v,k in SortedPairs(add) do
+		setupProp(k, prop[k])
+	end
+
+
+	for v,k in pairs(prop) do
+		if done[v] then
+			continue
+		end
+		
+		setupProp(v, k)
 	end
 end
 
