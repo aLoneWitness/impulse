@@ -36,18 +36,20 @@ function PANEL:Init()
 	end)
 	menuFile:AddOption("Load sequence", function()
 		local fb = vgui.Create("DFrame")
-		fb:SetSize(500, 200)
+		fb:SetSize(600, 400)
 		fb:SetSizable(true)
 		fb:Center()
 		fb:MakePopup()
 		fb:SetTitle("ops event manager load sequence")
 
 		local browser = vgui.Create("DFileBrowser", fb)
+		browser:SetTall(380)
 		browser:Dock(FILL)
 		browser:SetPath("DATA")
 		browser:SetBaseFolder("impulse/ops/eventmanager")
 		browser:SetOpen(true)
 		browser:SetCurrentFolder("impulse/ops/eventmanager")
+		browser:SetName("eventmanager")
 		browser:SetFileTypes("*.json")
 
 		function browser:OnSelect(path)
@@ -55,7 +57,7 @@ function PANEL:Init()
 
 			if not result then
 				surface.PlaySound("common/bugreporter_failed.wav")
-				LocalPlayer():Notify(msg)
+				LocalPlayer():Notify(msg..".")
 				return
 			end
 

@@ -119,6 +119,28 @@ function PANEL:SetTable(prop, callback)
 
 				callback(v, Vector(vec[1], vec[2], vec[3]))
 			end
+
+			local i = vgui.Create("DImageButton", row)
+			i:SetSize(16, 16)
+			i:SetPos(105, 2)
+			i:SetIcon("icon16/map_edit.png")
+			i:SetTooltip("Quick set")
+
+			function i:DoClick()
+				local m = DermaMenu()
+
+				m:AddOption("Use eye pos", function() 
+					local x = LocalPlayer():EyePos()
+					row:SetValue(x.x..", "..x.y..", "..x.z)
+					callback(v, x)
+				end)
+				m:AddOption("Use eye angle", function() 
+					local x = LocalPlayer():EyeAngles()
+					row:SetValue(x.p..", "..x.y..", "..x.r)
+					callback(v, Vector(x.p, x.y, x.r))
+				end)
+				m:Open()
+			end
 		end
 	end
 
