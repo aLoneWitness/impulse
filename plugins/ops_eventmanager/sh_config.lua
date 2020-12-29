@@ -157,7 +157,7 @@ impulse.Ops.EventManager.Config.Events = {
 			ef:SetOrigin(prop["pos"])
 			ef:SetScale(prop["scale"])
 
-			util.Effect(prop["name"], ef)
+			util.Effect(prop["name"], ef, true, true)
 		end
 	},
 	["makefire"] = {
@@ -850,6 +850,7 @@ impulse.Ops.EventManager.Config.Events = {
 			["endang"] = Vector(0, 0, 0),
 			["posSpeed"] = 0.1,
 			["posNoLerp"] = false,
+			["fovNoLerp"] = false,
 			["speed"] = 0.15,
 			["fovFrom"] = 70,
 			["fovTo"] = 70,
@@ -858,7 +859,9 @@ impulse.Ops.EventManager.Config.Events = {
 			["time"] = 6,
 			["fadeIn"] = true,
 			["fadeOut"] = true,
-			["noHUDReEnable"] = false
+			["noHUDReEnable"] = false,
+			["noHideProps"] = false,
+			["hidePlayers"] = true
 		},
 		NeedUID = true,
 		Clientside = true,
@@ -872,7 +875,7 @@ impulse.Ops.EventManager.Config.Events = {
 			end
 
 			prop["ang"] = Angle(prop["ang"].x, prop["ang"].y, prop["ang"].z)
-			prop["endang"] = Angle(prop["ang"].x, prop["ang"].y, prop["ang"].z)
+			prop["endang"] = Angle(prop["endang"].x, prop["endang"].y, prop["endang"].z)
 			
 			impulse.Ops.EventManager.Scenes[uid] = {prop}
 		end

@@ -34,7 +34,7 @@ function impulse.Scenes.Play(stage, sceneData, onDone, skipPVS, preLoad)
 		net.SendToServer()
 	end
 
-	hideEnts(true, sceneData.hidePlayers)
+	hideEnts((sceneData.noHideProps == nil and true) or sceneData.noHideProps, sceneData.hidePlayers)
 
 	local fov
 	local lastAdd = 0

@@ -301,9 +301,11 @@ function GM:CalcView(player, origin, angles, fov)
 				return false
 			end
 			
-			if ent:GetNoDraw() then
+			if ent.GetNoDraw(ent) then
 				return false
 			end
+
+			return true
 		end
 		
 		local tr = util.TraceLine(t)
