@@ -143,6 +143,23 @@ impulse.Ops.EventManager.Config.Events = {
 			ParticleEffectAttach(prop["name"], PATTACH_ABSORIGIN_FOLLOW, OPS_ENTS[uid], 0)
 		end
 	},
+	["effect"] = {
+		Cat = "effect",
+		Prop = {
+			["pos"] = Vector(0, 0, 0),
+			["scale"] = 1,
+			["name"] = "effect_name"
+		},
+		NeedUID = true,
+		Clientside = true,
+		Do = function(prop, uid)
+			local ef = EffectData()
+			ef:SetOrigin(prop["pos"])
+			ef:SetScale(prop["scale"])
+
+			util.Effect(prop["name"], ef)
+		end
+	},
 	["makefire"] = {
 		Cat = "effect",
 		Prop = {
@@ -840,7 +857,8 @@ impulse.Ops.EventManager.Config.Events = {
 			["text"] = "Optional text",
 			["time"] = 6,
 			["fadeIn"] = true,
-			["fadeOut"] = true
+			["fadeOut"] = true,
+			["noHUDReEnable"] = false
 		},
 		NeedUID = true,
 		Clientside = true,

@@ -100,7 +100,10 @@ function impulse.Scenes.Play(stage, sceneData, onDone, skipPVS, preLoad)
 		timer.Simple(sceneData.time, function()
 			hook.Remove("CalcView", "impulseScene")
 			hook.Remove("HUDPaint", "impulseScene")
-			impulse.hudEnabled = true
+
+			if not sceneData.noHUDReEnable then
+				impulse.hudEnabled = true
+			end
 
 			hideEnts(false)
 

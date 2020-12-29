@@ -296,7 +296,15 @@ function GM:CalcView(player, origin, angles, fov)
 
 		t.endpos = t.endpos + angles:Right() * offset.y
 		t.endpos = t.endpos + angles:Up() * offset.z
-		t.filter = player
+		t.filter = function(ent)
+			if ent == LocalPlayer() then
+				return false
+			end
+			
+			if ent:GetNoDraw() then
+				return false
+			end
+		end
 		
 		local tr = util.TraceLine(t)
 
