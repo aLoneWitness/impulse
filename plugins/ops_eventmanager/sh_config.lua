@@ -10,7 +10,8 @@ impulse.Ops.EventManager.Config.CategoryIcons = {
 	["ent"] = "icon16/brick.png",
 	["cookies"] = "icon16/database.png",
 	["script"] = "icon16/script_code_red.png",
-	["rtcamera"] = "icon16/camera.png"
+	["rtcamera"] = "icon16/camera.png",
+	["loot"] = "icon16/briefcase.png"
 }
 
 impulse.Ops.EventManager.Config.Events = {
@@ -581,7 +582,7 @@ impulse.Ops.EventManager.Config.Events = {
 		end
 	},
 	["itemspawn"] = {
-		Cat = "server",
+		Cat = "loot",
 		Prop = {
 			["itemclass"] = "item_name",
 			["pos"] = Vector(0, 0, 0)
@@ -591,6 +592,56 @@ impulse.Ops.EventManager.Config.Events = {
 		Do = function(prop, uid)
 			local x = impulse.Inventory.SpawnItem(prop["itemclass"], prop["pos"])
 			x.IsRestrictedItem = true
+		end
+	},
+	["ammobox_spawn"] = {
+		Cat = "loot",
+		Prop = {
+			["pos"] = Vector(0, 0, 0),
+			["ang"] = Vector(0, 0, 0),
+			["physics"] = false
+		},
+		NeedUID = true,
+		Clientside = false,
+		Do = function(prop, uid)
+			OPS_ENTS = OPS_ENTS or {}
+
+			if OPS_ENTS and OPS_ENTS[uid] and IsValid(OPS_ENTS[uid]) then
+				OPS_ENTS[uid]:Remove()
+			end
+
+			local ent = ents.Create("impulse_hl2rp_eventammobox")
+			ent:SetPos(prop["pos"])
+			ent:SetAngles(Angle(prop["ang"].x, prop["ang"].y, prop["ang"].z))
+			ent:Spawn()
+			ent:Activate()
+
+			local phys = ent:GetPhysicsObject()
+
+			if phys and phys:IsValid() and prop["physics"] then
+				phys:EnableMotion(true)
+			elseif phys and phys:IsValid() then
+				phys:EnableMotion(false)
+			end
+
+			if prop["ignite"] then
+				ent:Ignite(120)
+			end
+
+			OPS_ENTS[uid] = ent
+		end
+	},
+	["ammobox_remove"] = {
+		Cat = "loot",
+		Prop = {},
+		NeedUID = true,
+		Clientside = false,
+		Do = function(prop, uid)
+			OPS_ENTS = OPS_ENTS or {}
+
+			if OPS_ENTS and OPS_ENTS[uid] and IsValid(OPS_ENTS[uid]) then
+				OPS_ENTS[uid]:Remove()
+			end
 		end
 	},
 	["setcookie"] = {
@@ -635,7 +686,7 @@ impulse.Ops.EventManager.Config.Events = {
 
  			if prop["cpsarefriendly"] then
  				for v,k in pairs(player.GetAll()) do
- 					if k:IsCP() then
+ 					if k:IsCP() or k:GetMoveType() == MOVETYPE_NOCLIP then
  						OPS_NPCS[uid]:AddEntityRelationship(k, D_LI, 99)
  					end
  				end
@@ -832,6 +883,11 @@ impulse.Ops.EventManager.Config.Events = {
  			OPS_NPCS[uid] = ents.Create("prop_thumper")
  			OPS_NPCS[uid]:SetPos(prop["pos"])
  			OPS_NPCS[uid]:SetAngles(Angle(prop["ang"].x, prop["ang"].y, prop["ang"].z))
+
+ 			if prop["isBig"] then
+ 				OPS_NPCS[uid]:SetModel("models/props_combine/combinethumper001a.mdl")
+ 			end
+ 			
  			OPS_NPCS[uid]:Spawn()
  			OPS_NPCS[uid]:Activate()
 
@@ -843,6 +899,7 @@ impulse.Ops.EventManager.Config.Events = {
 
  			if prop["isBig"] then
  				OPS_NPCS[uid]:SetKeyValue("dustscale", 256)
+
  			else
  				OPS_NPCS[uid]:SetKeyValue("dustscale", 128)
  			end

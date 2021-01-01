@@ -416,9 +416,13 @@ impulse.RegisterChatCommand("/invsearch", searchCommand)
 
 local eventCommand = {
 	description = "Sends a global chat message to all players. Only for use in events.",
-	superAdminOnly = true,
+	leadAdminOnly = true,
 	requiresArg = true,
 	onRun = function(ply, arg, rawText)
+		if ply:GetUserGroup() == "leadadmin" then
+			return
+		end
+		
 		for v,k in pairs(player.GetAll()) do
 			k:SendChatClassMessage(14, rawText, ply)
 		end

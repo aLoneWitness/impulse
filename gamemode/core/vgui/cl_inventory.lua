@@ -51,7 +51,12 @@ function PANEL:Init()
 	self.modelPreview:SetModel(model, skin)
 	self.modelPreview:MoveToBack()
 	self.modelPreview:SetCursor("arrow")
-	self.modelPreview:SetFOV((324 / ScrH()) * 100) -- a incredible equation that makes the model fit onto the ui, patent by professor vin
+
+	if ScrH() > 2159 then
+		self.modelPreview:SetFOV((324 / ScrH()) * 130) -- a incredible equation that makes the model fit onto the ui, patent by professor vin
+	else
+		self.modelPreview:SetFOV((324 / ScrH()) * 100) -- a incredible equation that makes the model fit onto the ui, patent by professor vin
+	end
 
 	function self.modelPreview:LayoutEntity(ent)
 		ent:SetAngles(Angle(-1, 45, 0))

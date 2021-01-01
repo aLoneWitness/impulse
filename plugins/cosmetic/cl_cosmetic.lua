@@ -55,7 +55,7 @@ function MakeCosmetic(ply, id, bone, data, slot)
 	ply.Cosmetics[slot].owner = ply
 end
 
-local function RemoveCosmetic(ply, ent, slot)
+function RemoveCosmetic(ply, ent, slot)
 	ply.Cosmetics[slot] = nil
 	SafeRemoveEntity(ent)
 end
@@ -70,20 +70,40 @@ hook.Add("PostPlayerDraw", "impulseCosmeticDraw", function(k)
 	if k.Cosmetics then
 		for a,b in pairs(k.Cosmetics) do
 			if not IsValid(b) then continue end
-			local bone = k:LookupBone(b.bone)
+			local bone
+			local attach
+			local matrix
+			local pos
+			local ang
 
-			if not bone then
-				return
+			if b.drawdata.attachment then
+				local lk = k:LookupAttachment(b.drawdata.attachment)
+
+				if lk == "0" then
+					return
+				end
+
+				local attach = k:GetAttachment(lk)
+				
+				pos = attach.Pos
+				ang = attach.Ang
+			else
+				bone = k:LookupBone(b.bone)
+
+				if not bone then
+					return
+				end
+				
+				matrix = k:GetBoneMatrix(bone)
+
+				if not matrix then
+					return
+				end
+
+				pos = matrix:GetTranslation()
+				ang = matrix:GetAngles()
 			end
-			
-			local matrix = k:GetBoneMatrix(bone)
 
-			if not matrix then
-				return
-			end
-
-			local pos = matrix:GetTranslation()
-			local ang = matrix:GetAngles()
 			local f = ang:Forward()
 			local u = ang:Up()
 			local r = ang:Right()
@@ -165,20 +185,41 @@ hook.Add("SetupInventoryModel", "impulseDrawCosmetics", function(panel)
 		if k.Cosmetics then
 			for a,b in pairs(k.Cosmetics) do
 				if not IsValid(b) then continue end
-				local bone = k:LookupBone(b.bone)
 
-				if not bone then
-					return
+				local bone
+				local attach
+				local matrix
+				local pos
+				local ang
+
+				if b.attachment then
+					local lk = k:LookupAttachment(b.attachment)
+
+					if lk == "0" then
+						return
+					end
+
+					local attach = k:GetAttachment(lk)
+					
+					pos = attach.Pos
+					ang = attach.Ang
+				else
+					bone = k:LookupBone(b.bone)
+
+					if not bone then
+						return
+					end
+					
+					matrix = k:GetBoneMatrix(bone)
+
+					if not matrix then
+						return
+					end
+
+					pos = matrix:GetTranslation()
+					ang = matrix:GetAngles()
 				end
-				
-				local matrix = k:GetBoneMatrix(bone)
 
-				if not matrix then
-					return
-				end
-
-				local pos = matrix:GetTranslation()
-				local ang = matrix:GetAngles()
 				local f = ang:Forward()
 				local u = ang:Up()
 				local r = ang:Right()

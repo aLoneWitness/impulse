@@ -39,9 +39,9 @@ local topCol = Color(30, 30, 30, 200)
 local bodyCol = Color(80, 80, 80, 100)
 local bodyColOp = Color(80, 80, 80, 200)
 function SKIN:PaintFrame(panel, w, h)
-    impulse.blur( panel, 10, 20, 255 )
-	draw.RoundedBox( 0, 0, 0, w, h, topCol) -- this is the body of the frame
-    draw.RoundedBox( 0, 0, 0, w, 25, bodyCol) -- this is the "top bar" of the derma frame
+    impulse.blur(panel, 10, 20, 255)
+	draw.RoundedBox(0, 0, 0, w, h, topCol) -- this is the body of the frame
+    draw.RoundedBox(0, 0, 0, w, 25, bodyCol) -- this is the "top bar" of the derma frame
 end
 
 function SKIN:PaintMenuBar(panel, w, h)
@@ -96,14 +96,14 @@ function SKIN:PaintScrollBarGrip(panel, w, h)
     surface.DrawRect(1, 0, w - 2, h)
 end
 
-function SKIN:PaintButtonDown( panel, w, h )
-	if ( !panel.m_bBackground ) then return end
+function SKIN:PaintButtonDown(panel, w, h)
+	if !panel.m_bBackground then return end
 
-	if ( panel.Depressed || panel:IsSelected() ) then
+	if panel.Depressed || panel:IsSelected() then
 		return self.tex.Scroller.DownButton_Down( 0, 0, w, h )
 	end
 
-	if ( panel.Hovered ) then
+	if panel.Hovered then
 		return self.tex.Scroller.DownButton_Hover(0, 0, w, h, Color(130, 130, 130, 200))
 	end
 
