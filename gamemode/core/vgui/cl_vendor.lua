@@ -84,24 +84,51 @@ function PANEL:SetupVendor()
 	self.vendorScroll:SetSize(340, h - 83)
 
 	for v,k in pairs(self.Vendor.Sell) do
-		local itemid = impulse.Inventory.ClassToNetID(v)
+		if not k.CanBuy or k.CanBuy(LocalPlayer()) then
+			local itemid = impulse.Inventory.ClassToNetID(v)
 
-		if not itemid then
-			print("[impulse] "..v.." is invalid!")
-			continue
+			if not itemid then
+				print("[impulse] "..v.." is invalid!")
+				continue
+			end
+
+			local item = impulse.Inventory.Items[itemid]
+
+			if not item then
+				print("[impulse] Failed to resolve ItemID "..itemid.."! (Class "..v..")!")
+				continue
+			end
+
+			local vendorItem = self.vendorScroll:Add("impulseVendorItem")
+			vendorItem:SetItem(item, k)
+			vendorItem.Parent = self
+			vendorItem:Dock(TOP)
 		end
 
-		local item = impulse.Inventory.Items[itemid]
+		empty = false
+	end
 
-		if not item then
-			print("[impulse] Failed to resolve ItemID "..itemid.."! (Class "..v..")!")
-			continue
+	for v,k in pairs(self.Vendor.Sell) do
+		if k.CanBuy and not k.CanBuy(LocalPlayer()) then
+			local itemid = impulse.Inventory.ClassToNetID(v)
+
+			if not itemid then
+				print("[impulse] "..v.." is invalid!")
+				continue
+			end
+
+			local item = impulse.Inventory.Items[itemid]
+
+			if not item then
+				print("[impulse] Failed to resolve ItemID "..itemid.."! (Class "..v..")!")
+				continue
+			end
+
+			local vendorItem = self.vendorScroll:Add("impulseVendorItem")
+			vendorItem:SetItem(item, k)
+			vendorItem.Parent = self
+			vendorItem:Dock(TOP)
 		end
-
-		local vendorItem = self.vendorScroll:Add("impulseVendorItem")
-		vendorItem:SetItem(item, k)
-		vendorItem.Parent = self
-		vendorItem:Dock(TOP)
 
 		empty = false
 	end

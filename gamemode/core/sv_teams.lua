@@ -24,7 +24,6 @@ function meta:SetTeam(teamID, forced)
 	end
 
 	self:ResetSubMaterials()
-	self:StripWeapons()
 
 	if self:IsCP() or teamData.cp then
 		self:StripAmmo()
@@ -32,6 +31,7 @@ function meta:SetTeam(teamID, forced)
 	
 	self:UnEquipInventory()
 	self:ClearRestrictedInventory()
+	self:StripWeapons()
 	
 	if teamData.loadout then
 		for v,weapon in pairs(teamData.loadout) do
@@ -198,7 +198,7 @@ function meta:SetTeamRank(rankID)
 		self:SetBodyGroups("0000000")
 	end
 
-	if rankData.subMaterial then
+	if rankData.subMaterial and not classData.noSubMats then
 		for v,k in pairs(rankData.subMaterial) do
 			self:SetSubMaterial(v - 1, k)
 
@@ -383,11 +383,11 @@ function meta:SetupWhitelists()
 			local level = k.level
 			local realTeam = impulse.Teams.NameRef[teamName]
 
-			if not realTeam then -- team does not exist
-				continue
-			end
+			--if not realTeam then -- team does not exist
+			--	continue
+			--end
 
-			self.Whitelists[realTeam] = level
+			self.Whitelists[realTeam or k.team] = level
 		end
 	end)
 end

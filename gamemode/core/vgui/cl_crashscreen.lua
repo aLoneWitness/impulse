@@ -82,7 +82,9 @@ function PANEL:DoLamar()
 		self.backsoon:AlphaTo(200, 8)
 
 		timer.Simple(8, function()
-			self.backsoon:AlphaTo(0, 10)
+			if IsValid(self) then
+				self.backsoon:AlphaTo(0, 10)
+			end
 		end)
 	end
 

@@ -108,6 +108,12 @@ function meta:CanBecomeTeamClass(classID, notify)
 
 	if self:GetTeamClass() == classID then return false end
 
+	if classData.whitelistLevel and classData.whitelistUID and not self:HasTeamWhitelist(classData.whitelistUID, classData.whitelistLevel) then
+		local add = classData.whitelistFailMessage or ""
+		if notify then self:Notify("You must be whitelisted to play as this rank. "..add) end
+		return false
+	end
+
 	if classData.xp and classData.xp > self:GetXP() then
 		if notify then self:Notify("You don't have the XP required to play as this class.") end
 		return false
