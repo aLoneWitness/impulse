@@ -684,11 +684,19 @@ impulse.Ops.EventManager.Config.Events = {
  				OPS_NPCS[uid]:Give(prop["weapon"])
  			end
 
+ 			local all = player.GetAll()
+
  			if prop["cpsarefriendly"] then
- 				for v,k in pairs(player.GetAll()) do
- 					if k:IsCP() or k:GetMoveType() == MOVETYPE_NOCLIP then
+ 				for v,k in pairs(all) do
+ 					if k:IsCP() then
  						OPS_NPCS[uid]:AddEntityRelationship(k, D_LI, 99)
  					end
+ 				end
+ 			end
+
+ 			for v,k in pairs(all) do
+ 				if k.GetMoveType(k) == MOVETYPE_NOCLIP then
+ 					OPS_NPCS[uid]:AddEntityRelationship(k, D_NU, 99)
  				end
  			end
 		end

@@ -161,14 +161,4 @@ if GExtension then
     }
 
     impulse.RegisterChatCommand("/warn", warnCommand)
-
-    local warnViewCommand = {
-        description = "Allows you to view your warnings.",
-        onRun = function(ply, arg, rawText)
-            net.Start("GExtension_Net_WarningsPanelShow")
-            net.Send(ply)
-        end
-    }
-
-    impulse.RegisterChatCommand("/warnings", warnViewCommand)
 end

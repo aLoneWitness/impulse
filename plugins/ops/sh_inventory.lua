@@ -100,6 +100,11 @@ local restoreInvCommand = {
 				plyTarget:Notify("Your inventory has been restored to its last state by a game moderator.")
 				ply:Notify("You have restored "..plyTarget:Nick().."'s inventory to the last state.")
 
+                for v,k in pairs(player.GetAll()) do
+                    if k:IsLeadAdmin() then
+                        k:AddChatText(Color(135, 206, 235), "[ops] Moderator "..ply:SteamName().." restored "..plyTarget:SteamName().."'s inventory.")
+                    end
+                end
 			else
 				return ply:Notify("No restore point found for this player.")
 			end

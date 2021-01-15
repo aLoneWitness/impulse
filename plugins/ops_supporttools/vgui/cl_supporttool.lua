@@ -142,6 +142,18 @@ function PANEL:Init()
 		if id == "" or not tonumber(id) then
 			return LocalPlayer():Notify("Invalid Steam64ID.")
 		end
+
+		if not refund2 or table.Count(refund2) < 1 then
+			return LocalPlayer():Notify("No refund items selected.")
+		end
+
+		local data = pon.encode(refund)
+
+		net.Start("impulseOpsSTDoRefund")
+		net.WriteString(id)
+		net.WriteUInt(#data, 32)
+		net.WriteData(data, #data)
+		net.SendToServer()
 	end
 
 	sheet:AddSheet("Refunder", b, "icon16/bricks.png")
