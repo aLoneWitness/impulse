@@ -18,7 +18,16 @@ local function hideEnts(hide, hidePlayers)
 
 	if hidePlayers or not hide then
 		for v,k in pairs(player.GetAll()) do
-			k:SetNoDraw(hidePlayers or false)
+			if not hidePlayers and k.sceneHide then
+				k:SetNoDraw(false)
+				k.sceneHide = nil
+				continue
+			end
+			
+			if not k:GetNoDraw() then
+				k:SetNoDraw(hidePlayers or false)
+				k.sceneHide = true
+			end
 		end
 	end
 end
