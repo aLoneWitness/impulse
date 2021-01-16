@@ -24,8 +24,8 @@ local function hideEnts(hide, hidePlayers)
 				continue
 			end
 			
-			if not k:GetNoDraw() then
-				k:SetNoDraw(hidePlayers or false)
+			if hidePlayers and not k:GetNoDraw() then
+				k:SetNoDraw(hidePlayers)
 				k.sceneHide = true
 			end
 		end
