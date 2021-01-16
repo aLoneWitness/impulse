@@ -1395,8 +1395,10 @@ net.Receive("impulseRequestWhitelists", function(len, ply)
 		net.WriteUInt(count, 4)
 
 		for v,k in pairs(whitelists) do
-			net.WriteUInt(v, 8)
-			net.WriteUInt(k, 8)
+			if isnumber(v) then
+				net.WriteUInt(v, 8)
+				net.WriteUInt(k, 8)
+			end
 		end
 
 		net.Send(ply)
