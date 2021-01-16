@@ -1389,7 +1389,13 @@ net.Receive("impulseRequestWhitelists", function(len, ply)
 
 	if targ and IsValid(targ) and targ:IsPlayer() and targ.Whitelists then
 		local whitelists = targ.Whitelists
-		local count = table.Count(whitelists)
+		local count = 0
+
+		for v,k in pairs(whitelists) do
+			if isnumber(v) then
+				count = count + 1
+			end
+		end
 
 		net.Start("impulseViewWhitelists")
 		net.WriteUInt(count, 4)
