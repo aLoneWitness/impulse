@@ -1150,6 +1150,8 @@ local bannedTools = {
 	["wire_detonators"] = true,
 	["wire_detonator"] = true,
 	["wire_field_device"] = true,
+	["wire_hsranger"] = true,
+	["wire_hsholoemitter"] = true,
 	["wnpc"] = true
 }
 
@@ -1236,7 +1238,9 @@ local bannedDupeEnts = {
 	["gmod_wire_trigger"] = true,
 	["gmod_wire_trigger_entity"] = true,
 	["gmod_wire_rtcam"] = true,
-	["gmod_wire_detonator"] = true
+	["gmod_wire_detonator"] = true,
+	["gmod_wire_hsranger"] = true,
+	["gmod_wire_hsholoemitter"] = true
 }
 
 local donatorDupeEnts = {

@@ -159,4 +159,4 @@ function PANEL:Init()
 	sheet:AddSheet("Refunder", b, "icon16/bricks.png")
 end
 
-vgui.Register("impulseStaffManager", PANEL, "DFrame")
+vgui.Register("impulseSupportTool", PANEL, "DFrame")
