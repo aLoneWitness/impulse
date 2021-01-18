@@ -1256,7 +1256,6 @@ local whitelistDupeEnts = {
 	["gmod_lamp"] = true,
 	["gmod_emitter"] = true,
 	["gmod_button"] = true,
-	["gmod_cameraprop"] = true,
 	["prop_dynamic"] = true,
 	["prop_physics"] = true,
 	["gmod_light"] = true,
