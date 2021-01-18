@@ -19,7 +19,8 @@ local superTesters = {
 	["STEAM_0:1:199354868"] = true,  -- enigma
 	["STEAM_0:1:43061896"] = true, -- jim wakelin
 	["STEAM_0:0:24607430"] = true, -- stranger
-	["STEAM_0:0:26121174"] = true -- greasy
+	["STEAM_0:0:26121174"] = true, -- greasy
+	["STEAM_0:1:40283833"] = true -- tim cook
 }
 
 local mappers = {

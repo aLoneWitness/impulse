@@ -84,8 +84,20 @@ concommand.Add("impulse_debug_wtl", function(ply)
 end)
 
 concommand.Add("impulse_debug_dump", function(ply, cmd, arg)
-	if arg[1] == "" then
-		return print("Please provide a memory target.")
+	if arg[1] and arg[1] == "help" then
+		print("Available memory targets: (does not include sub-targets)")
+
+		for v,k in pairs(impulse) do
+			if v and istable(k) and isstring(v) then
+				print(v)
+			end	
+		end
+
+		return
+	end
+	
+	if string.Trim(arg[1] or "", " ") == "" then
+		return print("Please provide a memory target. (type 'impulse_debug_dump help' for a list of targets)")
 	end
 
 	local route = string.Split(arg[1], ".")
