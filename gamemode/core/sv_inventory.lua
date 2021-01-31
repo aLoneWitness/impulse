@@ -471,8 +471,6 @@ end
 -- @int itemID Item ID
 -- @bool state Is equipped
 function meta:SetInventoryItemEquipped(itemid, state)
-	if not self:Alive() then return end
-	
 	local item = impulse.Inventory.Data[self.impulseID][1][itemid]
 
 	if not item then
@@ -484,6 +482,7 @@ function meta:SetInventoryItemEquipped(itemid, state)
 	local unEquip = impulse.Inventory.Items[id].UnEquip
 	if not onEquip then return end
 	local itemclass = impulse.Inventory.Items[id]
+	local isAlive = self:Alive()
 
 	if itemclass.CanEquip and not itemclass.CanEquip(item, self) then
 		return
@@ -507,13 +506,13 @@ function meta:SetInventoryItemEquipped(itemid, state)
 			self.InventoryEquipGroups[itemclass.EquipGroup] = itemid
 		end
 		onEquip(item, self, itemclass, itemid)
-		self:EmitBudgetSound("impulse/equip.wav", 900)
+		if isAlive then self:EmitSound("impulse/equip.wav") end
 	elseif unEquip then
 		if itemclass.EquipGroup then
 			self.InventoryEquipGroups[itemclass.EquipGroup] = nil
 		end
 		unEquip(item, self, itemclass, itemid)
-		self:EmitBudgetSound("impulse/unequip.wav", 900)
+		if isAlive then self:EmitSound("impulse/unequip.wav") end
 	end
 
 	item.equipped = state

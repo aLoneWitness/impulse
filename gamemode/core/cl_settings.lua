@@ -2,6 +2,7 @@
 -- @module Setting
 
 impulse.Settings = impulse.Settings or {}
+impulse.AdvSettings = impulse.AdvSettings or {}
 
 --- A collection of data that defines how a setting will behave
 -- @realm client
@@ -90,11 +91,50 @@ function impulse.SetSetting(name, newValue)
 	return print("[impulse] Error, could not SetSetting. You've probably got the name wrong! Attempted name: "..name)
 end
 
+function impulse.GetAdvSetting(name)
+	return impulse.AdvSettings[name]
+end
+
+function impulse.LoadAdvSettings()
+	if not file.Exists("impulse/adv_settings.json", "DATA") then
+		return "No adv_settings.json file found."
+	end
+	
+	local f = file.Read("impulse/adv_settings.json")
+
+	if not f then
+		return "Can't read adv_settings.json file."
+	end
+	
+	local json = util.JSONToTable(f)
+
+	if not json or not istable(json) then
+		return "Corrupted music kit file. Check formatting."
+	end
+
+	impulse.AdvSettings = json
+end
+
+impulse.LoadAdvSettings()
+
+concommand.Add("impulse_reloadadvsettings", function()
+	print("[impulse] Attempting to reload advanced settings...")
+
+	local try = impulse.LoadAdvSettings()
+
+	if try then
+		print("[impulse] Error when loading advanced settings: "..try)
+	else
+		print("[impulse] Successful reload.")
+	end
+end)
+
 concommand.Add("impulse_resetsettings", function()
 	for v,k in pairs(impulse.Settings) do
 		impulse.SetSetting(v, k.default)
 	end
 	print("[impulse] Settings reset!")
 end)
+
 
 hook.Run("DefineSettings")

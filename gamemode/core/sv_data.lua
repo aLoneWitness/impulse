@@ -32,13 +32,26 @@ function impulse.Data.Write(name, data)
 	query:Execute()
 end
 
-function impulse.Data.Read(name, onDone)
+function impulse.Data.Remove(name, limit)
+	local query = mysql:Delete("impulse_data")
+	query:Where("name", name)
+
+	if limit then
+		query:Limit(limit)
+	end
+
+	query:Execute()
+end
+
+function impulse.Data.Read(name, onDone, fallback)
 	local query = mysql:Select("impulse_data")
 	query:Select("data")
 	query:Where("name", name)
 	query:Callback(function(result)
 		if type(result) == "table" and #result > 0 then
 			onDone(pon.decode(result[1].data))
+		elseif fallback then
+			fallback()
 		end
 	end)
 

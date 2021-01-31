@@ -1,3 +1,21 @@
+-- helper funcs
+
+local stringVars = {
+	["#PlayerName"] = function() return LocalPlayer():Nick() end,
+	["#PlayerSteamName"] = function() return LocalPlayer():SteamName() end
+}
+
+local function uiStringVarSwap(str)
+	local out = str
+
+	for v,k in pairs(variables) do
+		out = string.Replace(v, k() or "Variable return error")
+	end
+
+	return out
+end
+-- config
+
 impulse.Ops.EventManager.Config.CategoryIcons = {
 	["hidden"] = "icon16/new.png",
 	["music"] = "icon16/music.png",
@@ -256,7 +274,7 @@ impulse.Ops.EventManager.Config.Events = {
 		Clientside = true,
 		Do = function(prop, uid)
 			local text = vgui.Create("impulseFadeText")
-			text:Setup(prop["message"], prop["pos_x"], prop["pos_y"], prop["message_fadein"], prop["message_fadeout"], prop["message_hold"], prop["message_colour"], prop["message_align"])
+			text:Setup(uiStringVarSwap(prop["message"]), prop["pos_x"], prop["pos_y"], prop["message_fadein"], prop["message_fadeout"], prop["message_hold"], prop["message_colour"], prop["message_align"])
 		end
 	},
 	["textarray"] = {
@@ -283,7 +301,7 @@ impulse.Ops.EventManager.Config.Events = {
 
 			timer.Create("impulseOpsEMTextArray"..math.random(1,100000), prop["array_delay"], max, function()
 				local text = vgui.Create("impulseFadeText")
-				text:Setup(items[c], prop["pos_x"], prop["pos_y"] + (((c - 1) * yAdd) / ScrH()), prop["message_fadein"], prop["message_fadeout"], prop["message_hold"] + ((max - c) * prop["array_delay"]), prop["message_colour"], prop["message_align"])
+				text:Setup(uiStringVarSwap(items[c]), prop["pos_x"], prop["pos_y"] + (((c - 1) * yAdd) / ScrH()), prop["message_fadein"], prop["message_fadeout"], prop["message_hold"] + ((max - c) * prop["array_delay"]), prop["message_colour"], prop["message_align"])
 
 				c = c + 1
 			end)

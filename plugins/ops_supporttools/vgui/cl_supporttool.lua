@@ -65,6 +65,7 @@ function PANEL:Init()
         btn:SetText("  "..k.Name.." ("..k.UniqueID..")")
         btn:SetContentAlignment(4)
         btn:Dock(TOP)
+        btn:SetFont("Impulse-Elements18")
         btn:DockMargin(0, 0, 0, 5)
         btn.ItemClass = k.UniqueID
 
@@ -97,7 +98,7 @@ function PANEL:Init()
         		refund[self.ItemClass] = val
         		table.insert(refund2, {self.ItemClass, val})
 
-        		LocalPlayer():Notify("Refunded "..k.Name.." x"..val..".")
+        		LocalPlayer():Notify("Selected "..k.Name.." x"..val..".")
         	end)
         end
 

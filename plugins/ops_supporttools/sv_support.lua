@@ -10,10 +10,6 @@ function impulse.Ops.ST.Open(ply)
 end
 
 net.Receive("impulseOpsSTDoRefund", function(len, ply)
-	if true then
-		return -- WIP
-	end
-	
 	if not ply:IsSuperAdmin() then
 		if ply:GetUserGroup() != "communitymanager" then
 			return
@@ -23,7 +19,7 @@ net.Receive("impulseOpsSTDoRefund", function(len, ply)
 	local s64 = net.ReadString()
 	local len = net.ReadUInt(32)
 	local items = pon.decode(net.ReadData(len))
-	local steamid = util.SteamIDTo64(s64)
+	local steamid = util.SteamIDFrom64(s64)
 
     local query = mysql:Select("impulse_players")
     query:Select("id")
@@ -38,30 +34,47 @@ net.Receive("impulseOpsSTDoRefund", function(len, ply)
         end
 
         local impulseID = result[1].id
+        local refundData = {}
 
         for v,k in pairs(items) do
         	if not impulse.Inventory.ItemsRef[v] then
         		continue
         	end
 
-        	impulse.Inventory.DBAddItem(impulseID, v)
+        	refundData[v] = k
         end
 
-        if not impulse.Inventory.ItemsRef[item] then
-            return ply:Notify("Item: "..item.." does not exist.")
-        end
+        impulse.Data.Write("SupportRefund_"..s64, refundData)
 
-        if target and IsValid(target) then
-            target:GiveInventoryItem(item)
-            return ply:Notify("You have given "..target:Nick().." a "..item..".")
-        end
-
-        local impulseID = result[1].id
-
-
-        impulse.Inventory.DBAddItem(impulseID, item, 2)
-        ply:Notify("Offline player ("..steamid..") has been given a "..item..".")
+        ply:Notify("Issued support refund for user "..s64..".")
     end)
 
     query:Execute()
 end)
+
+function PLUGIN:PostInventorySetup(ply)
+    impulse.Data.Read("SupportRefund_"..ply:SteamID64(), function(refundData)
+        if not IsValid(ply) then
+            return
+        end
+        
+        for v,k in pairs(refundData) do
+            if not impulse.Inventory.ItemsRef[v] then
+                continue
+            end
+            
+            for i=1,k do
+               ply:GiveInventoryItem(v, INV_STORAGE) -- refund to storage 
+            end
+        end
+
+        impulse.Data.Remove("SupportRefund_"..ply:SteamID64())
+
+        local data = pon.encode(refundData)
+
+        net.Start("impulseOpsSTGetRefund")
+        net.WriteUInt(#data, 32)
+        net.WriteData(data, #data)
+        net.Send(ply)
+    end)
+end

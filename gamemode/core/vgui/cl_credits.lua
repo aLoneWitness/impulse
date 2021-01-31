@@ -23,7 +23,9 @@ function PANEL:Init()
 		rebel1234 and Chessnut - animations base
 		wyozi - medialib
 		Dominic Letz - yaml parser
-		Falco - CPPI</font>
+		Falco - CPPI
+		vin - impulse markup language
+		kikito - tween.lua</font>
 
 		Powered by
 		<font=Impulse-Elements23>Discord - Discord API
