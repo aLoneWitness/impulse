@@ -55,3 +55,26 @@ function GM:Move(ply, mvData)
 		mvData:SetSideSpeed(sideRatio * speed)
 	end
 end
+
+local adminPhysgunWhitelist = {
+	["impulse_item"] = true,
+	["impulse_money"] = true,
+	["impulse_letter"] = true,
+	["prop_ragdoll"] = true,
+	["prop_physics"] = true
+}
+
+function GM:PhysgunPickup(ply, ent)
+	if ply:IsSuperAdmin() or not ply:IsAdmin() then
+		return
+	end
+	
+	if ent.CPPIGetOwner then
+		local owner = ent:CPPIGetOwner()
+		if not ent:IsPlayer() and not ent:IsNPC() and not owner then
+			if not adminPhysgunWhitelist[ent:GetClass()] then
+				return false
+			end
+		end
+	end
+end

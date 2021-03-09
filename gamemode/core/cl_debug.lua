@@ -7,6 +7,15 @@ concommand.Add("impulse_debug_pos", function(ply)
 	SetClipboardText(output)
 end)
 
+concommand.Add("impulse_debug_eyepos", function(ply)
+	local pos = ply:EyePos()
+
+	local output = "Vector("..pos.x..", "..pos.y..", "..pos.z..")"
+	chat.AddText(output)
+
+	SetClipboardText(output)
+end)
+
 concommand.Add("impulse_debug_ang", function(ply)
 	local pos = ply:EyeAngles()
 

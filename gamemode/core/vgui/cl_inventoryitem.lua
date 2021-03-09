@@ -154,7 +154,7 @@ function PANEL:OnMousePressed(keycode)
 		end
 
 		net.Start("impulseInvContainerDoMove")
-		net.WriteUInt(itemid, 10)
+		net.WriteUInt(itemid, 16)
 		net.WriteUInt(self.Type, 4)
 		net.SendToServer()
 
@@ -213,7 +213,7 @@ function PANEL:OnMousePressed(keycode)
 			return
 		else
 			net.Start("impulseInvDoMove")
-			net.WriteUInt(invid, 10)
+			net.WriteUInt(invid, 16)
 			net.WriteUInt(self.Type, 4)
 			net.SendToServer()
 
@@ -265,14 +265,14 @@ function PANEL:OnMousePressed(keycode)
 
 					impulse.MakeWorkbar(self.Item.UseWorkBarTime, self.Item.UseWorkBarName or "Using...", function()
 						net.Start("impulseInvDoUse")
-						net.WriteUInt(invid, 10)
+						net.WriteUInt(invid, 16)
 						net.SendToServer()
 					end, self.Item.UseWorkBarFreeze or false)
 
 					self.InvPanel:Remove()
 				else
 					net.Start("impulseInvDoUse")
-					net.WriteUInt(self.InvID, 10)
+					net.WriteUInt(self.InvID, 16)
 					net.SendToServer()
 				end
 			end)
@@ -284,14 +284,14 @@ function PANEL:OnMousePressed(keycode)
 			if not self.IsEquipped then
 				popup:AddOption(self.Item.EquipName or "Equip", function()
 					net.Start("impulseInvDoEquip")
-					net.WriteUInt(self.InvID, 10)
+					net.WriteUInt(self.InvID, 16)
 					net.WriteBool(true)
 					net.SendToServer()
 				end)
 			else
 				popup:AddOption(self.Item.UnEquipName or "Un-Equip", function()
 					net.Start("impulseInvDoEquip")
-					net.WriteUInt(self.InvID, 10)
+					net.WriteUInt(self.InvID, 16)
 					net.WriteBool(false)
 					net.SendToServer()
 				end)
@@ -302,7 +302,7 @@ function PANEL:OnMousePressed(keycode)
 	if (not self.IsRestricted and not self.Item.DropIfRestricted) then
 		popup:AddOption("Drop", function()
 			net.Start("impulseInvDoDrop")
-			net.WriteUInt(self.InvID, 10)
+			net.WriteUInt(self.InvID, 16)
 			net.SendToServer()
 		end)
 	end

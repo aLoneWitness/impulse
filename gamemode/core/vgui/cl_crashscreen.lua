@@ -36,6 +36,10 @@ function PANEL:Init()
 	 			self.ServerIsOff = false
 	 		end
 	 	end, function()
+	 		if not IsValid(self) then
+	 			return
+	 		end
+	 		
 	 		self.ServerIsOff = false
 	 	end)
 	 end)

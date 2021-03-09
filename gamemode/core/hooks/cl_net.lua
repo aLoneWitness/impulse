@@ -113,7 +113,7 @@ end)
 
 net.Receive("impulseInvGive", function()
 	local netid = net.ReadUInt(16)
-	local invid = net.ReadUInt(10)
+	local invid = net.ReadUInt(16)
 	local strid = net.ReadUInt(4)
 	local restricted = net.ReadBool()
 
@@ -133,8 +133,8 @@ net.Receive("impulseInvGive", function()
 end)
 
 net.Receive("impulseInvMove", function()
-	local invid = net.ReadUInt(10)
-	local newinvid = net.ReadUInt(10)
+	local invid = net.ReadUInt(16)
+	local newinvid = net.ReadUInt(16)
 	local from = net.ReadUInt(4)
 	local to = net.ReadUInt(4)
 	local netid
@@ -163,7 +163,7 @@ net.Receive("impulseInvMove", function()
 end)
 
 net.Receive("impulseInvRemove", function()
-	local invid = net.ReadUInt(10)
+	local invid = net.ReadUInt(16)
 	local strid = net.ReadUInt(4)
 	local item = impulse.Inventory.Data[0][strid][invid]
 
@@ -197,7 +197,7 @@ net.Receive("impulseInvClearRestricted", function()
 end)
 
 net.Receive("impulseInvUpdateEquip", function()
-	local invid = net.ReadUInt(10)
+	local invid = net.ReadUInt(16)
 	local state = net.ReadBool()
 	local item = impulse.Inventory.Data[0][1][invid]
 

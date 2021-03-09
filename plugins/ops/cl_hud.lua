@@ -67,12 +67,14 @@ hook.Add("HUDPaint", "impulseOpsHUD", function()
 				local pos = (k:GetPos() + k:OBBCenter()):ToScreen()
 				local col = team.GetColor(k:Team())
 
-				draw.SimpleText(k:Name(), "Impulse-Elements18-Shadow", pos.x, pos.y, col, TEXT_ALIGN_CENTER)
-				draw.SimpleText(k:SteamName(), "Impulse-Elements16-Shadow", pos.x, pos.y + 15, impulse.Config.InteractColour, TEXT_ALIGN_CENTER)
 
-				if k:GetTeamClass() != 0 then
-					draw.SimpleText(k:GetTeamClassName().." - "..k:GetTeamRankName(), "Impulse-Elements14-Shadow", pos.x + 20, pos.y, col, TEXT_ALIGN_CENTER)
+				if k:GetMoveType() == MOVETYPE_NOCLIP then
+					draw.SimpleText("** In Observer Mode **", "Impulse-Elements18-Shadow", pos.x, pos.y, Color(255, 0, 0), TEXT_ALIGN_CENTER)
+				else
+					draw.SimpleText(k:Name(), "Impulse-Elements18-Shadow", pos.x, pos.y, col, TEXT_ALIGN_CENTER)
 				end
+
+				draw.SimpleText(k:SteamName(), "Impulse-Elements16-Shadow", pos.x, pos.y + 15, impulse.Config.InteractColour, TEXT_ALIGN_CENTER)
 			end
 		end
 

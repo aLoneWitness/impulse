@@ -313,7 +313,7 @@ function meta:GiveInventoryItem(itemclass, storetype, restricted, isLoaded, movi
 	if not moving then
 		net.Start("impulseInvGive")
 		net.WriteUInt(itemid, 16)
-		net.WriteUInt(invid, 10)
+		net.WriteUInt(invid, 16)
 		net.WriteUInt(storetype, 4)
 		net.WriteBool(restricted or false)
 		net.Send(self)
@@ -375,7 +375,7 @@ function meta:TakeInventoryItem(invid, storetype, moving)
 	
 	if not moving then
 		net.Start("impulseInvRemove")
-		net.WriteUInt(invid, 10)
+		net.WriteUInt(invid, 16)
 		net.WriteUInt(storetype, 4)
 		net.Send(self)
 	end
@@ -518,7 +518,7 @@ function meta:SetInventoryItemEquipped(itemid, state)
 	item.equipped = state
 
 	net.Start("impulseInvUpdateEquip")
-	net.WriteUInt(itemid, 10)
+	net.WriteUInt(itemid, 16)
 	net.WriteBool(state or false)
 	net.Send(self)
 end
@@ -636,8 +636,8 @@ function meta:MoveInventoryItem(itemid, from, to)
 	local newinvid = self:GiveInventoryItem(itemclass, to, false, nil, true, (itemclip or nil))
 
 	net.Start("impulseInvMove")
-	net.WriteUInt(itemid, 10)
-	net.WriteUInt(newinvid, 10)
+	net.WriteUInt(itemid, 16)
+	net.WriteUInt(newinvid, 16)
 	net.WriteUInt(from, 4)
 	net.WriteUInt(to, 4)
 	net.Send(self)
@@ -661,8 +661,8 @@ function meta:MoveInventoryItemMass(itemclass, from, to, amount)
 			local newinvid = self:GiveInventoryItem(itemclass, to, false, nil, true, (itemclip or nil))
 
 			net.Start("impulseInvMove")
-			net.WriteUInt(v, 10)
-			net.WriteUInt(newinvid, 10)
+			net.WriteUInt(v, 16)
+			net.WriteUInt(newinvid, 16)
 			net.WriteUInt(from, 4)
 			net.WriteUInt(to, 4)
 			net.Send(self)

@@ -1011,7 +1011,7 @@ function GM:PlayerSpawnRagdoll(ply, model)
 		return false
 	end
 
-	return ply:IsAdmin()
+	return ply:IsLeadAdmin()
 end
 
 function GM:PlayerSpawnSENT(ply)

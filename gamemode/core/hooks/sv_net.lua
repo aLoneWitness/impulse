@@ -649,7 +649,7 @@ net.Receive("impulseInvDoEquip", function(len, ply)
 		return
 	end
 
-	local invid = net.ReadUInt(10)
+	local invid = net.ReadUInt(16)
 	local equipState = net.ReadBool()
 
 	local hasItem, item = ply:HasInventoryItemSpecific(invid)
@@ -673,7 +673,7 @@ net.Receive("impulseInvDoDrop", function(len, ply)
 		return
 	end
 
-	local invid = net.ReadUInt(10)
+	local invid = net.ReadUInt(16)
 
 	local hasItem, item = ply:HasInventoryItemSpecific(invid)
 
@@ -697,7 +697,7 @@ net.Receive("impulseInvDoUse", function(len, ply)
 		return
 	end
 
-	local invid = net.ReadUInt(10)
+	local invid = net.ReadUInt(16)
 
 	local hasItem, item = ply:HasInventoryItemSpecific(invid)
 
@@ -759,7 +759,7 @@ net.Receive("impulseInvDoMove", function(len, ply)
 		return
 	end
 
-	local itemid = net.ReadUInt(10)
+	local itemid = net.ReadUInt(16)
 	local from = net.ReadUInt(4)
 	local to = 1
 

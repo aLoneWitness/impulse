@@ -264,7 +264,7 @@ function PANEL:Init()
 		end
 
 		self.whitelistButton = vgui.Create("DButton", self)
-		self.whitelistButton:SetText("Whitelists")
+		self.whitelistButton:SetText("Forum Profile")
 		self.whitelistButton:SetPos(295, 105)
 		self.whitelistButton:SetSize(90, 20)
 		self.whitelistButton.DoClick = function()
@@ -272,14 +272,7 @@ function PANEL:Init()
 				return
 			end
 
-			if (LocalPlayer().nextWhitelistReq or 0) > CurTime() then return LocalPlayer():Notify("Please wait 5 seconds before making another whitelist request.") end
-			LocalPlayer().nextWhitelistReq = CurTime() + 5
-
-			impulse_WhitelistReqTarg = self.Player
-
-			net.Start("impulseRequestWhitelists")
-			net.WriteUInt(self.Player:EntIndex(), 8)
-			net.SendToServer()
+			gui.OpenURL("https://impulse-community.com/api/getforumprofile.php?id="..self.Player:SteamID64())
 		end
 
 		-- badges

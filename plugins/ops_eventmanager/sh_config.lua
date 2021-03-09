@@ -8,7 +8,7 @@ local stringVars = {
 local function uiStringVarSwap(str)
 	local out = str
 
-	for v,k in pairs(variables) do
+	for v,k in pairs(stringVars) do
 		out = string.Replace(v, k() or "Variable return error")
 	end
 
