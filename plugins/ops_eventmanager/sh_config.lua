@@ -9,7 +9,7 @@ local function uiStringVarSwap(str)
 	local out = str
 
 	for v,k in pairs(stringVars) do
-		out = string.Replace(v, k() or "Variable return error")
+		out = string.Replace(out, v, k() or "Variable return error")
 	end
 
 	return out
