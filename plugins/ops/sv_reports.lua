@@ -204,6 +204,10 @@ function impulse.Ops.ReportClose(ply, arg, rawText)
             net.Send(reporter)
         end
 
+        if not IsValid(ply) or not ply:IsPlayer() then
+            return
+        end
+
         opsSlackLog(":no_entry: *[REPORT CLOSED]* [#"..reportId.."] closed by "..ply:SteamName().." ("..ply:SteamID()..")")
     else
         ply:AddChatText(claimedReportCol, "Report #"..reportId.." does not exist.")
