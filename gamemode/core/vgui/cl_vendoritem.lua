@@ -65,7 +65,7 @@ end
 function PANEL:OnMousePressed()
 	if self.Selling then
 		net.Start("impulseVendorSell")
-		net.WriteUInt(self.ItemID, 10)
+		net.WriteUInt(self.ItemID, 16)
 		net.SendToServer()
 	else
 		net.Start("impulseVendorBuy")

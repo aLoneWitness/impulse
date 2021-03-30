@@ -1340,7 +1340,7 @@ net.Receive("impulseVendorSell", function(len, ply)
 		return ply:Notify("This vendor can not afford to purchase this item.")
 	end
 
-	local itemid = net.ReadUInt(10)
+	local itemid = net.ReadUInt(16)
 	local hasItem, itemData = ply:HasInventoryItemSpecific(itemid)
 
 	if not hasItem then
@@ -1525,7 +1525,7 @@ net.Receive("impulseInvContainerDoMove", function(len, ply)
 		return
 	end
 
-	local itemid = net.ReadUInt(10)
+	local itemid = net.ReadUInt(16)
 	local from = net.ReadUInt(4)
 	local to = 1
 

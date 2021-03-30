@@ -106,7 +106,7 @@ function PANEL:SetInv(invdata)
 			net.WriteUInt(panel.ply:EntIndex(), 8)
 			net.WriteUInt(count, 16)
 			for v,k in pairs(panel.taking) do
-				net.WriteUInt(k, 10)
+				net.WriteUInt(k, 16)
 			end
 			net.SendToServer()
 		end

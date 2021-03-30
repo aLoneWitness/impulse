@@ -12,7 +12,7 @@ if SERVER then
 		if not IsValid(targ) then return end
 
 		for i=1,invSize do
-			local itemid = net.ReadUInt(10)
+			local itemid = net.ReadUInt(16)
 			local hasItem = targ:HasInventoryItemSpecific(itemid)
 
 			if hasItem then
@@ -34,7 +34,7 @@ else
 			local itemnetid = net.ReadUInt(10)
 			local itemrestricted = net.ReadBool()
 			local itemequipped = net.ReadBool()
-			local itemid = net.ReadUInt(10)
+			local itemid = net.ReadUInt(16)
 			local item = impulse.Inventory.Items[itemnetid]
 			
 			table.insert(invCompiled, {item, itemrestricted, itemequipped, itemid})
@@ -67,7 +67,7 @@ local viewInvCommand = {
 				net.WriteUInt(netid, 10)
 				net.WriteBool(k.restricted or false)
 				net.WriteBool(k.equipped or false)
-				net.WriteUInt(v, 10)
+				net.WriteUInt(v, 16)
 			end
 
 			net.Send(ply)
