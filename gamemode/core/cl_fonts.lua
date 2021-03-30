@@ -265,3 +265,5 @@ surface.CreateFont("Impulse-SpecialFont", {
 	antialias = true,
 	shadow = true
 })
+
+hook.Run("PostLoadFonts")

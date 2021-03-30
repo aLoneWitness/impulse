@@ -74,6 +74,8 @@ function GM:PlayerInitialSpawn(ply)
 			timer.Remove(ply:UserID().."impulseFullLoad")
 		end
 	end)
+
+	ply.AFKTimer = CurTime() + 720 -- initial afk time :)
 end
 
 function GM:PlayerInitialSpawnLoaded(ply) -- called once player is full loaded

@@ -1431,6 +1431,10 @@ net.Receive("impulseUnRestrain", function(len, ply)
 		return
 	end
 
+	if ent.BeingJailed then
+		return
+	end
+
 	if ent.InJail then
 		return ply:Notify("You can't unrestrain someone who is in jail.")
 	end 

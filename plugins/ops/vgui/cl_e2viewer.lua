@@ -33,36 +33,37 @@ function PANEL:SetupE2S(e2s)
 
     	local x = self.list:AddLine(owner:Nick().." ("..owner:SteamName()..")", k.name, cpuTime)
     	x.Owner = owner:SteamID()
-    	x.Ent = k
+    	x.Ent = k.ent
 
     	table.insert(self.list.lines, x)
-	end
 
-	function self.list:OnRowSelected(index, row)
-		local m = DermaMenu()
+		function x:OnSelect()
+			local row = x
+			local m = DermaMenu()
 
-		m:AddOption("Copy Owner SteamID", function()
-			if not IsValid(row) then
-				return
-			end
+			m:AddOption("Copy Owner SteamID", function()
+				if not IsValid(row) then
+					return
+				end
 
-			SetClipboardText(row.Owner)
-			LocalPlayer():Notify("Copied SteamID.")
-		end)
+				SetClipboardText(row.Owner)
+				LocalPlayer():Notify("Copied SteamID.")
+			end)
 
-		m:AddOption("Remove E2", function()
-			if not IsValid(row) then
-				return
-			end
+			m:AddOption("Remove E2", function()
+				if not IsValid(row) then
+					return
+				end
 
-			net.Start("opsE2ViewerRemove")
-			net.WriteEntity(row.Ent)
-			net.SendToServer()
+				net.Start("opsE2ViewerRemove")
+				net.WriteEntity(row.Ent)
+				net.SendToServer()
 
-			panel.list:RemoveLine(index)
-		end):SetIcon("icon16/delete.png")
+				panel:Remove()
+			end):SetIcon("icon16/delete.png")
 
-		m:Open()
+			m:Open()
+		end
 	end
 
 	function self.list:Think()

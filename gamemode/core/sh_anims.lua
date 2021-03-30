@@ -399,6 +399,7 @@ impulse.Anim.SetModelClass("models/vortigaunt_blue.mdl", "vort")
 impulse.Anim.SetModelClass("models/vortigaunt_doctor.mdl", "vort")
 impulse.Anim.SetModelClass("models/vortigaunt_slave.mdl", "vort")
 impulse.Anim.SetModelClass("models/vortiblue1.mdl", "vort")
+impulse.Anim.SetModelClass("models/dpfilms/metropolice/police_fragger.mdl", "metrocop")
 --impulse.Anim.SetModelClass("models/breen.mdl", "player")
 --impulse.Anim.SetModelClass("models/nicrobe/gallahan.mdl", "player")
 

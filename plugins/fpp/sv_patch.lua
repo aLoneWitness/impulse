@@ -27,4 +27,9 @@ if FPP then
         end
     end
     concommand.Add("FPP_Cleanup", runIfAccess("FPP_Cleanup", CleanupDisconnected))
+
+    local function nothin()
+        return false
+    end
+    concommand.Add("FPP_FallbackOwner", nothin) -- turn this off cause it causes a lot of issues
 end

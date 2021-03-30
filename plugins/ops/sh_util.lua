@@ -12,7 +12,7 @@ local setHealthCommand = {
         local targ = impulse.FindPlayer(arg[1])
         local hp = arg[2]
 
-        if not hp then
+        if not hp or not tonumber(hp) then
             return
         end
 
