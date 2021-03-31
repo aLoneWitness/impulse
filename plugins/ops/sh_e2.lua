@@ -7,14 +7,11 @@ if SERVER then
 	util.AddNetworkString("opsE2ViewerRemove")
 
 	net.Receive("opsE2ViewerRemove", function(len, ply)
-		print(ply)
 		if not ply:IsAdmin() then
 			return
 		end
 
 		local chip = net.ReadEntity()
-
-		print(chip)
 
 		if not IsValid(chip) then
 			return
