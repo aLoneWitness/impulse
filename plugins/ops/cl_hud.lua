@@ -68,7 +68,7 @@ hook.Add("HUDPaint", "impulseOpsHUD", function()
 				local col = team.GetColor(k:Team())
 
 
-				if k:GetMoveType() == MOVETYPE_NOCLIP then
+				if k:IsAdmin() and k:GetMoveType() == MOVETYPE_NOCLIP and k:GetNoDraw() then
 					draw.SimpleText("** In Observer Mode **", "Impulse-Elements18-Shadow", pos.x, pos.y, Color(255, 0, 0), TEXT_ALIGN_CENTER)
 				else
 					draw.SimpleText(k:Name(), "Impulse-Elements18-Shadow", pos.x, pos.y, col, TEXT_ALIGN_CENTER)
