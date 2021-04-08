@@ -62,33 +62,3 @@ e2function number impulseGetPlayerFirstJoinDate(entity ent)
 
 	return ent.impulseFirstJoin
 end
-
-__e2setcost(60)
-e2function number impulsePickupMoney(entity ent)
-	if not IsValid(ent) then return end
-	if not IsValid(self.entity) then return end
-	if not IsValid(self.player) then return end
-	if ent:GetClass() != "impulse_money" or not ent.money then
-		return 0
-	end
-
-	if ent:GetPos():DistToSqr(self.entity:GetPos()) > (100 ^ 2) then
-		return 0
-	end
-
-	local m = ent.money
-	local tax = math.Clamp(math.ceil(m * 0.08), 1, 500)
-	local delta = m - tax
-
-	if delta < 1 then
-		tax = 0
-		delta = m
-	end
-
-	ent:Remove()
-
-	self.player:GiveMoney(delta)
-	self.player:Notify("You have gained "..impulse.Config.CurrencyPrefix..delta.." from your E2 chip ("..impulse.Config.CurrencyPrefix..tax.." taxed).")
-
-	return tax
-end
