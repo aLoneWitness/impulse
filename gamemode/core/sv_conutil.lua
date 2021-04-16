@@ -13,7 +13,7 @@ concommand.Add("impulse_setgroup", function(ply, cmd, args)
 	local targ = player.GetBySteamID(steamid)
 
 	if IsValid(targ) then
-		targ:SetUserGroup("superadmin")
+		targ:SetUserGroup(group)
 	end
 
 	local query = mysql:Update("impulse_players")
