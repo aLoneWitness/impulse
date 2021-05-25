@@ -133,6 +133,10 @@ function PANEL:ShowGroup()
 		return
 	end
 
+	if group.Color then
+		lbl:SetTextColor(group.Color)
+	end
+
 	local lblM = vgui.Create("DLabel", sheet)
 	lblM:SetText("")
 	lblM:SetFont("Impulse-Elements20-Shadow")
@@ -292,6 +296,8 @@ function PANEL:ShowGroup()
 		m:Open()
 	end
 
+	self:ShowInfo()
+
 	if LocalPlayer():GroupHasPermission(6) then
 		self:ShowRanks()
 	end
@@ -331,6 +337,51 @@ function PANEL:Refresh()
 	--		self.sheet:SetActiveButton(k)
 	--	end
 	--end
+end
+
+
+function PANEL:ShowInfo()
+	local group = impulse.Group.Groups[1]
+	local name = LocalPlayer():GetSyncVar(SYNC_GROUP_NAME, "ERROR")
+	local sheet = self:AddSheet("Info", "icon16/information.png")
+	local canEdit = LocalPlayer():GroupHasPermission(8)
+
+	local lbl = vgui.Create("DLabel", sheet)
+	lbl:SetText("Group info:")
+	lbl:SetFont("Impulse-Elements19-Shadow")
+	lbl:SizeToContents()
+	lbl:Dock(TOP)
+	lbl:SetTextColor(darkText)
+
+	local msg = vgui.Create("DTextEntry", sheet)
+	msg:Dock(TOP)
+	msg:SetTall(400)
+	msg:SetFont("Impulse-Elements18")
+	msg:SetText("")
+
+	if group.Info then
+		msg:SetText(group.Info)
+	end
+	
+	msg:SetPlaceholderText("No infomation here yet...")
+	msg:SetEditable(canEdit and true or false)
+	msg:SetMultiline(true)
+	msg:DockMargin(0, 5, 0, 0)
+
+	if not canEdit then
+		return
+	end
+	
+	local btn = vgui.Create("DButton", sheet)
+	btn:SetText("Update text")
+	btn:DockMargin(0, 10, 0, 0)
+	btn:Dock(TOP)
+
+	function btn:DoClick()
+		net.Start("impulseGroupDoSetInfo")
+		net.WriteString(msg:GetValue())
+		net.SendToServer()
+	end
 end
 
 function PANEL:ShowRanks()
@@ -495,9 +546,55 @@ function PANEL:ShowAdmin()
 	local name = LocalPlayer():GetSyncVar(SYNC_GROUP_NAME, "ERROR")
 	local sheet = self:AddSheet("Admin", "icon16/shield.png")
 
+	local lbl = vgui.Create("DLabel", sheet)
+	lbl:SetText("Group colour")
+	lbl:SetFont("Impulse-Elements19-Shadow")
+	lbl:SizeToContents()
+	--lbl:DockMargin(0, 10, 0, 0)
+	lbl:Dock(TOP)
+	lbl:SetTextColor(darkText)
+
+	local colPicker = vgui.Create("DColorMixer", sheet)
+	colPicker:Dock(TOP)
+	colPicker:DockMargin(0, 10, 0, 0)
+	colPicker:SetPalette(false)
+	colPicker:SetAlphaBar(false)
+	colPicker:SetWangs(true)
+	colPicker:SetTall(70)
+
+	if group.Color then
+		colPicker:SetColor(group.Color)
+	else
+		colPicker:SetColor(Color(0, 0, 0))
+	end
+
+	local btn = vgui.Create("DButton", sheet)
+	btn:SetText("Update colour")
+	btn:DockMargin(0, 10, 0, 0)
+	btn:Dock(TOP)
+
+	function btn:DoClick()
+		local col = colPicker:GetColor()
+
+		print(col)
+
+		net.Start("impulseGroupDoSetColor")
+		net.WriteColor(Color(col.r, col.g, col.b, 255))
+		net.SendToServer()
+	end
+
+	local lbl = vgui.Create("DLabel", sheet)
+	lbl:SetText("Administrative actions")
+	lbl:SetFont("Impulse-Elements19-Shadow")
+	lbl:SizeToContents()
+	lbl:DockMargin(0, 25, 0, 0)
+	lbl:Dock(TOP)
+	lbl:SetTextColor(darkText)
+
 	local del = vgui.Create("DButton", sheet)
 	del:SetText("Close group (this can not be undone)")
 	del:SetTextColor(Color(255, 0, 0))
+	del:DockMargin(0, 10, 0, 0)
 	del:Dock(TOP)
 
 	local panel = self

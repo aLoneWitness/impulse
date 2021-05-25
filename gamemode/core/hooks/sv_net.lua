@@ -74,6 +74,7 @@ util.AddNetworkString("impulseGroupRanks")
 util.AddNetworkString("impulseGroupRank")
 util.AddNetworkString("impulseGroupMemberRemove")
 util.AddNetworkString("impulseGroupInvite")
+util.AddNetworkString("impulseGroupMetadata")
 util.AddNetworkString("impulseGroupDoRankAdd")
 util.AddNetworkString("impulseGroupDoRankRemove")
 util.AddNetworkString("impulseGroupDoInvite")
@@ -83,6 +84,8 @@ util.AddNetworkString("impulseGroupDoRemove")
 util.AddNetworkString("impulseGroupDoCreate")
 util.AddNetworkString("impulseGroupDoDelete")
 util.AddNetworkString("impulseGroupDoLeave")
+util.AddNetworkString("impulseGroupDoSetColor")
+util.AddNetworkString("impulseGroupDoSetInfo")
 
 local AUTH_FAILURE = "Invalid argument (rejoin to continue)"
 
@@ -2140,4 +2143,82 @@ net.Receive("impulseGroupDoLeave", function(len, ply)
 
 	ply:GroupRemove(name)
 	ply:Notify("You have left the "..name.." group.")
+end)
+
+net.Receive("impulseGroupDoSetColor", function(len, ply)
+	if (ply.nextRPGroupDataSet or 0) > CurTime() then return end
+	ply.nextRPGroupDataSet = CurTime() + 1
+
+	if ply:IsCP() then
+		return
+	end
+
+	local name = ply:GetSyncVar(SYNC_GROUP_NAME, nil)
+	local rank = ply:GetSyncVar(SYNC_GROUP_RANK, nil)
+
+	if not name or not rank then
+		return
+	end
+
+	local groupData = impulse.Group.Groups[name]
+
+	if not groupData then
+		return
+	end
+
+	if not ply:GroupHasPermission(99) then
+		return
+	end
+
+	local col = net.ReadColor()
+
+	if not col then
+		return
+	end
+
+	col.a = 255
+
+	impulse.Group.SetMetaData(name, nil, col)
+	impulse.Group.NetworkMetaDataToOnline(name)
+
+	ply:Notify("You have updated the colour of your group.")
+end)
+
+net.Receive("impulseGroupDoSetInfo", function(len, ply)
+	if (ply.nextRPGroupDataSet or 0) > CurTime() then return end
+	ply.nextRPGroupDataSet = CurTime() + 3
+
+	if ply:IsCP() then
+		return
+	end
+
+	local name = ply:GetSyncVar(SYNC_GROUP_NAME, nil)
+	local rank = ply:GetSyncVar(SYNC_GROUP_RANK, nil)
+
+	if not name or not rank then
+		return
+	end
+
+	local groupData = impulse.Group.Groups[name]
+
+	if not groupData then
+		return
+	end
+
+	if not ply:GroupHasPermission(8) then
+		return
+	end
+
+	local info = net.ReadString()
+
+	if not info then
+		return
+	end
+	
+	info = string.sub(info, 1, 1024)
+
+	impulse.Group.SetMetaData(name, info)
+	impulse.Group.NetworkMetaDataToOnline(name)
+
+	ply:Notify("You have updated the info for your group.")
 end)

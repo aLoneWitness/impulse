@@ -9,6 +9,7 @@ RPGROUP_PERMISSIONS = {
 	[4] = "Can remove members",
 	[5] = "Can promote/demote members",
 	[6] = "Can edit ranks",
+	[8] = "Can edit info page",
 	[99] = "Is owner group"
 	--[7] = "Access group storage",
 	--[8] = ""

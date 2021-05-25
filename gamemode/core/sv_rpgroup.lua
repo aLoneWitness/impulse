@@ -104,6 +104,13 @@ function impulse.Group.DBUpdateMaxMembers(groupid, max)
 	query:Execute()
 end
 
+function impulse.Group.DBUpdateData(groupid, data)
+	local query = mysql:Update("impulse_rpgroups")
+	query:Update("data", pon.encode(data))
+	query:Where("id", groupid)
+	query:Execute()
+end
+
 function impulse.Group.ComputeMembers(name, callback)
 	local id = impulse.Group.Groups[name].ID
 
@@ -167,6 +174,52 @@ function impulse.Group.GetDefaultRank(name)
 	end
 
 	return "Member"
+end
+
+function impulse.Group.SetMetaData(name, info, col)
+	local grp = impulse.Group.Groups[name]
+	local id = grp.ID
+	local data = grp.Data or {}
+
+	data.Info = info or grp.Data.Info
+	data.Col = col or Color(grp.Data.Col.r, grp.Data.Col.g, grp.Data.Col.b)
+
+	impulse.Group.Groups[name].Data = data
+	impulse.Group.DBUpdateData(id, data)
+end
+
+function impulse.Group.NetworkMetaData(to, name)
+	local grp = impulse.Group.Groups[name]
+
+	net.Start("impulseGroupMetadata")
+	net.WriteString(grp.Data.Info or "")
+
+	if grp.Data.Col then
+		net.WriteColor(Color(grp.Data.Col.r, grp.Data.Col.g, grp.Data.Col.b))
+	else
+		net.WriteColor(Color(0, 0, 0))
+	end
+
+	net.Send(to)
+end
+
+function impulse.Group.NetworkMetaDataToOnline(name)
+	local grp = impulse.Group.Groups[name]
+
+	local rf = RecipientFilter()
+
+	for v,k in pairs(player.GetAll()) do
+		local x = k:GetSyncVar(SYNC_GROUP_NAME, nil)
+
+		if x and x == name then
+			rf:AddPlayer(k)
+		end
+	end
+
+	net.Start("impulseGroupMetadata")
+	net.WriteString(grp.Data.Info or "")
+	net.WriteColor(grp.Data.Col or Color(0, 0, 0))
+	net.Send(rf)
 end
 
 function impulse.Group.NetworkMember(to, name, sid)
@@ -309,6 +362,8 @@ local function postCompute(self, name, rank, skipDb)
 	else
 		impulse.Group.NetworkRank(name, self, rank)
 	end
+
+	impulse.Group.NetworkMetaData(self, name)
 end
 
 function meta:GroupAdd(name, rank, skipDb)
@@ -372,6 +427,8 @@ function meta:GroupLoad(groupid, rank)
 			impulse.Group.DBUpdateMaxMembers(groupid, impulse.Config.GroupMaxMembersVIP)
 			impulse.Group.Groups[name].MaxSize = impulse.Config.GroupMaxMembersVIP
 		end
+
+		impulse.Group.NetworkMetaData(self, name)
 	end)
 end
 
@@ -415,7 +472,7 @@ function impulse.Group.Load(id, onLoaded)
 				MaxSize = data.maxsize,
 				MaxStorage = data.maxstorage,
 				Ranks = pon.decode(data.ranks),
-				Data = data.data or {}
+				Data = (data.data and pon.decode(data.data) or {})
 			}
 
 			if onLoaded then

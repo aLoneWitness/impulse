@@ -200,6 +200,29 @@ impulse.Ops.EventManager.Config.Events = {
 	        end)
 		end
 	},
+	["makeflare"] = {
+		Cat = "effect",
+		Prop = {
+			["pos"] = Vector(0, 0, 0),
+			["delay"] = 0,
+			["life"] = 360
+		},
+		NeedUID = false,
+		Clientside = false,
+		Do = function(prop, uid)
+			local ent = ents.Create("env_flare")
+			ent:SetModel("models/props_junk/flare.mdl")
+	        ent:SetPos(prop["pos"])
+	        ent:SetKeyValue("spawnflags", 8) --start off
+	        ent:Spawn()
+
+	        timer.Simple(prop["delay"], function()
+	        	if IsValid(ent) then
+	        		ent:Fire("Start", prop["life"])
+	        	end
+	        end)
+		end
+	},
 	["chat"] = {
 		Cat = "ui",
 		Prop = {
@@ -695,6 +718,7 @@ impulse.Ops.EventManager.Config.Events = {
  			OPS_NPCS[uid] = ents.Create(prop["class"])
  			OPS_NPCS[uid]:SetPos(prop["pos"])
  			OPS_NPCS[uid]:SetAngles(Angle(prop["ang"].x, prop["ang"].y, prop["ang"].z))
+ 			OPS_NPCS[uid]:SetKeyValue("spawnflags", npc:GetSpawnFlags() + SF_NPC_NO_WEAPON_DROP)
  			OPS_NPCS[uid]:Spawn()
  			OPS_NPCS[uid]:Activate()
 
@@ -952,6 +976,17 @@ impulse.Ops.EventManager.Config.Events = {
  			end
 		end
 	},
+	["ai_disabled"] = {
+		Cat = "npc",
+		Prop = {
+			["disabled"] = false
+		},
+		NeedUID = false,
+		Clientside = false,
+		Do = function(prop, uid)
+			RunConsoleCommand("ai_disabled", (prop["disabled"] and "1" or "0"))
+		end
+	},
 	["citycodeset"] = {
 		Cat = "server",
 		Prop = {
@@ -1147,6 +1182,19 @@ impulse.Ops.EventManager.Config.Events = {
 			else
 				LocalPlayer():SetEyeAngles(delta)
 			end
+		end
+	},
+	["dnc_settime"] = {
+		Cat = "server",
+		Prop = {
+			["time"] = 3600
+		},
+		NeedUID = false,
+		Clientside = false,
+		Do = function(prop, uid)
+	 		if DNCSetTime then
+	 			DNCSetTime(prop["time"])
+	 		end
 		end
 	},
 	["colourcorrection"] = {

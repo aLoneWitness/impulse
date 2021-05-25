@@ -583,3 +583,22 @@ net.Receive("impulseGroupInvite", function()
 
 	LocalPlayer():Notify("You have been invited to a group. Press F6 to accept it.")
 end)
+
+net.Receive("impulseGroupMetadata", function()
+	local info = net.ReadString()
+	local col = net.ReadColor()
+
+	impulse.Group.Groups[1] = impulse.Group.Groups[1] or {}
+
+	if col.r == 0 and col.g == 0 and col.b == 0 then
+		impulse.Group.Groups[1].Color = nil
+	else
+		impulse.Group.Groups[1].Color = col
+	end
+
+	impulse.Group.Groups[1].Info = info
+
+	if IsValid(impulse.groupEditor) then
+		impulse.groupEditor:Refresh()
+	end
+end)

@@ -24,6 +24,7 @@ local blacklistNames = {
 	["shared"] = true,
 	["world"] = true,
 	["world prop"] = true,
+	["blocked"] = true,
 	["admin"] = true,
 	["server admin"] = true,
 	["mod"] = true,

@@ -3,23 +3,59 @@ impulse.Ops.ST = impulse.Ops.ST or {}
 util.AddNetworkString("impulseOpsSTOpenTool")
 util.AddNetworkString("impulseOpsSTDoRefund")
 util.AddNetworkString("impulseOpsSTGetRefund")
+util.AddNetworkString("impulseOpsSTDoOOCEnabled")
+util.AddNetworkString("impulseOpsSTDoTeamLocked")
 
-function impulse.Ops.ST.Open(ply)
-	net.Start("impulseOpsSTOpenTool")
-	net.Send(ply)
+local function isSupport(ply)
+    if not ply:IsSuperAdmin() then
+        if ply:GetUserGroup() != "communitymanager" then
+            return false
+        end
+    end
+
+    return true
 end
 
-net.Receive("impulseOpsSTDoRefund", function(len, ply)
-	if not ply:IsSuperAdmin() then
-		if ply:GetUserGroup() != "communitymanager" then
-			return
-		end
-	end
+local lockedTeams = lockedTeams or {}
 
-	local s64 = net.ReadString()
-	local len = net.ReadUInt(32)
-	local items = pon.decode(net.ReadData(len))
-	local steamid = util.SteamIDFrom64(s64)
+net.Receive("impulseOpsSTDoOOCEnabled", function(len, ply)
+    if not isSupport(ply) then
+        return
+    end
+
+    local enabled = net.ReadBool()
+
+    impulse.OOCClosed = !enabled
+
+    ply:Notify("OOC enabled set to "..(enabled and "true" or "false")..".")
+end)
+
+net.Receive("impulseOpsSTDoTeamLocked", function(len, ply)
+    if not isSupport(ply) then
+        return
+    end
+
+    local teamid = net.ReadUInt(8)
+    local locked = net.ReadBool()
+
+    if teamid == impulse.Config.DefaultTeam then
+        return ply:Notify("You can't lock the default team.")
+    end
+
+    lockedTeams[teamid] = locked
+
+    ply:Notify("Team "..teamid.." has been "..(locked and "locked" or "unlocked")..".")
+end)
+
+net.Receive("impulseOpsSTDoRefund", function(len, ply)
+    if not isSupport(ply) then
+        return
+    end
+
+    local s64 = net.ReadString()
+    local len = net.ReadUInt(32)
+    local items = pon.decode(net.ReadData(len))
+    local steamid = util.SteamIDFrom64(s64)
 
     local query = mysql:Select("impulse_players")
     query:Select("id")
@@ -37,11 +73,11 @@ net.Receive("impulseOpsSTDoRefund", function(len, ply)
         local refundData = {}
 
         for v,k in pairs(items) do
-        	if not impulse.Inventory.ItemsRef[v] then
-        		continue
-        	end
+            if not impulse.Inventory.ItemsRef[v] then
+                continue
+            end
 
-        	refundData[v] = k
+            refundData[v] = k
         end
 
         impulse.Data.Write("SupportRefund_"..s64, refundData)
@@ -51,6 +87,11 @@ net.Receive("impulseOpsSTDoRefund", function(len, ply)
 
     query:Execute()
 end)
+
+function impulse.Ops.ST.Open(ply)
+	net.Start("impulseOpsSTOpenTool")
+	net.Send(ply)
+end
 
 function PLUGIN:PostInventorySetup(ply)
     impulse.Data.Read("SupportRefund_"..ply:SteamID64(), function(refundData)
@@ -77,4 +118,13 @@ function PLUGIN:PostInventorySetup(ply)
         net.WriteData(data, #data)
         net.Send(ply)
     end)
+end
+
+function PLUGIN:CanPlayerChangeTeam(ply, newTeam)
+    if lockedTeams[newTeam] then
+        if SERVER then
+            ply:Notify("Team temporarily locked.")
+        end
+        return false
+    end
 end

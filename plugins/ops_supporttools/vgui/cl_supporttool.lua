@@ -158,6 +158,81 @@ function PANEL:Init()
 	end
 
 	sheet:AddSheet("Refunder", b, "icon16/bricks.png")
+
+	local b = vgui.Create("DPanel", sheet)
+	b:Dock(FILL)
+	b.Paint = function() end
+
+	local btn = vgui.Create("DButton", b)
+	btn:Dock(TOP)
+	btn:SetText("Enable OOC")
+
+	function btn:DoClick()
+		net.Start("impulseOpsSTDoOOCEnabled")
+		net.WriteBool(true)
+		net.SendToServer()
+	end
+
+	local btn = vgui.Create("DButton", b)
+	btn:Dock(TOP)
+	btn:SetText("Disable OOC")
+
+	function btn:DoClick()
+		net.Start("impulseOpsSTDoOOCEnabled")
+		net.WriteBool(false)
+		net.SendToServer()
+	end
+
+	sheet:AddSheet("Chat", b, "icon16/bricks.png")
+
+	local b = vgui.Create("DPanel", sheet)
+	b:Dock(FILL)
+	b.Paint = function() end
+
+	local scroll = vgui.Create("DScrollPanel", b)
+	scroll:Dock(FILL)
+
+	for v,k in pairs(impulse.Teams.Data) do
+		local t = scroll:Add("DPanel")
+		t:SetTall(60)
+		t:Dock(TOP)
+
+		function t:Paint(w, h)
+			draw.RoundedBox(0, 0, 0, w, h, Color(60, 60, 60, 200))
+		end
+
+		local lbl = vgui.Create("DLabel", t)
+		lbl:SetText(k.name.." (ID: "..v..") (Current players: "..#team.GetPlayers(v)..")")
+		lbl:SetFont("Impulse-Elements18")
+		lbl:SizeToContents()
+		lbl:SetPos(5, 5)
+
+		local btn = vgui.Create("DButton", t)
+		btn:SetPos(5, 25)
+		btn:SetSize(80, 25)
+		btn:SetText("Lock Team")
+
+		function btn:DoClick()
+			net.Start("impulseOpsSTDoTeamLocked")
+			net.WriteUInt(v, 8)
+			net.WriteBool(true)
+			net.SendToServer()
+		end
+
+		local btn = vgui.Create("DButton", t)
+		btn:SetPos(90, 25)
+		btn:SetSize(80, 25)
+		btn:SetText("Unlock Team")
+
+		function btn:DoClick()
+			net.Start("impulseOpsSTDoTeamLocked")
+			net.WriteUInt(v, 8)
+			net.WriteBool(false)
+			net.SendToServer()
+		end
+	end
+
+	sheet:AddSheet("Teams", b, "icon16/bricks.png")
 end
 
 vgui.Register("impulseSupportTool", PANEL, "DFrame")

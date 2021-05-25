@@ -44,7 +44,7 @@ local oocCommand = {
 	requiresArg = true,
 	onRun = function(ply, arg, rawText)
 		if impulse.OOCClosed then
-			return ply:Notify("OOC chat has been suspsended by the game moderators and will return shortly.")	
+			return ply:Notify("OOC chat has been suspsended and will return shortly.")	
 		end
 
 		local timeout = impulse.OOCTimeouts[ply:SteamID()]
@@ -559,6 +559,16 @@ if CLIENT then
 			return
 		end
 
-		chat.AddText(groupCol, "["..groupName.."] ("..groupRank..") ", speaker:Nick(), ": ", message)
+		local myGroup = impulse.Group.Groups[1]
+
+		if not myGroup then
+			return
+		end
+		
+		if myGroup.Color then
+			chat.AddText(myGroup.Color, "["..groupName.."] ("..groupRank..") ", speaker:Nick(), ": ", message)
+		else
+			chat.AddText(groupCol, "["..groupName.."] ("..groupRank..") ", speaker:Nick(), ": ", message)
+		end
 	end)
 end
