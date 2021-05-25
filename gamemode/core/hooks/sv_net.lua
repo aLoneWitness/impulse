@@ -1686,6 +1686,10 @@ net.Receive("impulseGroupDoRankAdd", function(len, ply)
 		if string.Trim(newName, " ") == "" then
 			return ply:Notify("Invalid rank name.")
 		end
+
+		if groupData.Ranks[newName] then
+			return ply:Notify("This rank name is already in use.")
+		end
 	end
 
 	local permissions = {}
@@ -1718,11 +1722,15 @@ net.Receive("impulseGroupDoRankAdd", function(len, ply)
 		local enabled = net.ReadBool()
 
 		-- protected permissions that can not be changed
-		if not isOwner and permId == 99 then
-			continue
-		end
+		if permId == 0 or permId == 99 then
+			if isOwner then
+				permissions[99] = true
+			end
 
-		if not isDefault and permId == 0 then
+			if isDefault then
+				permissions[0] = true
+			end
+
 			continue
 		end
 

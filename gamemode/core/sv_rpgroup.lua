@@ -9,6 +9,7 @@ local DEFAULT_RANKS = pon.encode({
 		[4] = true,
 		[5] = true,
 		[6] = true,
+		[8] = true,
 		[99] = true
 	},
 	["Member"] = {
@@ -182,7 +183,7 @@ function impulse.Group.SetMetaData(name, info, col)
 	local data = grp.Data or {}
 
 	data.Info = info or grp.Data.Info
-	data.Col = col or Color(grp.Data.Col.r, grp.Data.Col.g, grp.Data.Col.b)
+	data.Col = col or (grp.Data.Col and Color(grp.Data.Col.r, grp.Data.Col.g, grp.Data.Col.b)) or nil
 
 	impulse.Group.Groups[name].Data = data
 	impulse.Group.DBUpdateData(id, data)
@@ -407,6 +408,8 @@ function meta:GroupLoad(groupid, rank)
 			if self:GroupHasPermission(5) or self:GroupHasPermission(6) then
 				impulse.Group.NetworkRanks(self, name)
 			end
+
+			impulse.Group.NetworkMetaData(self, name)
 		end)
 
 		if rank then
@@ -427,8 +430,6 @@ function meta:GroupLoad(groupid, rank)
 			impulse.Group.DBUpdateMaxMembers(groupid, impulse.Config.GroupMaxMembersVIP)
 			impulse.Group.Groups[name].MaxSize = impulse.Config.GroupMaxMembersVIP
 		end
-
-		impulse.Group.NetworkMetaData(self, name)
 	end)
 end
 
