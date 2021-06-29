@@ -718,7 +718,7 @@ impulse.Ops.EventManager.Config.Events = {
  			OPS_NPCS[uid] = ents.Create(prop["class"])
  			OPS_NPCS[uid]:SetPos(prop["pos"])
  			OPS_NPCS[uid]:SetAngles(Angle(prop["ang"].x, prop["ang"].y, prop["ang"].z))
- 			OPS_NPCS[uid]:SetKeyValue("spawnflags", npc:GetSpawnFlags() + SF_NPC_NO_WEAPON_DROP)
+ 			OPS_NPCS[uid]:SetKeyValue("spawnflags", OPS_NPCS[uid]:GetSpawnFlags() + SF_NPC_NO_WEAPON_DROP)
  			OPS_NPCS[uid]:Spawn()
  			OPS_NPCS[uid]:Activate()
 
