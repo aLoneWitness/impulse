@@ -136,15 +136,22 @@ function GM:Think()
 	end
 end
 
-function GM:InitPostEntity()
-	for a,button in pairs(ents.FindByClass("func_button")) do
+local function loadButtons()
+	for a,button in pairs(ents.FindByClass("class C_BaseEntity")) do
 		for v,k in pairs(impulse.Config.Buttons) do
-			if k.pos:DistToSqr(button:GetPos()) < (9 ^ 2) then -- getpos client/server innaccuracy
+			local h = button:GetPos()
+			if k.pos.x == h.x and k.pos.y == h.y and k.pos.z == h.z then -- getpos client/server innaccuracy
 				button.ButtonCheck = v
 			end
 		end
 	end
 end
+
+function GM:InitPostEntity()
+	loadButtons()
+end
+
+concommand.Add("impulse_debug_reloadbuttons", loadButtons)
 
 function GM:ScoreboardShow()
 	if LocalPlayer():Team() == 0 then return end -- players who have not been loaded yet

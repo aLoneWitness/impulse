@@ -14,6 +14,14 @@ function impulse.IsHighRes()
 	return ScrH() > 1900
 end
 
+function HIGH_RES(low, high)
+	if impulse.IsHighRes() then
+		return high
+	end
+	
+	return low
+end
+
 include("shared.lua")
 MsgC( Color( 0, 255, 0 ), "[impulse] Completed client load...\n" )
 
