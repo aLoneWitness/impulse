@@ -122,7 +122,7 @@ function meta:RemoveDoorUser(door)
 	self.OwnedDoors[door] = nil
 end
 
-concommand.Add("impulse_doorsethidden", function(ply, cmd, args)
+concommand.Add("impulse_door_sethidden", function(ply, cmd, args)
 	if not ply:IsSuperAdmin() then return false end
 
 	local trace = {}
@@ -148,7 +148,7 @@ concommand.Add("impulse_doorsethidden", function(ply, cmd, args)
 	end
 end)
 
-concommand.Add("impulse_doorsetgroup", function(ply, cmd, args)
+concommand.Add("impulse_door_setgroup", function(ply, cmd, args)
 	if not ply:IsSuperAdmin() then return false end
 
 	local trace = {}
@@ -170,7 +170,7 @@ concommand.Add("impulse_doorsetgroup", function(ply, cmd, args)
 	end
 end)
 
-concommand.Add("impulse_doorremovegroup", function(ply, cmd, args)
+concommand.Add("impulse_door_removegroup", function(ply, cmd, args)
 	if not ply:IsSuperAdmin() then return false end
 
 	local trace = {}

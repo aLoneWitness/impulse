@@ -37,9 +37,9 @@ function impulse.chatBox.buildBox()
 	end
 	
 	impulse.chatBox.entry = vgui.Create("DTextEntry", impulse.chatBox.frame) 
-	impulse.chatBox.entry:SetSize( impulse.chatBox.frame:GetWide() - 50, 20 )
+	impulse.chatBox.entry:SetSize( impulse.chatBox.frame:GetWide() - 50, (impulse.IsHighRes() and 28 or 20) )
 	impulse.chatBox.entry:SetTextColor( color_white )
-	impulse.chatBox.entry:SetFont("Impulse-ChatSmall")
+	impulse.chatBox.entry:SetFont(impulse.IsHighRes() and "Impulse-ChatMedium" or "Impulse-ChatSmall")
 	impulse.chatBox.entry:SetDrawBorder( false )
 	impulse.chatBox.entry:SetDrawBackground( false )
 	impulse.chatBox.entry:SetCursorColor( color_white )
@@ -192,7 +192,7 @@ function impulse.chatBox.buildBox()
  						end
  
 						draw.DrawText(k.." - "..v.description, "Impulse-ChatMedium", 10, 10 + i, c, TEXT_ALIGN_LEFT)
-						i = i + 15
+						i = i + (impulse.IsHighRes() and 22 or 15)
 						showing = showing + 1
 
 						if showing > 24 then

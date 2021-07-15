@@ -10,6 +10,10 @@ impulse = impulse or {} -- defining global function table
 impulse.meta = FindMetaTable( "Player" )
 impulse.lib = {}
 
+function impulse.IsHighRes()
+	return ScrH() > 1900
+end
+
 include("shared.lua")
 MsgC( Color( 0, 255, 0 ), "[impulse] Completed client load...\n" )
 

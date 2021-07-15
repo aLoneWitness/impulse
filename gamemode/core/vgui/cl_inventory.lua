@@ -52,7 +52,7 @@ function PANEL:Init()
 	self.modelPreview:MoveToBack()
 	self.modelPreview:SetCursor("arrow")
 
-	if ScrH() > 2159 then
+	if impulse.IsHighRes() then
 		self.modelPreview:SetFOV((324 / ScrH()) * 130) -- a incredible equation that makes the model fit onto the ui, patent by professor vin
 	else
 		self.modelPreview:SetFOV((324 / ScrH()) * 100) -- a incredible equation that makes the model fit onto the ui, patent by professor vin

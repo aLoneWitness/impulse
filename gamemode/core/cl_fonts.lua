@@ -221,7 +221,7 @@ surface.CreateFont("Impulse-Elements48", {
 
 surface.CreateFont("Impulse-ChatSmall", {
 	font = "Arial",
-	size = 16,
+	size = (impulse.IsHighRes() and 20 or 16),
 	weight = 700,
 	antialias = true,
 	shadow = true,
@@ -229,7 +229,7 @@ surface.CreateFont("Impulse-ChatSmall", {
 
 surface.CreateFont("Impulse-ChatMedium", {
 	font = "Arial",
-	size = 17,
+	size = (impulse.IsHighRes() and 21 or 17),
 	weight = 700,
 	antialias = true,
 	shadow = true,
@@ -237,16 +237,16 @@ surface.CreateFont("Impulse-ChatMedium", {
 
 surface.CreateFont("Impulse-ChatRadio", {
 	font = "Consolas",
-	size = 17,
-	weight = 500,
+	size = (impulse.IsHighRes() and 24 or 17),
+	weight = (impulse.IsHighRes() and 500 or 700),
 	antialias = true,
 	shadow = true,
 } )
 
 surface.CreateFont("Impulse-ChatLarge", {
 	font = "Arial",
-	size = 20,
-	weight = 700,
+	size = (impulse.IsHighRes() and 27 or 20),
+	weight = (impulse.IsHighRes() and 1100 or 700),
 	antialias = true,
 	shadow = true,
 } )
