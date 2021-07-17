@@ -1176,6 +1176,7 @@ local bannedTools = {
 	["wire_field_device"] = true,
 	["wire_hsranger"] = true,
 	["wire_hsholoemitter"] = true,
+	["wire_eyepod"] = true,
 	["wnpc"] = true
 }
 
@@ -1264,7 +1265,8 @@ local bannedDupeEnts = {
 	["gmod_wire_rtcam"] = true,
 	["gmod_wire_detonator"] = true,
 	["gmod_wire_hsranger"] = true,
-	["gmod_wire_hsholoemitter"] = true
+	["gmod_wire_hsholoemitter"] = true,
+	["gmod_wire_eyepod"] = true
 }
 
 local donatorDupeEnts = {
