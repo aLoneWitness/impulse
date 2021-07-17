@@ -238,7 +238,7 @@ surface.CreateFont("Impulse-ChatMedium", {
 surface.CreateFont("Impulse-ChatRadio", {
 	font = "Consolas",
 	size = (impulse.IsHighRes() and 24 or 17),
-	weight = (impulse.IsHighRes() and 500 or 700),
+	weight = (impulse.IsHighRes() and 700 or 500),
 	antialias = true,
 	shadow = true,
 } )
