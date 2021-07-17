@@ -247,6 +247,10 @@ local advertCommand = {
 			return ply:Notify("Your team cannot make an advert.") 
 		end
 
+		if ply:GetSyncVar(SYNC_ARRESTED, false) then
+			return ply:Notify("You cannot make an advert while arrested.")
+		end
+
 
 		timer.Simple(15, function()
 			if IsValid(ply) and ply:IsPlayer() then
