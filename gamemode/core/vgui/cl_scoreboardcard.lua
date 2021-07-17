@@ -73,7 +73,7 @@ function PANEL:Paint(w,h)
  	surface.DrawTexturedRect(1,1,w-1,h-2)
 
 	 -- OOC/IC name
-	 surface.SetFont("Impulse-Elements20-Shadow")
+	 surface.SetFont(HIGH_RES("Impulse-Elements20-Shadow", "Impulse-Elements20A-Shadow"))
 	 surface.SetTextColor(color_white)
 	 surface.SetTextPos(65,10)
 
@@ -88,7 +88,7 @@ function PANEL:Paint(w,h)
 	 surface.DrawText(self.Player:Ping())
 
 	 -- Team name
-	 surface.SetFont("Impulse-Elements18-Shadow")
+	 surface.SetFont(HIGH_RES("Impulse-Elements18-Shadow", "Impulse-Elements19-Shadow"))
 	 surface.SetTextPos(65,30)
 	 surface.DrawText(team.GetName(self.Player:Team()))
 	 

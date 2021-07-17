@@ -115,3 +115,52 @@ function SizeWH(width, height)
     local screenheight = myscrh
     return width*ScrW()/screenwidth, height*ScrH()/screenheight
 end
+
+function HexColor(hex, alpha)
+    hex = hex:gsub("#","")
+    return Color (tonumber("0x" .. hex:sub(1,2)), tonumber("0x" .. hex:sub(3,4)), tonumber("0x" .. hex:sub(5,6)), alpha or 255)
+end
+
+local uColoursBase = {
+	HexColor("#ff0000"),
+	HexColor("#ff8c00"),
+	HexColor("#00ff7f"),
+	HexColor("#ff1493"),
+	HexColor("#1e90ff"),
+	HexColor("#adff2f"),
+	HexColor("#eee8aa"),
+	HexColor("#87cefa"),
+	HexColor("#dda0dd"),
+	HexColor("#ffd700"),
+	HexColor("#808000"),
+	HexColor("#2e8b57"),
+	HexColor("#ba55d3"),
+	HexColor("#000080"),
+	HexColor("#b22222"),
+	HexColor("#2e8b57"),
+	HexColor("#696969"),
+	HexColor("#e9967a")
+}
+
+local uColoursUsed = {}
+local uColoursLive = {}
+function impulse.GetUniqueColour(hash)
+	if uColoursLive[hash] then
+		return uColoursLive[hash]
+	end
+	
+	for v,k in RandomPairs(uColoursBase) do
+		if uColoursUsed[v] then
+			continue
+		end
+		
+		uColoursLive[hash] = k
+		uColoursUsed[v] = true
+	end
+
+	if not uColoursLive[hash] then
+		uColoursUsed = {}
+	end
+
+	return uColoursLive[hash]
+end

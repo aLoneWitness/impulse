@@ -88,15 +88,21 @@ else
 	end
 
 	function SWEP:Reload()
+		if self.NextGo > CurTime() then return end
+		self.NextGo = CurTime() + .3
+
 		if self.Selected then
 			local buttonPos = self.Selected:GetPos()
 			local pos = "Vector("..buttonPos.x..", "..buttonPos.y..", "..buttonPos.z..")"
 			-- im sorry i had to do this indent god, pls forgiv
-			local output = [[{
-	desc = "brief desc here",
-	pos = ]]..pos..[[,
-	doorgroup = 1
-}]]
+			local output = ""
+
+			Derma_Query("Please select template", "impulse", 
+				"generic", function()
+					output = [[{
+	desc = "Desc or remove line for no desc",
+	pos = ]]..pos.."\n}"
+
 			chat.AddText("-----------------OUTPUT-----------------")
 			chat.AddText(output)
 			chat.AddText("Output copied to clipboard.")
@@ -105,6 +111,58 @@ else
 			self.Selected = nil
 			self.Button = nil
 			self.State = nil
+				end, 
+				"doorgroup", function()
+					output = [[{
+	desc = "Desc or remove line for no desc",
+	pos = ]]..pos..[[,
+	doorgroup = 1
+}]]
+
+			chat.AddText("-----------------OUTPUT-----------------")
+			chat.AddText(output)
+			chat.AddText("Output copied to clipboard.")
+			SetClipboardText(output)
+
+			self.Selected = nil
+			self.Button = nil
+			self.State = nil
+				end, 
+				"staffonly", function()
+					output = [[{
+	desc = "Desc or remove line for no desc",
+	pos = ]]..pos..[[,
+	customCheck = function(ply)
+		return ply:IsAdmin()
+	end
+}]]
+
+			chat.AddText("-----------------OUTPUT-----------------")
+			chat.AddText(output)
+			chat.AddText("Output copied to clipboard.")
+			SetClipboardText(output)
+
+			self.Selected = nil
+			self.Button = nil
+			self.State = nil
+				end,
+				"disabled", function()
+					output = [[{
+	pos = ]]..pos..[[,
+	customCheck = function(ply)
+		return false
+	end
+}]]
+
+			chat.AddText("-----------------OUTPUT-----------------")
+			chat.AddText(output)
+			chat.AddText("Output copied to clipboard.")
+			SetClipboardText(output)
+
+			self.Selected = nil
+			self.Button = nil
+			self.State = nil
+			end)
 		end
 	end
 
@@ -117,7 +175,7 @@ else
 		for v,k in pairs(impulse.Config.Buttons) do
 			if lpPos:DistToSqr(k.pos) < 900 ^ 2 then
 				local cent = k.pos:ToScreen()
-				draw.SimpleText(k.desc or "nodesc", "BudgetLabel", cent.x, cent.y)
+				draw.SimpleText(k.desc or "ScriptedButton", "ChatFont", cent.x, cent.y)
 			end
 		end
 	end

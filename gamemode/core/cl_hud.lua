@@ -169,11 +169,11 @@ local function DrawEntInfo(target, alpha)
 	end
 end
 
-local function DrawButtonInfo(target, alpha)
+local function DrawButtonInfo(target, alpha)	
 	local pos = target.LocalToWorld(target, target:OBBCenter()):ToScreen()
 	local scrW = ScrW()
 	local scrH = ScrH()
-	local buttonId = target.ButtonCheck
+	local buttonId = impulse_ActiveButtons[target:EntIndex()]
 	local hudCol = impulse.Config.InteractColour
 	local buttonData = impulse.Config.Buttons[buttonId]
 
@@ -624,7 +624,7 @@ function GM:HUDPaintBackground()
 						DrawEntInfo(entTarg, alpha)
 					elseif entTarg:IsDoor() then
 						DrawDoorInfo(entTarg, alpha)
-					elseif entTarg.ButtonCheck then
+					elseif impulse_ActiveButtons[entTarg.EntIndex(entTarg)] then
 						DrawButtonInfo(entTarg, alpha)
 					end
 				end

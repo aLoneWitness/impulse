@@ -602,3 +602,16 @@ net.Receive("impulseGroupMetadata", function()
 		impulse.groupEditor:Refresh()
 	end
 end)
+
+net.Receive("impulseGetButtons", function()
+	local count = net.ReadUInt(16)
+
+	impulse_ActiveButtons = {}
+
+	for i=1,count do
+		local entIndex = net.ReadUInt(16)
+		local buttonId = net.ReadUInt(16)
+
+		impulse_ActiveButtons[entIndex] = buttonId
+	end
+end)

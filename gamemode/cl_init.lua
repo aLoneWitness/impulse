@@ -10,8 +10,11 @@ impulse = impulse or {} -- defining global function table
 impulse.meta = FindMetaTable( "Player" )
 impulse.lib = {}
 
+include("impulse/gamemode/core/cl_settings.lua") -- hacky
+impulse.DefineSetting("hud_highres", {name="UHD resolution scaling", category="HUD", type="tickbox", default=false, needsRestart=true})
+
 function impulse.IsHighRes()
-	return ScrH() > 1900
+	return impulse.GetSetting("hud_highres")
 end
 
 function HIGH_RES(low, high)

@@ -15,18 +15,18 @@ function PANEL:Init()
  	self.infoName = vgui.Create("DLabel", self)
  	self.infoName:SetPos(15, 40)
  	self.infoName:SetText(LocalPlayer():Nick())
- 	self.infoName:SetFont("Impulse-Elements24-Shadow")
+ 	self.infoName:SetFont(HIGH_RES("Impulse-Elements24-Shadow", "Impulse-Elements27-Shadow"))
  	self.infoName:SizeToContents()
 
  	if self.infoName:GetWide() > 245 then
- 		self.infoName:SetFont("Impulse-Elements19-Shadow")
+ 		self.infoName:SetFont(HIGH_RES("Impulse-Elements19-Shadow", "Impulse-Elements24-Shadow"))
  	end
 
  	local lpTeam = LocalPlayer():Team()
   	self.infoTeam = vgui.Create("DLabel", self)
  	self.infoTeam:SetPos(15, 64)
  	self.infoTeam:SetText(team.GetName(lpTeam))
- 	self.infoTeam:SetFont("Impulse-Elements19-Shadow")
+ 	self.infoTeam:SetFont(HIGH_RES("Impulse-Elements19-Shadow", "Impulse-Elements22-Shadow"))
  	self.infoTeam:SetColor(team.GetColor(lpTeam))
  	self.infoTeam:SizeToContents()
 
@@ -36,7 +36,7 @@ function PANEL:Init()
  	if className != "Default" then
 	 	self.infoClassRank = vgui.Create("DLabel", self)
 	 	self.infoClassRank:SetPos(15, 80)
-	 	self.infoClassRank:SetFont("Impulse-Elements19-Shadow")
+	 	self.infoClassRank:SetFont(HIGH_RES("Impulse-Elements19-Shadow", "Impulse-Elements22-Shadow"))
 	 	self.infoClassRank:SetText(className)
 	 	self.infoClassRank:SetColor(team.GetColor(lpTeam))
 	 	self.infoClassRank:SizeToContents()
@@ -46,14 +46,14 @@ function PANEL:Init()
  	local skin = LocalPlayer():GetSkin()
 
  	self.modelPreview = vgui.Create("impulseModelPanel", self)
-	self.modelPreview:SetPos(0, 80)
-	self.modelPreview:SetSize(270, h * .75)
+	self.modelPreview:SetPos(HIGH_RES(0, 20), 80)
+	self.modelPreview:SetSize(HIGH_RES(270, 335), h * .75)
 	self.modelPreview:SetModel(model, skin)
 	self.modelPreview:MoveToBack()
 	self.modelPreview:SetCursor("arrow")
 
 	if impulse.IsHighRes() then
-		self.modelPreview:SetFOV((324 / ScrH()) * 130) -- a incredible equation that makes the model fit onto the ui, patent by professor vin
+		self.modelPreview:SetFOV((324 / ScrH()) * 140) -- a incredible equation that makes the model fit onto the ui, patent by professor vin
 	else
 		self.modelPreview:SetFOV((324 / ScrH()) * 100) -- a incredible equation that makes the model fit onto the ui, patent by professor vin
 	end
@@ -98,9 +98,10 @@ function PANEL:SetupItems()
 		self.tabs:Remove()
 	end
 
+	local s = HIGH_RES(270, 400)
  	self.tabs = vgui.Create("DPropertySheet", self)
- 	self.tabs:SetPos(270, 40)
- 	self.tabs:SetSize(w - 270, h - 42)
+ 	self.tabs:SetPos(s, 40)
+ 	self.tabs:SetSize(w - s, h - 42)
  	self.tabs.tabScroller:DockMargin(-1, 0, -1, 0)
  	self.tabs.tabScroller:SetOverlap(0)
 
@@ -184,7 +185,7 @@ function PANEL:SetupItems()
 		self.empty:SetContentAlignment(5)
 		self.empty:Dock(TOP)
 		self.empty:SetText("Empty")
-		self.empty:SetFont("Impulse-Elements19-Shadow")
+		self.empty:SetFont(HIGH_RES("Impulse-Elements19-Shadow", "Impulse-Elements22-Shadow"))
 	end
 
 	self.invWeight = weight
@@ -260,7 +261,7 @@ end
 
 local grey = Color(209, 209, 209)
 function PANEL:PaintOver(w, h)
-	draw.SimpleText(self.invWeight.."kg/"..impulse.Config.InventoryMaxWeight.."kg", "Impulse-Elements18-Shadow", w - 18, 40, grey, TEXT_ALIGN_RIGHT, TEXT_ALIGN_TOP)
+	draw.SimpleText(self.invWeight.."kg/"..impulse.Config.InventoryMaxWeight.."kg", HIGH_RES("Impulse-Elements18-Shadow", "Impulse-Elements22-Shadow"), w - 18, 40, grey, TEXT_ALIGN_RIGHT, TEXT_ALIGN_TOP)
 end
 
 vgui.Register("impulseInventory", PANEL, "DFrame")

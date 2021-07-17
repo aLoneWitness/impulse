@@ -289,6 +289,7 @@ function PANEL:Init()
 	timer.Simple(0, function()
 		if impulse.MainMenu.popup then return end
 		hook.Run("DisplayMenuMessages", self)
+		hook.Run("OnMenuFirstLoad", self)
 
 		if REFUND_MSG then
 			Derma_Message(REFUND_MSG, "impulse", "Claim Refund")

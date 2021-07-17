@@ -1,7 +1,7 @@
 local PANEL = {}
 
 function PANEL:Init()
-	self:SetSize(770, 580)
+	self:SetSize(HIGH_RES(770, 770 * 1.5), HIGH_RES(580, 580 * 1.5))
 	self:Center()
 	self:SetTitle("Player menu")
 	self:MakePopup()
@@ -85,6 +85,7 @@ function PANEL:QuickActions()
 	self.list:SetSpaceX(5)
 
 	local btn = self.list:Add("DButton")
+	if impulse.IsHighRes() then btn:SetTall(30) btn:SetFont("Impulse-Elements17-Shadow") end
 	btn:Dock(TOP)
 	btn:SetText("Drop money")
 	function btn:DoClick()
@@ -94,6 +95,7 @@ function PANEL:QuickActions()
 	end
 
 	local btn = self.list:Add("DButton")
+	if impulse.IsHighRes() then btn:SetTall(30) btn:SetFont("Impulse-Elements17-Shadow") end
 	btn:Dock(TOP)
 	btn:SetText("Write a letter")
 	function btn:DoClick()
@@ -103,6 +105,7 @@ function PANEL:QuickActions()
 	end
 
 	local btn = self.list:Add("DButton")
+	if impulse.IsHighRes() then btn:SetTall(30) btn:SetFont("Impulse-Elements17-Shadow") end
 	btn:Dock(TOP)
 	btn:SetText("Change RP name (requires "..impulse.Config.CurrencyPrefix..impulse.Config.RPNameChangePrice..")")
 	function btn:DoClick()
@@ -114,6 +117,7 @@ function PANEL:QuickActions()
 	end
 
 	local btn = self.list:Add("DButton")
+	if impulse.IsHighRes() then btn:SetTall(30) btn:SetFont("Impulse-Elements17-Shadow") end
 	btn:Dock(TOP)
 	btn:SetText("Sell all doors")
 	function btn:DoClick()
@@ -149,6 +153,7 @@ function PANEL:QuickActions()
 		for v,classData in pairs(classes) do
 			if not classData.noMenu and LocalPlayer():GetTeamClass() != v then
 				local btn = self.list:Add("DButton")
+				if impulse.IsHighRes() then btn:SetTall(30) btn:SetFont("Impulse-Elements17-Shadow") end
 				btn:Dock(TOP)
 				btn.classID = v
 
@@ -357,7 +362,11 @@ function PANEL:Business()
 			item:SetModel(k.model)
 		end
 
-		item:SetSize(58,58)
+		if impulse.IsHighRes() then
+			item:SetSize(78,78)
+		else
+			item:SetSize(58,58)
+		end
 		item:SetTooltip(name.." \n"..impulse.Config.CurrencyPrefix..k.price)
 		item.id = table.KeyFromValue(impulse.Business.DataRef, name)
 
@@ -368,8 +377,8 @@ function PANEL:Business()
 		end
 
 		local costLbl = vgui.Create("DLabel", item)
-		costLbl:SetPos(5,35)
-		costLbl:SetFont("Impulse-Elements20-Shadow")
+		costLbl:SetPos(5,HIGH_RES(35, 55))
+		costLbl:SetFont(HIGH_RES("Impulse-Elements20-Shadow", "Impulse-Elements22-Shadow"))
 		costLbl:SetText(impulse.Config.CurrencyPrefix..k.price)
 		costLbl:SizeToContents()
 	end
@@ -438,7 +447,7 @@ function PANEL:AddSheet(name, icon, pnl, loadFunc)
 		surface.SetMaterial(icon)
 		surface.DrawTexturedRect(0, 0, w-10, h-40)
 
-		draw.DrawText(name, "Impulse-Elements18", (w-10)/2, 95, color_white, TEXT_ALIGN_CENTER)
+		draw.DrawText(name, HIGH_RES("Impulse-Elements18", "Impulse-Elements20A-Shadow"), (w-10)/2, 95, color_white, TEXT_ALIGN_CENTER)
 
 		return true
 	end

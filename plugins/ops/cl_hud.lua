@@ -21,9 +21,23 @@ hook.Add("HUDPaint", "impulseOpsHUD", function()
 		local onDuty = impulse.GetSetting("admin_onduty") or false
 
 		if onDuty then
-			draw.SimpleText("OBSERVER MODE", "Impulse-Elements16-Shadow", 20, 10, col)
+			draw.SimpleText("OBSERVER MODE", "Impulse-Elements19-Shadow", 20, 10, col)
 		else
-			draw.SimpleText("OBSERVER MODE (OFF DUTY! YOU WILL NOT VIEW INBOUND REPORTS!)", "Impulse-Elements16-Shadow", 20, 10, red)
+			draw.SimpleText("OBSERVER MODE (OFF DUTY! YOU WILL NOT VIEW INBOUND REPORTS!)", "Impulse-Elements19-Shadow", 20, 10, red)
+		end
+
+		local staffOn = 0
+
+		for v,k in pairs(player.GetAll()) do
+			if k:IsAdmin() then
+				staffOn = staffOn + 1
+			end
+		end
+
+		draw.SimpleText(staffOn.." STAFF ONLINE", "Impulse-Elements18-Shadow", ScrW() * .5, 10, col, TEXT_ALIGN_CENTER)
+
+		if OPS_LIGHT then
+			draw.SimpleText("LIGHT ON", "Impulse-Elements18-Shadow", ScrW() * .5, 30, col, TEXT_ALIGN_CENTER)
 		end
 
 		draw.SimpleText("TOTAL REPORTS: " ..#impulse.Ops.Reports, "Impulse-Elements16-Shadow", 20, 30, col)

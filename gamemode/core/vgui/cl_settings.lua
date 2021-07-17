@@ -46,6 +46,10 @@ function PANEL:Init()
 
 			function tickbox:OnChange(value)
 				impulse.SetSetting(v, value)
+
+				if k.needsRestart then
+					Derma_Message("You may need to reconnect to the server to fully activate this setting.", "impulse", "Ok")
+				end
 			end
 		elseif settingType == "plainint" then
 			local numberEntry = vgui.Create("DNumberWang", settingBase)

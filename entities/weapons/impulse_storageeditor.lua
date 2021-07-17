@@ -47,6 +47,15 @@ else
 	function SWEP:DrawHUD()
 		draw.SimpleText("LEFT: Register entity, RIGHT: Reset, RELOAD: Link", "BudgetLabel", 100, 100)
 		draw.SimpleText("STATE: "..(self.State or "Select a storage container..."), "BudgetLabel", 100, 120)
+
+		local count = 0
+		for v,k in pairs(ents.FindByClass("impulse_storage")) do
+			count = count + 1
+			if k:GetPos():DistToSqr(LocalPlayer():GetPos()) < (1000 ^ 2) then
+				local sPos = k:GetPos():ToScreen()
+				draw.SimpleText("Cont#"..k:EntIndex(), "ChatFont", sPos.x, sPos.y, Color(255, 0, 0), TEXT_ALIGN_CENTER)
+			end
+		end
 	end
 end
 

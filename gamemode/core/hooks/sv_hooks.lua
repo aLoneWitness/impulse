@@ -43,6 +43,16 @@ function GM:PlayerInitialSpawn(ply)
 			net.Start("impulseJoinData")
 			net.WriteBool(isNew)
 			net.Send(ply)
+
+			net.Start("impulseGetButtons")
+			net.WriteUInt(table.Count(impulse.ActiveButtons), 16)
+
+			for v,k in pairs(impulse.ActiveButtons) do
+				net.WriteUInt(v, 16)
+				net.WriteUInt(k, 16)
+			end
+
+			net.Send(ply)
 		end
 	end)
 	query:Execute()
@@ -827,11 +837,23 @@ function GM:KeyRelease(ply, key)
 	end
 end
 
+impulse.ActiveButtons = {}
 local function LoadButtons()
 	for a,button in pairs(ents.FindByClass("func_button")) do
+		if button.ButtonCheck then
+			button.ButtonCheck = nil
+		end
+	end
+	
+	for a,button in pairs(ents.FindByClass("func_button")) do
+		if button.ButtonCheck then
+			continue
+		end
+		
 		for v,k in pairs(impulse.Config.Buttons) do
 			if k.pos:DistToSqr(button:GetPos()) < (9 ^ 2) then -- getpos client/server innaccuracy
 				button.ButtonCheck = v
+				impulse.ActiveButtons[button:EntIndex()] = v
 
 				if k.init then
 					k.init(button)

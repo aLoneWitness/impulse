@@ -86,6 +86,7 @@ util.AddNetworkString("impulseGroupDoDelete")
 util.AddNetworkString("impulseGroupDoLeave")
 util.AddNetworkString("impulseGroupDoSetColor")
 util.AddNetworkString("impulseGroupDoSetInfo")
+util.AddNetworkString("impulseGetButtons")
 
 local AUTH_FAILURE = "Invalid argument (rejoin to continue)"
 
@@ -206,6 +207,7 @@ net.Receive("impulseChatMessage", function(len, ply) -- should implement a check
 		ply.nextChat = CurTime() + 0.3 + math.Clamp(#text / 300, 0, 4)
 		
 		text = string.sub(text, 1, 1024)
+		text = string.Replace(text, "\n", "")
 		hook.Run("PlayerSay", ply, text, false, true)
 	end
 end)

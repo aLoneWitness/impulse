@@ -5,10 +5,17 @@ hook.Add("PlayerNoClip", "opsNoclip", function(ply, state)
 				impulse.Ops.Cloak(ply)
 				ply:GodEnable()
 				ply:SetCollisionGroup(COLLISION_GROUP_WEAPON)
+
+				if ply:FlashlightIsOn() then
+					ply:Flashlight(false)
+				end
+
+				ply:AllowFlashlight(false)
 			else
 				impulse.Ops.Uncloak(ply)
 				ply:GodDisable()
 				ply:SetCollisionGroup(COLLISION_GROUP_PLAYER)
+				ply:AllowFlashlight(true)
 			end
 		end
 
