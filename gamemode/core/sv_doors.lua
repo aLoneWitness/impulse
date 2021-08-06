@@ -31,17 +31,56 @@ function impulse.Doors.Load()
 
 	if file.Exists(fileName..".dat", "DATA") then
 		local mapDoorData = util.JSONToTable(file.Read(fileName..".dat", "DATA"))
-		for doorID, doorData in pairs(mapDoorData) do
-			local doorEnt = ents.GetMapCreatedEntity(doorID)
+		local posBuffer = {}
+		local posFinds = {}
 
-			if IsValid(doorEnt) and doorEnt:IsDoor() then
+		-- use position hashes so we dont take several seconds
+		for doorID, doorData in pairs(mapDoorData) do
+			if not doorData.pos then
+				continue
+			end
+
+			posBuffer[doorData.pos.x.."|"..doorData.pos.y.."|"..doorData.pos.z] = doorID
+		end
+
+		-- try to find every door via the pos value (update safeish)
+		for v,k in pairs(ents.GetAll()) do
+			local p = k.GetPos(k)
+			local found = posBuffer[p.x.."|"..p.y.."|"..p.z]
+
+			if found and k:IsDoor() then
+				local doorEnt = k
+				local doorData = mapDoorData[found]
 				local doorIndex = doorEnt:EntIndex()
+				posFinds[doorIndex] = true
 				
 				if doorData.name then doorEnt:SetSyncVar(SYNC_DOOR_NAME, doorData.name, true) end
 				if doorData.group then doorEnt:SetSyncVar(SYNC_DOOR_GROUP, doorData.group, true) end
 				if doorData.buyable != nil then doorEnt:SetSyncVar(SYNC_DOOR_BUYABLE, false, true) end
 			end
 		end
+
+		-- and doors we couldnt get by pos, we'll fallback to hammerID's (less update safe) (old method)
+		for doorID, doorData in pairs(mapDoorData) do
+			local doorEnt = ents.GetMapCreatedEntity(doorID)
+
+			if IsValid(doorEnt) and doorEnt:IsDoor() then
+				local doorIndex = doorEnt:EntIndex()
+
+				if posFinds[doorIndex] then
+					continue
+				end
+				
+				if doorData.name then doorEnt:SetSyncVar(SYNC_DOOR_NAME, doorData.name, true) end
+				if doorData.group then doorEnt:SetSyncVar(SYNC_DOOR_GROUP, doorData.group, true) end
+				if doorData.buyable != nil then doorEnt:SetSyncVar(SYNC_DOOR_BUYABLE, false, true) end
+
+				print("[impulse] Warning! Added door by HammerID value because it could not be found via pos. Door index: "..doorIndex..". Please investigate.")
+			end
+		end
+
+		posBuffer = nil
+		posFinds = nil
 	end
 
 	hook.Run("DoorsSetup")
