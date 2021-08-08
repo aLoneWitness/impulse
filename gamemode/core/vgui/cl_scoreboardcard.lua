@@ -80,6 +80,11 @@ function PANEL:Paint(w,h)
 	 local icName = ""
 	 if LocalPlayer():IsAdmin() then 
 	 	icName = " ("..self.Player:Name()..")"
+
+		local rpGroup = self.Player:GetSyncVar(SYNC_GROUP_NAME, nil)
+		if impulse.GetSetting("admin_showgroup") and rpGroup then
+			icName = icName.." ("..rpGroup..")"
+		end
 	 end
 	 surface.DrawText(self.Player:SteamName()..icName)
 

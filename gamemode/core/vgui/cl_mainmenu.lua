@@ -257,7 +257,7 @@ function PANEL:Init()
 	local year = os.date("%Y", os.time())
 	local copyrightLabel = vgui.Create("DLabel", self.core)
 	copyrightLabel:SetFont("Impulse-Elements14")
-	copyrightLabel:SetText("Powered by impulse\nCopyright vin "..year.."\nimpulse version: "..impulse.Version)
+	copyrightLabel:SetText("Powered by impulse\nCopyright 2i.games "..year.."\nimpulse version: "..impulse.Version)
 	copyrightLabel:SizeToContents()
 	copyrightLabel:SetPos(ScrW()-copyrightLabel:GetWide(), ScrH()-copyrightLabel:GetTall()-5)
 

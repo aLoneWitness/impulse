@@ -407,7 +407,7 @@ if SERVER then
 
   local x = file.Read("impulse/gamemode/core/vgui/cl_mainmenu.lua", "LUA")
 
-  if not x:find([[copyrightLabel:SetText("Powered by impulse\nCopyright vin "..year.."\nimpulse version: "..impulse.Version)]], nil, true) then
+  if not x:find([[copyrightLabel:SetText("Powered by impulse\nCopyright 2i.games "..year.."\nimpulse version: "..impulse.Version)]], nil, true) then
     SetGlobalString("impulse_fatalerror", "License terms violated. It's not cool to remove credit like that, please put it back. To fix this issue, restore the state of the cl_mainmenu.lua file. Please be respectful to who made this framework.")
   end
 end

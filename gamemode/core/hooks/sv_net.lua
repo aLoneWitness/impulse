@@ -1708,7 +1708,7 @@ net.Receive("impulseGroupDoRankAdd", function(len, ply)
 			isDefault = true
 		end
 	else
-		if table.Count(groupData.Ranks) > 12 then
+		if table.Count(groupData.Ranks) >= impulse.Config.GroupMaxRanks then
 			return ply:Notify("Max ranks reached.")
 		end
 

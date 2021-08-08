@@ -1177,6 +1177,7 @@ local bannedTools = {
 	["wire_hsranger"] = true,
 	["wire_hsholoemitter"] = true,
 	["wire_eyepod"] = true,
+	["wire_light"] = true,
 	["wnpc"] = true
 }
 
@@ -1266,6 +1267,7 @@ local bannedDupeEnts = {
 	["gmod_wire_detonator"] = true,
 	["gmod_wire_hsranger"] = true,
 	["gmod_wire_hsholoemitter"] = true,
+	["gmod_wire_light"] = true,
 	["gmod_wire_eyepod"] = true
 }
 

@@ -111,6 +111,34 @@ if GExtension then
                     
                     plyTarget:GE_Ban(time, reason, ply:SteamID64())
                     ply:Notify("You have banned "..plyTarget:SteamName().." for "..time.." minutes.")
+
+                    local steamid = plyTarget:SteamID64()
+                    local embeds = {
+                        title = "Manual ban issued",
+                        description = "User was banned by a staff member.",
+                        url = "https://panel.impulse-community.com/index.php?t=admin_bans&id="..steamid,
+                        color = 8801791,
+                        fields = {
+                            {
+                                name = "User",
+                                value = "**"..plyTarget:SteamName().."** ("..steamid..") ("..plyTarget:Nick()..")"
+                            },
+                            {
+                                name = "Moderator",
+                                value = "**"..ply:SteamName().."** ("..ply:SteamID()..")"
+                            },
+                            {
+                                name = "Reason",
+                                value = reason
+                            },
+                            {
+                                name = "Length",
+                                value = string.NiceTime(time * 60).." ("..time.." minutes)"
+                            }
+                        }
+                    }
+                    
+                    opsDiscordLog(nil, embeds)
                 else
                     ply:Notify("This user can not be banned.")
                 end
@@ -154,6 +182,30 @@ if GExtension then
                 net.Start("opsGiveWarn")
                 net.WriteString(reason)
                 net.Send(plyTarget)
+
+            	local steamid = plyTarget:SteamID64()
+                local embeds = {
+                    title = "Warning issued",
+                    description = "User was warned by a staff member.",
+                    url = "https://panel.impulse-community.com/index.php?t=admin_warnings&id="..steamid,
+                    color = 16774400,
+                    fields = {
+                        {
+                            name = "User",
+                            value = "**"..plyTarget:SteamName().."** ("..steamid..") ("..plyTarget:Nick()..")"
+                        },
+                        {
+                            name = "Moderator",
+                            value = "**"..ply:SteamName().."** ("..ply:SteamID()..")"
+                        },
+                        {
+                            name = "Reason",
+                            value = reason
+                        }
+                    }
+                }
+                
+                opsDiscordLog(nil, embeds)
             else
                 return ply:Notify("Could not find player: "..tostring(name))
             end

@@ -26,12 +26,10 @@ function PLUGIN:Think()
 			dLight.g = col.g
 			dLight.b = col.b
 			dLight.brightness = 3
-			dLight.Decay = 100
-			dLight.Size = 1200
-
-			if lightOn then
-				dLight.DieTime = CurTime() + 0.1
-			end
+			local size = 1200
+			dLight.Size = size
+			dLight.Decay = size * 5
+			dLight.DieTime = CurTime() + 0.8
 		end
 	end
 

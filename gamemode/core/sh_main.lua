@@ -109,6 +109,10 @@ function impulse.AngleToBearing(ang)
     return math.Round(360 - (ang.y % 360))
 end
 
+function impulse.PosToString(pos)
+    return pos.x.."|"..pos.y.."|"..pos.x
+end
+
 impulse.notices = impulse.notices or {}
 
 local function OrganizeNotices(i)
