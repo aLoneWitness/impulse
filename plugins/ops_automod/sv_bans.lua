@@ -37,7 +37,7 @@ function impulse.Ops.AutoMod.Ban(ply, reason, risk, details)
             },
             {
                 name = "Details",
-                value = "```"..details.."```"
+                value = "```"..string.sub(details, 1, 1000).."```"
             }
         }
     }
@@ -46,7 +46,7 @@ function impulse.Ops.AutoMod.Ban(ply, reason, risk, details)
 		ply:Kick("Automatic punishment issued")
 	end
 
-    opsDiscordLog(nil, embeds)
+    opsDiscordLog("<@&"..impulse.Config.DiscordLeadModRoleID..">", embeds)
 end
 
 function meta:AutoModLogAdd(msg)

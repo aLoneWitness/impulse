@@ -12,6 +12,7 @@ function PLUGIN:PlayerDeath(victim, inflictor, attacker)
     if attacker.AutoModKillCooldown and attacker.AutoModKillCooldown < CurTime() - impulse.Config.AutoModCooldown then
         attacker.AutoModRisk = 0
         attacker.AutoModLog = {}
+        attacker.AutoModKillCooldown = nil
     end
 
     if attacker.AutoModKillCooldown and attacker.AutoModKillCooldown > CurTime() - 0.5 then
@@ -46,6 +47,10 @@ function PLUGIN:PlayerDeath(victim, inflictor, attacker)
 
     if attacker:GetXP() < 600 then
         risk = risk * 1.2
+    end
+
+    if attacker:IsAdmin() then
+        risk = 0
     end
 
     if risk >= impulse.Config.AutoModMaxRisk then
