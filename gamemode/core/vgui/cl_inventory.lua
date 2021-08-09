@@ -99,6 +99,7 @@ function PANEL:SetupItems()
 	end
 
 	local s = HIGH_RES(270, 400)
+	
  	self.tabs = vgui.Create("DPropertySheet", self)
  	self.tabs:SetPos(s, 40)
  	self.tabs:SetSize(w - s, h - 42)
@@ -115,7 +116,7 @@ function PANEL:SetupItems()
 
 	self.invScroll = vgui.Create("DScrollPanel", self.tabs)
  	self.invScroll:SetPos(0, 0)
- 	self.invScroll:SetSize(w - 270, h - 42)
+ 	self.invScroll:SetSize(w - math.Clamp(s, 100, 270), h - 42)
 
 	self.items = {}
 	self.itemsPanels = {}

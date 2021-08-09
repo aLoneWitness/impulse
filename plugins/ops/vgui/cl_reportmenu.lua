@@ -110,6 +110,7 @@ function PANEL:ReloadReports()
 				quickReplies:SetPos(10, 90)
 				quickReplies:SetSize(145, 20)
 				quickReplies:SetValue("Quick replies")
+				quickReplies:SetPopupStayAtBack(false)
 
 				for v,k in pairs(impulse.Config.ModQuickReplies) do
 					quickReplies:AddChoice(k)

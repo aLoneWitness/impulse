@@ -5,6 +5,7 @@ util.AddNetworkString("impulseOpsSTDoRefund")
 util.AddNetworkString("impulseOpsSTGetRefund")
 util.AddNetworkString("impulseOpsSTDoOOCEnabled")
 util.AddNetworkString("impulseOpsSTDoTeamLocked")
+util.AddNetworkString("impulseOpsSTDoGroupRemove")
 
 local function isSupport(ply)
     if not ply:IsSuperAdmin() then
@@ -28,6 +29,37 @@ net.Receive("impulseOpsSTDoOOCEnabled", function(len, ply)
     impulse.OOCClosed = !enabled
 
     ply:Notify("OOC enabled set to "..(enabled and "true" or "false")..".")
+end)
+
+net.Receive("impulseOpsSTDoGroupRemove", function(len, ply)
+    if not isSupport(ply) then
+        return
+    end
+
+    local name = net.ReadString()
+    local groupData = impulse.Group.Groups[name]
+
+	if not groupData or not groupData.ID then
+        impulse.Group.DBRemoveByName(name)
+        ply:Notify("No loaded group found, however, we have attempted to remove it from the database.")
+		return
+	end
+	
+	for v,k in pairs(groupData.Members) do
+		local targEnt = player.GetBySteamID(v)
+
+		if IsValid(targEnt) then
+			targEnt:SetSyncVar(SYNC_GROUP_NAME, nil, true)
+			targEnt:SetSyncVar(SYNC_GROUP_RANK, nil, true)
+			targEnt:Notify("You were removed from the "..name.." group as it has been removed by the staff team for violations of the RP group rules.")
+		end
+	end
+
+	impulse.Group.DBRemove(groupData.ID)
+	impulse.Group.DBRemovePlayerMass(groupData.ID)
+	impulse.Group.Groups[name] = nil
+
+    ply:Notify("The "..name.." group has been removed.")
 end)
 
 net.Receive("impulseOpsSTDoTeamLocked", function(len, ply)

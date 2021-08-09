@@ -125,7 +125,7 @@ if GExtension then
                             },
                             {
                                 name = "Moderator",
-                                value = "**"..ply:SteamName().."** ("..ply:SteamID()..")"
+                                value = "**"..ply:SteamName().."** ("..ply:SteamID64()..")"
                             },
                             {
                                 name = "Reason",
@@ -196,7 +196,7 @@ if GExtension then
                         },
                         {
                             name = "Moderator",
-                            value = "**"..ply:SteamName().."** ("..ply:SteamID()..")"
+                            value = "**"..ply:SteamName().."** ("..ply:SteamID64()..")"
                         },
                         {
                             name = "Reason",

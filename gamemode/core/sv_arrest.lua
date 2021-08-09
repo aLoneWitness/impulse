@@ -141,6 +141,8 @@ function meta:Jail(time, jailData)
 				self:UnJail()
 			end
 		end)
+
+		hook.Run("PlayerJailed", self, time, jailData)
 	end
 end
 

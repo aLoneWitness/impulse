@@ -47,6 +47,12 @@ function impulse.Group.DBRemove(groupid)
 	query:Execute()
 end
 
+function impulse.Group.DBRemoveByName(name)
+	local query = mysql:Delete("impulse_rpgroups")
+	query:Where("name", name)
+	query:Execute()
+end
+
 function impulse.Group.DBAddPlayer(steamid, groupid, rank, callback)
 	local query = mysql:Update("impulse_players")
 	query:Update("rpgroup", groupid)

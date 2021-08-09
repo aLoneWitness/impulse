@@ -233,6 +233,29 @@ function PANEL:Init()
 	end
 
 	sheet:AddSheet("Teams", b, "icon16/bricks.png")
+
+	local b = vgui.Create("DPanel", sheet)
+	b:Dock(FILL)
+	b.Paint = function() end
+
+	local text = vgui.Create("DTextEntry", b)
+	text:Dock(TOP)
+	text:SetPlaceholderText("Enter group name (exactly)")
+
+	local btn = vgui.Create("DButton", b)
+	btn:Dock(TOP)
+	btn:SetText("Remove Group")
+
+	function btn:DoClick()
+		Derma_Query("Are you sure you want to remove the "..text:GetValue().." group?", "impulse",
+		"Remove", function()
+			net.Start("impulseOpsSTDoGroupRemove")
+			net.WriteString(text:GetValue())
+			net.SendToServer()
+		end, "Cancel")
+	end
+
+	sheet:AddSheet("Groups", b, "icon16/bricks.png")
 end
 
 vgui.Register("impulseSupportTool", PANEL, "DFrame")
