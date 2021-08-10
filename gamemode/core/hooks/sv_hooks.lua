@@ -515,8 +515,8 @@ function GM:PlayerSay(ply, text, teamChat, newChat)
 				return ""
 			end
 
-			if command.requiresArg == true and (not args[2] or string.Trim(args[2]) == "") then return "" end
-			if command.requiresAlive == true and not ply:Alive() then return "" end
+			if command.requiresArg and (not args[2] or string.Trim(args[2]) == "") then return "" end
+			if command.requiresAlive and not ply:Alive() then return "" end
 
 			text = string.sub(text, string.len(args[1]) + 2)
 

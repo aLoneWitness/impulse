@@ -1708,8 +1708,17 @@ net.Receive("impulseGroupDoRankAdd", function(len, ply)
 			isDefault = true
 		end
 	else
-		if table.Count(groupData.Ranks) >= impulse.Config.GroupMaxRanks then
-			return ply:Notify("Max ranks reached.")
+		local isBig = false
+		if groupData.MemberCount >= 30 then
+			isBig = true
+		end
+
+		if isBig then
+			if table.Count(groupData.Ranks) >= impulse.Config.GroupMaxRanksVIP then
+				return ply:Notify("Max ranks reached.")
+			end
+		elseif table.Count(groupData.Ranks) >= impulse.Config.GroupMaxRanks then
+			return ply:Notify("Max ranks reached. (once the group reaches 30 members you will unlock more)")
 		end
 
 		rankName = string.sub(rankName, 1, 32)
