@@ -8,8 +8,9 @@ resource.AddWorkshop("1651398810") -- framework content
 DeriveGamemode("sandbox")
 
 MsgC(Color(83, 143, 239), '[impulse] Starting boot sequence...')
-print('\nCopyright (c) 2017 Jake Green')
-print('No permission is granted to USE, REPRODUCE, EDIT or SELL this software.')
+
+print('\n\n\nCopyright (c) 2021 2i games (www.2i.games)')
+print('No permission is granted to USE, REPRODUCE, EDIT or SELL this software.\n\n\n')
 
 MsgC( Color( 83, 143, 239 ), "[impulse] Starting server load...\n" )
 impulse = impulse or {} -- defining global function table
