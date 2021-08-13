@@ -3,7 +3,7 @@ function PLUGIN:PlayerDeath(victim, inflictor, attacker)
         return
     end
 
-    local inflictor = attacker:GetActiveWeapon()
+    local inflictor = (IsValid(attacker) and attacker.GetActiveWeapon) and attacker:GetActiveWeapon() or nil
 
     if not IsValid(inflictor) or not inflictor.IsWeapon or not inflictor:IsWeapon() then
         return

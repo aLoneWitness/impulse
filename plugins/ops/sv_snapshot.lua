@@ -49,4 +49,6 @@ hook.Add("PlayerDeath", "opsDeathSnapshot", function(victim, attacker, inflictor
 
 	victim.LastSnapshotID = snapshotsCount
 	inflictor.LastSnapshotID = snapshotsCount
+
+	hook.Run("PlayerDeathPostSnapshot", victim, attacker, inflictor)
 end)
