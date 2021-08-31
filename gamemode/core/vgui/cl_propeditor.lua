@@ -59,9 +59,54 @@ function PANEL:SetTable(prop, callback)
 			local row = self.props:CreateRow("Properties", v)
 			row:Setup("Generic")
 			row:SetValue(k)
+			row.Value = k
 
 			function row:DataChanged(newVal)
+				row.Value = newVal
 				callback(v, newVal)
+			end
+
+			local i = vgui.Create("DImageButton", row)
+			i:SetSize(16, 16)
+			i:SetPos(105, 2)
+			i:SetIcon("icon16/page_white_edit.png")
+			i:SetTooltip("Text editor")
+
+			function i:DoClick()
+				if IsValid(ACTIVE_EM_TXTEDITOR) then
+					ACTIVE_EM_TXTEDITOR:Remove()
+				end
+
+				local m = vgui.Create("DFrame")
+				m:SetSize(550, 700)
+				m:Center()
+				m:MakePopup()
+				m:SetTitle(v.." property text editor")
+
+				ACTIVE_EM_TXTEDITOR = m
+				
+				local txt = vgui.Create("DTextEntry", m)
+				txt:Dock(FILL)
+				txt:SetText(row.Value)
+				txt:SetEditable(true)
+				txt:SetMultiline(true)
+				txt:SetFont("Impulse-Elements18")
+				txt:SetUpdateOnType(true)
+				txt:SetPlaceholderText("Click to edit text...")
+
+				function txt:Think()
+					if not IsValid(row) then
+						return self:Remove()
+					end
+				end
+
+				function txt:OnChange(t)
+					if IsValid(row) then
+						local val = self:GetValue()
+						row:SetValue(val)
+						row.DataChanged(row, val)
+					end
+				end
 			end
 		elseif IsColor(k) or (istable(k) and k.r and k.g and k.b) then
 			local row = self.props:CreateRow("Properties", v)

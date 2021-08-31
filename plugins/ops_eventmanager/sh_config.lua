@@ -366,7 +366,7 @@ impulse.Ops.EventManager.Config.Events = {
 			end
 
 			if prop["ignite"] then
-				ent:Ignite(120)
+				ent:Ignite()
 			end
 
 			OPS_ENTS[uid] = ent
