@@ -81,7 +81,7 @@ function PANEL:SetTable(prop, callback)
 				m:SetSize(550, 700)
 				m:Center()
 				m:MakePopup()
-				m:SetTitle(v.." property text editor")
+				m:SetTitle("Text Edtior for property "..v.." | Remember multi-line will not work with most events!")
 
 				ACTIVE_EM_TXTEDITOR = m
 				
@@ -96,7 +96,7 @@ function PANEL:SetTable(prop, callback)
 
 				function txt:Think()
 					if not IsValid(row) then
-						return self:Remove()
+						return m:Remove()
 					end
 				end
 
@@ -184,6 +184,22 @@ function PANEL:SetTable(prop, callback)
 					row:SetValue(x.p..", "..x.y..", "..x.r)
 					callback(v, Vector(x.p, x.y, x.r))
 				end)
+
+				local tr = LocalPlayer():GetEyeTrace()
+
+				if IsValid(tr.Entity) then
+					m:AddOption("Use "..tostring(tr.Entity).." pos", function() 
+						local x = tr.Entity:GetPos()
+						row:SetValue(x.x..", "..x.y..", "..x.z)
+						callback(v, x)
+					end)
+
+					m:AddOption("Use "..tostring(tr.Entity).." angle", function() 
+						local x = tr.Entity:GetAngles()
+						row:SetValue(x.p..", "..x.y..", "..x.r)
+						callback(v, Vector(x.p, x.y, x.r))
+					end)
+				end
 				m:Open()
 			end
 		end

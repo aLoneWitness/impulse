@@ -128,6 +128,28 @@ impulse.Ops.EventManager.Config.Events = {
 	        explodeEnt:Fire("explode", "", 0)
 		end
 	},
+	["explode_cinematic"] = {
+		Cat = "effect",
+		Prop = {
+			["pos"] = Vector(0, 0, 0),
+			["magnitude"] = 325,
+			["debris"] = 9
+		},
+		NeedUID = false,
+		Clientside = false,
+		Do = function(prop, uid)
+			local tempEnt = ents.Create("impulse_usable")
+			tempEnt:SetModel("models/weapons/w_c4_planted.mdl")
+			tempEnt:SetPos(prop["pos"])
+			tempEnt:Spawn()
+
+			timer.Simple(0.05, function()
+				if IsValid(tempEnt) then
+					impulse.MakeBigExplosion(tempEnt, prop["magnitude"], prop["debris"])
+				end
+			end)
+		end
+	},
 	["particleffect"] = {
 		Cat = "effect",
 		Prop = {
@@ -366,7 +388,7 @@ impulse.Ops.EventManager.Config.Events = {
 			end
 
 			if prop["ignite"] then
-				ent:Ignite()
+				ent:Ignite(9999)
 			end
 
 			OPS_ENTS[uid] = ent
@@ -431,6 +453,67 @@ impulse.Ops.EventManager.Config.Events = {
 		Do = function(prop, uid)
 			if OPS_ENTS and OPS_ENTS[uid] and IsValid(OPS_ENTS[uid]) then
 				OPS_ENTS[uid]:ResetSequence(prop["sequence"])
+			end
+		end
+	},
+	["moveent"] = {
+		Cat = "ent",
+		Prop = {
+			["end_pos"] = Vector(0, 0, 0),
+			["speed"] = 100
+		},
+		NeedUID = true,
+		Clientside = false,
+		Do = function(prop, uid)
+			if not OPS_ENTS or not OPS_ENTS[uid] or not IsValid(OPS_ENTS[uid]) then
+				return
+			end
+
+			local e = OPS_ENTS[uid]
+
+			if IsValid(e.loco) then
+				e.loco:Remove()
+			end
+
+			e.loco = ents.Create("func_movelinear")
+			e.loco:SetPos(e:GetPos())
+			e.loco:SetAngles(e:GetAngles())
+			e.loco:Spawn()
+			e.loco:SetMoveType(MOVETYPE_PUSH)
+			e.loco.dad = e
+			e:SetParent(e.loco)
+
+			e.loco:CallOnRemove("removeLoco", function(ent)
+				if IsValid(ent.dad) then
+					ent.dad:Remove()
+				end
+			end)
+
+			e:CallOnRemove("removeELoco", function(ent)
+				if IsValid(ent.loco) then
+					ent.loco:Remove()
+				end
+			end)
+
+			e.loco:SetSaveValue("m_VecPosition1", tostring(e:GetPos()))
+			e.loco:SetSaveValue("m_VecPosition2", tostring(prop["end_pos"]))
+
+			print("locoing")
+
+			e.loco:Fire("SetSpeed", prop["speed"])
+			e.loco:Fire("Open")
+		end
+	},
+	["movespeedent"] = {
+		Cat = "ent",
+		Prop = {
+			["speed"] = 100
+		},
+		NeedUID = true,
+		Clientside = false,
+		Do = function(prop, uid)
+			if OPS_ENTS and OPS_ENTS[uid] and IsValid(OPS_ENTS[uid]) and IsValid(OPS_ENTS[uid].loco) then
+				OPS_ENTS[uid].loco:Fire("SetSpeed", prop["speed"])
 			end
 		end
 	},
@@ -663,10 +746,6 @@ impulse.Ops.EventManager.Config.Events = {
 				phys:EnableMotion(true)
 			elseif phys and phys:IsValid() then
 				phys:EnableMotion(false)
-			end
-
-			if prop["ignite"] then
-				ent:Ignite(120)
 			end
 
 			OPS_ENTS[uid] = ent
@@ -1265,6 +1344,26 @@ impulse.Ops.EventManager.Config.Events = {
 			if LocalPlayer():IsCP() then
 				impulse.AddCombineMessage(prop["message"], prop["col"], prop["nosound"])
 			end
+		end
+	},
+	["combineobjective"] = {
+		Cat = "ui",
+		Prop = {
+			["message"] = "Message text here",
+			["length"] = 20
+		},
+		NeedUID = false,
+		Clientside = false,
+		Do = function(prop, uid)
+			local rf = RecipientFilter()
+
+			rf:AddRecipientsByTeam(TEAM_CP)
+			rf:AddRecipientsByTeam(TEAM_OTA)
+
+			net.Start("impulseHL2RPObjectiveSendEvent")
+			net.WriteString(prop["message"])
+			net.WriteUInt(prop["length"], 8)
+			net.Send(rf)
 		end
 	}
 }
