@@ -32,6 +32,15 @@ impulse.Ops.EventManager.Config.CategoryIcons = {
 	["loot"] = "icon16/briefcase.png"
 }
 
+impulse.Ops.EventManager.Config.TagColours = {
+	["purple"] = Color(177, 112, 212),
+	["blue"] = Color(60, 140, 246),
+	["green"] = Color(80, 207, 98),
+	["yellow"] = Color(247, 206, 75),
+	["orange"] = Color(246, 163, 71),
+	["red"] = Color(246, 91, 85)
+}
+
 impulse.Ops.EventManager.Config.Events = {
 	["empty"] = {
 		Cat = "hidden",
@@ -472,7 +481,7 @@ impulse.Ops.EventManager.Config.Events = {
 			local e = OPS_ENTS[uid]
 
 			if IsValid(e.loco) then
-				e.loco:Remove()
+				--e.loco:Remove()
 			end
 
 			e.loco = ents.Create("func_movelinear")
@@ -497,8 +506,6 @@ impulse.Ops.EventManager.Config.Events = {
 
 			e.loco:SetSaveValue("m_VecPosition1", tostring(e:GetPos()))
 			e.loco:SetSaveValue("m_VecPosition2", tostring(prop["end_pos"]))
-
-			print("locoing")
 
 			e.loco:Fire("SetSpeed", prop["speed"])
 			e.loco:Fire("Open")

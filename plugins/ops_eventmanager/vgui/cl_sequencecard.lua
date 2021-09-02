@@ -111,6 +111,12 @@ function PANEL:AddEvent(id, eventdata)
 
 	function event:Paint(w, h)
 		draw.RoundedBox(0, 0, 0, w, h, Color(60, 60, 60, 200))
+
+		local colTag = impulse.Ops.EventManager.Sequences[panel.Sequence].Events[id].z_MetaTag
+		if colTag and impulse.Ops.EventManager.Config.TagColours[colTag] then
+			draw.RoundedBox(0, 0, 0, w, h, ColorAlpha(impulse.Ops.EventManager.Config.TagColours[colTag], 40))
+		end
+
 		draw.RoundedBox(0, 0, h-2, w, 2, Color(100, 100, 100, 150))
 
 		local curEvents = impulse.Ops.EventManager.GetCurEvents()
@@ -237,7 +243,7 @@ function PANEL:AddEvent(id, eventdata)
 
 		local x, y = panel.Dad:GetPos()
 		panel.Dad.Properties:SetPos(x + panel.Dad:GetWide() + 10, y)
-		panel.Dad.Properties:SetSize(300, 500)
+		panel.Dad.Properties:SetSize(300, 580)
 
 		local x = self
 
@@ -245,6 +251,66 @@ function PANEL:AddEvent(id, eventdata)
 			if not IsValid(x) then
 				self:Remove()
 			end
+		end
+
+		panel.Dad.Properties.props:DockMargin(0, 0, 0, 130)
+
+		local me = panel.Dad.Properties
+
+		local lbl = vgui.Create("DLabel", me)
+		lbl:SetPos(10, 450)
+		lbl:SetText("Event Metadata")
+		lbl:SizeToContents()
+
+		local lbl = vgui.Create("DLabel", me)
+		lbl:SetPos(20, 470)
+		lbl:SetText("Colour Tag")
+		lbl:SizeToContents()
+
+		local l = vgui.Create("DIconLayout", me)
+		l:SetPos(20, 485)
+		l:SetSize(260, 26)
+		l:SetSpaceY(5)
+		l:SetSpaceX(5)
+
+		for v,k in pairs(impulse.Ops.EventManager.Config.TagColours) do
+			local a = l:Add("DButton")
+			a:SetText("")
+			a:SetSize(20, 20)
+			a:SetTooltip(v)
+
+			function a:Paint(w, h)
+				draw.RoundedBox(12, 0, 0, w, h, k)
+			end
+
+			function a:DoClick()
+				impulse.Ops.EventManager.Sequences[panel.Sequence].Events[id].z_MetaTag = v
+			end
+		end
+
+		local noCol = l:Add("DButton")
+		noCol:SetText("None")
+		noCol:SetSize(40, 20)
+
+		function noCol:DoClick()
+			impulse.Ops.EventManager.Sequences[panel.Sequence].Events[id].z_MetaTag = nil
+		end
+
+		local lbl = vgui.Create("DLabel", me)
+		lbl:SetPos(20, 510)
+		lbl:SetText("Director's Notes")
+		lbl:SizeToContents()
+
+		local notes = vgui.Create("DTextEntry", me)
+		notes:SetPos(20, 525)
+		notes:SetSize(260, 50)
+		notes:SetMultiline(true)
+		notes:SetUpdateOnType(true)
+		notes:SetPlaceholderText("Write notes here...")
+		notes:SetValue(impulse.Ops.EventManager.Sequences[panel.Sequence].Events[id].z_MetaNotes or "")
+
+		function notes:OnValueChange()
+			impulse.Ops.EventManager.Sequences[panel.Sequence].Events[id].z_MetaNotes = self:GetValue()
 		end
 	end
 
