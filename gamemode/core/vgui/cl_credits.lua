@@ -87,9 +87,9 @@ function PANEL:Init()
 
 
 		<font=Impulse-Elements23>
-		Copyright 2020 Jake Green (vin)
+		Copyright 2i.games ]]..os.date("%Y", os.time())..[[
 		impulse-community.com
-		jakegreen.me
+		with <3 from vin
 		</font>]], 550)
 
 	self.scrollY = ScrH() + 160
