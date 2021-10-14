@@ -16,13 +16,13 @@ local superTesters = {
 	["STEAM_0:1:53542485"] = true, -- mats
 	["STEAM_0:1:75156459"] = true, -- jamsu
 	["STEAM_0:1:83204982"] = true, -- oscar
-	["STEAM_0:1:199354868"] = true,  -- enigma
 	["STEAM_0:1:43061896"] = true, -- jim wakelin
 	["STEAM_0:0:24607430"] = true, -- stranger
 	["STEAM_0:0:26121174"] = true, -- greasy
 	["STEAM_0:1:40283833"] = true, -- tim cook
 	["STEAM_0:0:157214263"] = true, -- loka
-	["STEAM_0:0:73384910"] = true -- avx/soviet
+	["STEAM_0:0:73384910"] = true, -- avx/soviet
+	["STEAM_0:1:175014750"] = true -- personwhoplaysgames
 }
 
 local mappers = {
