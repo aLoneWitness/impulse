@@ -29,7 +29,9 @@ local mappers = {
 	["STEAM_0:0:24607430"] = true -- stranger
 }
 
-local eventTeam = {}
+local eventTeam = {
+	["STEAM_0:1:462578059"] = true -- opiper
+}
 
 local winners = {}
 
@@ -44,7 +46,7 @@ impulse.Badges = {
 	supertester = {Material("icon16/bug.png"), "This player made large contributions to the testing of impulse.", function(ply) return (superTesters[ply:SteamID()] or false) end},
 	competition = {Material("icon16/rosette.png"), "This player has won a competition.", function(ply) return winners[ply:SteamID()] end},
 	mapper = {Material("icon16/map.png"), "This player is a mapper that has collaborated with impulse.", function(ply) return mappers[ply:SteamID()] end},
-	eventteam = {Material("icon16/controller.png"), "This player is a member of the event team.", function(ply) return eventTeam[ply:SteamID()] end},
+	eventteam = {Material("icon16/controller.png"), "This player is the leader of the event team.", function(ply) return eventTeam[ply:SteamID()] end},
 	communitymanager = {Material("icon16/transmit.png"), "This player is a community manager. Feel free to ask them questions.", function(ply) return ply:GetUserGroup() == "communitymanager" end}
 }
 
