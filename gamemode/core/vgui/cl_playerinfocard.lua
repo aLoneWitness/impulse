@@ -116,7 +116,16 @@ local quickTools = {
 		onRun = function(ply, sid)
 			local i = Derma_StringRequest("impulse", "Enter the length (in minutes):", "", function(length)
 				Derma_StringRequest("impulse", "Enter the reason:", "", function(reason)
-					LocalPlayer():ConCommand("say /ban "..sid.." "..length.." "..reason)
+					local userInfo = sid
+					local targ = player.GetBySteamID(sid)
+
+					if IsValid(targ) then
+						userInfo = targ:Nick().." ("..targ:SteamName()..")"
+					end
+
+					Derma_Query("Please confirm the ban:\nUser: "..userInfo.."\nLength: "..string.NiceTime(tonumber(length) * 60).." ("..length.." minutes)\nReason: "..reason.."\n\nAll issued bans are logged forever, even if deleted.", "impulse", "Confirm", function()
+						LocalPlayer():ConCommand("say /ban "..sid.." "..length.." "..reason)
+					end, "Abort")
 				end)
 			end)
 

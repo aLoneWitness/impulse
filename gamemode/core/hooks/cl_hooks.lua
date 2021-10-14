@@ -175,8 +175,9 @@ function GM:DefineSettings()
 	impulse.DefineSetting("perf_blur", {name="Blur enabled", category="Performance", type="tickbox", default=true})
 	impulse.DefineSetting("inv_sortequippablesattop", {name="Sort equipped at top", category="Inventory", type="tickbox", default=true})
 	impulse.DefineSetting("inv_sortweight", {name="Sort by weight", category="Inventory", type="dropdown", default="Inventory only", options={"Never", "Inventory only", "Containers only", "Always"}})
-	impulse.DefineSetting("misc_vendorgreeting", {name="Vendor greeting sound", category="Misc", type="tickbox", default=true})
+	impulse.DefineSetting("misc_vendorgreeting", {name="Vendor greeting sound enabled", category="Misc", type="tickbox", default=true})
 	impulse.DefineSetting("chat_oocenabled", {name="OOC enabled", category="Chatbox", type="tickbox", default=true})
+	impulse.DefineSetting("chat_pmpings", {name="PM and tag sound enabled", category="Chatbox", type="tickbox", default=true})
 end
 
 local loweredAngles = Angle(30, -30, -25)

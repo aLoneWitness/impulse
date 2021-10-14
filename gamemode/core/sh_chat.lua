@@ -488,12 +488,31 @@ if CLIENT then
 		chat.AddText(speaker, talkCol, " says: ", message)
 	end)
 
+	local strFind = string.find
 	impulse.RegisterChatClass(2, function(message, speaker)
 		if not impulse.GetSetting("chat_oocenabled", true) then
 			return print("(OOC DISABLED) [OOC] "..speaker:SteamName()..": "..message)
 		end
 
 		impulse.customChatPlayer = speaker
+
+		if LocalPlayer and IsValid(LocalPlayer()) then
+			local tag = "@"..LocalPlayer():SteamName()
+			local findStart, findEnd = strFind(string.lower(message), string.lower(tag), 1, true)
+
+			if findStart then
+				local pre = string.sub(message, 1, findStart - 1)
+				local post = string.sub(message, findEnd + 1)
+
+				if impulse.GetSetting("chat_pmpings") then
+					surface.PlaySound("buttons/blip1.wav")
+				end
+
+				chat.AddText(oocTagCol, "[OOC] ", (rankCols[speaker:IsIncognito() and "user" or speaker:GetUserGroup()] or fallbackRankCol), speaker:SteamName(), oocCol, ": ", pre, infoCol, tag, oocCol, post)
+				return
+			end
+		end
+
 		chat.AddText(oocTagCol, "[OOC] ", (rankCols[speaker:IsIncognito() and "user" or speaker:GetUserGroup()] or fallbackRankCol), speaker:SteamName(), oocCol, ": ", message)
 	end)
 
@@ -503,7 +522,10 @@ if CLIENT then
 	end)
 
 	impulse.RegisterChatClass(4, function(message, speaker)
-		surface.PlaySound("buttons/blip1.wav")
+		if impulse.GetSetting("chat_pmpings") then
+			surface.PlaySound("buttons/blip1.wav")
+		end
+		
 		chat.AddText(pmCol, "[PM] ", speaker:SteamName(), (team.GetColor(speaker:Team())), " (", speaker:Name(), ")", pmCol, ": ", message)
 	end)
 

@@ -483,10 +483,12 @@ end
 
 local talkCol = Color(255, 255, 100)
 local infoCol = Color(135, 206, 250)
-
+local strTrim = string.Trim
 function GM:PlayerSay(ply, text, teamChat, newChat)
 	if not ply.beenSetup then return "" end -- keep out players who are not setup yet
 	if teamChat == true then return "" end -- disabled team chat
+
+	text = strTrim(text, " ")
 
 	hook.Run("iPostPlayerSay", ply, text)
 

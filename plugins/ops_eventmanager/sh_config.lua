@@ -29,7 +29,8 @@ impulse.Ops.EventManager.Config.CategoryIcons = {
 	["cookies"] = "icon16/database.png",
 	["script"] = "icon16/script_code_red.png",
 	["rtcamera"] = "icon16/camera.png",
-	["loot"] = "icon16/briefcase.png"
+	["loot"] = "icon16/briefcase.png",
+	["prefabs"] = "icon16/plugin.png"
 }
 
 impulse.Ops.EventManager.Config.TagColours = {

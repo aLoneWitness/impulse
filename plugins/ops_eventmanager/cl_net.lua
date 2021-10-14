@@ -17,6 +17,8 @@ end)
 net.Receive("impulseOpsEMUpdateEvent", function()
 	local event = net.ReadUInt(10)
 
+	impulse_OpsEM_LastEvent = event
+
 	impulse_OpsEM_CurEvents = impulse_OpsEM_CurEvents or {}
 	impulse_OpsEM_CurEvents[event] = CurTime()
 end)
