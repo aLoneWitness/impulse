@@ -63,6 +63,7 @@ function PANEL:Init()
     			LocalPlayer():ScreenFade(SCREENFADE.IN, color_black, 4, 0)
     			selfPanel:Remove()
 				impulse.hudEnabled = true
+				FORCE_FADESPAWN = true
 			end)
 		else
 			selfPanel:Remove()

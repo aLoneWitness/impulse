@@ -197,6 +197,8 @@ local function DrawCrosshair(x, y)
 	surface.DrawLine(x, y + crosshairLength, x, y + crosshairGap)
 end
 
+local deathEndingFade
+local deathEnding
 function GM:HUDPaint()
 	local health = LocalPlayer():Health()
 	local lp = LocalPlayer()
@@ -220,7 +222,7 @@ function GM:HUDPaint()
 		end)
 	end
 
-	if not lp:Alive() then
+	if not lp:Alive() and not SCENES_PLAYING then
 		local ft = FrameTime()
 
 		if not deathRegistered then
@@ -233,6 +235,7 @@ function GM:HUDPaint()
 			end
 
 			deathRegistered = true
+			deathEnding = true
 		end
 
 		fde = math.Clamp(fde + ft * .2, 0, 1)
@@ -248,7 +251,7 @@ function GM:HUDPaint()
 		local wait = math.ceil(deathWait - CurTime())
 
 		if wait > 0 then
-			draw.SimpleText("You will respawn in "..wait.." seconds.", "Impulse-Elements23", scrW/2, (scrH/2)+30, textCol, TEXT_ALIGN_CENTER)
+			draw.SimpleText("You will respawn in "..wait.." "..(wait == 1 and "second" or "seconds")..".", "Impulse-Elements23", scrW/2, (scrH/2)+30, textCol, TEXT_ALIGN_CENTER)
 			draw.SimpleText("WARNING: NLR applies, you may not return to this area until 5 minutes after your death.", "Impulse-Elements18", scrW/2, (scrH/2)+70, textCol, TEXT_ALIGN_CENTER)
 
 			draw.SimpleText("If you feel you were unfairly killed, submit a report (F3) for assistance.", "Impulse-Elements16", scrW/2, scrH-20, textCol, TEXT_ALIGN_CENTER)
@@ -260,6 +263,24 @@ function GM:HUDPaint()
 		
 		return
 	else
+		if FORCE_FADESPAWN or deathEnding then
+			deathEnding = true
+			FORCE_FADESPAWN = nil 
+
+			local ft = FrameTime()
+			deathEndingFade = math.Clamp((deathEndingFade or 0) + ft * .15, 0, 1)
+
+			local val = 255 - math.ceil(deathEndingFade * 255)
+
+			if deathEndingFade != 1 then
+				surface.SetDrawColor(0, 0, 0, val)
+				surface.DrawRect(0, 0, ScrW(), ScrH())
+			else
+				deathEnding = false
+				deathEndingFade = 0
+			end
+		end
+
 		fde = 0
 
 		if deathRegistered then

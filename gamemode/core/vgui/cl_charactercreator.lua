@@ -42,6 +42,7 @@ function PANEL:Init()
     		self:Remove()
     		self:GetParent():Remove()
 			impulse.hudEnabled = true
+			FORCE_FADESPAWN = true
 			impulse_isNewPlayer = false
 
 			if CHAR_MUSIC and CHAR_MUSIC:IsPlaying() then

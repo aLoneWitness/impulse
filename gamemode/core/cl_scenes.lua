@@ -146,6 +146,8 @@ end
 function impulse.Scenes.PlaySet(set, music, onDone)
 	local counter = 1
 
+	SCENES_PLAYING = true
+
 	local function pvsPreLoad(counter) -- preloads the pvs 1 second before scene loads
 		local nextScene = set[counter + 1]
 
@@ -160,8 +162,12 @@ function impulse.Scenes.PlaySet(set, music, onDone)
 		if set[counter + 1] then
 			counter = counter + 1
 			impulse.Scenes.Play(counter, set[counter], playScenes, true, pvsPreLoad)
-		elseif onDone then
-			onDone()
+		else
+			if onDone then
+				onDone()
+			end
+
+			SCENES_PLAYING = false
 		end
 	end
 
