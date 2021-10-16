@@ -1,5 +1,6 @@
-**OPEN SOURCE PREVIEW**
-Do not share the open source preview. Contact vin#1128 on Discord to provide feedback.
+![logo](https://cdn.impulse-community.com/logo_big.png)
+
+© 2i games. All rights reserved. All trademarks are property of their respective owners in the UK and other countries.
 
 # Welcome to impulse
 impulse is a Semi-Serious roleplay framework for Garry's Mod.
