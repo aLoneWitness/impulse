@@ -1102,11 +1102,11 @@ impulse.Ops.EventManager.Config.Events = {
 		Clientside = false,
 		Do = function(prop, uid)
 			if prop["allow_voice"] then
+				hook.Remove("PlayerCanHearPlayersVoice", "opsEMBlockVoice")
+			else
 				hook.Add("PlayerCanHearPlayersVoice", "opsEMBlockVoice", function()
 					return false, false
 				end)
-			else
-				hook.Remove("PlayerCanHearPlayersVoice", "opsEMBlockVoice")
 			end
 		end
 	},
