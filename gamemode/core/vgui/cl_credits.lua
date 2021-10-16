@@ -87,7 +87,7 @@ function PANEL:Init()
 
 
 		<font=Impulse-Elements23>
-		Copyright 2i.games ]]..os.date("%Y", os.time())..[[
+		Copyright 2i.games 2021
 		impulse-community.com
 		with <3 from vin
 		</font>]], 550)

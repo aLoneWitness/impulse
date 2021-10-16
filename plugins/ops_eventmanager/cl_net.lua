@@ -55,3 +55,20 @@ net.Receive("impulseOpsEMPlayScene", function()
 
 	impulse.Scenes.PlaySet(impulse.Ops.EventManager.Scenes[scene])
 end)
+
+local customAnims = customAnims or {}
+net.Receive("impulseOpsEMEntAnim", function()
+	local entid = net.ReadUInt(16)
+	local anim = net.ReadString()
+
+	customAnims[entid] = anim
+
+	timer.Remove("opsAnimEnt"..entid)
+	timer.Create("opsAnimEnt"..entid, 0.05, 0, function()
+		local ent = Entity(entid)
+
+		if IsValid(ent) and customAnims[entid] and ent:GetSequence() == 0 then
+			ent:ResetSequence(customAnims[entid])
+		end
+	end)
+end)

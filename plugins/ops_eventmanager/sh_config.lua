@@ -462,7 +462,10 @@ impulse.Ops.EventManager.Config.Events = {
 		Clientside = false,
 		Do = function(prop, uid)
 			if OPS_ENTS and OPS_ENTS[uid] and IsValid(OPS_ENTS[uid]) then
-				OPS_ENTS[uid]:ResetSequence(prop["sequence"])
+				net.Start("impulseOpsEMEntAnim")
+				net.WriteUInt(OPS_ENTS[uid]:EntIndex(), 16)
+				net.WriteString(prop["sequence"])
+				net.Broadcast()
 			end
 		end
 	},

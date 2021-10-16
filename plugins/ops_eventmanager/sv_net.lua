@@ -6,6 +6,7 @@ util.AddNetworkString("impulseOpsEMStopSequence")
 util.AddNetworkString("impulseOpsEMClientsideEvent")
 util.AddNetworkString("impulseOpsEMIntroCookie")
 util.AddNetworkString("impulseOpsEMPlayScene")
+util.AddNetworkString("impulseOpsEMEntAnim")
 
 net.Receive("impulseOpsEMPushSequence", function(len, ply)
 	if (ply.nextOpsEMPush or 0) > CurTime() then return end
