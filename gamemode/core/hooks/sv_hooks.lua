@@ -1179,6 +1179,7 @@ local bannedTools = {
 	["wire_hsranger"] = true,
 	["wire_hsholoemitter"] = true,
 	["wire_eyepod"] = true,
+	["wire_spu"] = true,
 	["wnpc"] = true
 }
 
@@ -1192,7 +1193,6 @@ local dupeBannedTools = {
 
 local donatorTools = {
 	["wire_expression2"] = true,
-	["wire_spu"] = true,
 	["wire_egp"] = true,
 	["wire_soundemitter"] = true
 }
@@ -1268,12 +1268,12 @@ local bannedDupeEnts = {
 	["gmod_wire_detonator"] = true,
 	["gmod_wire_hsranger"] = true,
 	["gmod_wire_hsholoemitter"] = true,
-	["gmod_wire_eyepod"] = true
+	["gmod_wire_eyepod"] = true,
+	["gmod_wire_spu"] = true
 }
 
 local donatorDupeEnts = {
 	["gmod_wire_expression2"] = true,
-	["gmod_wire_spu"] = true,
 	["prop_vehicle_prisoner_pod"] = true,
 	["gmod_wire_soundemitter"] = true,
 	["gmod_wire_epg"] = true
