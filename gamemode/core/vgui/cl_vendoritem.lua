@@ -19,7 +19,6 @@ function PANEL:SetItem(item, sellData)
 	self.model:SetSize(74, 74)
 	self.model:SetMouseInputEnabled(true)
 	self.model:SetModel(item.Model)
-	self.model:SetSkin(item.Skin or 0)
 	self.model:SetFOV(item.FOV or 35)
 
 	function self.model:LayoutEntity(ent)
@@ -31,6 +30,10 @@ function PANEL:SetItem(item, sellData)
 
 		if not item.NoCenter then
 			self:SetLookAt(Vector(0, 0, 0))
+		end
+
+		if item.Skin then
+			ent:SetSkin(item.Skin)
 		end
 	end
 
