@@ -262,6 +262,15 @@ local idleFishVO = {
     "fish_resumetalk03.wav"
 }
 
+local idleZombVO = {
+    "npc/zombie/zombie_voice_idle9.wav",
+    "npc/zombie/zombie_voice_idle4.wav",
+    "npc/zombie/zombie_voice_idle10.wav",
+    "npc/zombie/zombie_voice_idle13.wav",
+    "npc/zombie/zombie_voice_idle6.wav",
+    "npc/zombie/zombie_voice_idle7.wav"
+}
+
 function impulse.GetRandomAmbientVO(gender)
     if gender == "male" then
         return "vo/npc/male01/"..idleVO[math.random(1, #idleVO)]
@@ -269,6 +278,8 @@ function impulse.GetRandomAmbientVO(gender)
         return "lostcoast/vo/fisherman/"..idleFishVO[math.random(1, #idleFishVO)]
     elseif gender == "cp" then
         return "npc/metropolice/vo/"..idleCPVO[math.random(1, #idleCPVO)]
+    elseif gender == "zombie" then
+        return idleZombVO[math.random(1, #idleZombVO)]
     else
         return "vo/npc/female01/"..idleVO[math.random(1, #idleVO)]
     end

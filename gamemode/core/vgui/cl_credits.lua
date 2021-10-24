@@ -89,7 +89,7 @@ function PANEL:Init()
 		<font=Impulse-Elements23>
 		Copyright 2i.games 2021
 		impulse-community.com
-		with <3 from vin
+		with luv from vin
 		</font>]], 550)
 
 	self.scrollY = ScrH() + 160

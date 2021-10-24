@@ -201,6 +201,11 @@ function impulse.Schema.LoadPlugin(path, name)
     impulse.lib.includeDir(path.."/vgui", true, "PLUGIN", name)
     impulse.Schema.LoadEntites(path.."/entities")
     impulse.lib.includeDir(path.."/hooks", true, "PLUGIN", name)
+    impulse.lib.includeDir(path.."/items", true, "PLUGIN", name)
+    impulse.lib.includeDir(path.."/benches", true, "PLUGIN", name)
+    impulse.lib.includeDir(path.."/mixtures", true, "PLUGIN", name)
+    impulse.lib.includeDir(path.."/buyables", true, "PLUGIN", name)
+    impulse.lib.includeDir(path.."/vendors", true, "PLUGIN", name)
 end
 
 function impulse.Schema.LoadHooks(file, variable, uid)

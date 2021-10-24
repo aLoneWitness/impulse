@@ -23,12 +23,10 @@ function PANEL:SetItem(netitem, wide)
 	self.Count = 1
 
 	local panel = self
-
 	self.model:SetPos(0, 0)
 	self.model:SetSize(64, 64)
 	self.model:SetMouseInputEnabled(true)
 	self.model:SetModel(item.Model)
-	self.model:SetSkin(item.Skin or 0)
 	self.model:SetFOV(item.FOV or 35)
 
 	if self.Item.ItemColour then
@@ -44,6 +42,10 @@ function PANEL:SetItem(netitem, wide)
 
 		if not item.NoCenter then
 			self:SetLookAt(Vector(0, 0, 0))
+		end
+
+		if panel.Item.Skin then
+			ent:SetSkin(panel.Item.Skin)
 		end
 	end
 

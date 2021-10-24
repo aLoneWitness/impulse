@@ -324,12 +324,25 @@ impulse.Anim.player = {
 	}
 }
 impulse.Anim.zombie = {
-	[ACT_MP_STAND_IDLE] = ACT_HL2MP_IDLE_ZOMBIE,
-	[ACT_MP_CROUCH_IDLE] = ACT_HL2MP_IDLE_CROUCH_ZOMBIE,
-	[ACT_MP_CROUCHWALK] = ACT_HL2MP_WALK_CROUCH_ZOMBIE_01,
-	[ACT_MP_WALK] = ACT_HL2MP_WALK_ZOMBIE_02,
-	[ACT_MP_RUN] = ACT_HL2MP_RUN_ZOMBIE
+	normal = {
+		[ACT_MP_STAND_IDLE] = {ACT_IDLE, ACT_IDLE},
+		[ACT_MP_CROUCH_IDLE] = {"crouchidle", "crouchidle"},
+		[ACT_MP_WALK] = {ACT_WALK, ACT_WALK},
+		[ACT_MP_CROUCHWALK] = {ACT_WALK, ACT_WALK},
+		[ACT_MP_RUN] = {ACT_WALK, ACT_WALK},
+		attack = ACT_MELEE_ATTACK1
+	},
+	grenade = {
+		[ACT_MP_STAND_IDLE] = {"idle_grenade", "idle_grenade"},
+		[ACT_MP_CROUCH_IDLE] = {"idle_grenade", "idle_grenade"},
+		[ACT_MP_WALK] = {"walk_all_grenade", "walk_all_grenade"},
+		[ACT_MP_CROUCHWALK] = {"walk_all_grenade", "walk_all_grenade"},
+		[ACT_MP_RUN] = {"run_all_grenade", "run_all_grenade"},
+		attack = ACT_MELEE_ATTACK1
+	}
 }
+impulse.Anim.zombie.melee = impulse.Anim.zombie.normal
+
 impulse.Anim.fastZombie = {
 	[ACT_MP_STAND_IDLE] = ACT_HL2MP_WALK_ZOMBIE,
 	[ACT_MP_CROUCH_IDLE] = ACT_HL2MP_IDLE_CROUCH_ZOMBIE,
@@ -400,6 +413,10 @@ impulse.Anim.SetModelClass("models/vortigaunt_doctor.mdl", "vort")
 impulse.Anim.SetModelClass("models/vortigaunt_slave.mdl", "vort")
 impulse.Anim.SetModelClass("models/vortiblue1.mdl", "vort")
 impulse.Anim.SetModelClass("models/dpfilms/metropolice/police_fragger.mdl", "metrocop")
+impulse.Anim.SetModelClass("models/dpfilms/metropolice/zombie_police.mdl", "zombie")
+impulse.Anim.SetModelClass("models/zombie/classic.mdl", "zombie")
+impulse.Anim.SetModelClass("models/zombie/zombie_soldier.mdl", "zombie")
+
 --impulse.Anim.SetModelClass("models/breen.mdl", "player")
 --impulse.Anim.SetModelClass("models/nicrobe/gallahan.mdl", "player")
 
