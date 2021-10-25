@@ -137,7 +137,14 @@ hook.Add("PostPlayerDraw", "impulseCosmeticDraw", function(k)
 			end
 
 			b:SetRenderAngles(ang)
-			b:DrawModel()
+			
+			if b.drawdata.renderSetting then
+				if impulse.GetSetting(b.drawdata.renderSetting) then
+					b:DrawModel()
+				end
+			else
+				b:DrawModel()
+			end
 		end
 	end
 
