@@ -417,6 +417,19 @@ impulse.Ops.EventManager.Config.Events = {
 			end
 		end
 	},
+	["bodygroupent"] = {
+		Cat = "ent",
+		Prop = {
+			["bodygroups"] = ""
+		},
+		NeedUID = true,
+		Clientside = false,
+		Do = function(prop, uid)
+			if OPS_ENTS and OPS_ENTS[uid] and IsValid(OPS_ENTS[uid]) then
+				OPS_ENTS[uid]:SetBodyGroups(prop["bodygroups"])
+			end
+		end
+	},
 	["removeent"] = {
 		Cat = "ent",
 		Prop = {},
