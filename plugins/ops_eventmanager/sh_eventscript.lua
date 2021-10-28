@@ -246,6 +246,7 @@ LANG.TERMS = {
                 return COMP_REPROCESS, {TERM = "macro"}
             end
 
+            PrintTable(MACRO)
             if not MACRO.NAME then
                 if word == "" then
                     Ex(no, "Can not find macro name")
@@ -479,7 +480,7 @@ end
 local function DoWord(word, no)
     word = trim(word)
 
-    if word == "" or word == "" then
+    if word == "" then
         return
     end
 
@@ -581,12 +582,9 @@ local function DoLine(line, no)
             COMP_GOTOTERM = data.TERM or nil -- route next word into term
             COMP_GOTOPARSER = data.PARSER or nil
 
-            local s
             if data.SUB_WORD and data.SUB_WORD != "" then
-                s = data.SUB_WORD or word
+                caller(data.SUB_WORD or word, no)
             end
-
-            caller(data.SUB_WORD or word, no)
         elseif act == COMP_HALT then
             return 101 -- break
         end
