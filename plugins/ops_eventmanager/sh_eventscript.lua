@@ -25,6 +25,7 @@ local COMP_CURLINE = ""
 local COMP_CURTERM
 local COMP_LINESTRBUFFER = {}
 local COMP_CURWORDPOS = 0
+local COMP_STARTLINE = nil
 local VAR_PARSED = 99
 local CALL
 local MAKECALL
@@ -63,8 +64,8 @@ local function VarCheck(no, word)
             return VARS[name]
         end
 
-        Ex(no, "Can not find VAR called '"..word.."'")
-        return COMP_HALT
+        Ex(no, "Can not find VAR called '"..word.."'") -- FIX ME this doesnt error correctly!
+        return nil, COMP_HALT
     end
 
     return word
@@ -189,8 +190,15 @@ local function ParseVar(word, no)
         PARSER = {}
         PARSER.Current = "String"
 
+        local endPos = find(word, LANG.STR)
+        if endPos then
+            return COMP_REPROCESS, {TERM = COMP_CURTERM, SUB_WORD = LANG.STR}
+        end
+
         return COMP_REPROCESS, {TERM = COMP_CURTERM}
     end
+
+    print("CHECKING WORD FOR KEYTERM VEC/ANG :: "..word)
 
     if string.StartWith(word, "Vector") or string.StartWith(word, "Angle") then
         PARSER = {}
@@ -198,6 +206,9 @@ local function ParseVar(word, no)
 
         return COMP_REPROCESS, {TERM = COMP_CURTERM, SUB_WORD = word}
     end
+
+    Ex(no, "Unknown variable to parse '"..word.."'")
+    return COMP_HALT
 end
 
 local function DoCall(word, no)
@@ -433,11 +444,16 @@ LANG.TERMS = {
                     Ex(no, "Can not find VAR name")
                     return COMP_HALT
                 end
+
+                print("var name")
     
                 MAKEVAR.NAME = word
                 MAKEVAR.NAME_START = false
                 return COMP_REPROCESS, {TERM = "var"}
             end
+
+            print("var before val")
+            PrintTable(MAKEVAR)
     
             if MAKEVAR.NAME and not MAKEVAR.VALUE then
                 local r, data = ParseVar(word, no)
@@ -479,7 +495,8 @@ LANG.TERMS = {
         end
     },
     start = {
-        Handler = function() 
+        Handler = function(word, no)
+            COMP_STARTLINE = no
             return COMP_SKIPLINE
         end
     },
@@ -489,10 +506,6 @@ LANG.TERMS = {
         end
     },
 }
-
-local function DoString(string, no)
-
-end
 
 local function DoTerm(macro, no)
     local x = string.sub(macro, 2) -- remove #
@@ -520,7 +533,10 @@ local function DoWord(word, no)
     word = trim(word)
 
     if word == "" then
-        return
+        if COMP_GOTOTERM then
+            return COMP_REPROCESS, {TERM = COMP_GOTOTERM}
+        end
+        return 
     end
 
     print("doing a word: "..word)
@@ -530,16 +546,25 @@ local function DoWord(word, no)
         return COMP_SKIPLINE
     end
 
-    word = VarCheck(no, word)
+    word, rCode = VarCheck(no, word)
+
+    if rCode then
+        return rCode
+    end
 
     if COMP_CONSTRUCTING == "CALL" then
+        print("constructing")
         return DoCall(word, no)
     end
 
     if COMP_GOTOPARSER then
+        print("1111111111111111PARSING")
         local c, data = ParseVar(word, no)
         return c, data
     end
+
+    print("COMP_GOTOTERM IS: ")
+    print(COMP_GOTOTERM)
 
     if COMP_GOTOTERM and COMP_GOTOTERM != "" then
         print("going to "..COMP_GOTOTERM)
@@ -613,12 +638,16 @@ local function DoLine(line, no)
         local act, data = DoWord(word, no)
 
         if not data or not data.TERM then
+            print("COMP GOTOTERM SET TO NIL")
             COMP_GOTOTERM = nil
         end
 
         if not data or not data.PARSER then
             COMP_GOTOPARSER = nil
         end
+
+        print("Passed ACT is:")
+        print(act)
 
         if act == COMP_SKIPLINE then
             return 100 -- continue
@@ -627,6 +656,7 @@ local function DoLine(line, no)
             COMP_GOTOPARSER = data.PARSER or nil
 
             if data.SUB_WORD and data.SUB_WORD != "" then
+                print("calling sub word term call")
                 caller(data.SUB_WORD, no)
             end
         elseif act == COMP_HALT then
@@ -649,6 +679,7 @@ local function DoLine(line, no)
     end
 
     for x, word in pairs(words) do
+        print("word progression: "..word)
         local r = caller(word, no) or 0
 
         print("ReturnCode: ", r)
@@ -678,10 +709,13 @@ local function DoLine(line, no)
 end
 
 function IES.Compile(script)
+    local startTime = SysTime()
+
     COMP_CONSTRUCTING = ""
     COMP_GOTOTERM = nil
     COMP_GOTOPARSER = nil
     COMP_CURTERM = nil
+    COMP_STARTLINE = nil
     CALL = {}
     VARS = {}
     TAGS = {}
@@ -703,6 +737,16 @@ function IES.Compile(script)
         Ex(MACRO.START_LINE - 1, "Can not find end for macro")
         return
     end
+
+    local endTime = SysTime()
+    local green = Color(76, 240, 61)
+
+    MsgC(green, "------------------------------\n")
+    MsgC(green, "|[IES COMPILE]\n")
+    MsgC(green, "|    Successfully compiled "..#lines.." lines\n")
+    MsgC(green, "|    Took "..endTime - startTime.." seconds", "\n")
+    MsgC(green, "------------------------------\n")
+    
 
     print("FINAL VARS")
 
