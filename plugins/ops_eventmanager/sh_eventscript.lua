@@ -185,13 +185,15 @@ local function ParseVar(word, no)
         return VAR_PARSED, num
     end
 
+    print(word)
+
     if string.StartWith(word, LANG.STR) then
         print("str")
         PARSER = {}
         PARSER.Current = "String"
 
         local endPos = find(word, LANG.STR)
-        if endPos then
+        if endPos and endPos != 1 then
             return COMP_REPROCESS, {TERM = COMP_CURTERM, SUB_WORD = LANG.STR}
         end
 
@@ -502,7 +504,7 @@ LANG.TERMS = {
     },
     ["break"] = {
         Handler = function() 
-            return COMP_HALT
+            return 102 -- COMP_HALT WITH NO ERRORCODE
         end
     },
 }
@@ -612,6 +614,7 @@ local function DoLine(line, no)
             if !commentPos or strOpen or find < commentPos then
                 if strOpen then
                     local str = string.sub(line, strOpenPos + 1, find - 1)
+                    print("STR SEARCH FOUND: "..str)
                     table.insert(COMP_LINESTRBUFFER, str)
                     strOpen = false
                     strSearch(find + 1)
@@ -727,9 +730,13 @@ function IES.Compile(script)
     for lineNo, line in pairs(lines) do
         local returnCode = DoLine(line, lineNo)
 
-        if returnCode and returnCode == 101 then
-            errored = true
-            break
+        if returnCode then
+            if returnCode == 101 then
+                errored = true
+                break
+            elseif returnCode == 102 then
+                break
+            end
         end
     end
 
@@ -738,15 +745,16 @@ function IES.Compile(script)
         return
     end
 
-    local endTime = SysTime()
-    local green = Color(76, 240, 61)
+    if not errored then
+        local endTime = SysTime()
+        local green = Color(76, 240, 61)
 
-    MsgC(green, "------------------------------\n")
-    MsgC(green, "|[IES COMPILE]\n")
-    MsgC(green, "|    Successfully compiled "..#lines.." lines\n")
-    MsgC(green, "|    Took "..endTime - startTime.." seconds", "\n")
-    MsgC(green, "------------------------------\n")
-    
+        MsgC(green, "------------------------------\n")
+        MsgC(green, "|[IES COMPILE]\n")
+        MsgC(green, "|    Successfully compiled "..#lines.." lines\n")
+        MsgC(green, "|    Took "..endTime - startTime.." seconds", "\n")
+        MsgC(green, "------------------------------\n")
+    end
 
     print("FINAL VARS")
 
