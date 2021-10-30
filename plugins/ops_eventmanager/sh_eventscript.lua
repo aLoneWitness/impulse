@@ -22,6 +22,7 @@ local COMP_CONSTRUCTING = ""
 local COMP_GOTOTERM = ""
 local COMP_GOTOPARSER = ""
 local COMP_CURLINE = ""
+local COMP_CURTERM
 local COMP_LINESTRBUFFER = {}
 local COMP_CURWORDPOS = 0
 local VAR_PARSED = 99
@@ -75,37 +76,64 @@ local parserWorkers = {
         local ender = find(word, LANG.STR)
 
         if not ender then
-            return COMP_REPROCESS, {PARSER = true}
+            return COMP_REPROCESS, {TERM = COMP_CURTERM}
         end
 
         local val = table.remove(COMP_LINESTRBUFFER, 1)
 
+        print(val)
+
         return VAR_PARSED, val
     end,
     ["Vector"] = function(word, no) -- aliases: Angle
+        print("VEC IN: "..word)
         if not PARSER.Opened then
             local opener = find(word, "(")
 
             if opener then
+                print("VEC OPENER: ", opener)
                 PARSER.Opened = true
+                PARSER.NeedVal = true
             end
 
-            return COMP_REPROCESS, {PARSER = true, SUB_WORD = string.sub(word, opener + 1)}
+            return COMP_REPROCESS, {TERM = COMP_CURTERM, SUB_WORD = string.sub(word, opener + 1)}
         end
 
-        if PARSER.NeedsComma then
+        if PARSER.NeedComma then
             local comma = find(word, LANG.SEP)
 
+            print("VEC COMMA time")
+            print("VEC COMMA IS: ", word)
+
             if comma then
+                print("VEC COMMA FOUND: "..comma)
                 PARSER.NeedComma = false
                 PARSER.NeedVal = true
             end
 
-            return COMP_REPROCESS, {PARSER = true, SUB_WORD = string.sub(word, comma + 1)}
+            return COMP_REPROCESS, {TERM = COMP_CURTERM, SUB_WORD = string.sub(word, comma + 1)}
         end
 
         if PARSER.NeedVal then
-            local num = tonumber(word)
+            local hasComma = find(word, LANG.SEP)
+            local hasEnder = find(word, ")")
+            local len = string.len(word)
+            local scannable = word
+            local subWord = nil
+
+            print("has comma", hasComma)
+            print("has ender", hasEnder)
+
+            if hasComma and (not hasEnder or hasComma < hasEnder) then
+                scannable = string.sub(scannable, 0, hasComma - 1)
+                subWord = string.sub(word, hasComma, len)
+            elseif hasEnder then
+                scannable  = string.sub(scannable, 0, hasEnder - 1)
+                print("SCN RESULT :"..scannable..":")
+                subWord = string.sub(word, hasEnder, len)
+            end
+
+            local num = tonumber(scannable)
 
             if not num then
                 Ex(no, "Expected number inside Vector, got '"..word.."'")
@@ -120,12 +148,17 @@ local parserWorkers = {
             PARSER.Values = PARSER.Values or {}
             PARSER.Values[#PARSER.Values + 1] = num
 
+            print("VEC ADDED VAL: ", num)
+
             if #PARSER.Values != 3 then
-                PARSER.NeedVal = false
                 PARSER.NeedComma = true
             end
 
-            return COMP_REPROCESS, {PARSER = true, SUB_WORD = string.sub(word, string.len(word))}
+            PARSER.NeedVal = false
+
+            print("VEC SUBWORD: ", subWord)
+
+            return COMP_REPROCESS, {TERM = COMP_CURTERM, SUB_WORD = subWord}
         end
 
         local ender = find(word, ")")
@@ -140,10 +173,7 @@ local parserWorkers = {
 
 local function ParseVar(word, no)
     if PARSER and parserWorkers[PARSER.Current] then
-        local a,b = parserWorkers[PARSER.Current](word, no)
-        print("A: "..a)
-        print("B: "..b)
-        return a, b
+        return parserWorkers[PARSER.Current](word, no)
     end
 
     local num = tonumber(word)
@@ -159,14 +189,14 @@ local function ParseVar(word, no)
         PARSER = {}
         PARSER.Current = "String"
 
-        return COMP_REPROCESS, {PARSER = true}
+        return COMP_REPROCESS, {TERM = COMP_CURTERM}
     end
 
     if string.StartWith(word, "Vector") or string.StartWith(word, "Angle") then
         PARSER = {}
         PARSER.Current = "Vector"
 
-        return COMP_REPROCESS, {PARSER = true}
+        return COMP_REPROCESS, {TERM = COMP_CURTERM, SUB_WORD = word}
     end
 end
 
@@ -243,8 +273,13 @@ LANG.TERMS = {
                 MACRO = {}
                 MACRO.START_LINE = no + 1
 
+                print("MACRO reprocess code:")
+                print(COMP_REPROCESS)
+
                 return COMP_REPROCESS, {TERM = "macro"}
             end
+
+            print("2nd stage macro")
 
             PrintTable(MACRO)
             if not MACRO.NAME then
@@ -261,7 +296,7 @@ LANG.TERMS = {
                     return COMP_REPROCESS, {TERM = "macro", SUB_WORD = string.sub(word, split)}
                 end
 
-                return
+                return COMP_REPROCESS, {TERM = "macro"}
             end
 
             if not MACRO.PROPS and (string.StartWith(word, LANG.PROP_START) or MACRO.PROP_OPEN) then
@@ -280,7 +315,7 @@ LANG.TERMS = {
                 return COMP_REPROCESS, {TERM = "macro"}
             end
 
-            
+            print("MACRO skipline")            
             return COMP_SKIPLINE
         end,
         OnLineDone = function(no)
@@ -407,12 +442,15 @@ LANG.TERMS = {
             if MAKEVAR.NAME and not MAKEVAR.VALUE then
                 local r, data = ParseVar(word, no)
 
-                print("woop")
-
+                print("pre parse info")
                 print(r)
-                print(data)
 
                 if r and r == VAR_PARSED then
+                    print("PARSE COMPLETED:")
+
+                    print(r)
+                    PrintTable({data})
+                    PARSER = nil
                     MAKEVAR.VALUE = data
                     return COMP_SKIPLINE
                 else
@@ -465,6 +503,7 @@ local function DoTerm(macro, no)
     local term = LANG.TERMS[x]
 
     if term then
+        COMP_CURTERM = x
         return term.Handler(nil, no)
     else
         Ex(no, "Can not find term matching '"..x.."'")
@@ -498,7 +537,8 @@ local function DoWord(word, no)
     end
 
     if COMP_GOTOPARSER then
-        return ParseVar(word, no)
+        local c, data = ParseVar(word, no)
+        return c, data
     end
 
     if COMP_GOTOTERM and COMP_GOTOTERM != "" then
@@ -546,7 +586,7 @@ local function DoLine(line, no)
         if find then
             if !commentPos or strOpen or find < commentPos then
                 if strOpen then
-                    local str = string.sub(line, strOpenPos, find)
+                    local str = string.sub(line, strOpenPos + 1, find - 1)
                     table.insert(COMP_LINESTRBUFFER, str)
                     strOpen = false
                     strSearch(find + 1)
@@ -576,6 +616,10 @@ local function DoLine(line, no)
             COMP_GOTOTERM = nil
         end
 
+        if not data or not data.PARSER then
+            COMP_GOTOPARSER = nil
+        end
+
         if act == COMP_SKIPLINE then
             return 100 -- continue
         elseif act == COMP_REPROCESS then
@@ -583,7 +627,7 @@ local function DoLine(line, no)
             COMP_GOTOPARSER = data.PARSER or nil
 
             if data.SUB_WORD and data.SUB_WORD != "" then
-                caller(data.SUB_WORD or word, no)
+                caller(data.SUB_WORD, no)
             end
         elseif act == COMP_HALT then
             return 101 -- break
@@ -592,12 +636,25 @@ local function DoLine(line, no)
 
     print("doing line "..no)
 
+    local function completeLine()
+        if COMP_GOTOTERM or COMP_CURTERM then
+            local term = LANG.TERMS[COMP_GOTOTERM or COMP_CURTERM]
+    
+            if term and term.OnLineDone then
+                term.OnLineDone(no)
+            end
+        end
+    
+        COMP_GOTOTERM = nil
+    end
+
     for x, word in pairs(words) do
         local r = caller(word, no) or 0
 
         print("ReturnCode: ", r)
 
         if r == 100 then
+            completeLine()
             return -- skip line
         elseif r == 101 then
             return 101
@@ -616,40 +673,40 @@ local function DoLine(line, no)
 
         CALL = nil
     end
-    
-    if COMP_GOTOTERM then
-        local term = LANG.TERMS[COMP_GOTOTERM]
 
-        if term and term.OnLineDone then
-            term.OnLineDone(no)
-        end
-    end
-
-    COMP_GOTOTERM = nil
+    completeLine()
 end
 
 function IES.Compile(script)
     COMP_CONSTRUCTING = ""
     COMP_GOTOTERM = nil
     COMP_GOTOPARSER = nil
+    COMP_CURTERM = nil
     CALL = {}
     VARS = {}
     TAGS = {}
+    PARSER = nil
 
     local lines = string.Explode(LANG.NEWLINE, script)
+    local errored = false
 
     for lineNo, line in pairs(lines) do
         local returnCode = DoLine(line, lineNo)
 
         if returnCode and returnCode == 101 then
+            errored = true
             break
         end
     end
 
-    if MACRO then
+    if not errored and MACRO then
         Ex(MACRO.START_LINE - 1, "Can not find end for macro")
         return
     end
+
+    print("FINAL VARS")
+
+    PrintTable(VARS)
 
     return TAGS
 end
