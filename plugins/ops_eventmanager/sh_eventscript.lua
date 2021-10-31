@@ -59,9 +59,19 @@ end
 local function VarCheck(no, word)
     if string.StartWith(word, LANG.GET) then
         local name = string.sub(word, 2)
+        local var = VARS[name]
 
-        if VARS[name] then
-            return VARS[name]
+        if var then
+            if isstring(var) then
+                return '"'..var..'"'
+            end
+            
+            if istable(var) then
+                print("VARCHECK TABLE GET!! PANIC")
+                PrintTable(var)
+                return var
+            end
+            return var
         end
 
         Ex(no, "Can not find VAR called '"..word.."'") -- FIX ME this doesnt error correctly!
@@ -173,6 +183,14 @@ local parserWorkers = {
 }
 
 local function ParseVar(word, no)
+    local word, rCode = VarCheck(no, word)
+
+    print(word)
+
+    if rCode then
+        return rCode
+    end
+
     if PARSER and parserWorkers[PARSER.Current] then
         return parserWorkers[PARSER.Current](word, no)
     end
@@ -192,8 +210,10 @@ local function ParseVar(word, no)
         PARSER = {}
         PARSER.Current = "String"
 
-        local endPos = find(word, LANG.STR)
-        if endPos and endPos != 1 then
+        local endPos = find(string.sub(word, 2, string.len(word)), LANG.STR)
+        if endPos then
+            print("STR ENDER IN SAME WORD! LOC:")
+            print(endPos)
             return COMP_REPROCESS, {TERM = COMP_CURTERM, SUB_WORD = LANG.STR}
         end
 
@@ -202,7 +222,7 @@ local function ParseVar(word, no)
 
     print("CHECKING WORD FOR KEYTERM VEC/ANG :: "..word)
 
-    if string.StartWith(word, "Vector") or string.StartWith(word, "Angle") then
+    if string.StartWith(word, "Vector") or string.StartWith(word, "Angle") or string.StartWith(word, "Color") then
         PARSER = {}
         PARSER.Current = "Vector"
 
@@ -548,12 +568,6 @@ local function DoWord(word, no)
         return COMP_SKIPLINE
     end
 
-    word, rCode = VarCheck(no, word)
-
-    if rCode then
-        return rCode
-    end
-
     if COMP_CONSTRUCTING == "CALL" then
         print("constructing")
         return DoCall(word, no)
@@ -664,6 +678,8 @@ local function DoLine(line, no)
             end
         elseif act == COMP_HALT then
             return 101 -- break
+        elseif act == 102 then
+            return act
         end
     end
 
@@ -674,11 +690,10 @@ local function DoLine(line, no)
             local term = LANG.TERMS[COMP_GOTOTERM or COMP_CURTERM]
     
             if term and term.OnLineDone then
-                term.OnLineDone(no)
+                COMP_GOTOTERM = nil
+                return term.OnLineDone(no)
             end
         end
-    
-        COMP_GOTOTERM = nil
     end
 
     for x, word in pairs(words) do
@@ -688,10 +703,16 @@ local function DoLine(line, no)
         print("ReturnCode: ", r)
 
         if r == 100 then
-            completeLine()
-            return -- skip line
+            local x = completeLine() -- SKIP LINE
+            if x and x == COMP_HALT then
+                return 101
+            end
+
+            return
         elseif r == 101 then
             return 101
+        elseif r == 102 then
+            return 102
         end
     end
 
@@ -708,7 +729,12 @@ local function DoLine(line, no)
         CALL = nil
     end
 
-    completeLine()
+    local x = completeLine()
+    if x and x == COMP_HALT then
+        return 101
+    end
+
+    return
 end
 
 function IES.Compile(script)
