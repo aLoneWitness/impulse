@@ -61,9 +61,9 @@ local function VarCheck(no, word)
         local name = string.sub(word, 2)
         local var = VARS[name]
 
-        if var then
+        if var != nil then
             if isstring(var) then
-                return '"'..var..'"'
+                return var
             end
             
             if istable(var) then
@@ -77,8 +77,6 @@ local function VarCheck(no, word)
         Ex(no, "Can not find VAR called '"..word.."'") -- FIX ME this doesnt error correctly!
         return nil, COMP_HALT
     end
-
-    return word
 end
 
 local parserWorkers = {
@@ -87,11 +85,15 @@ local parserWorkers = {
         local ender = find(word, LANG.STR)
 
         if not ender then
+            print("no str ender")
             return COMP_REPROCESS, {TERM = COMP_CURTERM}
         end
 
+        print("str ender found")
+
         local val = table.remove(COMP_LINESTRBUFFER, 1)
 
+        print("I HAVE PARSED A STRING VALUE AND I AM GONNA RETURN IT!!")
         print(val)
 
         return VAR_PARSED, val
@@ -183,12 +185,14 @@ local parserWorkers = {
 }
 
 local function ParseVar(word, no)
-    local word, rCode = VarCheck(no, word)
-
-    print(word)
+    local varVal, rCode = VarCheck(no, word) -- needs work :/
 
     if rCode then
         return rCode
+    end
+
+    if varVal != nil then
+        return VAR_PARSED, varVal
     end
 
     if PARSER and parserWorkers[PARSER.Current] then
@@ -229,8 +233,80 @@ local function ParseVar(word, no)
         return COMP_REPROCESS, {TERM = COMP_CURTERM, SUB_WORD = word}
     end
 
+    if word == "true" or word == "false" then
+        PARSER = {}
+        PARSER.Boolean = true
+        PARSER = nil
+        return VAR_PARSED, word == "true" and true or false
+    end
+
     Ex(no, "Unknown variable to parse '"..word.."'")
     return COMP_HALT
+end
+
+local function DoInProps(word, no, data)
+    local pre = ":::::::::::::::::::::::::::::"
+    print(pre.." PROPS IN WORD: "..word)
+    if data.NEEDCOMMA then
+        print(pre.." LOOKING FOR COMMA")
+        local findComma = find(word, LANG.SEP)
+        if findComma then
+            print(pre.." found COMMA")
+            data.NEEDCOMMA = false
+            data.CURKEY = nil
+            return COMP_REPROCESS, {SUB_WORD = string.sub(word, findComma + 1)}
+        end
+    end
+
+    if data.NEEDEQ then
+        local findEq = find(word, LANG.EQ)
+        print(pre.." looking for EQ")
+
+        if findEq then
+            print(pre.." found EQ")
+            data.NEEDEQ = false
+            data.NEEDVAL = true
+            return COMP_REPROCESS, {SUB_WORD = string.sub(word, findEq + 1)}
+        end
+    end
+
+    if data.NEEDVAL then
+        local x,y = ParseVar(word, no)
+
+        print(pre.." LOOKING FOR VAL")
+
+        if x and x == VAR_PARSED then
+            print(pre.." VAL DONE")
+            data.Values[data.CURKEY] = y
+            data.NEEDCOMMA = true
+
+            return COMP_REPROCESS, {SUB_WORD = word}
+        else
+            print(pre.." VAL PASSTHRU")
+            return x,y
+        end
+    end
+
+    if not data.CURKEY then
+        print(pre.." LOOKING FOR KEY")
+        local findEq = find(word, LANG.EQ)
+        local s = word
+
+        if findEq then
+            s = string.sub(word, 1, findEq - 1)
+        end
+
+        data.CURKEY = s
+        data.NEEDEQ = true
+
+        return COMP_REPROCESS, {SUB_WORD = word}
+    end
+
+    return VAR_PARSED, data
+end
+
+local function DoOutProps(word, no, data)
+
 end
 
 local function DoCall(word, no)
@@ -279,19 +355,37 @@ local function DoCall(word, no)
         end
     end
 
-    if not CALL.PROP and (string.StartWith(word, LANG.PROP_START) or CALL.PROP_OPEN) then
-        CALL.PROP_TMP = CALL.PROP_TMP or ""
-        CALL.PROP_OPEN = true
+    local findStart = string.StartWith(word, LANG.PROP_START)
+
+    if not CALL.PROP and (findStart or CALL.PROP_OPEN) then
+        CALL.PROP_TMP = CALL.PROP_TMP or {}
+
+        if findStart then
+            word = string.sub(word, 2)
+        end
+
         local findEnd = find(word, LANG.PROP_END)
 
         if findEnd then
-            local varName = string.sub(word, 1, findEnd)
-            CALL.PROP = CALL.PROP_TMP..varName
-            CALL.PROP_TMP = nil
-            CALL.PROP_OPEN = false
+            local x,y = DoInProps(string.sub(word, 1, findEnd - 1), no, CALL.PROP_TMP)
+            if x and x == VAR_PARSED then
+                CALL.PROP = y
+                CALL.PROP_TMP = nil 
+                CALL.PROP_OPEN = false
+                return
+            end
+
+            return x,y
         else
-            CALL.PROP_TMP = CALL.PROP_TMP..word
+            local x,y = DoInProps(word, no, CALL.PROP_TMP)
+            if x and x == VAR_PARSED then
+                CALL.PROP_TMP = y
+                return
+            end
+            return x,y
         end
+
+        CALL.PROP_OPEN = true
     end
 end
 
@@ -390,13 +484,22 @@ LANG.TERMS = {
 
             MAKECALL.HasCall = true
 
-            return DoCall(word, no) or COMP_SKIPLINE
+            local x,y = DoCall(word, no)
+
+            if x != nil then
+                return x,y
+            end
+
+            return COMP_SKIPLINE
         end,
         OnLineDone = function(no)
             if not MAKECALL.HasCall then
                 Ex(no, "Call was made but no arguments were provided")
                 return COMP_HALT
             end
+
+            print("Call final result:")
+            PrintTable(MAKECALL)
         end
     },
     call_async = {
@@ -487,6 +590,7 @@ LANG.TERMS = {
                     print("PARSE COMPLETED:")
 
                     print(r)
+                    print("--parse complete data")
                     PrintTable({data})
                     PARSER = nil
                     MAKEVAR.VALUE = data
@@ -506,7 +610,7 @@ LANG.TERMS = {
                 return COMP_HALT
             end
 
-            if not MAKEVAR.VALUE then
+            if MAKEVAR.VALUE == nil then
                 Ex(no, "No value provided for VAR '"..MAKEVAR.NAME.."'")
                 return COMP_HALT
             end
