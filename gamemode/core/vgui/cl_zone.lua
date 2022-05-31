@@ -19,8 +19,8 @@ function PANEL:Think()
 		return self:Remove()
 	end
 
-	local x = hook.Run("ShouldDrawHUDBox") or false
-	if x == false then
+	local x = hook.Run("ShouldDrawHUDBox")
+	if x != nil and x == false then
 		return self:Remove()
 	end
 
