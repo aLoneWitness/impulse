@@ -10,10 +10,10 @@ function PANEL:Init()
 	self.mainCredits = markup.Parse([[
 		<font=Impulse-Elements32>
 		Framework creator
-		<font=Impulse-Elements23>Jake Green - vin</font>
+		<font=Impulse-Elements23>vin</font>
 
 		Framework contributor(s)
-		<font=Impulse-Elements23>Sander van Dinteren - aLoneWitness</font>
+		<font=Impulse-Elements23>aLoneWitness</font>
 
 		Third-party contrbutors
 		<font=Impulse-Elements23>Alex Grist - mysql wrapper
@@ -88,8 +88,6 @@ function PANEL:Init()
 
 		<font=Impulse-Elements23>
 		Copyright 2i.games 2021
-		impulse-community.com
-		with luv from vin
 		</font>]], 550)
 
 	self.scrollY = ScrH() + 160

@@ -1,8 +1,3 @@
-/*
-** Copyright (c) 2017 Jake Green (TheVingard)
-** This file is private and may not be shared, downloaded, used or sold.
-*/
-
 impulse.Teams = impulse.Teams or {}
 impulse.Teams.Data = impulse.Teams.Data or {}
 impulse.Teams.ClassRef = impulse.Teams.ClassRef or {}

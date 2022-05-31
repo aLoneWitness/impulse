@@ -84,12 +84,19 @@ function PANEL:OnKeyCodeReleased()
 				if (cookie.GetString("impulse_em_do_intro") or "") == "true" then
 					cookie.Delete("impulse_em_do_intro")	
 				end
-
-				impulse.Scenes.PlaySet(impulse.Config.IntroScenes, impulse.Config.IntroMusic, function()
+				
+				if impulse.Config.IntroScenes then
+					impulse.Scenes.PlaySet(impulse.Config.IntroScenes, impulse.Config.IntroMusic, function()
+						local mainMenu = vgui.Create("impulseMainMenu")
+						mainMenu:SetAlpha(0)
+						mainMenu:AlphaTo(255, 1)
+					end)
+				else
 					local mainMenu = vgui.Create("impulseMainMenu")
 					mainMenu:SetAlpha(0)
 					mainMenu:AlphaTo(255, 1)
-				end)
+				end
+
 
 				net.Start("impulseOpsEMIntroCookie")
 				net.SendToServer()

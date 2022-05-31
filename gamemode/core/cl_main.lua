@@ -1,11 +1,6 @@
 --- A generic module that holds anything that doesnt fit elsewhere
 -- @module Misc
 
-/*
-** Copyright (c) 2017 Jake Green (TheVingard)
-** This file is private and may not be shared, downloaded, used or sold.
-*/
-
 function GM:ForceDermaSkin()
 	return "impulse"
 end

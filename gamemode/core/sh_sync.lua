@@ -1,10 +1,6 @@
 --- A fast entity based synchronous networking system
 -- @module Sync
 
-/*
-** Copyright (c) 2019 Jake Green (vin)
-** This file is private and may not be shared, downloaded, used or sold.
-*/
 -- This is Sync version 4 by vin.
 -- Sync V3 has massive networking speed improvements over sync V2, however these improvements require a bit more effort on the coders part
 -- SYNC V3 SHOULD NOT BE USED TO SEND VERY LARGE DATA TABLES, FOR EXAMPLE AN INVENTORY. FOR THAT USE NETSTREAM.

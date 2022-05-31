@@ -846,6 +846,10 @@ local function LoadButtons()
 			button.ButtonCheck = nil
 		end
 	end
+
+	if not impulse.Config.Button then
+		return
+	end
 	
 	for a,button in pairs(ents.FindByClass("func_button")) do
 		if button.ButtonCheck then
@@ -878,10 +882,12 @@ function GM:InitPostEntity()
 		impulse.Config.LoadScript()
 	end
 
-	for v,k in pairs(impulse.Config.Zones) do
-		local zone = ents.Create("impulse_zone")
-		zone:SetBounds(k.pos1, k.pos2)
-		zone.Zone = v
+	if impulse.Config.Zones then
+		for v,k in pairs(impulse.Config.Zones) do
+			local zone = ents.Create("impulse_zone")
+			zone:SetBounds(k.pos1, k.pos2)
+			zone.Zone = v
+		end
 	end
 
 	if impulse.Config.BlacklistEnts then

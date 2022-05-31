@@ -1,11 +1,6 @@
 --- Controls the business system which allows players to purchase items
 -- @module Business
 
-/*
-** Copyright (c) 2017 Jake Green (TheVingard)
-** This file is private and may not be shared, downloaded, used or sold.
-*/
-
 impulse.Business = impulse.Business or {}
 impulse.Business.Data = impulse.Business.Data or {}
 impulse.Business.DataRef = impulse.Business.DataRef or {}

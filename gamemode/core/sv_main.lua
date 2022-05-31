@@ -1,8 +1,3 @@
-/*
-** Copyright (c) 2017 Jake Green (TheVingard)
-** This file is private and may not be shared, downloaded, used or sold.
-*/
-
 function impulse.IsEmpty(vector, ignore) -- findpos and isempty are from darkrp
     ignore = ignore or {}
 
