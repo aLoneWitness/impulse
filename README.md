@@ -6,7 +6,7 @@
 impulse is a Semi-Serious roleplay framework for Garry's Mod.
 
 ## Working with impulse
-Check out the docs at [Check out the docs](https://vingard.github.io/impulsedocs/). If you want to just get started read the ['Installing impulse' guide](https://vingard.github.io/impulsedocs/topics/00-installing.md.html).
+Check out the docs at [Check out the docs](https://vingard.github.io/impulsedocs/). If you want to just get started read the ['Installing impulse' guide](https://vingard.github.io/impulsedocs/topics/00-installing.md.html). **The docs are incomplete! Look through the source code of the framework for full documentation!**
 
 ### Understanding the builds load process
 Currently, the build load process is very simple. The framework will look for a file called config.yml in the data folder, and if it exists it will merge it with the default developer database configuration. This system will probably be updated at some point to allow to to apply to config objects and other things.
