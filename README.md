@@ -6,7 +6,7 @@
 impulse is a Semi-Serious roleplay framework for Garry's Mod.
 
 ## Working with impulse
-Check out the docs at [Check out the docs](https://vingard.github.io/impulsedocs/). If you want to just get started read the ['Installing impulse' guide](https://vingard.github.io/impulsedocs/topics/00-installing.md.html). **The docs are VERY incomplete! Look through (search) the source code of the framework for full documentation!**
+[Check out the docs](https://vingard.github.io/impulsedocs/). If you want to just get started read the ['Installing impulse' guide](https://vingard.github.io/impulsedocs/topics/00-installing.md.html). **The docs are VERY incomplete! Look through (search) the source code of the framework for full documentation!**
 
 ### Schemas
 * [impulseskeleton](https://github.com/vingard/impulseskeleton) - Use this schema as a template for your schema! Shows the basics of schemas.
